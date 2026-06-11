@@ -1,4 +1,5 @@
 import AuthenticationServices
+import MapKit
 import SwiftUI
 
 @main
@@ -374,9 +375,9 @@ private struct FleetContentSections: View {
                 }
             }
 
-            let selectedDrives = Array(store.selectedVehicleRecentDrives.prefix(5))
+            let selectedDrives = Array(store.selectedVehicleRecentDrives.prefix(10))
             if !selectedDrives.isEmpty || store.isLoadingDrives {
-                RecentDrivesSection(drives: selectedDrives, isLoading: store.isLoadingDrives)
+                DriveDemoSection(store: store, drives: selectedDrives)
             }
 
             if !store.activeCharging.isEmpty || store.isLoadingCharging {
@@ -1139,59 +1140,324 @@ private struct ActiveDriveSection: View {
     }
 }
 
-private struct RecentDrivesSection: View {
+private struct DriveDemoSection: View {
+    let store: FleetDataStore
     let drives: [FleetDriveSession]
-    let isLoading: Bool
+
+    @State private var selectedPointIndex = 0
+    @State private var selectedSessionID: String?
 
     var body: some View {
-        Section("Recent Drives") {
-            if isLoading && drives.isEmpty {
+        Section("Drive Demo") {
+            if store.isLoadingDrives && drives.isEmpty {
                 HStack(spacing: 12) {
                     ProgressView()
                     Text("Loading drives")
                 }
-            }
+            } else if drives.isEmpty {
+                ContentUnavailableView("No drives", systemImage: "map", description: Text("Recent drive sessions were not returned for this vehicle."))
+            } else {
+                DriveSessionPicker(drives: drives, selectedSessionID: selectedSessionBinding)
 
-            ForEach(drives) { drive in
-                DriveSessionRow(drive: drive)
+                if let selectedDrive {
+                    let route = resolvedRoute(for: selectedDrive)
+                    DriveRouteMap(route: route, selectedPointIndex: selectedPointIndex)
+                        .frame(height: 260)
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
+                        .task(id: selectedDrive.sessionID) {
+                            selectedPointIndex = 0
+                            if route.isEmpty {
+                                await store.refreshRoute(for: selectedDrive)
+                            }
+                        }
+
+                    DriveSessionSummary(drive: selectedDrive, routePointCount: route.count)
+
+                    if route.isEmpty {
+                        Button {
+                            Task { await store.refreshRoute(for: selectedDrive) }
+                        } label: {
+                            Label("Load Route", systemImage: "arrow.clockwise")
+                        }
+                    } else {
+                        DrivePointScrubber(pointCount: route.count, selectedPointIndex: $selectedPointIndex)
+
+                        if let selectedPoint = route[safe: selectedPointIndex] {
+                            DriveRoutePointDetails(point: selectedPoint, index: selectedPointIndex, count: route.count)
+                        }
+
+                        DriveRoutePointList(route: route, selectedPointIndex: $selectedPointIndex)
+                    }
+                }
             }
+        }
+    }
+
+    private var selectedSessionBinding: Binding<String> {
+        Binding {
+            selectedSessionID ?? drives.first?.sessionID ?? ""
+        } set: { newValue in
+            selectedSessionID = newValue
+            selectedPointIndex = 0
+        }
+    }
+
+    private var selectedDrive: FleetDriveSession? {
+        let sessionID = selectedSessionID ?? drives.first?.sessionID
+        return drives.first { $0.sessionID == sessionID } ?? drives.first
+    }
+
+    private func resolvedRoute(for drive: FleetDriveSession) -> [FleetRoutePoint] {
+        let cachedRoute = store.route(for: drive)
+        return cachedRoute.isEmpty ? drive.route : cachedRoute
+    }
+}
+
+private struct DriveSessionPicker: View {
+    let drives: [FleetDriveSession]
+    @Binding var selectedSessionID: String
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                ForEach(drives) { drive in
+                    Button {
+                        selectedSessionID = drive.sessionID
+                    } label: {
+                        DriveSessionChip(drive: drive, isSelected: selectedSessionID == drive.sessionID)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Select drive from \(drive.startedAtDate.formatted(date: .abbreviated, time: .shortened))")
+                }
+            }
+            .padding(.vertical, 2)
         }
     }
 }
 
-private struct DriveSessionRow: View {
+private struct DriveSessionChip: View {
     let drive: FleetDriveSession
+    let isSelected: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(drive.startedAtDate.formatted(date: .abbreviated, time: .shortened))
+                .font(.caption.weight(.semibold))
+                .lineLimit(1)
+            Text(formattedNumber(drive.distanceMiles, fractionLength: 1, suffix: " mi"))
+                .font(.caption2)
+                .foregroundStyle(isSelected ? .white.opacity(0.82) : .secondary)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .frame(minWidth: 128, alignment: .leading)
+        .background(isSelected ? Color.accentColor : Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .foregroundStyle(isSelected ? .white : .primary)
+    }
+}
+
+private struct DriveRouteMap: View {
+    let route: [FleetRoutePoint]
+    let selectedPointIndex: Int
+
+    @State private var cameraPosition: MapCameraPosition = .automatic
+
+    var body: some View {
+        let coordinates = route.compactMap(\.coordinate)
+
+        ZStack {
+            if coordinates.isEmpty {
+                ContentUnavailableView("No route points", systemImage: "map", description: Text("Select a drive with normalized route coordinates."))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(uiColor: .secondarySystemGroupedBackground))
+            } else {
+                Map(position: $cameraPosition) {
+                    MapPolyline(coordinates: coordinates)
+                        .stroke(.blue, lineWidth: 5)
+
+                    if let firstCoordinate = coordinates.first {
+                        Marker("Start", systemImage: "flag.fill", coordinate: firstCoordinate)
+                            .tint(.green)
+                    }
+
+                    if let lastCoordinate = coordinates.last {
+                        Marker("End", systemImage: "flag.checkered", coordinate: lastCoordinate)
+                            .tint(.black)
+                    }
+
+                    if let selectedCoordinate = route[safe: selectedPointIndex]?.coordinate {
+                        Marker("Selected point", systemImage: "mappin.circle.fill", coordinate: selectedCoordinate)
+                            .tint(.red)
+                    }
+                }
+                .mapStyle(.standard(elevation: .realistic))
+                .mapControls {
+                    MapCompass()
+                    MapScaleView()
+                }
+                .task(id: cameraKey) {
+                    if let rect = mapRect(for: coordinates) {
+                        cameraPosition = .rect(rect)
+                    }
+                }
+            }
+        }
+    }
+
+    private var cameraKey: String {
+        [route.first?.id, route.last?.id, String(route.count)].compactMap { $0 }.joined(separator: ":")
+    }
+
+    private func mapRect(for coordinates: [CLLocationCoordinate2D]) -> MKMapRect? {
+        guard let firstCoordinate = coordinates.first else {
+            return nil
+        }
+
+        var rect = MKMapRect(origin: MKMapPoint(firstCoordinate), size: MKMapSize(width: 1, height: 1))
+        for coordinate in coordinates.dropFirst() {
+            rect = rect.union(MKMapRect(origin: MKMapPoint(coordinate), size: MKMapSize(width: 1, height: 1)))
+        }
+
+        let widthPadding = max(rect.size.width * 0.18, 1_200)
+        let heightPadding = max(rect.size.height * 0.18, 1_200)
+        return rect.insetBy(dx: -widthPadding, dy: -heightPadding)
+    }
+}
+
+private struct DriveSessionSummary: View {
+    let drive: FleetDriveSession
+    let routePointCount: Int
+
+    var body: some View {
+        Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 8) {
+            GridRow {
+                DriveMetricTile(title: "Distance", value: formattedNumber(drive.distanceMiles, fractionLength: 1, suffix: " mi"), systemImage: "point.topleft.down.curvedto.point.bottomright.up")
+                DriveMetricTile(title: "Duration", value: formattedDuration(milliseconds: drive.durationMS), systemImage: "timer")
+            }
+            GridRow {
+                DriveMetricTile(title: "Average", value: formattedNumber(drive.avgSpeedMPH, fractionLength: 0, suffix: " mph"), systemImage: "speedometer")
+                DriveMetricTile(title: "Route", value: "\(routePointCount) pts", systemImage: "map")
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+private struct DriveMetricTile: View {
+    let title: String
+    let value: String
+    let systemImage: String
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: systemImage)
+                .frame(width: 24)
+                .foregroundStyle(.tint)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Text(value)
+                    .font(.subheadline.weight(.semibold))
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, minHeight: 58, alignment: .leading)
+        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+}
+
+private struct DrivePointScrubber: View {
+    let pointCount: Int
+    @Binding var selectedPointIndex: Int
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .firstTextBaseline) {
-                Label("Drive", systemImage: "car.side")
+            HStack {
+                Label("Route Point", systemImage: "mappin.and.ellipse")
                     .font(.headline)
-                Spacer(minLength: 12)
-                Text(drive.startedAtDate, style: .time)
-                    .font(.caption)
+                Spacer()
+                Text("\(min(selectedPointIndex + 1, pointCount)) / \(pointCount)")
+                    .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
             }
 
-            HStack(spacing: 16) {
-                Text(formattedNumber(drive.distanceMiles, fractionLength: 1, suffix: " mi"))
-                Text(formattedDuration(milliseconds: drive.durationMS))
-                Text(formattedNumber(drive.energyUsedKWH, fractionLength: 1, suffix: " kWh"))
-            }
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
+            Slider(
+                value: Binding(
+                    get: { Double(min(selectedPointIndex, max(pointCount - 1, 0))) },
+                    set: { selectedPointIndex = min(max(Int($0.rounded()), 0), max(pointCount - 1, 0)) }
+                ),
+                in: 0...Double(max(pointCount - 1, 0)),
+                step: 1
+            )
+            .disabled(pointCount < 2)
+        }
+    }
+}
 
-            HStack(spacing: 16) {
-                Text("Avg " + formattedNumber(drive.avgSpeedMPH, fractionLength: 0, suffix: " mph"))
-                Text("Max " + formattedNumber(drive.maxSpeedMPH, fractionLength: 0, suffix: " mph"))
-                if let endedAtDate = drive.endedAtDate {
-                    Text("Ended " + endedAtDate.formatted(date: .omitted, time: .shortened))
-                }
+private struct DriveRoutePointDetails: View {
+    let point: FleetRoutePoint
+    let index: Int
+    let count: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Label("Selected Sample", systemImage: "scope")
+                    .font(.headline)
+                Spacer()
+                Text("#\(index + 1)")
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
             }
-            .font(.caption)
-            .foregroundStyle(.secondary)
+
+            LabeledContent("Speed", value: formattedNumber(point.speed, fractionLength: 0, suffix: " mph"))
+            LabeledContent("Time", value: point.timestampDate?.formatted(date: .abbreviated, time: .standard) ?? "--")
+            LabeledContent("Odometer", value: formattedNumber(point.odometer, fractionLength: 1, suffix: " mi"))
+            LabeledContent("Coordinate", value: formattedCoordinate(latitude: point.latitude, longitude: point.longitude))
+            LabeledContent("Progress", value: formattedPercent(index: index, count: count))
         }
         .padding(.vertical, 4)
+    }
+
+    private func formattedPercent(index: Int, count: Int) -> String {
+        guard count > 1 else {
+            return "--"
+        }
+        let percent = Double(index) / Double(count - 1) * 100
+        return percent.formatted(.number.precision(.fractionLength(0))) + "%"
+    }
+}
+
+private struct DriveRoutePointList: View {
+    let route: [FleetRoutePoint]
+    @Binding var selectedPointIndex: Int
+
+    var body: some View {
+        ForEach(Array(route.enumerated()), id: \.element.id) { index, point in
+            Button {
+                selectedPointIndex = index
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: selectedPointIndex == index ? "mappin.circle.fill" : "circle")
+                        .foregroundStyle(selectedPointIndex == index ? .red : .secondary)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(point.timestampDate?.formatted(date: .omitted, time: .standard) ?? "Sample \(index + 1)")
+                            .font(.subheadline)
+                        Text(formattedCoordinate(latitude: point.latitude, longitude: point.longitude))
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Text(formattedNumber(point.speed, fractionLength: 0, suffix: " mph"))
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .buttonStyle(.plain)
+        }
     }
 }
 
@@ -1266,6 +1532,24 @@ private func formattedJSONValue(_ value: JSONValue) -> String {
         return "{\(object.count) fields}"
     case .null:
         return "null"
+    }
+}
+
+private extension FleetRoutePoint {
+    var coordinate: CLLocationCoordinate2D? {
+        guard let latitude, let longitude else {
+            return nil
+        }
+        return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+}
+
+private extension Array {
+    subscript(safe index: Int) -> Element? {
+        guard indices.contains(index) else {
+            return nil
+        }
+        return self[index]
     }
 }
 

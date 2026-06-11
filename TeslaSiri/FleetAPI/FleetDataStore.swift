@@ -420,7 +420,20 @@ final class FleetDataStore {
                 limit: nil,
                 maxPoints: maxPoints
             )
-            driveRoutesBySessionID[drive.sessionID] = FleetDataNormalizer.routePoints(page.data, limit: maxPoints)
+            let normalizedRoute = FleetDataNormalizer.routePoints(page.data, limit: maxPoints)
+            if normalizedRoute.isEmpty {
+                driveRoutesBySessionID.removeValue(forKey: drive.sessionID)
+            } else {
+                driveRoutesBySessionID[drive.sessionID] = normalizedRoute
+            }
+            recentDrives = FleetDataNormalizer.driveSessions(recentDrives.map { existingDrive in
+                guard existingDrive.sessionID == drive.sessionID else {
+                    return existingDrive
+                }
+                var updatedDrive = existingDrive
+                updatedDrive.route = normalizedRoute
+                return updatedDrive
+            })
             lastErrorMessage = nil
             lastRequestID = page.requestID ?? lastRequestID
             lastRefreshDate = Date()
@@ -1471,6 +1484,7 @@ nonisolated private extension Array where Element == FleetDriveSession {
 extension FleetDataStore {
     static func previewLoaded() -> FleetDataStore {
         let store = FleetDataStore(apiClient: PreviewFleetDataClient())
+        let previewRoute = PreviewFleetDataClient.previewDriveRoute
         store.activeCharging = [
             FleetChargeSession(
                 avgPowerKW: 42.1,
@@ -1492,8 +1506,9 @@ extension FleetDataStore {
             "5YJ3E1EA7JF000001": FleetActiveDriveSession(
                 durationMS: 540_000,
                 latest: FleetLatestSnapshot(speed: 32, timestamp: 1_781_000_540_000, updatedAt: 1_781_000_540_000, vin: "5YJ3E1EA7JF000001"),
-                latestRoutePoint: FleetRoutePoint(latitude: 37.3321, longitude: -122.0308, speed: 32, timestamp: 1_781_000_540_000),
-                routePointCount: 18,
+                latestRoutePoint: previewRoute.last,
+                route: previewRoute,
+                routePointCount: previewRoute.count,
                 sessionID: "preview-active-drive",
                 startedAt: 1_781_000_000_000,
                 vin: "5YJ3E1EA7JF000001"
@@ -1508,12 +1523,11 @@ extension FleetDataStore {
             scopes: ["vehicles:read", "telemetry:read"]
         )
         store.cursor = 1_781_000_100_000
+        store.driveRoutesBySessionID = ["preview-drive": previewRoute]
         store.lastRefreshDate = Date()
         store.loadState = .loaded
         store.locationHistoryByVIN = [
-            "5YJ3E1EA7JF000001": [
-                FleetRoutePoint(latitude: 37.3318, longitude: -122.0312, odometer: 19_204, speed: 0, timestamp: 1_781_000_000_000)
-            ]
+            "5YJ3E1EA7JF000001": previewRoute
         ]
         store.recentDrives = [
             FleetDriveSession(
@@ -1523,6 +1537,7 @@ extension FleetDataStore {
                 endedAt: 1_781_001_620_000,
                 energyUsedKWH: 3.1,
                 maxSpeedMPH: 58,
+                route: previewRoute,
                 sessionID: "preview-drive",
                 startedAt: 1_781_000_000_000,
                 vin: "5YJ3E1EA7JF000001"
@@ -1589,6 +1604,18 @@ extension FleetDataStore {
 }
 
 private struct PreviewFleetDataClient: FleetDataLoading {
+    static let previewDriveRoute = FleetDataNormalizer.routePoints([
+        FleetRoutePoint(latitude: 37.3318, longitude: -122.0312, odometer: 19_204.0, speed: 0, timestamp: 1_781_000_000),
+        FleetRoutePoint(latitude: 37.3324, longitude: -122.0307, odometer: 19_204.2, speed: 18, timestamp: 1_781_000_180_000),
+        FleetRoutePoint(latitude: 37.3333, longitude: -122.0297, odometer: 19_204.5, speed: 32, timestamp: 1_781_000_360_000),
+        FleetRoutePoint(latitude: 37.3342, longitude: -122.0282, odometer: 19_204.9, speed: 41, timestamp: 1_781_000_540_000),
+        FleetRoutePoint(latitude: 37.3354, longitude: -122.0270, odometer: 19_205.2, speed: 37, timestamp: 1_781_000_720_000),
+        FleetRoutePoint(latitude: 37.3361, longitude: -122.0259, odometer: 19_205.5, speed: 24, timestamp: 1_781_000_900_000),
+        FleetRoutePoint(latitude: 37.3364, longitude: -122.0251, odometer: 19_205.7, speed: 0, timestamp: 1_781_001_080_000),
+        FleetRoutePoint(latitude: 91, longitude: -122.0251, odometer: 19_205.8, speed: -4, timestamp: 1_781_001_090_000),
+        FleetRoutePoint(latitude: 37.3364, longitude: -122.0251, odometer: 19_205.7, speed: 0, timestamp: 1_781_001_080_000)
+    ])
+
     func activeDrive(vin: String, includeRoute: Bool, routeMaxPoints: Int?) async throws -> FleetAPIPage<FleetActiveDriveSession> {
         FleetAPIPage(
             data: FleetActiveDriveSession(active: false, vin: vin),
@@ -1712,7 +1739,7 @@ private struct PreviewFleetDataClient: FleetDataLoading {
 
     func driveRoute(sessionID: String, startTime: Int64?, endTime: Int64?, limit: Int?, maxPoints: Int?) async throws -> FleetAPIPage<[FleetRoutePoint]> {
         FleetAPIPage(
-            data: [],
+            data: Self.previewDriveRoute,
             cursor: nil,
             cached: false,
             stale: false,
@@ -1722,7 +1749,18 @@ private struct PreviewFleetDataClient: FleetDataLoading {
 
     func drives(vin: String, limit: Int?, includeRoute: Bool) async throws -> FleetAPIPage<[FleetDriveSession]> {
         FleetAPIPage(
-            data: [],
+            data: [
+                FleetDriveSession(
+                    distanceMiles: 1.7,
+                    durationMS: 1_080_000,
+                    endedAt: 1_781_001_080_000,
+                    energyUsedKWH: 0.6,
+                    route: includeRoute ? Self.previewDriveRoute : [],
+                    sessionID: "preview-drive",
+                    startedAt: 1_781_000_000_000,
+                    vin: vin
+                )
+            ],
             cursor: nil,
             cached: false,
             stale: false,
