@@ -1,0 +1,45 @@
+# Xcode
+DerivedData/
+build/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Per-user Xcode data
+xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# CocoaPods / Carthage, if introduced later
+Pods/
+Carthage/Build/
+
+# App secrets and local configuration
+.env
+.env.*
+!.env.example
+*.p8
+*.p12
+*.mobileprovision
+*.provisionprofile
+
+# macOS
+.DS_Store
+
+# Logs and temporary files
+*.log
+*.tmp
+tmp/
+
+# Local Fleet exports
+FleetRawDataExport*.json
+raw-vehicle-data*.json

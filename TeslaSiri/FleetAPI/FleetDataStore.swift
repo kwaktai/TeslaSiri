@@ -973,6 +973,8 @@ nonisolated private enum FleetDataNormalizer {
             drive.maxSpeedMPH = nonNegative(drive.maxSpeedMPH) ?? derivedMaxSpeedMPH(from: drive.route)
             drive.avgSpeedMPH = nonNegative(drive.avgSpeedMPH) ?? derivedAverageSpeedMPH(distanceMiles: drive.distanceMiles, durationMS: drive.durationMS, route: drive.route)
             drive.sessionID = normalizedSessionID(drive.sessionID, fallback: "drive:\(drive.vin):\(drive.startedAt)")
+            drive.startAddress = normalizedString(drive.startAddress)
+            drive.endAddress = normalizedString(drive.endAddress)
 
             if let existingDrive = drivesByID[drive.sessionID], existingDrive.startedAt >= drive.startedAt {
                 continue
@@ -1539,6 +1541,8 @@ extension FleetDataStore {
                 maxSpeedMPH: 58,
                 route: previewRoute,
                 sessionID: "preview-drive",
+                startAddress: "1 Apple Park Way, Cupertino, CA",
+                endAddress: "Infinite Loop, Cupertino, CA",
                 startedAt: 1_781_000_000_000,
                 vin: "5YJ3E1EA7JF000001"
             )
@@ -1757,6 +1761,8 @@ private struct PreviewFleetDataClient: FleetDataLoading {
                     energyUsedKWH: 0.6,
                     route: includeRoute ? Self.previewDriveRoute : [],
                     sessionID: "preview-drive",
+                    startAddress: "1 Apple Park Way, Cupertino, CA",
+                    endAddress: "Infinite Loop, Cupertino, CA",
                     startedAt: 1_781_000_000_000,
                     vin: vin
                 )

@@ -640,6 +640,8 @@ nonisolated struct FleetDriveSession: Codable, Equatable, Identifiable, Sendable
     var maxSpeedMPH: Double?
     var route: [FleetRoutePoint]
     var sessionID: String
+    var startAddress: String?
+    var endAddress: String?
     var startedAt: Int64
     var vin: String
 
@@ -656,6 +658,8 @@ nonisolated struct FleetDriveSession: Codable, Equatable, Identifiable, Sendable
         case maxSpeedMPH = "max_speed_mph"
         case route = "route_points"
         case sessionID = "session_id"
+        case startAddress = "start_address"
+        case endAddress = "end_address"
         case startedAt = "started_at"
         case vin
     }
@@ -670,6 +674,12 @@ nonisolated struct FleetDriveSession: Codable, Equatable, Identifiable, Sendable
         case maxSpeedMPH = "max_speed_mph"
         case routePoints = "route_points"
         case sessionID = "session_id"
+        case startAddress = "start_address"
+        case startLocationAddress = "start_location_address"
+        case originAddress = "origin_address"
+        case endAddress = "end_address"
+        case endLocationAddress = "end_location_address"
+        case destinationAddress = "destination_address"
         case startedAt = "started_at"
         case vin
     }
@@ -683,6 +693,8 @@ nonisolated struct FleetDriveSession: Codable, Equatable, Identifiable, Sendable
         maxSpeedMPH: Double? = nil,
         route: [FleetRoutePoint] = [],
         sessionID: String = "",
+        startAddress: String? = nil,
+        endAddress: String? = nil,
         startedAt: Int64 = 0,
         vin: String = ""
     ) {
@@ -694,6 +706,8 @@ nonisolated struct FleetDriveSession: Codable, Equatable, Identifiable, Sendable
         self.maxSpeedMPH = maxSpeedMPH
         self.route = route
         self.sessionID = sessionID
+        self.startAddress = startAddress
+        self.endAddress = endAddress
         self.startedAt = startedAt
         self.vin = vin
     }
@@ -710,6 +724,12 @@ nonisolated struct FleetDriveSession: Codable, Equatable, Identifiable, Sendable
         let legacyRoute = try container.decodeIfPresent([FleetRoutePoint].self, forKey: .legacyRoute) ?? []
         route = routePoints.isEmpty ? legacyRoute : routePoints
         sessionID = try container.decodeIfPresent(String.self, forKey: .sessionID) ?? ""
+        startAddress = try container.decodeIfPresent(String.self, forKey: .startAddress)
+            ?? container.decodeIfPresent(String.self, forKey: .startLocationAddress)
+            ?? container.decodeIfPresent(String.self, forKey: .originAddress)
+        endAddress = try container.decodeIfPresent(String.self, forKey: .endAddress)
+            ?? container.decodeIfPresent(String.self, forKey: .endLocationAddress)
+            ?? container.decodeIfPresent(String.self, forKey: .destinationAddress)
         startedAt = container.decodeFlexibleInt64IfPresent(forKey: .startedAt) ?? 0
         vin = try container.decodeIfPresent(String.self, forKey: .vin) ?? ""
     }
