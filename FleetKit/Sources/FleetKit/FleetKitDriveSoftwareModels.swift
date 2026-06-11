@@ -1,0 +1,145 @@
+import Foundation
+
+public struct FleetDriveInfo: Decodable, Sendable, Identifiable {
+    public let sessionID: String
+    public let vin: String
+    public let distanceMiles: Double?
+    public let durationMS: Int64?
+    public let avgSpeedMPH: Double?
+    public let maxSpeedMPH: Double?
+    public let energyUsedKWH: Double?
+    public let startedAt: Int64
+    public let endedAt: Int64?
+    public let startAddress: String?
+    public let endAddress: String?
+
+    public var id: String { sessionID }
+    public var startedAtDate: Date { Date(timeIntervalSince1970: TimeInterval(startedAt) / 1000) }
+    public var endedAtDate: Date? { endedAt.map { Date(timeIntervalSince1970: TimeInterval($0) / 1000) } }
+
+    enum CodingKeys: String, CodingKey {
+        case sessionID = "session_id"
+        case vin
+        case distanceMiles = "distance_miles"
+        case durationMS = "duration_ms"
+        case avgSpeedMPH = "avg_speed_mph"
+        case maxSpeedMPH = "max_speed_mph"
+        case energyUsedKWH = "energy_used_kwh"
+        case startedAt = "started_at"
+        case endedAt = "ended_at"
+        case startAddress = "start_address"
+        case endAddress = "end_address"
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        sessionID = try c.decodeIfPresent(String.self, forKey: .sessionID) ?? ""
+        vin = try c.decodeIfPresent(String.self, forKey: .vin) ?? ""
+        distanceMiles = c.flexibleDouble(.distanceMiles)
+        durationMS = c.flexibleInt64(.durationMS)
+        avgSpeedMPH = c.flexibleDouble(.avgSpeedMPH)
+        maxSpeedMPH = c.flexibleDouble(.maxSpeedMPH)
+        energyUsedKWH = c.flexibleDouble(.energyUsedKWH)
+        startedAt = c.flexibleInt64(.startedAt) ?? 0
+        endedAt = c.flexibleInt64(.endedAt)
+        startAddress = try c.decodeIfPresent(String.self, forKey: .startAddress)
+        endAddress = try c.decodeIfPresent(String.self, forKey: .endAddress)
+    }
+}
+
+public struct FleetReleaseNoteInfo: Decodable, Sendable, Identifiable {
+    public let title: String
+    public let subtitle: String?
+    public let details: String?
+
+    public var id: String { title + (subtitle ?? "") }
+
+    enum CodingKeys: String, CodingKey {
+        case title
+        case subtitle
+        case details = "description"
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        title = try c.decodeIfPresent(String.self, forKey: .title) ?? ""
+        subtitle = try c.decodeIfPresent(String.self, forKey: .subtitle)
+        details = try c.decodeIfPresent(String.self, forKey: .details)
+    }
+}
+
+public struct FleetSoftwareInfo: Decodable, Sendable {
+    public let currentVersion: String?
+    public let availableVersion: String?
+    public let updateAvailable: Bool
+    public let installable: Bool
+    public let status: String?
+    public let downloadPercent: Double?
+    public let installPercent: Double?
+    public let expectedDurationMinutes: Double?
+    public let releaseNotes: [FleetReleaseNoteInfo]
+
+    enum CodingKeys: String, CodingKey {
+        case currentVersion = "current_version"
+        case availableVersion = "available_version"
+        case updateAvailable = "update_available"
+        case installable
+        case status
+        case downloadPercent = "download_percent"
+        case installPercent = "install_percent"
+        case expectedDurationMinutes = "expected_duration_minutes"
+        case releaseNotes = "release_notes"
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        currentVersion = try c.decodeIfPresent(String.self, forKey: .currentVersion)
+        availableVersion = try c.decodeIfPresent(String.self, forKey: .availableVersion)
+        updateAvailable = try c.decodeIfPresent(Bool.self, forKey: .updateAvailable) ?? false
+        installable = try c.decodeIfPresent(Bool.self, forKey: .installable) ?? false
+        status = try c.decodeIfPresent(String.self, forKey: .status)
+        downloadPercent = c.flexibleDouble(.downloadPercent)
+        installPercent = c.flexibleDouble(.installPercent)
+        expectedDurationMinutes = c.flexibleDouble(.expectedDurationMinutes)
+        releaseNotes = try c.decodeIfPresent([FleetReleaseNoteInfo].self, forKey: .releaseNotes) ?? []
+    }
+}
+
+public struct FleetControlActionsInfo: Decodable, Sendable {
+    public let actions: [String]
+    public let chargeActions: [String]
+    public let schemas: [String: [String]]
+
+    enum CodingKeys: String, CodingKey {
+        case actions
+        case chargeActions = "charge_actions"
+        case schemas
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        actions = try c.decodeIfPresent([String].self, forKey: .actions) ?? []
+        chargeActions = try c.decodeIfPresent([String].self, forKey: .chargeActions) ?? []
+        schemas = try c.decodeIfPresent([String: [String]].self, forKey: .schemas) ?? [:]
+    }
+
+    /// Whether the backend advertises the given action for this account/vehicle.
+    public func supports(_ action: String) -> Bool {
+        actions.contains(action) || chargeActions.contains(action)
+    }
+}
+
+extension KeyedDecodingContainer {
+    func flexibleInt64(_ key: Key) -> Int64? {
+        if let value = try? decodeIfPresent(Int64.self, forKey: key) {
+            return value
+        }
+        if let value = try? decodeIfPresent(Double.self, forKey: key) {
+            return Int64(value)
+        }
+        if let string = try? decodeIfPresent(String.self, forKey: key) {
+            return Int64(string)
+        }
+        return nil
+    }
+}

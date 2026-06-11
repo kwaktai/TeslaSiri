@@ -8,11 +8,37 @@
 
 /* Begin PBXBuildFile section */
 		1FA023AC2FDB1D73001FDFD5 /* SiriTesla.icon in Resources */ = {isa = PBXBuildFile; fileRef = 1FA023AB2FDB1D73001FDFD5 /* SiriTesla.icon */; };
+		1FA023C52FDB3BCD001FDFD5 /* TeslaSiriAppIntents.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 1FA023BC2FDB3BCD001FDFD5 /* TeslaSiriAppIntents.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1FA023D12FDB4077001FDFD5 /* FleetKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1FA023D02FDB4077001FDFD5 /* FleetKit */; };
+		1FA023D42FDB4089001FDFD5 /* FleetKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1FA023D32FDB4089001FDFD5 /* FleetKit */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1FA023C32FDB3BCD001FDFD5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 000000000000000000000000 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1FA023BB2FDB3BCD001FDFD5;
+			remoteInfo = TeslaSiriAppIntents;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1FA023CA2FDB3BCD001FDFD5 /* Embed ExtensionKit Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
+			dstSubfolder = Product;
+			files = (
+				1FA023C52FDB3BCD001FDFD5 /* TeslaSiriAppIntents.appex in Embed ExtensionKit Extensions */,
+			);
+			name = "Embed ExtensionKit Extensions";
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		000000000000000000000120 /* TeslaSiri.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TeslaSiri.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FA023AB2FDB1D73001FDFD5 /* SiriTesla.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = SiriTesla.icon; sourceTree = "<group>"; };
+		1FA023BC2FDB3BCD001FDFD5 /* TeslaSiriAppIntents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = TeslaSiriAppIntents.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -22,6 +48,13 @@
 				Info.plist,
 			);
 			target = 000000000000000100000000 /* TeslaSiri */;
+		};
+		1FA023C92FDB3BCD001FDFD5 /* Exceptions for "TeslaSiriAppIntents" folder in "TeslaSiriAppIntents" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 1FA023BB2FDB3BCD001FDFD5 /* TeslaSiriAppIntents */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -34,12 +67,27 @@
 			path = TeslaSiri;
 			sourceTree = "<group>";
 		};
+		1FA023BD2FDB3BCD001FDFD5 /* TeslaSiriAppIntents */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1FA023C92FDB3BCD001FDFD5 /* Exceptions for "TeslaSiriAppIntents" folder in "TeslaSiriAppIntents" target */,
+			);
+			path = TeslaSiriAppIntents;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		000000000000000130000000 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				1FA023D12FDB4077001FDFD5 /* FleetKit in Frameworks */,
+			);
+		};
+		1FA023B92FDB3BCD001FDFD5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				1FA023D42FDB4089001FDFD5 /* FleetKit in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -49,8 +97,10 @@
 			isa = PBXGroup;
 			children = (
 				000000000000000000000010 /* TeslaSiri */,
+				1FA023BD2FDB3BCD001FDFD5 /* TeslaSiriAppIntents */,
 				000000000000000000000020 /* Products */,
 				1FA023AB2FDB1D73001FDFD5 /* SiriTesla.icon */,
+				1FA023D22FDB4089001FDFD5 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,8 +108,16 @@
 			isa = PBXGroup;
 			children = (
 				000000000000000000000120 /* TeslaSiri.app */,
+				1FA023BC2FDB3BCD001FDFD5 /* TeslaSiriAppIntents.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1FA023D22FDB4089001FDFD5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -72,16 +130,44 @@
 				000000000000000120000000 /* Sources */,
 				000000000000000130000000 /* Frameworks */,
 				000000000000000140000000 /* Resources */,
+				1FA023CA2FDB3BCD001FDFD5 /* Embed ExtensionKit Extensions */,
 			);
 			buildRules = (
+			);
+			dependencies = (
+				1FA023C42FDB3BCD001FDFD5 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				000000000000000000000010 /* TeslaSiri */,
 			);
 			name = TeslaSiri;
+			packageProductDependencies = (
+				1FA023D02FDB4077001FDFD5 /* FleetKit */,
+			);
 			productName = MyApp;
 			productReference = 000000000000000000000120 /* TeslaSiri.app */;
 			productType = "com.apple.product-type.application";
+		};
+		1FA023BB2FDB3BCD001FDFD5 /* TeslaSiriAppIntents */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1FA023C62FDB3BCD001FDFD5 /* Build configuration list for PBXNativeTarget "TeslaSiriAppIntents" */;
+			buildPhases = (
+				1FA023B82FDB3BCD001FDFD5 /* Sources */,
+				1FA023B92FDB3BCD001FDFD5 /* Frameworks */,
+				1FA023BA2FDB3BCD001FDFD5 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				1FA023BD2FDB3BCD001FDFD5 /* TeslaSiriAppIntents */,
+			);
+			name = TeslaSiriAppIntents;
+			packageProductDependencies = (
+				1FA023D32FDB4089001FDFD5 /* FleetKit */,
+			);
+			productName = TeslaSiriAppIntents;
+			productReference = 1FA023BC2FDB3BCD001FDFD5 /* TeslaSiriAppIntents.appex */;
+			productType = "com.apple.product-type.extensionkit-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -90,11 +176,14 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2630;
+				LastSwiftUpdateCheck = 2700;
 				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					000000000000000100000000 = {
 						CreatedOnToolsVersion = 26.3;
+					};
+					1FA023BB2FDB3BCD001FDFD5 = {
+						CreatedOnToolsVersion = 27.0;
 					};
 				};
 			};
@@ -107,12 +196,16 @@
 			);
 			mainGroup = 000000000000000000000001;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1FA023CF2FDB4077001FDFD5 /* XCLocalSwiftPackageReference "FleetKit" */,
+			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 000000000000000000000020 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				000000000000000100000000 /* TeslaSiri */,
+				1FA023BB2FDB3BCD001FDFD5 /* TeslaSiriAppIntents */,
 			);
 		};
 /* End PBXProject section */
@@ -124,6 +217,11 @@
 				1FA023AC2FDB1D73001FDFD5 /* SiriTesla.icon in Resources */,
 			);
 		};
+		1FA023BA2FDB3BCD001FDFD5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -132,7 +230,20 @@
 			files = (
 			);
 		};
+		1FA023B82FDB3BCD001FDFD5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1FA023C42FDB3BCD001FDFD5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1FA023BB2FDB3BCD001FDFD5 /* TeslaSiriAppIntents */;
+			targetProxy = 1FA023C32FDB3BCD001FDFD5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		000000000000000011000000 /* Debug configuration for PBXProject "TeslaSiri" */ = {
@@ -271,6 +382,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = TeslaSiri/TeslaSiri.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6UHAW5UAT4;
@@ -313,6 +425,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = TeslaSiri/TeslaSiri.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6UHAW5UAT4;
@@ -351,6 +464,69 @@
 			};
 			name = Release;
 		};
+		1FA023C72FDB3BCD001FDFD5 /* Debug configuration for PBXNativeTarget "TeslaSiriAppIntents" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TeslaSiriAppIntents/TeslaSiriAppIntents.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6UHAW5UAT4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TeslaSiriAppIntents/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TeslaSiriAppIntents;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = devplaceholder.ZSPR1SNG.TeslaSiri.TeslaSiriAppIntents;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1FA023C82FDB3BCD001FDFD5 /* Release configuration for PBXNativeTarget "TeslaSiriAppIntents" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TeslaSiriAppIntents/TeslaSiriAppIntents.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6UHAW5UAT4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TeslaSiriAppIntents/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TeslaSiriAppIntents;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = devplaceholder.ZSPR1SNG.TeslaSiri.TeslaSiriAppIntents;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -370,7 +546,34 @@
 			);
 			defaultConfigurationName = Release;
 		};
+		1FA023C62FDB3BCD001FDFD5 /* Build configuration list for PBXNativeTarget "TeslaSiriAppIntents" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1FA023C72FDB3BCD001FDFD5 /* Debug configuration for PBXNativeTarget "TeslaSiriAppIntents" */,
+				1FA023C82FDB3BCD001FDFD5 /* Release configuration for PBXNativeTarget "TeslaSiriAppIntents" */,
+			);
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1FA023CF2FDB4077001FDFD5 /* XCLocalSwiftPackageReference "FleetKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = FleetKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1FA023D02FDB4077001FDFD5 /* FleetKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FleetKit;
+		};
+		1FA023D32FDB4089001FDFD5 /* FleetKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1FA023CF2FDB4077001FDFD5 /* XCLocalSwiftPackageReference "FleetKit" */;
+			productName = FleetKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 000000000000000000000000 /* Project object */;
 }
