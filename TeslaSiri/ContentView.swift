@@ -1,4 +1,5 @@
 import AuthenticationServices
+import CoreLocation
 import MapKit
 import SwiftUI
 
@@ -1144,6 +1145,7 @@ private struct DriveDemoSection: View {
     let store: FleetDataStore
     let drives: [FleetDriveSession]
 
+    @State private var endpointAddresses: [String: DriveEndpointAddresses] = [:]
     @State private var selectedPointIndex = 0
     @State private var selectedSessionID: String?
 
@@ -1157,7 +1159,7 @@ private struct DriveDemoSection: View {
             } else if drives.isEmpty {
                 ContentUnavailableView("No drives", systemImage: "map", description: Text("Recent drive sessions were not returned for this vehicle."))
             } else {
-                DriveSessionPicker(drives: drives, selectedSessionID: selectedSessionBinding)
+                DriveSessionPicker(drives: drives, endpointAddresses: endpointAddresses, selectedSessionID: selectedSessionBinding)
 
                 if let selectedDrive {
                     let route = resolvedRoute(for: selectedDrive)
@@ -1172,7 +1174,7 @@ private struct DriveDemoSection: View {
                             }
                         }
 
-                    DriveSessionSummary(drive: selectedDrive, hasRoute: !route.isEmpty)
+                    DriveSessionSummary(drive: selectedDrive, endpointAddresses: endpointAddresses[selectedDrive.sessionID], hasRoute: !route.isEmpty)
 
                     if route.isEmpty {
                         Button {
@@ -1190,6 +1192,9 @@ private struct DriveDemoSection: View {
                 }
             }
         }
+        .task(id: endpointLookupKey) {
+            await refreshEndpointAddresses()
+        }
     }
 
     private var selectedSessionBinding: Binding<String> {
@@ -1206,14 +1211,40 @@ private struct DriveDemoSection: View {
         return drives.first { $0.sessionID == sessionID } ?? drives.first
     }
 
+    private var endpointLookupKey: String {
+        drives.map { drive in
+            let route = resolvedRoute(for: drive)
+            return [drive.sessionID, drive.startAddress, drive.endAddress, route.first?.id, route.last?.id, String(route.count)]
+                .compactMap { $0 }
+                .joined(separator: ":")
+        }
+        .joined(separator: "|")
+    }
+
     private func resolvedRoute(for drive: FleetDriveSession) -> [FleetRoutePoint] {
         let cachedRoute = store.route(for: drive)
         return cachedRoute.isEmpty ? drive.route : cachedRoute
+    }
+
+    private func refreshEndpointAddresses() async {
+        let visibleSessionIDs = Set(drives.map(\.sessionID))
+        var resolvedAddresses = endpointAddresses.filter { visibleSessionIDs.contains($0.key) }
+
+        for drive in drives {
+            let route = resolvedRoute(for: drive)
+            let addresses = await driveEndpointAddressGeocoder.addresses(for: drive, route: route)
+            guard !Task.isCancelled else {
+                return
+            }
+            resolvedAddresses[drive.sessionID] = addresses
+            endpointAddresses = resolvedAddresses
+        }
     }
 }
 
 private struct DriveSessionPicker: View {
     let drives: [FleetDriveSession]
+    let endpointAddresses: [String: DriveEndpointAddresses]
     @Binding var selectedSessionID: String
 
     var body: some View {
@@ -1223,7 +1254,7 @@ private struct DriveSessionPicker: View {
                     Button {
                         selectedSessionID = drive.sessionID
                     } label: {
-                        DriveSessionChip(drive: drive, isSelected: selectedSessionID == drive.sessionID)
+                        DriveSessionChip(drive: drive, endpointAddresses: endpointAddresses[drive.sessionID], isSelected: selectedSessionID == drive.sessionID)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Select drive from \(drive.startedAtDate.formatted(date: .abbreviated, time: .shortened))")
@@ -1236,6 +1267,7 @@ private struct DriveSessionPicker: View {
 
 private struct DriveSessionChip: View {
     let drive: FleetDriveSession
+    let endpointAddresses: DriveEndpointAddresses?
     let isSelected: Bool
 
     var body: some View {
@@ -1243,7 +1275,7 @@ private struct DriveSessionChip: View {
             Text(drive.startedAtDate.formatted(date: .abbreviated, time: .shortened))
                 .font(.caption.weight(.semibold))
                 .lineLimit(1)
-            Text(driveEndpointSummary(drive))
+            Text(driveEndpointSummary(drive, endpointAddresses: endpointAddresses))
                 .font(.caption2)
                 .lineLimit(1)
                 .foregroundStyle(isSelected ? .white.opacity(0.82) : .secondary)
@@ -1329,6 +1361,7 @@ private struct DriveRouteMap: View {
 
 private struct DriveSessionSummary: View {
     let drive: FleetDriveSession
+    let endpointAddresses: DriveEndpointAddresses?
     let hasRoute: Bool
 
     var body: some View {
@@ -1344,8 +1377,8 @@ private struct DriveSessionSummary: View {
                 }
             }
 
-            LabeledContent("Start", value: drive.startAddress ?? "--")
-            LabeledContent("End", value: drive.endAddress ?? "--")
+            LabeledContent("Starting location", value: endpointAddresses?.start ?? drive.startAddress ?? "--")
+            LabeledContent("Ending location", value: endpointAddresses?.end ?? drive.endAddress ?? "--")
         }
         .padding(.vertical, 4)
     }
@@ -1454,6 +1487,74 @@ private struct AccountSection: View {
     }
 }
 
+private let driveEndpointAddressGeocoder = DriveEndpointAddressGeocoder()
+
+private struct DriveEndpointAddresses: Equatable, Sendable {
+    var start: String?
+    var end: String?
+}
+
+private actor DriveEndpointAddressGeocoder {
+    private var cachedAddresses: [String: String] = [:]
+
+    func addresses(for drive: FleetDriveSession, route: [FleetRoutePoint]) async -> DriveEndpointAddresses {
+        let startAddress: String?
+        if let start = drive.startAddress {
+            startAddress = start
+        } else {
+            startAddress = await address(for: route.first)
+        }
+
+        let endAddress: String?
+        if let end = drive.endAddress {
+            endAddress = end
+        } else if route.first?.coordinateKey == route.last?.coordinateKey {
+            endAddress = startAddress
+        } else {
+            endAddress = await address(for: route.last)
+        }
+        return DriveEndpointAddresses(start: startAddress, end: endAddress)
+    }
+
+    private func address(for point: FleetRoutePoint?) async -> String? {
+        guard let point, let latitude = point.latitude, let longitude = point.longitude else {
+            return nil
+        }
+
+        let cacheKey = point.coordinateKey
+        if let cachedAddress = cachedAddresses[cacheKey] {
+            return cachedAddress
+        }
+
+        let location = CLLocation(latitude: latitude, longitude: longitude)
+        guard let request = MKReverseGeocodingRequest(location: location) else {
+            return nil
+        }
+
+        do {
+            guard let mapItem = try await request.mapItems.first else {
+                return nil
+            }
+            let address = formattedAddress(from: mapItem)
+            cachedAddresses[cacheKey] = address
+            return address
+        } catch {
+            return nil
+        }
+    }
+
+    private func formattedAddress(from mapItem: MKMapItem) -> String {
+        [mapItem.address?.shortAddress, mapItem.address?.fullAddress, mapItem.name]
+            .compactMap(normalizedPlacemarkPart)
+            .first ?? "Address unavailable"
+    }
+
+    private func normalizedPlacemarkPart(_ value: String?) -> String? {
+        let normalized = value?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return normalized?.isEmpty == false ? normalized : nil
+    }
+}
+
 private func formattedNumber(_ value: Double?, fractionLength: Int = 0, suffix: String = "") -> String {
     guard let value else {
         return "--"
@@ -1491,8 +1592,11 @@ private func formattedCoordinate(latitude: Double?, longitude: Double?) -> Strin
     return "\(lat), \(lon)"
 }
 
-private func driveEndpointSummary(_ drive: FleetDriveSession) -> String {
-    switch (drive.startAddress, drive.endAddress) {
+private func driveEndpointSummary(_ drive: FleetDriveSession, endpointAddresses: DriveEndpointAddresses?) -> String {
+    let startAddress = endpointAddresses?.start ?? drive.startAddress
+    let endAddress = endpointAddresses?.end ?? drive.endAddress
+
+    switch (startAddress, endAddress) {
     case let (start?, end?):
         return "\(start) to \(end)"
     case let (start?, nil):
@@ -1500,7 +1604,7 @@ private func driveEndpointSummary(_ drive: FleetDriveSession) -> String {
     case let (nil, end?):
         return "To \(end)"
     case (nil, nil):
-        return "Addresses unavailable"
+        return "Resolving addresses"
     }
 }
 
@@ -1529,6 +1633,15 @@ private extension FleetRoutePoint {
             return nil
         }
         return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+
+    nonisolated var coordinateKey: String {
+        guard let latitude, let longitude else {
+            return "missing"
+        }
+        let lat = latitude.formatted(.number.precision(.fractionLength(5)))
+        let lon = longitude.formatted(.number.precision(.fractionLength(5)))
+        return "\(lat),\(lon)"
     }
 }
 

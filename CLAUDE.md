@@ -2,6 +2,8 @@
 
 This repository is an Xcode-based SwiftUI iOS app. Claude and all other agents must use Xcode MCP tools before CLI tools for project work.
 
+The AGENTS.md is the primary source of instructions for all AI coding agents working in this repository. While the CLAUDE.md is the primary source for Claude, the AGENTS.md may be more up to date. Make sure you check it and update the CLAUDE.md with anything it is missing, and follow that.
+
 ## Highest Priority: Use Xcode MCP First
 
 For anything inside the Xcode project, use:

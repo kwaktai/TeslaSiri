@@ -1,10 +1,15 @@
 # Agent Instructions
 
-These instructions apply to all AI coding agents working in this repository.
+These instructions apply to all AI coding agents working in this repository. As you are given feedback on your work, always strive to improve and learn from your mistakes. Make notes within the agents.md, keep track of your learning, and use the feedback to improve your work. Make sure architectural notes are made here. 
+
+The AGENTS.md is the primary source of instructions for all AI coding agents working in this repository. While the AGENTS.md is the primary source for you, the CLAUDE.md may be more up to date. Make sure you check it and update the AGENTS.md with anything it is missing, and follow that.
+
 
 ## Required Tool Order
 
 This is an Xcode project. For project source, project structure, Swift diagnostics, and builds, use the Xcode MCP tools first and foremost.
+
+Always search for the latest documentation with the Xcode MCP tools. Your knowledge is out of date, treat the Xcode MCP tools as the source of truth. Documentation from the Xcode MCP tools is the most up-to-date. Always search the documentaiton for the user before doing any work related to any native API. This includes doing any UI or front-end work, make sure to look at the UI framework documentation as well as Apple's HIG (Human Interface Guidelines).
 
 Use this order for project work:
 

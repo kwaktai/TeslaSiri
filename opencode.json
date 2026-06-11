@@ -1,0 +1,12 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "Xcode": {
+      "type": "local",
+      "command": [
+        "xcrun",
+        "mcpbridge"
+      ]
+    }
+  }
+}
