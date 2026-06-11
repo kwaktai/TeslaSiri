@@ -35,10 +35,17 @@ If you use a CLI fallback for project files, state why in your response.
 
 Current project files are organized under:
 
-- `TeslaSiri/ContentView.swift`
-- `TeslaSiri/FleetAPI/`
+- `TeslaSiri/ContentView.swift` — `@main` App entry point only; wires shared services into `AppRootView`.
+- `TeslaSiri/UI/AppRootView.swift` — TabView shell (`AppTab` enum + `AppRootView`) and shared auth/diagnostics state.
+- `TeslaSiri/UI/Dashboard/` — User-facing dashboard cards (vehicle picker, status, software, active drive, charging, cached data, sign-in banner).
+- `TeslaSiri/UI/Drives/` — Drive demo: drive picker, route map, session summary, scrubber, metric tiles.
+- `TeslaSiri/UI/Diagnostics/` — Backend diagnostics, normalized data, webhook management, account.
+- `TeslaSiri/UI/Shared/` — Reusable building blocks: `CardContainer`, `StatusBadge`, formatters, geocoder actor, `DiagnosticMonospacedValue`.
+- `TeslaSiri/FleetAPI/` — Backend client, models, data store, cache, keychain, device identity, OAuth, notifications.
 - `TeslaSiri/Info.plist`
 - `TeslaSiri.xcodeproj`
+
+All new UI files must be created under `TeslaSiri/UI/` so the project's `PBXFileSystemSynchronizedRootGroup` (rooted at the `TeslaSiri/` folder) auto-includes them in the target. Do not create Swift files at the project root or outside `TeslaSiri/` — they will not be compiled.
 
 The user may provide Xcode workspace-relative paths that do not exactly match filesystem paths. Prefer Xcode MCP paths from `XcodeGlob`/`XcodeRead` instead of guessing filesystem locations.
 
@@ -72,3 +79,10 @@ For documentation-only changes, a full app build is usually not required.
 ## Sensitive Data
 
 Do not commit tokens, keychain dumps, OAuth secrets, raw vehicle exports, private keys, provisioning profiles, `.env` files, or local Xcode user state.
+
+## Architecture Notes
+
+- The `TeslaSiri` target uses a `PBXFileSystemSynchronizedRootGroup` rooted at the `TeslaSiri/` folder. Files placed anywhere under that folder are auto-included in the target on the next Xcode build/scan; do not edit the project.pbxproj by hand to add Swift sources.
+- The root tab shell lives in `TeslaSiri/UI/AppRootView.swift` and owns the `@State` for auth, diagnostics, selected tab, and OAuth flow. Tab content views receive pre-built dependencies and closures — do not create their own auth/backend singletons.
+- The Diagnostics tab is intentionally dense because the project is currently in a "validate the backend" phase. Once data shapes stabilize, move the user-facing pieces into Dashboard and treat Diagnostics as developer/QA chrome.
+- Dashboard cards live in `TeslaSiri/UI/Dashboard/`; reusable chrome (`CardContainer`, `StatusBadge`, `LoadingCard`, `LoadingStateView`, `ErrorStateView`, `EmptyStateView`) lives in `TeslaSiri/UI/Shared/CardContainer.swift` — use these instead of repeating backgrounds/padding.

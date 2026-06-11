@@ -6,8 +6,13 @@
 	objectVersion = 90;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1FA023AC2FDB1D73001FDFD5 /* SiriTesla.icon in Resources */ = {isa = PBXBuildFile; fileRef = 1FA023AB2FDB1D73001FDFD5 /* SiriTesla.icon */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		000000000000000000000120 /* TeslaSiri.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TeslaSiri.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1FA023AB2FDB1D73001FDFD5 /* SiriTesla.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = SiriTesla.icon; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -45,6 +50,7 @@
 			children = (
 				000000000000000000000010 /* TeslaSiri */,
 				000000000000000000000020 /* Products */,
+				1FA023AB2FDB1D73001FDFD5 /* SiriTesla.icon */,
 			);
 			sourceTree = "<group>";
 		};
@@ -115,6 +121,7 @@
 		000000000000000140000000 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
+				1FA023AC2FDB1D73001FDFD5 /* SiriTesla.icon in Resources */,
 			);
 		};
 /* End PBXResourcesBuildPhase section */
@@ -263,6 +270,7 @@
 		000000000000000111000000 /* Debug configuration for PBXNativeTarget "TeslaSiri" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6UHAW5UAT4;
@@ -271,6 +279,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TeslaSiri/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -303,6 +312,7 @@
 		000000000000000112000000 /* Release configuration for PBXNativeTarget "TeslaSiri" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6UHAW5UAT4;
@@ -311,6 +321,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TeslaSiri/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;

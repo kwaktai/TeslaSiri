@@ -1230,6 +1230,40 @@ nonisolated struct FleetDeviceNotificationWebhook: Codable, Equatable, Identifia
         case vins
     }
 
+    init(
+        createdAt: Int64,
+        description: String?,
+        deviceID: String,
+        deviceName: String?,
+        enabled: Bool,
+        events: [String],
+        failureCount: Int,
+        id: String,
+        lastFailureAt: Int64?,
+        lastSuccessAt: Int64?,
+        platform: String?,
+        secret: String?,
+        updatedAt: Int64,
+        url: URL,
+        vins: [String]
+    ) {
+        self.createdAt = createdAt
+        self.description = description
+        self.deviceID = deviceID
+        self.deviceName = deviceName
+        self.enabled = enabled
+        self.events = events
+        self.failureCount = failureCount
+        self.id = id
+        self.lastFailureAt = lastFailureAt
+        self.lastSuccessAt = lastSuccessAt
+        self.platform = platform
+        self.secret = secret
+        self.updatedAt = updatedAt
+        self.url = url
+        self.vins = vins
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         createdAt = container.decodeFlexibleInt64IfPresent(forKey: .createdAt) ?? 0

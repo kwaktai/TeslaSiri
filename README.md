@@ -4,7 +4,12 @@ TeslaSiri is a SwiftUI iOS app for viewing Tesla Fleet data through the Fleet ba
 
 ## Project Layout
 
-- `TeslaSiri/ContentView.swift`: SwiftUI app entry point and dashboard UI.
+- `TeslaSiri/ContentView.swift`: SwiftUI `@main` app entry point; wires shared services into `AppRootView`.
+- `TeslaSiri/UI/AppRootView.swift`: TabView shell (`AppTab` enum + `AppRootView`) and shared auth/diagnostics state.
+- `TeslaSiri/UI/Dashboard/`: User-facing dashboard cards (vehicle picker, status, software, active drive, charging, cached data, sign-in banner).
+- `TeslaSiri/UI/Drives/`: Drive demo: drive picker, route map, session summary, scrubber, metric tiles.
+- `TeslaSiri/UI/Diagnostics/`: Backend diagnostics, normalized data, webhook management, account.
+- `TeslaSiri/UI/Shared/`: Reusable building blocks (`CardContainer`, `StatusBadge`, formatters, geocoder actor, `DiagnosticMonospacedValue`).
 - `TeslaSiri/FleetAPI/FleetAPIClient.swift`: Fleet backend HTTP client and API envelope handling.
 - `TeslaSiri/FleetAPI/FleetAPIModels.swift`: Codable Fleet API model types.
 - `TeslaSiri/FleetAPI/FleetDataStore.swift`: Main observable data store for bootstrap, sync, selected vehicle data, software actions, drives, routes, charging, and telemetry.

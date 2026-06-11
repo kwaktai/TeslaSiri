@@ -56,6 +56,7 @@ final class FleetDataStore {
     @ObservationIgnored private let apiClient: any FleetDataLoading
     @ObservationIgnored private let cache: any FleetDataCaching
     @ObservationIgnored private var loadingCounts: [LoadingKind: Int] = [:]
+    @ObservationIgnored private var pollingTask: Task<Void, Never>?
     @ObservationIgnored private var selectionRefreshTask: Task<Void, Never>?
 
     private(set) var activeCharging: [FleetChargeSession] = []
@@ -147,6 +148,22 @@ final class FleetDataStore {
     init(apiClient: any FleetDataLoading, cache: any FleetDataCaching = FleetNoDataCache()) {
         self.apiClient = apiClient
         self.cache = cache
+    }
+
+    func startPolling(interval: TimeInterval = 60) {
+        guard pollingTask == nil else {
+            return
+        }
+
+        let pollingInterval = max(interval, 15)
+        pollingTask = Task { [weak self] in
+            await self?.pollFleetData(every: pollingInterval)
+        }
+    }
+
+    func stopPolling() {
+        pollingTask?.cancel()
+        pollingTask = nil
     }
 
     func loadInitialDataIfNeeded() async {
@@ -527,6 +544,7 @@ final class FleetDataStore {
     }
 
     func reset(clearCache: Bool) async {
+        stopPolling()
         selectionRefreshTask?.cancel()
         selectionRefreshTask = nil
         loadingCounts = [:]
@@ -593,6 +611,39 @@ final class FleetDataStore {
         case .telemetry:
             isLoadingTelemetry = isLoading
         }
+    }
+
+    private func pollFleetData(every interval: TimeInterval) async {
+        while !Task.isCancelled {
+            await refreshIfNeededForPolling()
+
+            do {
+                try await Task.sleep(nanoseconds: nanoseconds(from: interval))
+            } catch {
+                return
+            }
+        }
+    }
+
+    private func refreshIfNeededForPolling() async {
+        guard !isRefreshing, !loadState.isLoading else {
+            return
+        }
+
+        if vehicles.isEmpty {
+            await loadInitialDataIfNeeded()
+            return
+        }
+
+        if let lastRefreshDate, Date().timeIntervalSince(lastRefreshDate) < 15 {
+            return
+        }
+
+        await refresh()
+    }
+
+    private nonisolated func nanoseconds(from seconds: TimeInterval) -> UInt64 {
+        UInt64(max(seconds, 0) * 1_000_000_000)
     }
 
     private nonisolated static func writeRawDataExport(_ export: FleetRawDataExport) throws -> URL {
@@ -1057,6 +1108,20 @@ nonisolated private enum FleetDataNormalizer {
         update.status = normalizedString(update.status)
         update.updatedAt = normalizedEpochMilliseconds(update.updatedAt)
         update.warningTimeRemainingMS = nonNegative(update.warningTimeRemainingMS)
+
+        let hasDistinctAvailableVersion = update.availableVersion != nil && update.availableVersion != update.currentVersion
+        if !hasDistinctAvailableVersion {
+            update.availableVersion = nil
+            update.downloadPercent = nil
+            update.expectedDurationMinutes = nil
+            update.expectedDurationSec = nil
+            update.installPercent = nil
+            update.installable = false
+            update.updateAvailable = false
+            if update.status == nil, update.currentVersion != nil {
+                update.status = "Current"
+            }
+        }
 
         let hasSoftwareState = update.currentVersion != nil || update.availableVersion != nil || update.status != nil || update.updateAvailable || update.installable || !update.releaseNotes.isEmpty
         return hasSoftwareState ? update : nil
