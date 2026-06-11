@@ -86,3 +86,121 @@ Do not commit tokens, keychain dumps, OAuth secrets, raw vehicle exports, privat
 - The root tab shell lives in `TeslaSiri/UI/AppRootView.swift` and owns the `@State` for auth, diagnostics, selected tab, and OAuth flow. Tab content views receive pre-built dependencies and closures — do not create their own auth/backend singletons.
 - The Diagnostics tab is intentionally dense because the project is currently in a "validate the backend" phase. Once data shapes stabilize, move the user-facing pieces into Dashboard and treat Diagnostics as developer/QA chrome.
 - Dashboard cards live in `TeslaSiri/UI/Dashboard/`; reusable chrome (`CardContainer`, `StatusBadge`, `LoadingCard`, `LoadingStateView`, `ErrorStateView`, `EmptyStateView`) lives in `TeslaSiri/UI/Shared/CardContainer.swift` — use these instead of repeating backgrounds/padding.
+
+## FleetKit and App Intents
+
+Siri, Shortcuts, Spotlight, and background intent execution live in a **local Swift package** (`FleetKit/`) plus a thin **ExtensionKit** host (`TeslaSiriAppIntents/`). The main app owns OAuth; the extension reads mirrored credentials and calls the Fleet API on its own.
+
+### Layout
+
+| Area | Path | Role |
+|------|------|------|
+| Package manifest | `FleetKit/Package.swift` | Single `FleetKit` library target, iOS/macOS 27, no external deps |
+| Intents, entities, API | `FleetKit/Sources/FleetKit/*.swift` | All `AppIntent` types, `VehicleEntity`, `FleetIntentClient`, snippet views |
+| Package marker | `FleetKit/Sources/FleetKit/FleetKitPackage.swift` | Empty `AppIntentsPackage` type exported to the system |
+| Intent metadata helpers | `FleetKit/Sources/FleetKit/FleetIntentMetadata.swift` | Vehicle prediction titles, `SelectedVehicleOptionsProvider` |
+| App bridge | `TeslaSiri/AppIntents/` | Token mirroring, `AppShortcutsProvider`, `BGAppRefreshTask` battery check |
+| Extension host | `TeslaSiriAppIntents/` | `@main AppIntentsExtension` + `AppIntentsPackage` re-exporting `FleetKitPackage` |
+| Entitlements | `TeslaSiri/TeslaSiri.entitlements`, `TeslaSiriAppIntents/TeslaSiriAppIntents.entitlements` | Shared App Group + matching `keychain-access-groups` |
+
+Both **TeslaSiri** and **TeslaSiriAppIntents** targets link the local `FleetKit` package in `project.pbxproj`. New Swift files under `FleetKit/Sources/FleetKit/` are picked up by the package automatically; do not duplicate intent types under `TeslaSiri/`.
+
+`TeslaSiri/AppIntents/*.swift` is auto-included via the `TeslaSiri/` synchronized root group.
+
+### Architecture (process boundaries)
+
+```
+Main app (OAuth keychain, FleetDataStore)
+    → FleetTokenBridge.sync / clear
+    → FleetSharedTokenStore (shared keychain token + App Group selected VIN)
+    → FleetIntentClient (extension + BG tasks + intents)
+
+TeslaSiriApp + TeslaSiriAppIntentsExtension
+    → AppIntentsPackage.includedPackages = [FleetKitPackage.self]
+```
+
+- **FleetKit is self-contained**: its own minimal models, HTTP client, and intents. The extension must **not** import `FleetDataStore`, dashboard UI, or the app’s full `FleetAPIClient`.
+- **App is source of truth** for OAuth. The extension cannot refresh tokens; on 401 it surfaces `FleetKitError.sessionExpired` (“open the app”).
+- **Vehicle resolution** (`FleetIntentService.resolvedVehicle`): explicit VIN parameter → shared selected VIN → first vehicle on the account. VINs are always validated against `client.vehicles()` (no arbitrary-VIN IDOR).
+
+### Token bridge (critical — do not break)
+
+`TeslaSiri/AppIntents/FleetTokenBridge.swift` mirrors the app session into shared storage for the extension.
+
+| Event | Required action |
+|-------|-----------------|
+| App launch | `FleetTokenBridge.sync(store:)` in `ContentView` `.task` |
+| App foreground | `FleetTokenBridge.sync` on `scenePhase == .active` |
+| Sign-in | `FleetTokenBridge.sync` after `loadInitialData()` in `AppRootView.signIn()` |
+| Sign-out | `FleetTokenBridge.clear()` after `tokenStore.deleteTokenSet()` |
+| Fleet reload | `FleetTokenBridge.sync` in `AppRootView.reloadFleet()` |
+| Vehicle picker change | `FleetTokenBridge.sync` in `DashboardView` `onSelect` |
+| OAuth save/refresh | `FleetOAuthTokenKeychain.saveTokenSet` / `deleteTokenSet` also write/clear `FleetSharedTokenStore` |
+
+`FleetTokenBridge.sync` **clears** the shared access token when `accessToken()` throws (do not leave stale tokens). It calls `TeslaSiriShortcuts.updateAppShortcutParameters()` so shortcut defaults pick up the current vehicle name.
+
+Access tokens live in **shared keychain** (`FleetSharedTokenStore`); selected VIN stays in App Group `UserDefaults`. Legacy UserDefaults tokens are migrated on read.
+
+### HTTP URLs in FleetKit
+
+`FleetIntentClient` must join API paths with `URLComponents` (see `makeURL` in `FleetKitClient.swift`). **Never** use `baseURL.appendingPathComponent("/api/v1/...")` — that percent-encodes slashes and breaks every request. Match the pattern in `TeslaSiri/FleetAPI/FleetAPIClient.makeURL`.
+
+### Adding or changing an App Intent
+
+1. **Search Apple docs first** — use Xcode MCP `DocumentationSearch` for `AppIntent`, `AppIntentsPackage`, `PredictableIntent`, `parameterSummary`, `AppShortcut`, `LongRunningIntent`, etc.
+2. **Implement in FleetKit** — new file under `FleetKit/Sources/FleetKit/`, `public` intent + entities as needed.
+3. **Vehicle parameter** — optional `VehicleEntity?` on VIN-scoped intents; resolve via `FleetIntentService.resolvedVehicle(vehicle?.id)` in `perform()`.
+4. **Vehicle-aware copy** — follow existing intents:
+   - `parameterSummary`: `When(\.$vehicle, .hasAnyValue) { Summary("Verb \(\.$vehicle)") } otherwise: { Summary("Verb my car") }`
+   - `PredictableIntent` + `predictionConfiguration` using `VehicleEntity.predictionTitle(verb:vehicle:)` (or `suffix:` variant)
+   - `@Parameter` title/description/request dialogs must use **string literals** at the call site (the macro rejects static `LocalizedStringResource` constants)
+   - `perform()` dialogs should use `resolved.name` from the API, not hardcoded “Tesla”
+5. **Register shortcuts** (optional) — add phrases in `TeslaSiri/AppIntents/TeslaSiriShortcuts.swift`. **Apple allows at most 10 `AppShortcut` entries.** Include both:
+   - `"Verb \(\.$vehicle) with \(.applicationName)"` (fills in car name from entity)
+   - `"Verb my car with \(.applicationName)"` (generic fallback)
+6. **Spotlight** — if the intent introduces a new `IndexedEntity`, update `FleetSpotlightIndexer` and ensure reindex runs after sign-in/reload (already wired in `AppRootView` / launch).
+7. **Build** — `BuildProject` on both app and extension; watch for “max 10 App Shortcuts” and `@Parameter` literal errors.
+
+Control intents must use action names validated by `FleetIntentService.runControl` against `controlActions()`. Confirmation policy: unlock, trunk, frunk, charge-limit prompt; lock, climate, vent run immediately (see comments in `ControlIntents.swift`).
+
+### App Shortcuts vs discoverability
+
+- **10 shortcut slots** — prioritize high-frequency actions (status, lock/unlock, climate, software update). Other intents remain available via Shortcuts library and `isDiscoverable = true`.
+- **`PredictableIntent`** — powers Siri suggestion/widget phrasing with vehicle names; separate from `AppShortcut` phrases.
+- **`SelectedVehicleOptionsProvider`** — loads vehicles from the API for shortcut parameter pickers; defaults to shared selected VIN.
+
+### Extension and entitlements
+
+- `TeslaSiriAppIntentsExtension` stays minimal: `@main` + `AppIntentsPackage` including `FleetKitPackage.self`.
+- App Group: `group.com.maxweinbach.TeslaSiri` on **both** targets.
+- Keychain group: `$(AppIdentifierPrefix)group.com.maxweinbach.TeslaSiri` on **both** targets.
+- Do not mirror refresh tokens or full token sets to the extension — access token only.
+
+### Background work
+
+- **Battery reminder** — `TeslaSiri/AppIntents/BatteryReminderManager.swift` uses `BGAppRefreshTask`; handler must hop to `@MainActor` with `Task { @MainActor in ... }`, never `MainActor.assumeIsolated` from the BG queue. Always complete the task (`setTaskCompleted`) including on expiration/cancellation.
+- **Software install** — `InstallSoftwareUpdateIntent` is `LongRunningIntent` and uses `performBackgroundTask`.
+
+### Model duplication
+
+`FleetKitModels` / `FleetKitDriveSoftwareModels` intentionally mirror a **subset** of `TeslaSiri/FleetAPI/FleetAPIModels.swift` so the package stays extension-safe. When backend fields change, update both layers or accept drift in snippet/intent output.
+
+### Common pitfalls (from prior reviews)
+
+- Forgetting `FleetTokenBridge.sync` after sign-in, vehicle change, or token refresh → Siri “not signed in” or wrong account.
+- Sign-out without `FleetTokenBridge.clear()` → extension keeps old session.
+- Broken FleetKit URLs via `appendingPathComponent`.
+- More than 10 `AppShortcut` entries → compile error.
+- `DriveEntityQuery.entities(for:)` must search **all** account vehicles, not only the default resolved vehicle.
+- Duplicating intent types under `TeslaSiri/AppIntents/` — conflicts with `public` FleetKit types; keep bridge/shortcuts only in the app target.
+
+### Validation checklist (FleetKit changes)
+
+1. `DocumentationSearch` for any new App Intents API usage.
+2. `XcodeRefreshCodeIssuesInFile` on edited Swift files.
+3. `BuildProject` (catches shortcut count, `@Parameter` macro issues).
+4. Manually verify token bridge call sites if touching auth, `FleetOAuth`, `AppRootView`, or `DashboardView`.
+
+### Future: navigation / Maps handoff
+
+There is no “send navigation to car” intent yet. To add one: confirm the Fleet control action name with the backend, add intent + `parameterSummary`/`AppShortcut` phrases like `"Send navigation to \(\.$vehicle)"` / `"Send navigation to my car"`, and wire a destination parameter with `inputConnectionBehavior` if accepting Maps output.

@@ -25,7 +25,7 @@ final class BatteryReminderManager {
                 task.setTaskCompleted(success: false)
                 return
             }
-            MainActor.assumeIsolated {
+            Task { @MainActor in
                 self.handle(refreshTask)
             }
         }
@@ -45,13 +45,15 @@ final class BatteryReminderManager {
     }
 
     private func handle(_ task: BGAppRefreshTask) {
-        schedule() // queue the next check regardless of this one's outcome
+        schedule()
 
         let work = Task {
             await checkBatteryAndNotify()
-            task.setTaskCompleted(success: true)
+            task.setTaskCompleted(success: !Task.isCancelled)
         }
-        task.expirationHandler = { work.cancel() }
+        task.expirationHandler = {
+            work.cancel()
+        }
     }
 
     func checkBatteryAndNotify() async {

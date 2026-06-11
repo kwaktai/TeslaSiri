@@ -50,10 +50,22 @@ public struct DriveEntityQuery: EntityQuery {
     public init() {}
 
     public func entities(for identifiers: [DriveEntity.ID]) async throws -> [DriveEntity] {
+        guard !identifiers.isEmpty else { return [] }
+
         let service = FleetIntentService.make()
-        let vehicle = try await service.resolvedVehicle(nil)
-        let drives = try await service.drives(vin: vehicle.vin, limit: 50)
-        return drives.filter { identifiers.contains($0.sessionID) }.map(DriveEntity.init(info:))
+        let vehicles = try await service.vehicles()
+        var remaining = Set(identifiers)
+        var found: [DriveEntity] = []
+
+        for vehicle in vehicles where !remaining.isEmpty {
+            let drives = try await service.drives(vin: vehicle.vin, limit: 50)
+            for drive in drives where remaining.contains(drive.sessionID) {
+                found.append(DriveEntity(info: drive))
+                remaining.remove(drive.sessionID)
+            }
+        }
+
+        return found
     }
 
     public func suggestedEntities() async throws -> [DriveEntity] {

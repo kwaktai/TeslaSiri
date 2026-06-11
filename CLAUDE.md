@@ -38,6 +38,7 @@ TeslaSiri is a SwiftUI iOS app that connects to a Fleet backend for Tesla vehicl
 - Vehicle dashboard UI.
 - Drive, route, charging, software update, telemetry, and raw export flows.
 - Notification payload handling and webhook registration state.
+- FleetKit local Swift package: Siri/Shortcuts/App Intents, ExtensionKit host, shared keychain token bridge (see `AGENTS.md` → FleetKit and App Intents).
 
 ## Key Files
 
@@ -56,6 +57,9 @@ TeslaSiri is a SwiftUI iOS app that connects to a Fleet backend for Tesla vehicl
 - `TeslaSiri/FleetAPI/FleetNotifications.swift`: Local notifications and webhook payloads.
 - `TeslaSiri/FleetAPI/FleetOAuth.swift`: OAuth flow.
 - `TeslaSiri/Info.plist`: URL scheme and app plist settings.
+- `FleetKit/Sources/FleetKit/`: App Intents, entities, `FleetIntentClient`, snippet views (`FleetKitPackage`).
+- `TeslaSiri/AppIntents/`: `FleetTokenBridge`, `TeslaSiriShortcuts`, `BatteryReminderManager`.
+- `TeslaSiriAppIntents/`: thin App Intents extension re-exporting `FleetKitPackage`.
 
 ## Worktree Safety
 

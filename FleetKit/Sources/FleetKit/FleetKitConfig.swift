@@ -12,9 +12,11 @@ public enum FleetKitConfig {
     /// App Group shared between the app and the App Intents extension.
     public static let appGroupIdentifier = "group.com.maxweinbach.TeslaSiri"
 
-    /// Key under which the app stores the current OAuth access token in the
-    /// shared App Group's `UserDefaults`.
+    /// Legacy UserDefaults key for access tokens (migrated to shared keychain).
     public static let accessTokenDefaultsKey = "fleet.accessToken"
+
+    public static let sharedAccessTokenKeychainService = "com.maxweinbach.TeslaSiri.fleet.shared"
+    public static let sharedAccessTokenKeychainAccount = "extensionAccessToken"
 
     /// Key under which the app stores the currently selected VIN.
     public static let selectedVINDefaultsKey = "fleet.selectedVIN"

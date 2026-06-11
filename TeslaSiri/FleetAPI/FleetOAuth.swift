@@ -1,5 +1,6 @@
 import AuthenticationServices
 import CryptoKit
+import FleetKit
 import Foundation
 import OSLog
 
@@ -428,11 +429,13 @@ nonisolated struct FleetOAuthTokenKeychain: Sendable {
         let data = try JSONEncoder().encode(tokenSet)
         try saveData(data, account: "oauthTokenSet")
         try FleetAccessTokenKeychain(service: service).saveAccessToken(tokenSet.accessToken)
+        FleetSharedTokenStore.shared.save(accessToken: tokenSet.accessToken)
     }
 
     func deleteTokenSet() throws {
         try deleteData(account: "oauthTokenSet")
         try FleetAccessTokenKeychain(service: service).deleteAccessToken()
+        FleetSharedTokenStore.shared.clearAccessToken()
     }
 
     private func loadData(account: String) throws -> Data? {

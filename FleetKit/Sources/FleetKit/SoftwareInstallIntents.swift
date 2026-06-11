@@ -2,12 +2,34 @@ import AppIntents
 
 /// Schedules the available software update. Conforms to `LongRunningIntent`
 /// since kicking off and confirming the install can take a while.
-public struct InstallSoftwareUpdateIntent: LongRunningIntent {
+public struct InstallSoftwareUpdateIntent: LongRunningIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Install Tesla Software Update"
-    public static let description = IntentDescription("Install the available software update on your Tesla.")
+    public static let description = IntentDescription("Install a software update. Uses your selected car when no vehicle is specified.")
+    public static let isDiscoverable = true
 
-    @Parameter(title: "Vehicle") public var vehicle: VehicleEntity?
+    @Parameter(
+        title: "Vehicle",
+        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
+        requestValueDialog: IntentDialog("Which car?"),
+        requestDisambiguationDialog: IntentDialog("Which one?")
+    )
+    public var vehicle: VehicleEntity?
+
     public init() {}
+
+    public static var parameterSummary: some ParameterSummary {
+        When(\.$vehicle, .hasAnyValue) {
+            Summary("Update \(\.$vehicle)")
+        } otherwise: {
+            Summary("Update my car")
+        }
+    }
+
+    public static var predictionConfiguration: some IntentPredictionConfiguration {
+        IntentPrediction(parameters: (\.$vehicle)) { vehicle in
+            DisplayRepresentation(title: VehicleEntity.predictionTitle(verb: "Update", vehicle: vehicle))
+        }
+    }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         let service = FleetIntentService.make()
@@ -29,12 +51,34 @@ public struct InstallSoftwareUpdateIntent: LongRunningIntent {
 }
 
 /// Cancels a scheduled software update.
-public struct CancelSoftwareUpdateIntent: AppIntent {
+public struct CancelSoftwareUpdateIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Cancel Tesla Software Update"
-    public static let description = IntentDescription("Cancel a scheduled software update on your Tesla.")
+    public static let description = IntentDescription("Cancel a scheduled software update. Uses your selected car when no vehicle is specified.")
+    public static let isDiscoverable = true
 
-    @Parameter(title: "Vehicle") public var vehicle: VehicleEntity?
+    @Parameter(
+        title: "Vehicle",
+        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
+        requestValueDialog: IntentDialog("Which car?"),
+        requestDisambiguationDialog: IntentDialog("Which one?")
+    )
+    public var vehicle: VehicleEntity?
+
     public init() {}
+
+    public static var parameterSummary: some ParameterSummary {
+        When(\.$vehicle, .hasAnyValue) {
+            Summary("Cancel update on \(\.$vehicle)")
+        } otherwise: {
+            Summary("Cancel update on my car")
+        }
+    }
+
+    public static var predictionConfiguration: some IntentPredictionConfiguration {
+        IntentPrediction(parameters: (\.$vehicle)) { vehicle in
+            DisplayRepresentation(title: VehicleEntity.predictionTitle(verb: "Cancel update on", vehicle: vehicle))
+        }
+    }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         let service = FleetIntentService.make()

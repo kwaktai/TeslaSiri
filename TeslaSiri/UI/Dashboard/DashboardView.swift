@@ -56,7 +56,10 @@ struct DashboardView: View {
             VehiclePickerCard(
                 vehicles: store.vehicles,
                 selectedVIN: store.selectedVIN,
-                onSelect: { store.selectVehicle(vin: $0) }
+                onSelect: { vin in
+                    store.selectVehicle(vin: vin)
+                    Task { await FleetTokenBridge.sync(store: store) }
+                }
             )
 
             if let vehicle = store.selectedVehicle {

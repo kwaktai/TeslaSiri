@@ -156,19 +156,27 @@ public struct FleetIntentClient: Sendable {
         }
     }
 
+    private func makeURL(path: String, query: [URLQueryItem]) throws -> URL {
+        guard var components = URLComponents(url: FleetKitConfig.baseURL, resolvingAgainstBaseURL: false) else {
+            throw FleetKitError.badResponse
+        }
+
+        let basePath = components.percentEncodedPath.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        let endpointPath = path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        components.percentEncodedPath = "/" + [basePath, endpointPath].filter { !$0.isEmpty }.joined(separator: "/")
+        components.queryItems = query.isEmpty ? nil : query
+
+        guard let url = components.url else {
+            throw FleetKitError.badResponse
+        }
+        return url
+    }
+
     private func authorizedRequest(path: String, query: [URLQueryItem], method: String) throws -> URLRequest {
         guard let token = tokenStore.accessToken() else {
             throw FleetKitError.notSignedIn
         }
-        guard var components = URLComponents(url: FleetKitConfig.baseURL.appendingPathComponent(path), resolvingAgainstBaseURL: false) else {
-            throw FleetKitError.badResponse
-        }
-        if !query.isEmpty {
-            components.queryItems = query
-        }
-        guard let url = components.url else {
-            throw FleetKitError.badResponse
-        }
+        let url = try makeURL(path: path, query: query)
         var request = URLRequest(url: url, timeoutInterval: FleetKitConfig.requestTimeout)
         request.httpMethod = method
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")

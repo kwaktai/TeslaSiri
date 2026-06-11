@@ -7,13 +7,34 @@ import AppIntents
 // Confirmation policy: unlock, trunk, frunk, and charge-limit changes prompt
 // for confirmation; lock, climate, and vent run immediately.
 
-public struct LockVehicleIntent: AppIntent {
+public struct LockVehicleIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Lock Tesla"
-    public static let description = IntentDescription("Lock your Tesla.")
+    public static let description = IntentDescription("Lock your Tesla. Uses your selected car when no vehicle is specified.")
     public static let isDiscoverable = true
 
-    @Parameter(title: "Vehicle") public var vehicle: VehicleEntity?
+    @Parameter(
+        title: "Vehicle",
+        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
+        requestValueDialog: IntentDialog("Which car?"),
+        requestDisambiguationDialog: IntentDialog("Which one?")
+    )
+    public var vehicle: VehicleEntity?
+
     public init() {}
+
+    public static var parameterSummary: some ParameterSummary {
+        When(\.$vehicle, .hasAnyValue) {
+            Summary("Lock \(\.$vehicle)")
+        } otherwise: {
+            Summary("Lock my car")
+        }
+    }
+
+    public static var predictionConfiguration: some IntentPredictionConfiguration {
+        IntentPrediction(parameters: (\.$vehicle)) { vehicle in
+            DisplayRepresentation(title: VehicleEntity.predictionTitle(verb: "Lock", vehicle: vehicle))
+        }
+    }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         let service = FleetIntentService.make()
@@ -23,12 +44,34 @@ public struct LockVehicleIntent: AppIntent {
     }
 }
 
-public struct UnlockVehicleIntent: AppIntent {
+public struct UnlockVehicleIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Unlock Tesla"
-    public static let description = IntentDescription("Unlock your Tesla.")
+    public static let description = IntentDescription("Unlock your Tesla. Uses your selected car when no vehicle is specified.")
+    public static let isDiscoverable = true
 
-    @Parameter(title: "Vehicle") public var vehicle: VehicleEntity?
+    @Parameter(
+        title: "Vehicle",
+        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
+        requestValueDialog: IntentDialog("Which car?"),
+        requestDisambiguationDialog: IntentDialog("Which one?")
+    )
+    public var vehicle: VehicleEntity?
+
     public init() {}
+
+    public static var parameterSummary: some ParameterSummary {
+        When(\.$vehicle, .hasAnyValue) {
+            Summary("Unlock \(\.$vehicle)")
+        } otherwise: {
+            Summary("Unlock my car")
+        }
+    }
+
+    public static var predictionConfiguration: some IntentPredictionConfiguration {
+        IntentPrediction(parameters: (\.$vehicle)) { vehicle in
+            DisplayRepresentation(title: VehicleEntity.predictionTitle(verb: "Unlock", vehicle: vehicle))
+        }
+    }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         let service = FleetIntentService.make()
@@ -39,12 +82,34 @@ public struct UnlockVehicleIntent: AppIntent {
     }
 }
 
-public struct StartClimateIntent: AppIntent {
+public struct StartClimateIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Start Tesla Climate"
-    public static let description = IntentDescription("Turn on climate control in your Tesla.")
+    public static let description = IntentDescription("Turn on climate control. Uses your selected car when no vehicle is specified.")
+    public static let isDiscoverable = true
 
-    @Parameter(title: "Vehicle") public var vehicle: VehicleEntity?
+    @Parameter(
+        title: "Vehicle",
+        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
+        requestValueDialog: IntentDialog("Which car?"),
+        requestDisambiguationDialog: IntentDialog("Which one?")
+    )
+    public var vehicle: VehicleEntity?
+
     public init() {}
+
+    public static var parameterSummary: some ParameterSummary {
+        When(\.$vehicle, .hasAnyValue) {
+            Summary("Start climate in \(\.$vehicle)")
+        } otherwise: {
+            Summary("Start climate in my car")
+        }
+    }
+
+    public static var predictionConfiguration: some IntentPredictionConfiguration {
+        IntentPrediction(parameters: (\.$vehicle)) { vehicle in
+            DisplayRepresentation(title: VehicleEntity.predictionTitle(verb: "Start climate in", vehicle: vehicle))
+        }
+    }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         let service = FleetIntentService.make()
@@ -54,12 +119,34 @@ public struct StartClimateIntent: AppIntent {
     }
 }
 
-public struct VentWindowsIntent: AppIntent {
+public struct VentWindowsIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Vent Tesla Windows"
-    public static let description = IntentDescription("Vent your Tesla's windows.")
+    public static let description = IntentDescription("Vent your Tesla's windows. Uses your selected car when no vehicle is specified.")
+    public static let isDiscoverable = true
 
-    @Parameter(title: "Vehicle") public var vehicle: VehicleEntity?
+    @Parameter(
+        title: "Vehicle",
+        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
+        requestValueDialog: IntentDialog("Which car?"),
+        requestDisambiguationDialog: IntentDialog("Which one?")
+    )
+    public var vehicle: VehicleEntity?
+
     public init() {}
+
+    public static var parameterSummary: some ParameterSummary {
+        When(\.$vehicle, .hasAnyValue) {
+            Summary("Vent \(\.$vehicle) windows")
+        } otherwise: {
+            Summary("Vent my car windows")
+        }
+    }
+
+    public static var predictionConfiguration: some IntentPredictionConfiguration {
+        IntentPrediction(parameters: (\.$vehicle)) { vehicle in
+            DisplayRepresentation(title: VehicleEntity.predictionTitle(verb: "Vent", vehicle: vehicle, suffix: "windows"))
+        }
+    }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         let service = FleetIntentService.make()
@@ -74,12 +161,34 @@ public struct VentWindowsIntent: AppIntent {
     }
 }
 
-public struct OpenTrunkIntent: AppIntent {
+public struct OpenTrunkIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Open Tesla Trunk"
-    public static let description = IntentDescription("Open (or close) your Tesla's rear trunk.")
+    public static let description = IntentDescription("Open your Tesla's rear trunk. Uses your selected car when no vehicle is specified.")
+    public static let isDiscoverable = true
 
-    @Parameter(title: "Vehicle") public var vehicle: VehicleEntity?
+    @Parameter(
+        title: "Vehicle",
+        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
+        requestValueDialog: IntentDialog("Which car?"),
+        requestDisambiguationDialog: IntentDialog("Which one?")
+    )
+    public var vehicle: VehicleEntity?
+
     public init() {}
+
+    public static var parameterSummary: some ParameterSummary {
+        When(\.$vehicle, .hasAnyValue) {
+            Summary("Open \(\.$vehicle) trunk")
+        } otherwise: {
+            Summary("Open my car trunk")
+        }
+    }
+
+    public static var predictionConfiguration: some IntentPredictionConfiguration {
+        IntentPrediction(parameters: (\.$vehicle)) { vehicle in
+            DisplayRepresentation(title: VehicleEntity.predictionTitle(verb: "Open", vehicle: vehicle, suffix: "trunk"))
+        }
+    }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         let service = FleetIntentService.make()
@@ -95,12 +204,34 @@ public struct OpenTrunkIntent: AppIntent {
     }
 }
 
-public struct OpenFrunkIntent: AppIntent {
+public struct OpenFrunkIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Open Tesla Frunk"
-    public static let description = IntentDescription("Open your Tesla's front trunk.")
+    public static let description = IntentDescription("Open your Tesla's front trunk. Uses your selected car when no vehicle is specified.")
+    public static let isDiscoverable = true
 
-    @Parameter(title: "Vehicle") public var vehicle: VehicleEntity?
+    @Parameter(
+        title: "Vehicle",
+        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
+        requestValueDialog: IntentDialog("Which car?"),
+        requestDisambiguationDialog: IntentDialog("Which one?")
+    )
+    public var vehicle: VehicleEntity?
+
     public init() {}
+
+    public static var parameterSummary: some ParameterSummary {
+        When(\.$vehicle, .hasAnyValue) {
+            Summary("Open \(\.$vehicle) frunk")
+        } otherwise: {
+            Summary("Open my car frunk")
+        }
+    }
+
+    public static var predictionConfiguration: some IntentPredictionConfiguration {
+        IntentPrediction(parameters: (\.$vehicle)) { vehicle in
+            DisplayRepresentation(title: VehicleEntity.predictionTitle(verb: "Open", vehicle: vehicle, suffix: "frunk"))
+        }
+    }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         let service = FleetIntentService.make()
@@ -116,16 +247,38 @@ public struct OpenFrunkIntent: AppIntent {
     }
 }
 
-public struct SetChargeLimitIntent: AppIntent {
+public struct SetChargeLimitIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Set Tesla Charge Limit"
-    public static let description = IntentDescription("Set your Tesla's charge limit percentage.")
+    public static let description = IntentDescription("Set your Tesla's charge limit. Uses your selected car when no vehicle is specified.")
+    public static let isDiscoverable = true
 
-    @Parameter(title: "Vehicle") public var vehicle: VehicleEntity?
+    @Parameter(
+        title: "Vehicle",
+        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
+        requestValueDialog: IntentDialog("Which car?"),
+        requestDisambiguationDialog: IntentDialog("Which one?")
+    )
+    public var vehicle: VehicleEntity?
 
     @Parameter(title: "Charge Limit %", default: 80, inclusiveRange: (50, 100))
     public var percent: Int
 
     public init() {}
+
+    public static var parameterSummary: some ParameterSummary {
+        When(\.$vehicle, .hasAnyValue) {
+            Summary("Set \(\.$vehicle) charge limit to \(\.$percent)%")
+        } otherwise: {
+            Summary("Set my car charge limit to \(\.$percent)%")
+        }
+    }
+
+    public static var predictionConfiguration: some IntentPredictionConfiguration {
+        IntentPrediction(parameters: (\.$vehicle, \.$percent)) { vehicle, percent in
+            let target = vehicle?.name ?? FleetIntentMetadata.myCar
+            return DisplayRepresentation(title: LocalizedStringResource(stringLiteral: "Set \(target) charge limit to \(percent)%"))
+        }
+    }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         let service = FleetIntentService.make()

@@ -5,6 +5,8 @@ import SwiftUI
 
 @main
 struct TeslaSiriApp: App {
+    @Environment(\.scenePhase) private var scenePhase
+
     @State private var notificationWebhooks = FleetNotificationWebhookStore()
     @State private var notifications = FleetNotificationCenter()
     @State private var oauthClient = FleetBackend.makeOAuthClient()
@@ -28,6 +30,12 @@ struct TeslaSiriApp: App {
                 await FleetTokenBridge.sync(store: store)
                 await BatteryReminderManager.shared.prepare()
                 await FleetSpotlightIndexer.reindexAll()
+            }
+            .onChange(of: scenePhase) { _, phase in
+                guard phase == .active else { return }
+                Task {
+                    await FleetTokenBridge.sync(store: store)
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
 import AuthenticationServices
+import FleetKit
 import SwiftUI
 
 enum AppTab: Hashable, Identifiable, CaseIterable {
@@ -158,6 +159,8 @@ struct AppRootView: View {
             diagnostics.probeMessage = "Signed in. Loading fleet data."
             refreshDiagnostics()
             await store.loadInitialData()
+            await FleetTokenBridge.sync(store: store)
+            await FleetSpotlightIndexer.reindexAll()
             await notificationWebhooks.refresh()
             refreshDiagnostics()
             configureFleetPolling(for: scenePhase)
@@ -170,6 +173,8 @@ struct AppRootView: View {
 
     private func reloadFleet() async {
         await store.refresh()
+        await FleetTokenBridge.sync(store: store)
+        await FleetSpotlightIndexer.reindexAll()
         await notificationWebhooks.refresh()
         refreshDiagnostics()
     }
@@ -206,6 +211,7 @@ struct AppRootView: View {
     private func signOut() async {
         do {
             try tokenStore.deleteTokenSet()
+            FleetTokenBridge.clear()
             await store.reset(clearCache: true)
             notificationWebhooks.reset()
             store.stopPolling()

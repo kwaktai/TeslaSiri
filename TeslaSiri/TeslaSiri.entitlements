@@ -6,5 +6,9 @@
 	<array>
 		<string>group.com.maxweinbach.TeslaSiri</string>
 	</array>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)group.com.maxweinbach.TeslaSiri</string>
+	</array>
 </dict>
 </plist>
