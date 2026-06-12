@@ -184,6 +184,12 @@ Control intent files in `FleetKit/Sources/FleetKit/`:
 - App UI surfaces for vehicles, status, software, and drives should use SwiftUI `appEntityIdentifier(_:)` with the matching FleetKit `IndexedEntity` IDs (VIN for vehicle/status/software, session ID for drives) so Siri and Apple Intelligence can understand onscreen content.
 - Use `SiriTipView` only for intents that are backed by `AppShortcut` entries; other discoverable intents should be exposed through the Shortcuts library and `ShortcutsLink`.
 
+### App schemas
+
+- Open entity intents in `FleetKit/Sources/FleetKit/OpenEntityIntents.swift` use `@AppIntent(schema: .system.open)` because they exactly match Apple's System open schema.
+- Vehicle, status, software, drive, charging, climate, lock, horn, lights, trunk/frunk, and Tesla navigation handoff actions remain custom App Intents. Current AppIntents docs do not expose an exact automotive/control schema, and `.maps.startNavigation` is not accurate for `SendNavigationIntent` because the app sends a destination to the vehicle backend rather than starting and returning an in-app navigation session.
+- Before adding future schema macros, search Apple docs with Xcode MCP and only adopt a schema when its required noun/action contract matches FleetKit behavior exactly.
+
 ### Extension and entitlements
 
 - `TeslaSiriAppIntentsExtension` stays minimal: `@main` + `AppIntentsPackage` including `FleetKitPackage.self`.

@@ -3,6 +3,7 @@ import AppIntents
 /// Open intents let Spotlight/Siri turn indexed FleetKit entities into app
 /// launches for the matching content. The app can add scene-level handlers to
 /// route these targets to specific tabs or detail views.
+@AppIntent(schema: .system.open)
 public struct OpenVehicleIntent: OpenIntent {
     public static let title: LocalizedStringResource = "Open Vehicle"
 
@@ -16,6 +17,7 @@ public struct OpenVehicleIntent: OpenIntent {
     }
 }
 
+@AppIntent(schema: .system.open)
 public struct OpenVehicleStatusIntent: OpenIntent {
     public static let title: LocalizedStringResource = "Open Vehicle Status"
 
@@ -29,6 +31,7 @@ public struct OpenVehicleStatusIntent: OpenIntent {
     }
 }
 
+@AppIntent(schema: .system.open)
 public struct OpenDriveIntent: OpenIntent {
     public static let title: LocalizedStringResource = "Open Drive"
 
@@ -42,6 +45,7 @@ public struct OpenDriveIntent: OpenIntent {
     }
 }
 
+@AppIntent(schema: .system.open)
 public struct OpenSoftwareUpdateIntent: OpenIntent {
     public static let title: LocalizedStringResource = "Open Software Update"
 
@@ -55,6 +59,7 @@ public struct OpenSoftwareUpdateIntent: OpenIntent {
     }
 }
 
+@AppIntent(schema: .system.open)
 public struct OpenReleaseNoteIntent: OpenIntent {
     public static let title: LocalizedStringResource = "Open Release Note"
 
