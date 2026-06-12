@@ -29,7 +29,7 @@ struct TeslaSiriApp: App {
             .task {
                 await FleetTokenBridge.sync(store: store)
                 await BatteryReminderManager.shared.prepare()
-                await FleetSpotlightIndexer.reindexAll()
+                _ = await FleetSpotlightIndexer.reindexAll()
             }
             .onChange(of: scenePhase) { _, phase in
                 guard phase == .active else { return }

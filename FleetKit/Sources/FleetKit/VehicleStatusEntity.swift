@@ -1,4 +1,6 @@
 import AppIntents
+import CoreSpotlight
+import Foundation
 
 /// A point-in-time, human-readable status snapshot for a vehicle. Conforms to
 /// `IndexedEntity` so it can be surfaced in Spotlight.
@@ -13,6 +15,14 @@ public struct VehicleStatusEntity: AppEntity, IndexedEntity, Identifiable {
     public let chargeLimitPercent: Int?
     public let chargingState: String?
     public let isLocked: Bool?
+    public let odometerMiles: Double?
+    public let speedMPH: Double?
+    public let insideTemp: Double?
+    public let outsideTemp: Double?
+    public let latitude: Double?
+    public let longitude: Double?
+    public let tireSummary: String?
+    public let updatedAt: Date?
 
     public init(snapshot: FleetSnapshotInfo, vehicleName: String) {
         self.id = snapshot.vin
@@ -21,29 +31,71 @@ public struct VehicleStatusEntity: AppEntity, IndexedEntity, Identifiable {
         self.chargeLimitPercent = snapshot.chargeLimitSOC.map { Int($0.rounded()) }
         self.chargingState = snapshot.chargingState
         self.isLocked = snapshot.locked
+        self.odometerMiles = snapshot.odometer
+        self.speedMPH = snapshot.speed
+        self.insideTemp = snapshot.insideTemp
+        self.outsideTemp = snapshot.outsideTemp
+        self.latitude = snapshot.latitude
+        self.longitude = snapshot.longitude
+        self.tireSummary = snapshot.tires?.displaySummary
+        self.updatedAt = snapshot.updatedAtDate
     }
 
     public var batteryDisplay: String {
-        batteryPercent.map { "\($0)%" } ?? "—"
+        batteryPercent.map { "\($0)%" } ?? "unknown battery"
+    }
+
+    public var odometerDisplay: String? {
+        odometerMiles.map { "\(Int($0.rounded())) mi" }
     }
 
     public var statusSummary: String {
         var parts: [String] = []
+        parts.append("Battery \(batteryDisplay)")
         if let chargingState, !chargingState.isEmpty {
             parts.append(chargingState.capitalized)
         }
         if let isLocked {
             parts.append(isLocked ? "Locked" : "Unlocked")
         }
-        return parts.isEmpty ? "Battery \(batteryDisplay)" : "\(batteryDisplay) • \(parts.joined(separator: " • "))"
+        if let odometerDisplay {
+            parts.append("Odometer \(odometerDisplay)")
+        }
+        if let tireSummary {
+            parts.append("Tires \(tireSummary)")
+        }
+        return parts.joined(separator: " • ")
     }
 
     public var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(vehicleName)", subtitle: "\(statusSummary)")
+        DisplayRepresentation(title: "\(vehicleName) Status", subtitle: "\(statusSummary)")
+    }
+
+    public var attributeSet: CSSearchableItemAttributeSet {
+        let attributes = defaultAttributeSet
+        var descriptionParts = [statusSummary]
+        if let chargeLimitPercent { descriptionParts.append("Charge limit \(chargeLimitPercent)%") }
+        if let speedMPH { descriptionParts.append("Speed \(Int(speedMPH.rounded())) mph") }
+        if let insideTemp { descriptionParts.append("Cabin \(Int(insideTemp.rounded())) degrees") }
+        if let outsideTemp { descriptionParts.append("Outside \(Int(outsideTemp.rounded())) degrees") }
+        if let updatedAt { descriptionParts.append("Updated \(updatedAt.formatted(date: .abbreviated, time: .shortened))") }
+        attributes.contentDescription = descriptionParts.joined(separator: ". ")
+        attributes.keywords = [
+            vehicleName, id, "Tesla", "vehicle status", "battery", "charge", "charging",
+            "lock", "unlock", "locked", "unlocked", "mileage", "odometer", "miles",
+            "tire", "tires", "tire pressure", "PSI", "climate", "temperature", "location"
+        ]
+        if let latitude, let longitude {
+            attributes.latitude = NSNumber(value: latitude)
+            attributes.longitude = NSNumber(value: longitude)
+            attributes.supportsNavigation = NSNumber(value: true)
+            attributes.namedLocation = "\(vehicleName) location"
+        }
+        return attributes
     }
 }
 
-public struct VehicleStatusEntityQuery: EntityQuery {
+public struct VehicleStatusEntityQuery: EntityQuery, IndexedEntityQuery {
     public init() {}
 
     public func entities(for identifiers: [VehicleStatusEntity.ID]) async throws -> [VehicleStatusEntity] {
@@ -66,5 +118,13 @@ public struct VehicleStatusEntityQuery: EntityQuery {
             results.append(VehicleStatusEntity(snapshot: snapshot, vehicleName: vehicle.name))
         }
         return results
+    }
+
+    public func reindexEntities(for identifiers: [VehicleStatusEntity.ID], indexDescription: CSSearchableIndexDescription) async throws {
+        try await FleetSpotlightIndexer.donate(entities(for: identifiers))
+    }
+
+    public func reindexAllEntities(indexDescription: CSSearchableIndexDescription) async throws {
+        try await FleetSpotlightIndexer.donate(suggestedEntities())
     }
 }

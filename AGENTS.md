@@ -161,11 +161,19 @@ Access tokens live in **shared keychain** (`FleetSharedTokenStore`); selected VI
 6. **Spotlight** — if the intent introduces a new `IndexedEntity`, update `FleetSpotlightIndexer` and ensure reindex runs after sign-in/reload (already wired in `AppRootView` / launch).
 7. **Build** — `BuildProject` on both app and extension; watch for “max 10 App Shortcuts” and `@Parameter` literal errors.
 
-Control intents must use action names validated by `FleetIntentService.runControl` against `controlActions()`. Confirmation policy: unlock, trunk, frunk, charge-limit prompt; lock, climate, vent run immediately (see comments in `ControlIntents.swift`).
+Control intents must use action names validated by `FleetIntentService.runControl` against `controlActions()`. Confirmation policy: unlock, trunk, frunk, charge-limit, and dog-mode-OFF prompt; lock, climate (start/stop/temps/defrost/bioweapon), vent, flash lights, honk, and navigation run immediately (see comments in `ControlIntents.swift`, `ClimateControlIntents.swift`, `ConvenienceControlIntents.swift`).
+
+Control intent files in `FleetKit/Sources/FleetKit/`:
+
+- `ControlIntents.swift` — lock/unlock (`door_lock`/`door_unlock`), start climate (`auto_conditioning_start`), vent windows (`window_control` vent), trunk/frunk (`actuate_trunk`), charge limit (`set_charge_limit`).
+- `ClimateControlIntents.swift` — stop climate (`auto_conditioning_stop`), cabin temperature (`set_temps`, `Measurement<UnitTemperature>` parameter converted to Celsius, clamped 15–28 °C, half-degree steps), max defrost (`remote_defrost`), dog mode (`set_pet_mode`), Bioweapon Defense (`set_bioweapon_mode` with `manual_override: false`).
+- `ConvenienceControlIntents.swift` — flash lights (`flash_lights`), honk horn (`honk_horn`), send destination (`navigation_request` with a plain string `value`; backend wraps it into the Tesla share payload).
+
+`window_control` close is intentionally not exposed as an intent: the backend requires the caller's lat/lon to prove proximity and the intents extension has no location access.
 
 ### App Shortcuts vs discoverability
 
-- **10 shortcut slots** — prioritize high-frequency actions (status, lock/unlock, climate, software update). Other intents remain available via Shortcuts library and `isDiscoverable = true`.
+- **10 shortcut slots** — prioritize high-frequency actions (status, lock/unlock, climate start/stop, software update). All 10 slots are currently used; Cancel Software Update gave up its slot to Stop Climate and remains available via the Shortcuts library. Other intents (temps, defrost, dog mode, bioweapon, flash, honk, navigation) remain available via Shortcuts library and `isDiscoverable = true`.
 - **`PredictableIntent`** — powers Siri suggestion/widget phrasing with vehicle names; separate from `AppShortcut` phrases.
 - **`SelectedVehicleOptionsProvider`** — loads vehicles from the API for shortcut parameter pickers; defaults to shared selected VIN.
 
@@ -201,6 +209,6 @@ Control intents must use action names validated by `FleetIntentService.runContro
 3. `BuildProject` (catches shortcut count, `@Parameter` macro issues).
 4. Manually verify token bridge call sites if touching auth, `FleetOAuth`, `AppRootView`, or `DashboardView`.
 
-### Future: navigation / Maps handoff
+### Navigation handoff
 
-There is no “send navigation to car” intent yet. To add one: confirm the Fleet control action name with the backend, add intent + `parameterSummary`/`AppShortcut` phrases like `"Send navigation to \(\.$vehicle)"` / `"Send navigation to my car"`, and wire a destination parameter with `inputConnectionBehavior` if accepting Maps output.
+`SendNavigationIntent` (`ConvenienceControlIntents.swift`) sends a destination to the car via the backend `navigation_request` action. The `destination` String parameter uses `inputConnectionBehavior: .connectToPreviousIntentResult` so Shortcuts can pipe output from a previous action into it. The backend defaults `type`/`locale`/`timestamp_ms` server-side and wraps a plain string into the Tesla share payload. `navigation_gps_request` (lat/lon) exists in the backend registry but has no intent — address form covers the Siri use case.

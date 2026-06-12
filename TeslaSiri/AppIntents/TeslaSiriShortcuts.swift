@@ -48,6 +48,15 @@ struct TeslaSiriShortcuts: AppShortcutsProvider {
             systemImageName: "fan.fill"
         )
         AppShortcut(
+            intent: StopClimateIntent(),
+            phrases: [
+                "Stop climate in \(\.$vehicle) with \(.applicationName)",
+                "Stop climate in my car with \(.applicationName)"
+            ],
+            shortTitle: "Stop Climate",
+            systemImageName: "fan.slash.fill"
+        )
+        AppShortcut(
             intent: VentWindowsIntent(),
             phrases: [
                 "Vent \(\.$vehicle) windows with \(.applicationName)",
@@ -91,15 +100,6 @@ struct TeslaSiriShortcuts: AppShortcutsProvider {
             ],
             shortTitle: "Install Update",
             systemImageName: "square.and.arrow.down.fill"
-        )
-        AppShortcut(
-            intent: CancelSoftwareUpdateIntent(),
-            phrases: [
-                "Cancel the update on \(\.$vehicle) with \(.applicationName)",
-                "Cancel my car software update in \(.applicationName)"
-            ],
-            shortTitle: "Cancel Update",
-            systemImageName: "xmark.circle.fill"
         )
     }
 }

@@ -35,6 +35,20 @@ struct VehicleStatusSnippetView: View {
             }
             .font(.subheadline)
             .foregroundStyle(.secondary)
+
+            VStack(alignment: .leading, spacing: 6) {
+                if let odometerDisplay = status.odometerDisplay {
+                    Label(odometerDisplay, systemImage: "gauge.with.needle")
+                }
+                if let tireSummary = status.tireSummary {
+                    Label(tireSummary, systemImage: "car.side.rear.and.tire.marks")
+                }
+                if let insideTemp = status.insideTemp {
+                    Label("Cabin \(Int(insideTemp.rounded())) degrees", systemImage: "thermometer.medium")
+                }
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
         }
         .padding()
     }

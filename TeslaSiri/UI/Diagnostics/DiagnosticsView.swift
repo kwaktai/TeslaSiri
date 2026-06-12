@@ -33,6 +33,8 @@ struct DiagnosticsView: View {
 
                 NormalizedDataSection(store: store)
 
+                SpotlightDebugSection(isSignedIn: diagnostics.isSignedIn)
+
                 if let user = store.user {
                     AccountSection(email: user.email, units: user.units, scopes: user.scopes)
                 }

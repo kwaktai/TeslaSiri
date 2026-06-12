@@ -160,7 +160,7 @@ struct AppRootView: View {
             refreshDiagnostics()
             await store.loadInitialData()
             await FleetTokenBridge.sync(store: store)
-            await FleetSpotlightIndexer.reindexAll()
+            _ = await FleetSpotlightIndexer.reindexAll()
             await notificationWebhooks.refresh()
             refreshDiagnostics()
             configureFleetPolling(for: scenePhase)
@@ -174,7 +174,7 @@ struct AppRootView: View {
     private func reloadFleet() async {
         await store.refresh()
         await FleetTokenBridge.sync(store: store)
-        await FleetSpotlightIndexer.reindexAll()
+        _ = await FleetSpotlightIndexer.reindexAll()
         await notificationWebhooks.refresh()
         refreshDiagnostics()
     }
