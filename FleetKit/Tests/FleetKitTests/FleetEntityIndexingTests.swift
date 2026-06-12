@@ -12,6 +12,10 @@ struct FleetEntityIndexingTests {
         #expect(entity.name == "Roadrunner")
         #expect(attributes.contentDescription?.contains("status") == true)
         #expect(attributes.contentDescription?.contains("horn") == true)
+        #expect(attributes.title == "Roadrunner")
+        #expect(attributes.displayName == "Roadrunner vehicle")
+        #expect(attributes.kind == "Tesla Vehicle")
+        #expect(attributes.textContent?.contains("Shortcuts") == true)
         #expect(attributes.keywords?.contains("honk") == true)
         #expect(attributes.keywords?.contains("tire pressure") == true)
         #expect(attributes.keywords?.contains("release notes") == true)
@@ -33,6 +37,10 @@ struct FleetEntityIndexingTests {
         #expect(entity.statusSummary.contains("Tires FL 39 PSI"))
         #expect(attributes.contentDescription?.contains("Charge limit 90%") == true)
         #expect(attributes.contentDescription?.contains("Speed 41 mph") == true)
+        #expect(attributes.title == "Roadrunner Status")
+        #expect(attributes.displayName == "Roadrunner vehicle status")
+        #expect(attributes.kind == "Tesla Vehicle Status")
+        #expect(attributes.textContent?.contains("Charge limit 90%") == true)
         #expect(attributes.keywords?.contains("mileage") == true)
         #expect(attributes.keywords?.contains("PSI") == true)
         #expect(attributes.latitude == NSNumber(value: 37.3317))
@@ -53,7 +61,11 @@ struct FleetEntityIndexingTests {
         #expect(entity.detailText.contains("avg 24 mph"))
         #expect(entity.detailText.contains("max 55 mph"))
         #expect(entity.detailText.contains("3.4 kWh"))
-        #expect(attributes.contentDescription?.contains("Tesla drive for VIN VIN-1") == true)
+        #expect(attributes.contentDescription?.contains("Tesla drive for vehicle VIN-1") == true)
+        #expect(attributes.title?.contains("Tesla Drive") == true)
+        #expect(attributes.displayName?.contains("Tesla Drive") == true)
+        #expect(attributes.kind == "Tesla Drive")
+        #expect(attributes.textContent?.contains("1 Infinite Loop") == true)
         #expect(attributes.keywords?.contains("average speed") == true)
         #expect(attributes.keywords?.contains("1 Infinite Loop") == true)
         #expect(attributes.contentCreationDate == Date(timeIntervalSince1970: 1_710_000_000))
@@ -71,6 +83,10 @@ struct FleetEntityIndexingTests {
         #expect(attributes.contentDescription?.contains("Current version 2026.2.1") == true)
         #expect(attributes.contentDescription?.contains("Available version 2026.8.4") == true)
         #expect(attributes.contentDescription?.contains("Installable now") == true)
+        #expect(attributes.title == "Roadrunner Software")
+        #expect(attributes.displayName == "Roadrunner software update")
+        #expect(attributes.kind == "Tesla Software Update")
+        #expect(attributes.textContent?.contains("Available version 2026.8.4") == true)
         #expect(attributes.keywords?.contains("release version") == true)
         #expect(attributes.keywords?.contains("2026.8.4") == true)
     }
@@ -97,11 +113,37 @@ struct FleetEntityIndexingTests {
         let attributes = entity.attributeSet
 
         #expect(entity.id == "VIN-1:2026.8.4:Better routingNavigation")
+        #expect(entity.id == ReleaseNoteEntity.entityID(forVIN: "VIN-1", version: "2026.8.4", noteID: "Better routingNavigation"))
         #expect(entity.title == "Better routing")
         #expect(entity.details == "Route planning improvements")
         #expect(attributes.contentDescription?.contains("Version 2026.8.4") == true)
         #expect(attributes.contentDescription?.contains("Better routing") == true)
+        #expect(attributes.title == "Better routing")
+        #expect(attributes.displayName == "Better routing 2026.8.4")
+        #expect(attributes.kind == "Tesla Release Note")
+        #expect(attributes.textContent?.contains("Route planning improvements") == true)
         #expect(attributes.keywords?.contains("release note") == true)
         #expect(attributes.keywords?.contains("Route planning improvements") == true)
+    }
+
+    @Test func `indexed metadata avoids full VIN exposure`() throws {
+        let vin = "5YJ3E1EA7KF000316"
+        let shortenedVIN = FleetKitLog.vin(vin)
+        let vehicle = VehicleEntity(id: vin, name: "Roadrunner")
+        let longVINDrive = try FleetKitFixtures.decode(
+            FleetDriveInfo.self,
+            from: FleetKitFixtures.driveJSON.replacingOccurrences(of: "VIN-1", with: vin)
+        )
+
+        #expect(String(localized: vehicle.displayRepresentation.subtitle!) == "VIN \(shortenedVIN)")
+        #expect(vehicle.attributeSet.contentDescription?.contains(vin) == false)
+        #expect(vehicle.attributeSet.keywords?.contains(vin) == false)
+        #expect(vehicle.attributeSet.keywords?.contains(shortenedVIN) == true)
+
+        let driveAttributes = DriveEntity(info: longVINDrive).attributeSet
+        #expect(driveAttributes.contentDescription?.contains(vin) == false)
+        #expect(driveAttributes.contentDescription?.contains(shortenedVIN) == true)
+        #expect(driveAttributes.keywords?.contains(vin) == false)
+        #expect(driveAttributes.keywords?.contains(shortenedVIN) == true)
     }
 }

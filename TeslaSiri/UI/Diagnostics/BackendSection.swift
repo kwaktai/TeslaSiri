@@ -4,7 +4,7 @@ struct BackendSection: View {
     let store: FleetDataStore
     let diagnostics: BackendDiagnosticsState
     let onProbeAccount: () -> Void
-    let onReloadFleet: () -> Void
+    let onReloadFleet: () async -> Void
     let onExportRawData: () -> Void
     let onSignOut: () -> Void
 
@@ -94,7 +94,7 @@ struct BackendSection: View {
                     .disabled(diagnostics.isProbeRunning)
 
                     Button {
-                        onReloadFleet()
+                        Task { await onReloadFleet() }
                     } label: {
                         Label("Reload Fleet", systemImage: "arrow.clockwise")
                     }

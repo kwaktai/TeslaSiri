@@ -1,3 +1,4 @@
+import AppIntents
 import AuthenticationServices
 import FleetKit
 import SwiftUI
@@ -72,6 +73,21 @@ struct AppRootView: View {
                 .tag(tab)
             }
         }
+        .onAppIntentExecution(OpenVehicleIntent.self) { intent in
+            openVehicle(intent.target.id, tab: .dashboard)
+        }
+        .onAppIntentExecution(OpenVehicleStatusIntent.self) { intent in
+            openVehicle(intent.target.vin, tab: .dashboard)
+        }
+        .onAppIntentExecution(OpenSoftwareUpdateIntent.self) { intent in
+            openVehicle(intent.target.vin, tab: .dashboard)
+        }
+        .onAppIntentExecution(OpenReleaseNoteIntent.self) { intent in
+            openVehicle(intent.target.vin, tab: .dashboard)
+        }
+        .onAppIntentExecution(OpenDriveIntent.self) { intent in
+            openVehicle(intent.target.vin, tab: .drives)
+        }
         .alert("Sign In Failed", isPresented: authErrorBinding) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -100,7 +116,7 @@ struct AppRootView: View {
                     Task { await signIn() }
                 },
                 onReload: {
-                    Task { await reloadFleet() }
+                    await reloadFleet()
                 }
             )
         case .drives:
@@ -114,7 +130,7 @@ struct AppRootView: View {
                     Task { await runBackendProbe() }
                 },
                 onReloadFleet: {
-                    Task { await reloadFleet() }
+                    await reloadFleet()
                 },
                 onExportRawData: {
                     Task { await exportRawData() }
@@ -175,8 +191,17 @@ struct AppRootView: View {
         await store.refresh()
         await FleetTokenBridge.sync(store: store)
         _ = await FleetSpotlightIndexer.reindexAll()
+        await FleetIntentDonations.donateManualStatusRefresh(for: store.selectedVehicle)
         await notificationWebhooks.refresh()
         refreshDiagnostics()
+    }
+
+    private func openVehicle(_ vin: String, tab: AppTab) {
+        if !vin.isEmpty {
+            store.selectVehicle(vin: vin)
+            Task { await FleetTokenBridge.sync(store: store) }
+        }
+        selectedTab = tab
     }
 
     private func configureFleetPolling(for phase: ScenePhase) {
@@ -212,6 +237,7 @@ struct AppRootView: View {
         do {
             try tokenStore.deleteTokenSet()
             FleetTokenBridge.clear()
+            try? await FleetSpotlightIndexer.deleteAllIndexedEntities()
             await store.reset(clearCache: true)
             notificationWebhooks.reset()
             store.stopPolling()

@@ -92,9 +92,14 @@ public struct VehicleStatusEntity: AppEntity, IndexedEntity, Identifiable {
         if let insideTemp { descriptionParts.append("Cabin \(Int(insideTemp.rounded())) degrees") }
         if let outsideTemp { descriptionParts.append("Outside \(Int(outsideTemp.rounded())) degrees") }
         if let updatedAt { descriptionParts.append("Updated \(updatedAt.formatted(date: .abbreviated, time: .shortened))") }
-        attributes.contentDescription = descriptionParts.joined(separator: ". ")
+        let description = descriptionParts.joined(separator: ". ")
+        attributes.title = "\(vehicleName) Status"
+        attributes.displayName = "\(vehicleName) vehicle status"
+        attributes.kind = "Tesla Vehicle Status"
+        attributes.contentDescription = description
+        attributes.textContent = description
         attributes.keywords = [
-            vehicleName, vin, "Tesla", "vehicle status", "battery", "charge", "charging",
+            vehicleName, FleetKitLog.vin(vin), "Tesla", "vehicle status", "battery", "charge", "charging",
             "lock", "unlock", "locked", "unlocked", "mileage", "odometer", "miles",
             "tire", "tires", "tire pressure", "PSI", "climate", "temperature", "location"
         ]

@@ -71,9 +71,14 @@ public struct SoftwareUpdateEntity: AppEntity, IndexedEntity, Identifiable {
         if let availableVersion { parts.append("Available version \(availableVersion)") }
         if let status { parts.append("Status \(status)") }
         if installable { parts.append("Installable now") }
-        attributes.contentDescription = "Tesla software update for \(vehicleName). \(parts.joined(separator: ". "))."
+        let description = "Tesla software update for \(vehicleName). \(parts.joined(separator: ". "))."
+        attributes.title = "\(vehicleName) Software"
+        attributes.displayName = "\(vehicleName) software update"
+        attributes.kind = "Tesla Software Update"
+        attributes.contentDescription = description
+        attributes.textContent = description
         attributes.keywords = [
-            vehicleName, vin, "Tesla", "software", "software update", "release", "release version",
+            vehicleName, FleetKitLog.vin(vin), "Tesla", "software", "software update", "release", "release version",
             "version", "install", "download", "update available", currentVersion, availableVersion, status
         ].compactMap { $0 }
         return attributes
@@ -130,11 +135,15 @@ public struct ReleaseNoteEntity: AppEntity, IndexedEntity, Identifiable {
     public let details: String?
 
     public init(info: FleetReleaseNoteInfo, vin: String, version: String?) {
-        self.id = [vin, version, info.id].compactMap { $0 }.joined(separator: ":")
+        self.id = Self.entityID(forVIN: vin, version: version, noteID: info.id)
         self.vin = vin
         self.version = version
         self.title = info.title
         self.details = info.details ?? info.subtitle
+    }
+
+    public static func entityID(forVIN vin: String, version: String?, noteID: String) -> String {
+        [vin, version, noteID].compactMap { $0 }.joined(separator: ":")
     }
 
     public var displayRepresentation: DisplayRepresentation {
@@ -144,8 +153,13 @@ public struct ReleaseNoteEntity: AppEntity, IndexedEntity, Identifiable {
 
     public var attributeSet: CSSearchableItemAttributeSet {
         let attributes = defaultAttributeSet
-        attributes.contentDescription = ["Tesla release note", version.map { "Version \($0)" }, title, details].compactMap { $0 }.joined(separator: ". ")
-        attributes.keywords = ["Tesla", "release note", "release version", "software", "update", "version", vin, version, title, details].compactMap { $0 }
+        let description = ["Tesla release note", version.map { "Version \($0)" }, title, details].compactMap { $0 }.joined(separator: ". ")
+        attributes.title = title
+        attributes.displayName = version.map { "\(title) \($0)" } ?? title
+        attributes.kind = "Tesla Release Note"
+        attributes.contentDescription = description
+        attributes.textContent = description
+        attributes.keywords = ["Tesla", "release note", "release version", "software", "update", "version", FleetKitLog.vin(vin), version, title, details].compactMap { $0 }
         return attributes
     }
 }

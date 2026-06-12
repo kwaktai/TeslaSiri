@@ -1,5 +1,3 @@
-import AppIntents
-import FleetKit
 import SwiftUI
 
 struct ActiveDriveCard: View {
@@ -28,12 +26,6 @@ struct ActiveDriveCard: View {
                 DiagnosticMonospacedValue(title: "Session", value: drive.sessionID.isEmpty ? "--" : drive.sessionID)
             }
         }
-        .appEntityIdentifier(driveEntityIdentifier)
-    }
-
-    private var driveEntityIdentifier: EntityIdentifier? {
-        guard !drive.sessionID.isEmpty else { return nil }
-        return EntityIdentifier(for: DriveEntity.self, identifier: drive.sessionID)
     }
 }
 

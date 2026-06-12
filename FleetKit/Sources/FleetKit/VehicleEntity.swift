@@ -13,14 +13,19 @@ public struct VehicleEntity: AppEntity, IndexedEntity, Identifiable {
     public let name: String
 
     public var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(name)", subtitle: "VIN \(id)")
+        DisplayRepresentation(title: "\(name)", subtitle: "VIN \(FleetKitLog.vin(id))")
     }
 
     public var attributeSet: CSSearchableItemAttributeSet {
         let attributes = defaultAttributeSet
-        attributes.contentDescription = "Tesla vehicle named \(name). VIN \(id). Use this car with Siri and Shortcuts for status, drives, software, lock, unlock, climate, horn, lights, trunk, frunk, charging, and navigation controls."
+        let description = "Tesla vehicle named \(name). Use this car with Siri and Shortcuts for status, drives, software, lock, unlock, climate, horn, lights, trunk, frunk, charging, and navigation controls."
+        attributes.title = name
+        attributes.displayName = "\(name) vehicle"
+        attributes.kind = "Tesla Vehicle"
+        attributes.contentDescription = description
+        attributes.textContent = description
         attributes.keywords = [
-            "Tesla", "vehicle", "car", name, id, "battery", "mileage", "odometer",
+            "Tesla", "vehicle", "car", name, FleetKitLog.vin(id), "battery", "mileage", "odometer",
             "tire pressure", "PSI", "drive", "software", "release notes", "lock", "unlock",
             "climate", "AC", "honk", "horn", "lights", "trunk", "frunk"
         ]

@@ -332,9 +332,10 @@ final class FleetDataStore {
         }
     }
 
-    func refreshSelectedVehicleSoftware(includeReleaseNotes: Bool = true, forceRefresh: Bool = false) async {
+    @discardableResult
+    func refreshSelectedVehicleSoftware(includeReleaseNotes: Bool = true, forceRefresh: Bool = false) async -> Bool {
         guard let vin = selectedVehicle?.vin else {
-            return
+            return false
         }
 
         beginLoading(.software)
@@ -355,14 +356,17 @@ final class FleetDataStore {
             lastRequestID = page.requestID ?? lastRequestID
             lastRefreshDate = Date()
             await saveCurrentState()
+            return true
         } catch {
             lastErrorMessage = error.localizedDescription
+            return false
         }
     }
 
-    func installSelectedVehicleSoftwareUpdate(offsetSec: Int = 0) async {
+    @discardableResult
+    func installSelectedVehicleSoftwareUpdate(offsetSec: Int = 0) async -> Bool {
         guard let vin = selectedVehicle?.vin, !isMutatingSoftware else {
-            return
+            return false
         }
 
         isMutatingSoftware = true
@@ -375,16 +379,19 @@ final class FleetDataStore {
             lastRequestID = page.requestID ?? lastRequestID
             softwareActionMessage = offsetSec == 0 ? "Requested software install." : "Scheduled software install."
             await refreshSelectedVehicleSoftware(forceRefresh: true)
+            return true
         } catch {
             let message = error.localizedDescription
             lastErrorMessage = message
             softwareActionMessage = message
+            return false
         }
     }
 
-    func cancelSelectedVehicleSoftwareUpdate() async {
+    @discardableResult
+    func cancelSelectedVehicleSoftwareUpdate() async -> Bool {
         guard let vin = selectedVehicle?.vin, !isMutatingSoftware else {
-            return
+            return false
         }
 
         isMutatingSoftware = true
@@ -397,10 +404,12 @@ final class FleetDataStore {
             lastRequestID = page.requestID ?? lastRequestID
             softwareActionMessage = "Canceled software update."
             await refreshSelectedVehicleSoftware(forceRefresh: true)
+            return true
         } catch {
             let message = error.localizedDescription
             lastErrorMessage = message
             softwareActionMessage = message
+            return false
         }
     }
 

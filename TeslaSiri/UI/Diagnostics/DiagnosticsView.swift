@@ -5,7 +5,7 @@ struct DiagnosticsView: View {
     let notificationWebhooks: FleetNotificationWebhookStore
     let diagnostics: BackendDiagnosticsState
     let onProbeAccount: () -> Void
-    let onReloadFleet: () -> Void
+    let onReloadFleet: () async -> Void
     let onExportRawData: () -> Void
     let onSignOut: () -> Void
     let onRequestNotificationAuthorization: () -> Void
@@ -46,7 +46,7 @@ struct DiagnosticsView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    Task { await store.refresh() }
+                    Task { await onReloadFleet() }
                 } label: {
                     Image(systemName: "arrow.clockwise")
                 }
@@ -55,7 +55,7 @@ struct DiagnosticsView: View {
             }
         }
         .refreshable {
-            await store.refresh()
+            await onReloadFleet()
         }
     }
 }

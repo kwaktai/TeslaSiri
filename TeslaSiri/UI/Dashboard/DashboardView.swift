@@ -5,7 +5,7 @@ struct DashboardView: View {
     let isSignedIn: Bool
     let isAuthenticating: Bool
     let onSignIn: () -> Void
-    let onReload: () -> Void
+    let onReload: () async -> Void
 
     var body: some View {
         ScrollView {
@@ -23,7 +23,7 @@ struct DashboardView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    onReload()
+                    Task { await onReload() }
                 } label: {
                     Image(systemName: "arrow.clockwise")
                 }
@@ -32,7 +32,7 @@ struct DashboardView: View {
             }
         }
         .refreshable {
-            await store.refresh()
+            await onReload()
         }
     }
 

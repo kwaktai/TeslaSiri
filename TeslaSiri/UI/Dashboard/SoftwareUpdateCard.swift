@@ -61,7 +61,7 @@ struct SoftwareUpdateCard: View {
 
                 HStack(spacing: 12) {
                     Button {
-                        Task { await store.refreshSelectedVehicleSoftware(forceRefresh: true) }
+                        Task { await refreshSoftwareStatus() }
                     } label: {
                         Label("Refresh", systemImage: "arrow.clockwise")
                     }
@@ -98,7 +98,11 @@ struct SoftwareUpdateCard: View {
                         Text("Changelog")
                             .font(.subheadline.weight(.semibold))
                         ForEach(Array(update.releaseNotes.prefix(3))) { note in
-                            SoftwareReleaseNoteRow(note: note)
+                            SoftwareReleaseNoteRow(
+                                note: note,
+                                vin: vin,
+                                version: update.availableVersion ?? update.currentVersion
+                            )
                         }
                         if update.releaseNotesCount ?? update.releaseNotes.count > 3 {
                             Text("+ \( (update.releaseNotesCount ?? update.releaseNotes.count) - 3) more")
@@ -118,11 +122,11 @@ struct SoftwareUpdateCard: View {
             switch action {
             case .installNow:
                 Button("Install Now", role: .destructive) {
-                    Task { await store.installSelectedVehicleSoftwareUpdate(offsetSec: 0) }
+                    Task { await installSoftwareUpdate() }
                 }
             case .cancel:
                 Button("Cancel Update") {
-                    Task { await store.cancelSelectedVehicleSoftwareUpdate() }
+                    Task { await cancelSoftwareUpdate() }
                 }
             }
         } message: { action in
@@ -137,7 +141,7 @@ struct SoftwareUpdateCard: View {
 
     private var softwareEntityIdentifier: EntityIdentifier? {
         guard let vin, !vin.isEmpty else { return nil }
-        return EntityIdentifier(for: SoftwareUpdateEntity.self, identifier: vin)
+        return EntityIdentifier(for: SoftwareUpdateEntity.self, identifier: SoftwareUpdateEntity.entityID(forVIN: vin))
     }
 
     private var statusIcon: String {
@@ -163,6 +167,27 @@ struct SoftwareUpdateCard: View {
             || update.warningTimeRemainingMS != nil
             || update.status?.localizedCaseInsensitiveContains("scheduled") == true
             || update.status?.localizedCaseInsensitiveContains("pending") == true
+    }
+
+    private func refreshSoftwareStatus() async {
+        let vehicle = store.selectedVehicle
+        guard await store.refreshSelectedVehicleSoftware(forceRefresh: true) else { return }
+        await FleetIntentDonations.donateSoftwareStatusRefresh(for: vehicle)
+        _ = await FleetSpotlightIndexer.reindexAll()
+    }
+
+    private func installSoftwareUpdate() async {
+        let vehicle = store.selectedVehicle
+        guard await store.installSelectedVehicleSoftwareUpdate(offsetSec: 0) else { return }
+        await FleetIntentDonations.donateSoftwareInstall(for: vehicle)
+        _ = await FleetSpotlightIndexer.reindexAll()
+    }
+
+    private func cancelSoftwareUpdate() async {
+        let vehicle = store.selectedVehicle
+        guard await store.cancelSelectedVehicleSoftwareUpdate() else { return }
+        await FleetIntentDonations.donateSoftwareCancel(for: vehicle)
+        _ = await FleetSpotlightIndexer.reindexAll()
     }
 }
 
@@ -206,6 +231,8 @@ private struct ProgressLine: View {
 
 struct SoftwareReleaseNoteRow: View {
     let note: FleetSoftwareReleaseNote
+    let vin: String?
+    let version: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -224,6 +251,16 @@ struct SoftwareReleaseNoteRow: View {
             }
         }
         .padding(.vertical, 2)
+        .appEntityIdentifier(releaseNoteEntityIdentifier)
+    }
+
+    private var releaseNoteEntityIdentifier: EntityIdentifier? {
+        guard let vin, !vin.isEmpty else { return nil }
+        let noteID = note.title + (note.subtitle ?? "")
+        return EntityIdentifier(
+            for: ReleaseNoteEntity.self,
+            identifier: ReleaseNoteEntity.entityID(forVIN: vin, version: version, noteID: noteID)
+        )
     }
 }
 
@@ -255,7 +292,11 @@ private struct SoftwareUpdatePreviewer: View {
 }
 
 #Preview("Release note") {
-    SoftwareReleaseNoteRow(note: PreviewData.softwareUpdateAvailable.releaseNotes[0])
+    SoftwareReleaseNoteRow(
+        note: PreviewData.softwareUpdateAvailable.releaseNotes[0],
+        vin: PreviewData.vin1,
+        version: PreviewData.softwareUpdateAvailable.availableVersion
+    )
         .padding()
         .background(Color(uiColor: .systemGroupedBackground))
 }

@@ -68,12 +68,18 @@ public struct DriveEntity: AppEntity, IndexedEntity, Identifiable {
 
     public var attributeSet: CSSearchableItemAttributeSet {
         let attributes = defaultAttributeSet
+        let title = "Tesla Drive \(startedAt.formatted(date: .abbreviated, time: .shortened))"
+        let description = "Tesla drive for vehicle \(FleetKitLog.vin(vin)). \(distanceText). \(detailText)."
+        attributes.title = title
+        attributes.displayName = title
+        attributes.kind = "Tesla Drive"
         attributes.contentCreationDate = startedAt
         attributes.contentModificationDate = endedAt ?? startedAt
-        attributes.contentDescription = "Tesla drive for VIN \(vin). \(distanceText). \(detailText)."
+        attributes.contentDescription = description
+        attributes.textContent = description
         attributes.keywords = [
             "Tesla", "drive", "trip", "route", "miles", "mileage", "distance", "duration",
-            "time", "average speed", "avg speed", "max speed", "energy", "kWh", vin,
+            "time", "average speed", "avg speed", "max speed", "energy", "kWh", FleetKitLog.vin(vin),
             startAddress, endAddress
         ].compactMap { $0 }
         return attributes

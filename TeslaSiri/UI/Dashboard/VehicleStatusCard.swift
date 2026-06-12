@@ -38,7 +38,7 @@ struct VehicleStatusCard: View {
 
     private var statusEntityIdentifier: EntityIdentifier? {
         guard let vin = snapshot?.vin, !vin.isEmpty else { return nil }
-        return EntityIdentifier(for: VehicleStatusEntity.self, identifier: vin)
+        return EntityIdentifier(for: VehicleStatusEntity.self, identifier: VehicleStatusEntity.entityID(forVIN: vin))
     }
 }
 

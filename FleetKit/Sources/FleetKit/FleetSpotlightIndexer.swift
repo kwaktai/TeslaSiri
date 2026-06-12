@@ -91,8 +91,14 @@ public enum FleetSpotlightIndexer {
                 return FleetSpotlightIndexingReport(indexName: indexName, submittedAt: submittedAt, groups: [], errors: ["No vehicles returned from the Fleet backend."])
             }
 
+            do {
+                try await deleteAllIndexedEntities()
+            } catch {
+                errors.append("Clearing stale Spotlight entities: \(error.localizedDescription)")
+            }
+
             let vehicleEntities = vehicles.map(VehicleEntity.init(info:))
-            await index(vehicleEntities, groupName: "Vehicles", groups: &groups, errors: &errors)
+            await index(vehicleEntities, groupName: "Vehicles", priority: 10, groups: &groups, errors: &errors)
 
             var statuses: [VehicleStatusEntity] = []
             var drives: [DriveEntity] = []
@@ -135,10 +141,10 @@ public enum FleetSpotlightIndexer {
                 FleetKitLog.spotlight.error("Reindex stopped early: session not usable; donating what was fetched so far")
             }
 
-            await index(statuses, groupName: "Live Status", groups: &groups, errors: &errors)
-            await index(drives, groupName: "Recent Drives", groups: &groups, errors: &errors)
-            await index(software, groupName: "Software", groups: &groups, errors: &errors)
-            await index(notes, groupName: "Release Notes", groups: &groups, errors: &errors)
+            await index(statuses, groupName: "Live Status", priority: 10, groups: &groups, errors: &errors)
+            await index(drives, groupName: "Recent Drives", priority: 4, groups: &groups, errors: &errors)
+            await index(software, groupName: "Software", priority: 8, groups: &groups, errors: &errors)
+            await index(notes, groupName: "Release Notes", priority: 2, groups: &groups, errors: &errors)
         } catch {
             FleetKitLog.spotlight.error("Reindex failed: \(error.localizedDescription, privacy: .public)")
             errors.append(error.localizedDescription)
@@ -159,7 +165,7 @@ public enum FleetSpotlightIndexer {
         let start = ContinuousClock.now
         let predicate = queryString(for: term)
         let context = CSSearchQueryContext()
-        context.fetchAttributes = ["title", "displayName", "contentDescription", "textContent", "keywords"]
+        context.fetchAttributes = ["title", "displayName", "contentDescription", "textContent", "keywords", "kind"]
         let query = CSSearchQuery(queryString: predicate, queryContext: context)
 
         var results: [FleetSpotlightSearchResult] = []
@@ -184,13 +190,28 @@ public enum FleetSpotlightIndexer {
         return results
     }
 
-    public static func donate<Entity: IndexedEntity>(_ entities: [Entity]) async throws {
+    public static func donate<Entity: IndexedEntity>(_ entities: [Entity], priority: Int = 0) async throws {
         guard !entities.isEmpty else { return }
         do {
-            try await CSSearchableIndex(name: indexName).indexAppEntities(entities)
-            FleetKitLog.spotlight.info("Donated \(entities.count, privacy: .public) \(String(describing: Entity.self), privacy: .public) item(s)")
+            try await CSSearchableIndex(name: indexName).indexAppEntities(entities, priority: priority)
+            FleetKitLog.spotlight.info("Donated \(entities.count, privacy: .public) \(String(describing: Entity.self), privacy: .public) item(s) at priority \(priority, privacy: .public)")
         } catch {
             FleetKitLog.spotlight.error("Donating \(entities.count, privacy: .public) \(String(describing: Entity.self), privacy: .public) item(s) failed — \(error.localizedDescription, privacy: .public)")
+            throw error
+        }
+    }
+
+    public static func deleteAllIndexedEntities() async throws {
+        let index = CSSearchableIndex(name: indexName)
+        do {
+            try await index.deleteAppEntities(ofType: VehicleEntity.self)
+            try await index.deleteAppEntities(ofType: VehicleStatusEntity.self)
+            try await index.deleteAppEntities(ofType: DriveEntity.self)
+            try await index.deleteAppEntities(ofType: SoftwareUpdateEntity.self)
+            try await index.deleteAppEntities(ofType: ReleaseNoteEntity.self)
+            FleetKitLog.spotlight.notice("Deleted all FleetKit indexed entities")
+        } catch {
+            FleetKitLog.spotlight.error("Deleting FleetKit indexed entities failed — \(error.localizedDescription, privacy: .public)")
             throw error
         }
     }
@@ -198,6 +219,7 @@ public enum FleetSpotlightIndexer {
     private static func index<Entity: IndexedEntity>(
         _ entities: [Entity],
         groupName: String,
+        priority: Int = 0,
         groups: inout [FleetSpotlightSubmittedGroup],
         errors: inout [String]
     ) async {
@@ -207,7 +229,7 @@ public enum FleetSpotlightIndexer {
         }
 
         do {
-            try await donate(entities)
+            try await donate(entities, priority: priority)
             groups.append(
                 FleetSpotlightSubmittedGroup(
                     name: groupName,
