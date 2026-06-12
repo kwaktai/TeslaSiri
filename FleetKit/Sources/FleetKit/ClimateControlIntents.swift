@@ -54,6 +54,12 @@ public struct SetCabinTemperatureIntent: AppIntent, PredictableIntent {
     static let minCelsius = 15.0
     static let maxCelsius = 28.0
 
+    static func targetCelsius(for measurement: Measurement<UnitTemperature>) -> Double {
+        let requestedCelsius = measurement.converted(to: .celsius).value
+        let clampedCelsius = min(max(requestedCelsius, Self.minCelsius), Self.maxCelsius)
+        return (clampedCelsius * 2).rounded() / 2
+    }
+
     @Parameter(
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
@@ -93,10 +99,7 @@ public struct SetCabinTemperatureIntent: AppIntent, PredictableIntent {
         let service = FleetIntentService.make()
         let resolved = try await service.resolvedVehicle(vehicle?.id)
 
-        let requestedCelsius = temperature.converted(to: .celsius).value
-        let clampedCelsius = min(max(requestedCelsius, Self.minCelsius), Self.maxCelsius)
-        // Tesla's thermostat steps in half degrees Celsius.
-        let targetCelsius = (clampedCelsius * 2).rounded() / 2
+        let targetCelsius = Self.targetCelsius(for: temperature)
 
         try await service.runControl(
             action: "set_temps",

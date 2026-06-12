@@ -11,6 +11,7 @@ let package = Package(
         .library(name: "FleetKit", targets: ["FleetKit"])
     ],
     targets: [
-        .target(name: "FleetKit")
+        .target(name: "FleetKit"),
+        .testTarget(name: "FleetKitTests", dependencies: ["FleetKit"])
     ]
 )

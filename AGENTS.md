@@ -212,9 +212,12 @@ Control intent files in `FleetKit/Sources/FleetKit/`:
 ### Validation checklist (FleetKit changes)
 
 1. `DocumentationSearch` for any new App Intents API usage.
-2. `XcodeRefreshCodeIssuesInFile` on edited Swift files.
-3. `BuildProject` (catches shortcut count, `@Parameter` macro issues).
-4. Manually verify token bridge call sites if touching auth, `FleetOAuth`, `AppRootView`, or `DashboardView`.
+2. Add or update Swift Testing coverage in `FleetKit/Tests/FleetKitTests/` for new FleetKit models, clients, control helpers, intent metadata, `IndexedEntity` formatting/search attributes, and pure logic introduced with App Intents.
+3. For Siri/Shortcuts/Spotlight integration behavior that must run through the real App Intents stack, add AppIntentsTesting coverage in a UI testing target (`IntentDefinitions(bundleIdentifier:)`, entity queries, `spotlightQuery(_:)`, and `viewAnnotations()` as applicable). Keep those tests out-of-process; do not import app/FleetKit implementation types into the UI test target.
+4. `XcodeRefreshCodeIssuesInFile` on edited Swift files.
+5. Run the relevant Swift package tests (`swift test --package-path FleetKit`) and AppIntentsTesting/XCUITest suite when one exists.
+6. `BuildProject` (catches shortcut count, `@Parameter` macro issues).
+7. Manually verify token bridge call sites if touching auth, `FleetOAuth`, `AppRootView`, or `DashboardView`.
 
 ### Navigation handoff
 
