@@ -1,3 +1,5 @@
+import AppIntents
+import FleetKit
 import SwiftUI
 
 struct DriveSessionSummary: View {
@@ -22,6 +24,7 @@ struct DriveSessionSummary: View {
             LabeledContent("Ending location", value: endpointAddresses?.end ?? drive.endAddress ?? "--")
         }
         .padding(.vertical, 4)
+        .appEntityIdentifier(EntityIdentifier(for: DriveEntity.self, identifier: drive.sessionID))
     }
 }
 

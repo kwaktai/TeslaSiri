@@ -1,3 +1,5 @@
+import AppIntents
+import FleetKit
 import SwiftUI
 
 struct DriveSessionPicker: View {
@@ -20,6 +22,7 @@ struct DriveSessionPicker: View {
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Select drive from \(drive.startedAtDate.formatted(date: .abbreviated, time: .shortened))")
+                    .appEntityIdentifier(EntityIdentifier(for: DriveEntity.self, identifier: drive.sessionID))
                 }
             }
             .padding(.vertical, 2)

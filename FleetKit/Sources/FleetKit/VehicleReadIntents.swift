@@ -133,7 +133,7 @@ public struct GetTirePressureIntent: AppIntent, PredictableIntent {
 }
 
 /// Shows a full vehicle status snippet plus a short supporting dialog.
-public struct GetVehicleStatusIntent: AppIntent, PredictableIntent {
+public struct GetVehicleStatusIntent: AppIntent, PredictableIntent, SnippetIntent {
     public static let title: LocalizedStringResource = "Check Vehicle Status"
     public static let description = IntentDescription("See battery, charging, lock status, mileage, tire PSI, temperature, and location. Uses your selected car when no vehicle is specified.")
     public static let isDiscoverable = true

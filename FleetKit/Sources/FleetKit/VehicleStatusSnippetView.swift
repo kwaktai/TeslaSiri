@@ -1,3 +1,4 @@
+import AppIntents
 import SwiftUI
 
 /// Self-contained snippet view for vehicle status. Kept independent of the
@@ -49,8 +50,60 @@ struct VehicleStatusSnippetView: View {
             }
             .font(.caption)
             .foregroundStyle(.secondary)
+
+            if !status.id.isEmpty {
+                HStack(spacing: 8) {
+                    if status.isLocked == true {
+                        Button(intent: unlockIntent) {
+                            Label("Unlock", systemImage: "lock.open.fill")
+                        }
+                    } else if status.isLocked == false {
+                        Button(intent: lockIntent) {
+                            Label("Lock", systemImage: "lock.fill")
+                        }
+                    }
+
+                    Button(intent: startClimateIntent) {
+                        Label("Climate", systemImage: "fan.fill")
+                    }
+
+                    Button(intent: honkIntent) {
+                        Label("Honk", systemImage: "speaker.wave.2.fill")
+                    }
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+            }
         }
         .padding()
+    }
+
+    private var vehicle: VehicleEntity {
+        VehicleEntity(id: status.id, name: status.vehicleName)
+    }
+
+    private var lockIntent: LockVehicleIntent {
+        var intent = LockVehicleIntent()
+        intent.vehicle = vehicle
+        return intent
+    }
+
+    private var unlockIntent: UnlockVehicleIntent {
+        var intent = UnlockVehicleIntent()
+        intent.vehicle = vehicle
+        return intent
+    }
+
+    private var startClimateIntent: StartClimateIntent {
+        var intent = StartClimateIntent()
+        intent.vehicle = vehicle
+        return intent
+    }
+
+    private var honkIntent: HonkHornIntent {
+        var intent = HonkHornIntent()
+        intent.vehicle = vehicle
+        return intent
     }
 
     private var batterySymbol: String {

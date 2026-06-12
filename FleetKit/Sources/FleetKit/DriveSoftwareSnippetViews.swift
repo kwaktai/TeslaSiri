@@ -1,3 +1,4 @@
+import AppIntents
 import SwiftUI
 
 struct DriveSnippetView: View {
@@ -43,7 +44,47 @@ struct SoftwareSnippetView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+
+            if software.updateAvailable || software.installable || canCancelUpdate {
+                HStack(spacing: 8) {
+                    if software.updateAvailable || software.installable {
+                        Button(intent: installIntent) {
+                            Label("Install", systemImage: "arrow.down.circle.fill")
+                        }
+                    }
+
+                    if canCancelUpdate {
+                        Button(intent: cancelIntent) {
+                            Label("Cancel", systemImage: "xmark.circle.fill")
+                        }
+                    }
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+            }
         }
         .padding()
+    }
+
+    private var vehicle: VehicleEntity {
+        VehicleEntity(id: software.id, name: software.vehicleName)
+    }
+
+    private var installIntent: InstallSoftwareUpdateIntent {
+        var intent = InstallSoftwareUpdateIntent()
+        intent.vehicle = vehicle
+        return intent
+    }
+
+    private var cancelIntent: CancelSoftwareUpdateIntent {
+        var intent = CancelSoftwareUpdateIntent()
+        intent.vehicle = vehicle
+        return intent
+    }
+
+    private var canCancelUpdate: Bool {
+        software.status?.localizedCaseInsensitiveContains("scheduled") == true
+            || software.status?.localizedCaseInsensitiveContains("pending") == true
+            || software.status?.localizedCaseInsensitiveContains("countdown") == true
     }
 }

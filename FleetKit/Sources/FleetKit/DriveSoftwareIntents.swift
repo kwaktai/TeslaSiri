@@ -91,7 +91,7 @@ public struct GetLastDriveIntent: AppIntent, PredictableIntent {
 
 /// Shows the software update status with a snippet. Doubles as the
 /// "check install status" intent (reports download/install progress).
-public struct GetSoftwareStatusIntent: AppIntent, PredictableIntent {
+public struct GetSoftwareStatusIntent: AppIntent, PredictableIntent, SnippetIntent {
     public static let title: LocalizedStringResource = "Software Update Status"
     public static let description = IntentDescription("Check software version and update status. Uses your selected car when no vehicle is specified.")
     public static let isDiscoverable = true

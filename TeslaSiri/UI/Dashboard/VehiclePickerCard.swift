@@ -1,3 +1,5 @@
+import AppIntents
+import FleetKit
 import SwiftUI
 
 struct VehiclePickerCard: View {
@@ -28,6 +30,7 @@ struct VehiclePickerCard: View {
                                 )
                             }
                             .buttonStyle(.plain)
+                            .appEntityIdentifier(EntityIdentifier(for: VehicleEntity.self, identifier: vehicle.vin))
                         }
                     }
                     .padding(.vertical, 2)

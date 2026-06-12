@@ -1,8 +1,11 @@
+import AppIntents
+import FleetKit
 import SwiftUI
 
 struct SoftwareUpdateCard: View {
     let store: FleetDataStore
     let update: FleetSoftwareUpdate
+    let vin: String?
 
     @State private var pendingAction: SoftwareAction?
 
@@ -110,6 +113,7 @@ struct SoftwareUpdateCard: View {
                 }
             }
         }
+        .appEntityIdentifier(softwareEntityIdentifier)
         .confirmationDialog("Software Update", item: $pendingAction) { action in
             switch action {
             case .installNow:
@@ -129,6 +133,11 @@ struct SoftwareUpdateCard: View {
                 Text("Cancel the pending software update countdown for this vehicle.")
             }
         }
+    }
+
+    private var softwareEntityIdentifier: EntityIdentifier? {
+        guard let vin, !vin.isEmpty else { return nil }
+        return EntityIdentifier(for: SoftwareUpdateEntity.self, identifier: vin)
     }
 
     private var statusIcon: String {
@@ -223,7 +232,7 @@ private struct SoftwareUpdatePreviewer: View {
 
     var body: some View {
         let store = FleetDataStore.previewLoaded()
-        SoftwareUpdateCard(store: store, update: update)
+        SoftwareUpdateCard(store: store, update: update, vin: PreviewData.vin1)
     }
 }
 

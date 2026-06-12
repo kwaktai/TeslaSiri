@@ -177,6 +177,13 @@ Control intent files in `FleetKit/Sources/FleetKit/`:
 - **`PredictableIntent`** — powers Siri suggestion/widget phrasing with vehicle names; separate from `AppShortcut` phrases.
 - **`SelectedVehicleOptionsProvider`** — loads vehicles from the API for shortcut parameter pickers; defaults to shared selected VIN.
 
+### Siri snippets and onscreen context
+
+- Interactive Siri snippet controls only work when the presenting intent conforms to `SnippetIntent`; `ShowsSnippetView` alone can display a view but does not make snippet buttons/toggles interactive.
+- Snippet buttons should use existing FleetKit control intents with an explicit `VehicleEntity` so the action runs against the same resolved VIN as the displayed status/software entity.
+- App UI surfaces for vehicles, status, software, and drives should use SwiftUI `appEntityIdentifier(_:)` with the matching FleetKit `IndexedEntity` IDs (VIN for vehicle/status/software, session ID for drives) so Siri and Apple Intelligence can understand onscreen content.
+- Use `SiriTipView` only for intents that are backed by `AppShortcut` entries; other discoverable intents should be exposed through the Shortcuts library and `ShortcutsLink`.
+
 ### Extension and entitlements
 
 - `TeslaSiriAppIntentsExtension` stays minimal: `@main` + `AppIntentsPackage` including `FleetKitPackage.self`.

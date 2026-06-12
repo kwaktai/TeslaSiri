@@ -1,3 +1,5 @@
+import AppIntents
+import FleetKit
 import SwiftUI
 
 struct VehicleStatusCard: View {
@@ -27,10 +29,16 @@ struct VehicleStatusCard: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .appEntityIdentifier(statusEntityIdentifier)
     }
 
     private var temperatureSuffix: String {
         units == "metric" ? "°C" : "°F"
+    }
+
+    private var statusEntityIdentifier: EntityIdentifier? {
+        guard let vin = snapshot?.vin, !vin.isEmpty else { return nil }
+        return EntityIdentifier(for: VehicleStatusEntity.self, identifier: vin)
     }
 }
 

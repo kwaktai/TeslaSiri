@@ -62,6 +62,8 @@ struct DashboardView: View {
                 }
             )
 
+            AppIntentDiscoveryCard()
+
             if let vehicle = store.selectedVehicle {
                 VehicleStatusCard(
                     vehicleName: vehicle.name,
@@ -71,7 +73,7 @@ struct DashboardView: View {
             }
 
             if let softwareUpdate = store.selectedVehicleSoftwareUpdate {
-                SoftwareUpdateCard(store: store, update: softwareUpdate)
+                SoftwareUpdateCard(store: store, update: softwareUpdate, vin: store.selectedVIN)
             } else if store.isLoadingSoftware {
                 LoadingCard(title: "Software", message: "Loading software…")
             }
