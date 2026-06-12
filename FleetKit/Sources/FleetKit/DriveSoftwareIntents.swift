@@ -11,7 +11,8 @@ public struct GetRecentDrivesIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -53,7 +54,8 @@ public struct GetLastDriveIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -100,7 +102,8 @@ public struct GetSoftwareStatusIntent: AppIntent, PredictableIntent, SnippetInte
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 

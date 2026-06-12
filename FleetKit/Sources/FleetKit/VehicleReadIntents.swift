@@ -11,7 +11,8 @@ public struct GetBatteryLevelIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -56,7 +57,8 @@ public struct GetVehicleMileageIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -99,7 +101,8 @@ public struct GetTirePressureIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -142,7 +145,8 @@ public struct GetVehicleStatusIntent: AppIntent, PredictableIntent, SnippetInten
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 

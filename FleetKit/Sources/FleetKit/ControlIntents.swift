@@ -16,7 +16,8 @@ public struct LockVehicleIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -53,7 +54,8 @@ public struct UnlockVehicleIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -91,7 +93,8 @@ public struct StartClimateIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -128,7 +131,8 @@ public struct VentWindowsIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -170,7 +174,8 @@ public struct OpenTrunkIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -213,7 +218,8 @@ public struct OpenFrunkIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -256,7 +262,8 @@ public struct SetChargeLimitIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 

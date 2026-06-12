@@ -16,7 +16,8 @@ public struct StopClimateIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -57,7 +58,8 @@ public struct SetCabinTemperatureIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -122,7 +124,8 @@ public struct SetMaxDefrostIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -168,7 +171,8 @@ public struct SetPetModeIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
@@ -218,7 +222,8 @@ public struct SetBioweaponModeIntent: AppIntent, PredictableIntent {
         title: "Vehicle",
         description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
         requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?")
+        requestDisambiguationDialog: IntentDialog("Which one?"),
+        optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
