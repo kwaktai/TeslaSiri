@@ -2,6 +2,9 @@ import Foundation
 import Testing
 @testable import FleetKit
 
+// Serialized: every test routes through the shared MockURLProtocol responder,
+// so parallel execution would cross-wire fixtures between tests.
+@Suite(.serialized)
 struct FleetIntentClientTests {
     @Test func `vehicles request uses bearer token and include live query`() async throws {
         let client = makeMockClient { request in
@@ -20,7 +23,7 @@ struct FleetIntentClientTests {
 
     @Test func `snapshot request preserves encoded VIN path separators`() async throws {
         let client = makeMockClient { request in
-            #expect(request.url?.percentEncodedPath == "/api/v1/vehicles/VIN%2FABC%20123/live")
+            #expect(request.url?.path(percentEncoded: true) == "/api/v1/vehicles/VIN%2FABC%20123/live")
             return (200, FleetKitFixtures.envelope(FleetKitFixtures.snapshotJSON))
         }
 

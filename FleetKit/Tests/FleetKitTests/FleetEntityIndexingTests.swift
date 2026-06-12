@@ -11,7 +11,8 @@ struct FleetEntityIndexingTests {
         #expect(entity.id == "VIN-1")
         #expect(entity.name == "Roadrunner")
         #expect(attributes.contentDescription?.contains("status") == true)
-        #expect(attributes.contentDescription?.contains("honk") == true)
+        #expect(attributes.contentDescription?.contains("horn") == true)
+        #expect(attributes.keywords?.contains("honk") == true)
         #expect(attributes.keywords?.contains("tire pressure") == true)
         #expect(attributes.keywords?.contains("release notes") == true)
         #expect(attributes.keywords?.contains("unlock") == true)
@@ -22,7 +23,8 @@ struct FleetEntityIndexingTests {
         let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: "Roadrunner")
         let attributes = entity.attributeSet
 
-        #expect(entity.id == "VIN-1")
+        #expect(entity.id == "status:VIN-1")
+        #expect(entity.vin == "VIN-1")
         #expect(entity.batteryPercent == 82)
         #expect(entity.chargeLimitPercent == 90)
         #expect(entity.odometerDisplay == "12346 mi")
@@ -62,7 +64,8 @@ struct FleetEntityIndexingTests {
         let entity = SoftwareUpdateEntity(info: software, vin: "VIN-1", vehicleName: "Roadrunner")
         let attributes = entity.attributeSet
 
-        #expect(entity.id == "VIN-1")
+        #expect(entity.id == "software:VIN-1")
+        #expect(entity.vin == "VIN-1")
         #expect(entity.headline == "Update available: 2026.8.4")
         #expect(entity.detailText == "Downloading • 100%")
         #expect(attributes.contentDescription?.contains("Current version 2026.2.1") == true)
@@ -70,6 +73,21 @@ struct FleetEntityIndexingTests {
         #expect(attributes.contentDescription?.contains("Installable now") == true)
         #expect(attributes.keywords?.contains("release version") == true)
         #expect(attributes.keywords?.contains("2026.8.4") == true)
+    }
+
+    @Test func `entity identifiers do not collide across types for the same VIN`() {
+        let vehicleID = VehicleEntity(id: "VIN-1", name: "Roadrunner").id
+        let statusID = VehicleStatusEntity.entityID(forVIN: "VIN-1")
+        let softwareID = SoftwareUpdateEntity.entityID(forVIN: "VIN-1")
+
+        #expect(Set([vehicleID, statusID, softwareID]).count == 3)
+    }
+
+    @Test func `legacy bare VIN identifiers still resolve to a VIN`() {
+        #expect(VehicleStatusEntity.vin(fromEntityID: "VIN-1") == "VIN-1")
+        #expect(VehicleStatusEntity.vin(fromEntityID: "status:VIN-1") == "VIN-1")
+        #expect(SoftwareUpdateEntity.vin(fromEntityID: "VIN-1") == "VIN-1")
+        #expect(SoftwareUpdateEntity.vin(fromEntityID: "software:VIN-1") == "VIN-1")
     }
 
     @Test func `release note entity indexes version title and details`() throws {

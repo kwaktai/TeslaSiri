@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 
 public enum FleetKitError: Swift.Error, LocalizedError {
     case notSignedIn
@@ -127,10 +128,11 @@ public struct FleetIntentClient: Sendable {
 
     private func get<Value: Decodable>(_ path: String, query: [URLQueryItem] = []) async throws -> Value {
         let request = try authorizedRequest(path: path, query: query, method: "GET")
-        let (data, response) = try await session.data(for: request)
+        let (data, response) = try await execute(request)
         try check(response)
         let envelope = try JSONDecoder().decode(Envelope<Value>.self, from: data)
         guard envelope.ok, let value = envelope.data else {
+            FleetKitLog.client.error("GET \(path, privacy: .public) envelope not ok — \(envelope.error ?? "no error message", privacy: .public)")
             throw FleetKitError.api(envelope.error)
         }
         return value
@@ -149,10 +151,30 @@ public struct FleetIntentClient: Sendable {
     }
 
     private func send(_ request: URLRequest) async throws {
-        let (data, response) = try await session.data(for: request)
+        let (data, response) = try await execute(request)
         try check(response)
         if let status = try? JSONDecoder().decode(StatusEnvelope.self, from: data), !status.ok {
+            let path = request.url?.path(percentEncoded: false) ?? "?"
+            FleetKitLog.client.error("POST \(path, privacy: .public) envelope not ok — \(status.error ?? "no error message", privacy: .public)")
             throw FleetKitError.api(status.error)
+        }
+    }
+
+    /// Runs the request and logs method, path, status code, and timing.
+    private func execute(_ request: URLRequest) async throws -> (Data, URLResponse) {
+        let method = request.httpMethod ?? "GET"
+        let path = request.url?.path(percentEncoded: false) ?? "?"
+        let start = ContinuousClock.now
+        do {
+            let (data, response) = try await session.data(for: request)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? -1
+            let elapsed = FleetKitLog.milliseconds(since: start)
+            FleetKitLog.client.info("\(method, privacy: .public) \(path, privacy: .public) → \(status, privacy: .public) in \(elapsed, privacy: .public) ms")
+            return (data, response)
+        } catch {
+            let elapsed = FleetKitLog.milliseconds(since: start)
+            FleetKitLog.client.error("\(method, privacy: .public) \(path, privacy: .public) failed after \(elapsed, privacy: .public) ms — \(error.localizedDescription, privacy: .public)")
+            throw error
         }
     }
 
@@ -187,6 +209,7 @@ public struct FleetIntentClient: Sendable {
     private func check(_ response: URLResponse) throws {
         guard let http = response as? HTTPURLResponse else { return }
         if http.statusCode == 401 {
+            FleetKitLog.client.warning("Received 401 — shared access token expired; the app must refresh it")
             throw FleetKitError.sessionExpired
         }
         guard (200..<300).contains(http.statusCode) else {

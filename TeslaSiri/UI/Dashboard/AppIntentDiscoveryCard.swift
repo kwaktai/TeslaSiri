@@ -7,19 +7,17 @@ struct AppIntentDiscoveryCard: View {
 
     var body: some View {
         CardContainer(title: "Siri & Shortcuts", systemImage: "sparkles") {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Control your Tesla hands-free — status, lock, climate, software, horn, lights, and navigation work from Siri, Spotlight, and the Shortcuts app.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
                 SiriTipView(intent: GetVehicleStatusIntent(), isVisible: $isStatusTipVisible)
                     .siriTipViewStyle(.automatic)
 
-                HStack(spacing: 12) {
-                    ShortcutsLink()
-                        .shortcutsLinkStyle(.automatic)
-
-                    Text("Manage car status, lock, unlock, climate, software, drives, horn, lights, and navigation actions.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+                ShortcutsLink()
+                    .shortcutsLinkStyle(.automatic)
             }
         }
     }

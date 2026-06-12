@@ -45,12 +45,24 @@ struct VehicleStatusCard: View {
 private struct BatteryHeader: View {
     let snapshot: FleetLatestSnapshot
 
+    private var batteryColor: Color {
+        if snapshot.chargingState?.lowercased() == "charging" {
+            return .green
+        }
+        if let level = snapshot.batteryLevel, level <= 20 {
+            return .red
+        }
+        return .primary
+    }
+
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(formattedNumber(snapshot.batteryLevel, suffix: "%"))
                     .font(.system(size: 44, weight: .bold, design: .rounded))
                     .monospacedDigit()
+                    .foregroundStyle(batteryColor)
+                    .contentTransition(.numericText())
                 Text("Battery")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -101,6 +113,18 @@ private struct MetricsGrid: View {
     let snapshot: FleetLatestSnapshot
     let units: String?
 
+    private struct Metric: Identifiable {
+        let id: String
+        let value: String
+        let systemImage: String
+
+        init(_ title: String, _ value: String, _ systemImage: String) {
+            self.id = title
+            self.value = value
+            self.systemImage = systemImage
+        }
+    }
+
     private let columns = [
         GridItem(.flexible(), spacing: 12),
         GridItem(.flexible(), spacing: 12)
@@ -110,16 +134,41 @@ private struct MetricsGrid: View {
         units == "metric" ? "°C" : "°F"
     }
 
+    /// Only metrics the backend actually reported — no "--" placeholder tiles.
+    private var metrics: [Metric] {
+        var items: [Metric] = []
+        if let limit = snapshot.chargeLimitSOC {
+            items.append(Metric("Charge limit", formattedNumber(limit, suffix: "%"), "battery.100"))
+        }
+        if let speed = snapshot.speed {
+            items.append(Metric("Speed", formattedNumber(speed, fractionLength: 0, suffix: " mph"), "speedometer"))
+        }
+        if let inside = snapshot.insideTemp {
+            items.append(Metric("Cabin", formattedNumber(inside, fractionLength: 0, suffix: temperatureSuffix), "thermometer.medium"))
+        }
+        if let outside = snapshot.outsideTemp {
+            items.append(Metric("Outside", formattedNumber(outside, fractionLength: 0, suffix: temperatureSuffix), "thermometer.medium.slash"))
+        }
+        if let timeToFull = snapshot.timeToFullCharge, timeToFull > 0 {
+            items.append(Metric("Time to full", formattedNumber(timeToFull, fractionLength: 1, suffix: " hr"), "clock"))
+        }
+        if let odometer = snapshot.odometer {
+            items.append(Metric("Odometer", formattedNumber(odometer, fractionLength: 0, suffix: " mi"), "gauge.with.needle"))
+        }
+        if let freshness = snapshot.freshnessMS, freshness > 0 {
+            items.append(Metric("Data age", formattedDuration(milliseconds: freshness), "antenna.radiowaves.left.and.right"))
+        }
+        if snapshot.latitude != nil, snapshot.longitude != nil {
+            items.append(Metric("Location", formattedCoordinate(latitude: snapshot.latitude, longitude: snapshot.longitude), "location"))
+        }
+        return items
+    }
+
     var body: some View {
         LazyVGrid(columns: columns, spacing: 12) {
-            MetricTile(title: "Charge limit", value: formattedNumber(snapshot.chargeLimitSOC, suffix: "%"), systemImage: "battery.100")
-            MetricTile(title: "Speed", value: formattedNumber(snapshot.speed, fractionLength: 0, suffix: " mph"), systemImage: "speedometer")
-            MetricTile(title: "Cabin", value: formattedNumber(snapshot.insideTemp, fractionLength: 0, suffix: temperatureSuffix), systemImage: "thermometer.medium")
-            MetricTile(title: "Outside", value: formattedNumber(snapshot.outsideTemp, fractionLength: 0, suffix: temperatureSuffix), systemImage: "thermometer.medium.slash")
-            MetricTile(title: "Time to full", value: formattedNumber(snapshot.timeToFullCharge, fractionLength: 1, suffix: " hr"), systemImage: "clock")
-            MetricTile(title: "Odometer", value: formattedNumber(snapshot.odometer, fractionLength: 0, suffix: " mi"), systemImage: "gauge.with.needle")
-            MetricTile(title: "Freshness", value: formattedDuration(milliseconds: snapshot.freshnessMS), systemImage: "antenna.radiowaves.left.and.right")
-            MetricTile(title: "Location", value: formattedCoordinate(latitude: snapshot.latitude, longitude: snapshot.longitude), systemImage: "location")
+            ForEach(metrics) { metric in
+                MetricTile(title: metric.id, value: metric.value, systemImage: metric.systemImage)
+            }
         }
     }
 }

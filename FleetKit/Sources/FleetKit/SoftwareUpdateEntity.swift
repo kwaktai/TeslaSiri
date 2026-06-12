@@ -7,7 +7,11 @@ public struct SoftwareUpdateEntity: AppEntity, IndexedEntity, Identifiable {
     public static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Software Update")
     public static let defaultQuery = SoftwareUpdateEntityQuery()
 
-    public let id: String // VIN
+    /// "software:<VIN>" — namespaced so it can't collide with other VIN-keyed
+    /// entity types in the shared Spotlight index, where the identifier is the
+    /// primary key and collisions overwrite.
+    public let id: String
+    public let vin: String
     public let vehicleName: String
     public let currentVersion: String?
     public let availableVersion: String?
@@ -18,7 +22,8 @@ public struct SoftwareUpdateEntity: AppEntity, IndexedEntity, Identifiable {
     public let installPercent: Int?
 
     public init(info: FleetSoftwareInfo, vin: String, vehicleName: String) {
-        self.id = vin
+        self.id = Self.entityID(forVIN: vin)
+        self.vin = vin
         self.vehicleName = vehicleName
         self.currentVersion = info.currentVersion
         self.availableVersion = info.availableVersion
@@ -27,6 +32,15 @@ public struct SoftwareUpdateEntity: AppEntity, IndexedEntity, Identifiable {
         self.status = info.status
         self.downloadPercent = info.downloadPercent.map { Int($0.rounded()) }
         self.installPercent = info.installPercent.map { Int($0.rounded()) }
+    }
+
+    public static func entityID(forVIN vin: String) -> String {
+        "software:\(vin)"
+    }
+
+    /// Accepts bare VINs too so identifiers saved before namespacing still resolve.
+    public static func vin(fromEntityID id: String) -> String {
+        id.hasPrefix("software:") ? String(id.dropFirst("software:".count)) : id
     }
 
     public var headline: String {
@@ -59,7 +73,7 @@ public struct SoftwareUpdateEntity: AppEntity, IndexedEntity, Identifiable {
         if installable { parts.append("Installable now") }
         attributes.contentDescription = "Tesla software update for \(vehicleName). \(parts.joined(separator: ". "))."
         attributes.keywords = [
-            vehicleName, id, "Tesla", "software", "software update", "release", "release version",
+            vehicleName, vin, "Tesla", "software", "software update", "release", "release version",
             "version", "install", "download", "update available", currentVersion, availableVersion, status
         ].compactMap { $0 }
         return attributes
@@ -73,7 +87,8 @@ public struct SoftwareUpdateEntityQuery: EntityQuery, IndexedEntityQuery {
         let service = FleetIntentService.make()
         let vehicles = try await service.vehicles()
         var results: [SoftwareUpdateEntity] = []
-        for vin in identifiers {
+        for identifier in identifiers {
+            let vin = SoftwareUpdateEntity.vin(fromEntityID: identifier)
             guard let vehicle = vehicles.first(where: { $0.vin == vin }) else { continue }
             let info = try await service.software(vin: vin)
             results.append(SoftwareUpdateEntity(info: info, vin: vin, vehicleName: vehicle.name))

@@ -33,17 +33,23 @@ public struct GetBatteryLevelIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ReturnsValue<VehicleStatusEntity> & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        let snapshot = try await service.snapshot(vin: resolved.vin)
-        let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: resolved.name)
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            let snapshot = try await service.snapshot(vin: resolved.vin)
+            let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: resolved.name)
 
-        let battery = entity.batteryPercent.map { "\($0)%" } ?? "an unknown level"
-        let charging = (snapshot.chargingState?.lowercased() == "charging") ? " and charging" : ""
-        return .result(
-            value: entity,
-            dialog: IntentDialog("\(resolved.name) is at \(battery)\(charging).")
-        )
+            let battery = entity.batteryPercent.map { "\($0)%" } ?? "an unknown level"
+            let charging = (snapshot.chargingState?.lowercased() == "charging") ? " and charging" : ""
+            log.success("\(resolved.name) at \(battery)\(charging)")
+            return .result(
+                value: entity,
+                dialog: IntentDialog("\(resolved.name) is at \(battery)\(charging).")
+            )
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -79,15 +85,21 @@ public struct GetVehicleMileageIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ReturnsValue<VehicleStatusEntity> & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        let snapshot = try await service.snapshot(vin: resolved.vin)
-        let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: resolved.name)
-        let mileage = entity.odometerDisplay ?? "unknown mileage"
-        return .result(
-            value: entity,
-            dialog: IntentDialog("\(resolved.name)'s odometer is \(mileage).")
-        )
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            let snapshot = try await service.snapshot(vin: resolved.vin)
+            let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: resolved.name)
+            let mileage = entity.odometerDisplay ?? "unknown mileage"
+            log.success("\(resolved.name) odometer \(mileage)")
+            return .result(
+                value: entity,
+                dialog: IntentDialog("\(resolved.name)'s odometer is \(mileage).")
+            )
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -123,15 +135,21 @@ public struct GetTirePressureIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ReturnsValue<VehicleStatusEntity> & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        let snapshot = try await service.snapshot(vin: resolved.vin)
-        let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: resolved.name)
-        let tires = entity.tireSummary ?? "no recent tire pressure reading"
-        return .result(
-            value: entity,
-            dialog: IntentDialog("\(resolved.name)'s tire pressure: \(tires).")
-        )
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            let snapshot = try await service.snapshot(vin: resolved.vin)
+            let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: resolved.name)
+            let tires = entity.tireSummary ?? "no recent tire pressure reading"
+            log.success("\(resolved.name) tires: \(tires)")
+            return .result(
+                value: entity,
+                dialog: IntentDialog("\(resolved.name)'s tire pressure: \(tires).")
+            )
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -168,15 +186,21 @@ public struct GetVehicleStatusIntent: AppIntent, PredictableIntent, SnippetInten
 
     @MainActor
     public func perform() async throws -> some IntentResult & ReturnsValue<VehicleStatusEntity> & ShowsSnippetView & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        let snapshot = try await service.snapshot(vin: resolved.vin)
-        let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: resolved.name)
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            let snapshot = try await service.snapshot(vin: resolved.vin)
+            let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: resolved.name)
 
-        return .result(
-            value: entity,
-            dialog: IntentDialog("Here's the latest on \(resolved.name)."),
-            view: VehicleStatusSnippetView(status: entity)
-        )
+            log.success("status snippet for \(resolved.name)")
+            return .result(
+                value: entity,
+                dialog: IntentDialog("Here's the latest on \(resolved.name)."),
+                view: VehicleStatusSnippetView(status: entity)
+            )
+        } catch {
+            throw log.failure(error)
+        }
     }
 }

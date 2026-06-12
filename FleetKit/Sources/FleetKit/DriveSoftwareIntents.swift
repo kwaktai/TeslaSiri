@@ -37,10 +37,16 @@ public struct GetRecentDrivesIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ReturnsValue<[DriveEntity]> {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        let drives = try await service.drives(vin: resolved.vin, limit: count)
-        return .result(value: drives.map(DriveEntity.init(info:)))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            let drives = try await service.drives(vin: resolved.vin, limit: count)
+            log.success("returned \(drives.count) drive(s) for \(resolved.name)")
+            return .result(value: drives.map(DriveEntity.init(info:)))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -77,17 +83,23 @@ public struct GetLastDriveIntent: AppIntent, PredictableIntent {
 
     @MainActor
     public func perform() async throws -> some IntentResult & ReturnsValue<DriveEntity> & ShowsSnippetView & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        guard let last = try await service.drives(vin: resolved.vin, limit: 1).first else {
-            throw FleetKitError.api("No recent drives were found.")
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            guard let last = try await service.drives(vin: resolved.vin, limit: 1).first else {
+                throw FleetKitError.api("No recent drives were found.")
+            }
+            let entity = DriveEntity(info: last)
+            log.success("last drive for \(resolved.name): \(entity.distanceText)")
+            return .result(
+                value: entity,
+                dialog: IntentDialog("\(resolved.name)'s last drive was \(entity.distanceText)."),
+                view: DriveSnippetView(drive: entity)
+            )
+        } catch {
+            throw log.failure(error)
         }
-        let entity = DriveEntity(info: last)
-        return .result(
-            value: entity,
-            dialog: IntentDialog("\(resolved.name)'s last drive was \(entity.distanceText)."),
-            view: DriveSnippetView(drive: entity)
-        )
     }
 }
 
@@ -125,14 +137,20 @@ public struct GetSoftwareStatusIntent: AppIntent, PredictableIntent, SnippetInte
 
     @MainActor
     public func perform() async throws -> some IntentResult & ReturnsValue<SoftwareUpdateEntity> & ShowsSnippetView & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        let info = try await service.software(vin: resolved.vin)
-        let entity = SoftwareUpdateEntity(info: info, vin: resolved.vin, vehicleName: resolved.name)
-        return .result(
-            value: entity,
-            dialog: IntentDialog("\(resolved.name): \(entity.headline)."),
-            view: SoftwareSnippetView(software: entity)
-        )
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            let info = try await service.software(vin: resolved.vin)
+            let entity = SoftwareUpdateEntity(info: info, vin: resolved.vin, vehicleName: resolved.name)
+            log.success("\(resolved.name): \(entity.headline)")
+            return .result(
+                value: entity,
+                dialog: IntentDialog("\(resolved.name): \(entity.headline)."),
+                view: SoftwareSnippetView(software: entity)
+            )
+        } catch {
+            throw log.failure(error)
+        }
     }
 }

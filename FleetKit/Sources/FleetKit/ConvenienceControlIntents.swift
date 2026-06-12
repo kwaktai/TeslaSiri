@@ -39,10 +39,16 @@ public struct FlashLightsIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await service.runControl(action: "flash_lights", vin: resolved.vin, humanName: "flashing the lights")
-        return .result(dialog: IntentDialog("Flashing \(resolved.name)'s lights."))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            try await service.runControl(action: "flash_lights", vin: resolved.vin, humanName: "flashing the lights")
+            log.success("flashed lights on \(resolved.name)")
+            return .result(dialog: IntentDialog("Flashing \(resolved.name)'s lights."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -77,10 +83,16 @@ public struct HonkHornIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await service.runControl(action: "honk_horn", vin: resolved.vin, humanName: "honking the horn")
-        return .result(dialog: IntentDialog("Honking \(resolved.name)'s horn."))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            try await service.runControl(action: "honk_horn", vin: resolved.vin, humanName: "honking the horn")
+            log.success("honked horn on \(resolved.name)")
+            return .result(dialog: IntentDialog("Honking \(resolved.name)'s horn."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -123,20 +135,26 @@ public struct SendNavigationIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        let trimmed = destination.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else {
-            throw FleetKitError.api("Tell me where to send \(resolved.name).")
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            let trimmed = destination.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else {
+                throw FleetKitError.api("Tell me where to send \(resolved.name).")
+            }
+            // The backend wraps a plain string into the Tesla share payload and
+            // fills type/locale/timestamp_ms server-side.
+            try await service.runControl(
+                action: "navigation_request",
+                vin: resolved.vin,
+                params: ["value": .string(trimmed)],
+                humanName: "sending the destination"
+            )
+            log.success("sent destination to \(resolved.name)")
+            return .result(dialog: IntentDialog("Sent \(trimmed) to \(resolved.name)."))
+        } catch {
+            throw log.failure(error)
         }
-        // The backend wraps a plain string into the Tesla share payload and
-        // fills type/locale/timestamp_ms server-side.
-        try await service.runControl(
-            action: "navigation_request",
-            vin: resolved.vin,
-            params: ["value": .string(trimmed)],
-            humanName: "sending the destination"
-        )
-        return .result(dialog: IntentDialog("Sent \(trimmed) to \(resolved.name)."))
     }
 }

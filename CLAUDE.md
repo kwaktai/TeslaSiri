@@ -58,6 +58,7 @@ TeslaSiri is a SwiftUI iOS app that connects to a Fleet backend for Tesla vehicl
 - `TeslaSiri/FleetAPI/FleetOAuth.swift`: OAuth flow.
 - `TeslaSiri/Info.plist`: URL scheme and app plist settings.
 - `FleetKit/Sources/FleetKit/`: App Intents, entities, `FleetIntentClient`, snippet views (`FleetKitPackage`).
+- `FleetKit/Sources/FleetKit/FleetKitLog.swift`: OSLog loggers (subsystem `com.maxweinbach.TeslaSiri`) + `FleetIntentLog` perform tracker; see `AGENTS.md` → Logging (FleetKitLog) for conventions and the device-debug `ENABLE_DEBUG_DYLIB` note.
 - `TeslaSiri/AppIntents/`: `FleetTokenBridge`, `TeslaSiriShortcuts`, `BatteryReminderManager`.
 - `TeslaSiriAppIntents/`: thin App Intents extension re-exporting `FleetKitPackage`.
 

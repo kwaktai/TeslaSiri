@@ -38,10 +38,16 @@ public struct StopClimateIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await service.runControl(action: "auto_conditioning_stop", vin: resolved.vin, humanName: "stopping climate")
-        return .result(dialog: IntentDialog("Climate is turning off in \(resolved.name)."))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            try await service.runControl(action: "auto_conditioning_stop", vin: resolved.vin, humanName: "stopping climate")
+            log.success("stopped climate in \(resolved.name)")
+            return .result(dialog: IntentDialog("Climate is turning off in \(resolved.name)."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -96,25 +102,31 @@ public struct SetCabinTemperatureIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
 
-        let targetCelsius = Self.targetCelsius(for: temperature)
+            let targetCelsius = Self.targetCelsius(for: temperature)
 
-        try await service.runControl(
-            action: "set_temps",
-            vin: resolved.vin,
-            params: [
-                "driver_temp": .double(targetCelsius),
-                "passenger_temp": .double(targetCelsius)
-            ],
-            humanName: "setting the cabin temperature"
-        )
+            try await service.runControl(
+                action: "set_temps",
+                vin: resolved.vin,
+                params: [
+                    "driver_temp": .double(targetCelsius),
+                    "passenger_temp": .double(targetCelsius)
+                ],
+                humanName: "setting the cabin temperature"
+            )
 
-        let applied = Measurement(value: targetCelsius, unit: UnitTemperature.celsius)
-            .converted(to: temperature.unit)
-            .formatted(.measurement(width: .abbreviated, usage: .asProvided, numberFormatStyle: .number.precision(.fractionLength(0...1))))
-        return .result(dialog: IntentDialog("Set \(resolved.name)'s cabin to \(applied)."))
+            let applied = Measurement(value: targetCelsius, unit: UnitTemperature.celsius)
+                .converted(to: temperature.unit)
+                .formatted(.measurement(width: .abbreviated, usage: .asProvided, numberFormatStyle: .number.precision(.fractionLength(0...1))))
+            log.success("set \(resolved.name) cabin to \(targetCelsius)°C")
+            return .result(dialog: IntentDialog("Set \(resolved.name)'s cabin to \(applied)."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -153,15 +165,21 @@ public struct SetMaxDefrostIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await service.runControl(
-            action: "remote_defrost",
-            vin: resolved.vin,
-            params: ["on": .bool(on)],
-            humanName: "setting max defrost"
-        )
-        return .result(dialog: IntentDialog(on ? "Max defrost is on in \(resolved.name)." : "Max defrost is off in \(resolved.name)."))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            try await service.runControl(
+                action: "remote_defrost",
+                vin: resolved.vin,
+                params: ["on": .bool(on)],
+                humanName: "setting max defrost"
+            )
+            log.success("max defrost \(on ? "on" : "off") in \(resolved.name)")
+            return .result(dialog: IntentDialog(on ? "Max defrost is on in \(resolved.name)." : "Max defrost is off in \(resolved.name)."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -200,19 +218,25 @@ public struct SetPetModeIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        if !on {
-            // Turning dog mode off remotely could leave a pet without climate.
-            try await requestConfirmation(dialog: IntentDialog("Turn off dog mode in \(resolved.name)?"))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            if !on {
+                // Turning dog mode off remotely could leave a pet without climate.
+                try await requestConfirmation(dialog: IntentDialog("Turn off dog mode in \(resolved.name)?"))
+            }
+            try await service.runControl(
+                action: "set_pet_mode",
+                vin: resolved.vin,
+                params: ["on": .bool(on)],
+                humanName: "setting dog mode"
+            )
+            log.success("dog mode \(on ? "on" : "off") in \(resolved.name)")
+            return .result(dialog: IntentDialog(on ? "Dog mode is on in \(resolved.name)." : "Dog mode is off in \(resolved.name)."))
+        } catch {
+            throw log.failure(error)
         }
-        try await service.runControl(
-            action: "set_pet_mode",
-            vin: resolved.vin,
-            params: ["on": .bool(on)],
-            humanName: "setting dog mode"
-        )
-        return .result(dialog: IntentDialog(on ? "Dog mode is on in \(resolved.name)." : "Dog mode is off in \(resolved.name)."))
     }
 }
 
@@ -251,14 +275,20 @@ public struct SetBioweaponModeIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await service.runControl(
-            action: "set_bioweapon_mode",
-            vin: resolved.vin,
-            params: ["on": .bool(on), "manual_override": .bool(false)],
-            humanName: "setting Bioweapon Defense Mode"
-        )
-        return .result(dialog: IntentDialog(on ? "Bioweapon Defense Mode is on in \(resolved.name)." : "Bioweapon Defense Mode is off in \(resolved.name)."))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            try await service.runControl(
+                action: "set_bioweapon_mode",
+                vin: resolved.vin,
+                params: ["on": .bool(on), "manual_override": .bool(false)],
+                humanName: "setting Bioweapon Defense Mode"
+            )
+            log.success("Bioweapon Defense \(on ? "on" : "off") in \(resolved.name)")
+            return .result(dialog: IntentDialog(on ? "Bioweapon Defense Mode is on in \(resolved.name)." : "Bioweapon Defense Mode is off in \(resolved.name)."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }

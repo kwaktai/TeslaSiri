@@ -1,6 +1,7 @@
 import AppIntents
 import CoreSpotlight
 import Foundation
+import OSLog
 
 /// A submitted entity group for Diagnostics. This is our durable view of what
 /// the app asked Spotlight to journal; Spotlight does not expose a public
@@ -66,15 +67,27 @@ public struct FleetSpotlightSearchResult: Identifiable, Sendable {
 public enum FleetSpotlightIndexer {
     public static let indexName = "FleetEntities"
 
+    private static let reindexCoordinator = ReindexCoordinator()
+
+    /// Coalesces concurrent callers: if a reindex is already running, callers
+    /// join it and receive its report instead of starting a competing run.
     public static func reindexAll() async -> FleetSpotlightIndexingReport {
+        await reindexCoordinator.run { await performReindexAll() }
+    }
+
+    private static func performReindexAll() async -> FleetSpotlightIndexingReport {
         let submittedAt = Date()
+        let start = ContinuousClock.now
         let service = FleetIntentService.make()
         var groups: [FleetSpotlightSubmittedGroup] = []
         var errors: [String] = []
 
+        FleetKitLog.spotlight.notice("Reindex started (index: \(indexName, privacy: .public))")
+
         do {
             let vehicles = try await service.vehicles()
             guard !vehicles.isEmpty else {
+                FleetKitLog.spotlight.error("Reindex aborted: no vehicles returned from the Fleet backend")
                 return FleetSpotlightIndexingReport(indexName: indexName, submittedAt: submittedAt, groups: [], errors: ["No vehicles returned from the Fleet backend."])
             }
 
@@ -86,12 +99,18 @@ public enum FleetSpotlightIndexer {
             var software: [SoftwareUpdateEntity] = []
             var notes: [ReleaseNoteEntity] = []
 
-            for vehicle in vehicles {
+            // An expired/missing session fails every remaining backend call the
+            // same way, so stop fetching at the first auth failure instead of
+            // burning minutes on requests that can only 401.
+            var stoppedOnAuthFailure = false
+
+            vehicleLoop: for vehicle in vehicles {
                 do {
                     let snapshot = try await service.snapshot(vin: vehicle.vin)
                     statuses.append(VehicleStatusEntity(snapshot: snapshot, vehicleName: vehicle.name))
                 } catch {
                     errors.append("Status for \(vehicle.name): \(error.localizedDescription)")
+                    if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
                 }
 
                 do {
@@ -99,6 +118,7 @@ public enum FleetSpotlightIndexer {
                     drives.append(contentsOf: recent.map(DriveEntity.init(info:)))
                 } catch {
                     errors.append("Drives for \(vehicle.name): \(error.localizedDescription)")
+                    if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
                 }
 
                 do {
@@ -107,7 +127,12 @@ public enum FleetSpotlightIndexer {
                     notes.append(contentsOf: info.releaseNotes.map { ReleaseNoteEntity(info: $0, vin: vehicle.vin, version: info.availableVersion ?? info.currentVersion) })
                 } catch {
                     errors.append("Software for \(vehicle.name): \(error.localizedDescription)")
+                    if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
                 }
+            }
+
+            if stoppedOnAuthFailure {
+                FleetKitLog.spotlight.error("Reindex stopped early: session not usable; donating what was fetched so far")
             }
 
             await index(statuses, groupName: "Live Status", groups: &groups, errors: &errors)
@@ -115,13 +140,23 @@ public enum FleetSpotlightIndexer {
             await index(software, groupName: "Software", groups: &groups, errors: &errors)
             await index(notes, groupName: "Release Notes", groups: &groups, errors: &errors)
         } catch {
+            FleetKitLog.spotlight.error("Reindex failed: \(error.localizedDescription, privacy: .public)")
             errors.append(error.localizedDescription)
         }
 
-        return FleetSpotlightIndexingReport(indexName: indexName, submittedAt: submittedAt, groups: groups, errors: errors)
+        let report = FleetSpotlightIndexingReport(indexName: indexName, submittedAt: submittedAt, groups: groups, errors: errors)
+        let elapsed = FleetKitLog.milliseconds(since: start)
+        let groupSummary = groups.map { "\($0.name): \($0.count)" }.joined(separator: ", ")
+        if report.succeeded {
+            FleetKitLog.spotlight.notice("Reindex finished in \(elapsed, privacy: .public) ms — \(report.submittedCount, privacy: .public) entities [\(groupSummary, privacy: .public)]")
+        } else {
+            FleetKitLog.spotlight.error("Reindex finished in \(elapsed, privacy: .public) ms with \(errors.count, privacy: .public) error(s) — \(report.submittedCount, privacy: .public) entities [\(groupSummary, privacy: .public)]; errors: \(errors.joined(separator: " | "), privacy: .public)")
+        }
+        return report
     }
 
     public static func search(_ term: String, limit: Int = 20) async throws -> [FleetSpotlightSearchResult] {
+        let start = ContinuousClock.now
         let predicate = queryString(for: term)
         let context = CSSearchQueryContext()
         context.fetchAttributes = ["title", "displayName", "contentDescription", "textContent", "keywords"]
@@ -144,12 +179,20 @@ public enum FleetSpotlightIndexer {
             )
             if results.count >= limit { break }
         }
+        let elapsed = FleetKitLog.milliseconds(since: start)
+        FleetKitLog.spotlight.info("Search '\(term, privacy: .public)' returned \(results.count, privacy: .public) result(s) in \(elapsed, privacy: .public) ms")
         return results
     }
 
     public static func donate<Entity: IndexedEntity>(_ entities: [Entity]) async throws {
         guard !entities.isEmpty else { return }
-        try await CSSearchableIndex(name: indexName).indexAppEntities(entities)
+        do {
+            try await CSSearchableIndex(name: indexName).indexAppEntities(entities)
+            FleetKitLog.spotlight.info("Donated \(entities.count, privacy: .public) \(String(describing: Entity.self), privacy: .public) item(s)")
+        } catch {
+            FleetKitLog.spotlight.error("Donating \(entities.count, privacy: .public) \(String(describing: Entity.self), privacy: .public) item(s) failed — \(error.localizedDescription, privacy: .public)")
+            throw error
+        }
     }
 
     private static func index<Entity: IndexedEntity>(
@@ -177,10 +220,39 @@ public enum FleetSpotlightIndexer {
         }
     }
 
+    private static func isAuthFailure(_ error: any Error) -> Bool {
+        switch error {
+        case FleetKitError.sessionExpired, FleetKitError.notSignedIn:
+            return true
+        default:
+            return false
+        }
+    }
+
     private static func queryString(for rawTerm: String) -> String {
         let term = rawTerm.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !term.isEmpty else { return "title == '*'cd" }
         let escaped = term.replacingOccurrences(of: "'", with: "\\'")
         return "title == '*\(escaped)*'cd || displayName == '*\(escaped)*'cd || contentDescription == '*\(escaped)*'cd || textContent == '*\(escaped)*'cd || keywords == '*\(escaped)*'cd"
+    }
+}
+
+/// Ensures only one reindex runs at a time. The app triggers reindexing from
+/// several launch paths (app task, sign-in, manual refresh) that can fire
+/// near-simultaneously; overlapping runs interleave donations and double the
+/// backend load for no benefit.
+private actor ReindexCoordinator {
+    private var inFlight: Task<FleetSpotlightIndexingReport, Never>?
+
+    func run(_ operation: @escaping @Sendable () async -> FleetSpotlightIndexingReport) async -> FleetSpotlightIndexingReport {
+        if let inFlight {
+            FleetKitLog.spotlight.notice("Reindex already in flight — joining the existing run")
+            return await inFlight.value
+        }
+        let task = Task { await operation() }
+        inFlight = task
+        let report = await task.value
+        inFlight = nil
+        return report
     }
 }

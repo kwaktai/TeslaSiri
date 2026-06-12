@@ -200,6 +200,23 @@ Control intent files in `FleetKit/Sources/FleetKit/`:
 
 `FleetKitModels` / `FleetKitDriveSoftwareModels` intentionally mirror a **subset** of `TeslaSiri/FleetAPI/FleetAPIModels.swift` so the package stays extension-safe. When backend fields change, update both layers or accept drift in snippet/intent output.
 
+### Logging (FleetKitLog)
+
+All FleetKit + intent logging goes through `FleetKit/Sources/FleetKit/FleetKitLog.swift` under the single OSLog subsystem `com.maxweinbach.TeslaSiri`. One Console/`log stream` predicate captures the app, the App Intents extension, and BG tasks:
+
+    log stream --level info --predicate 'subsystem == "com.maxweinbach.TeslaSiri"'
+
+| Category | Source | What it logs |
+|----------|--------|--------------|
+| `AppIntents` | `FleetIntentLog` + `FleetIntentService` | every intent `perform()` started/succeeded/failed/cancelled with ms timing; vehicle resolution path; control action validation + acceptance |
+| `Spotlight` | `FleetSpotlightIndexer` | reindex start/finish summary (per-group counts, errors, duration), donations, searches |
+| `FleetIntentClient` | `FleetIntentClient.execute` | method, path, status code, ms per request; 401 warnings; envelope errors |
+| `Entities` | entity queries + options providers | query match counts, default vehicle selection |
+| `TokenBridge` | `FleetTokenBridge` (app) | token mirrored/cleared, shared VIN set/cleared |
+| `BatteryReminder` | `BatteryReminderManager` (app) | BG task scheduled/fired, battery check outcome |
+
+Conventions: every new intent `perform()` must create `let log = FleetIntentLog(Self.self, vehicle: vehicle)` and wrap its body in `do { ... log.success(...) } catch { throw log.failure(error) }` (keeps `.result(...)` type inference inside `perform()`; a generic wrapper closure breaks it). Never log full VINs or tokens — use `FleetKitLog.vin(_:)` (last 6 chars) and mark interpolations `privacy: .public` deliberately. `Logger` calls inside a struct `init` must copy stored properties to locals first (escaping autoclosure cannot capture mutating `self`).
+
 ### Common pitfalls (from prior reviews)
 
 - Forgetting `FleetTokenBridge.sync` after sign-in, vehicle change, or token refresh → Siri “not signed in” or wrong account.
@@ -208,6 +225,11 @@ Control intent files in `FleetKit/Sources/FleetKit/`:
 - More than 10 `AppShortcut` entries → compile error.
 - `DriveEntityQuery.entities(for:)` must search **all** account vehicles, not only the default resolved vehicle.
 - Duplicating intent types under `TeslaSiri/AppIntents/` — conflicts with `public` FleetKit types; keep bridge/shortcuts only in the app target.
+- **Do not move `TeslaSiriShortcuts` (AppShortcutsProvider) into the FleetKit package.** The appintentsmetadataprocessor only extracts `autoShortcuts`/`autoShortcutProviderMangledName` when the provider is compiled in the app target; in the package, BOTH the app and extension end up with zero shortcuts metadata. Verified empirically (June 2026, Xcode 27 beta).
+- `ENABLE_DEBUG_DYLIB` is set per-SDK on the TeslaSiri target in project.pbxproj: `YES` base (required for Xcode Previews) but `NO` for `[sdk=iphoneos*]` — with the debug dylib the app code is in `TeslaSiri.debug.dylib` and App Intents/App Shortcuts metadata breaks on device debug runs. To render previews, switch the run destination to a simulator first.
+- Known iOS 27 beta issue: `LNMetadataProviderErrorDomain 9004 "No app shortcuts provider mangled type name in bundle"` from `updateAppShortcutParameters()`, with the downstream fault `Provided AppIntent does not match an App Shortcut, SiriTipView will not display.` Ruled out empirically (June 2026, controlled probe experiments on device): NOT the debug dylib (persists with static binary), NOT package-located intents (a probe intent compiled directly into the app target still failed), NOT `APP_SHORTCUTS_ENABLE_FLEXIBLE_MATCHING` (failed with it NO), NOT MainActor default isolation (failed with `nonisolated` provider+intent), NOT stale install state (failed after `devicectl` uninstall + fresh install). `Metadata.appintents/extract.actionsdata` verifiably contains the provider mangled name, all 24 actions, and 10 autoShortcuts every time. Conclusion: OS-side `linkd` registration failure for dev installs on this beta (simulators can't reproduce — `linkd` doesn't run there). Remedies: reboot the device (restarts `linkd`), check the Shortcuts app for the TeslaSiri section, file Apple Feedback with sysdiagnose if it persists. Do not restructure app/package code for this error.
+- `TeslaSiriShortcuts` is declared `nonisolated` deliberately: the target sets `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` and the AppIntents runtime reads `appShortcuts` from arbitrary contexts. Keep it that way.
+- `FleetIntentClientTests` must stay `@Suite(.serialized)` — `MockURLProtocol` uses shared static responder state and Swift Testing runs suites in parallel by default.
 
 ### Validation checklist (FleetKit changes)
 

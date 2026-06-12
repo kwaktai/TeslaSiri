@@ -1,5 +1,6 @@
 import AppIntents
 import CoreSpotlight
+import OSLog
 
 /// A Tesla on the account, used as the optional vehicle parameter on
 /// VIN-scoped intents so Siri/Shortcuts can disambiguate.
@@ -43,11 +44,15 @@ public struct VehicleEntityQuery: EnumerableEntityQuery, IndexedEntityQuery {
     public init() {}
 
     public func allEntities() async throws -> [VehicleEntity] {
-        try await FleetIntentService.make().vehicles().map(VehicleEntity.init(info:))
+        let entities = try await FleetIntentService.make().vehicles().map(VehicleEntity.init(info:))
+        FleetKitLog.entities.info("VehicleEntityQuery.allEntities returned \(entities.count, privacy: .public) vehicle(s)")
+        return entities
     }
 
     public func entities(for identifiers: [VehicleEntity.ID]) async throws -> [VehicleEntity] {
-        try await allEntities().filter { identifiers.contains($0.id) }
+        let matches = try await allEntities().filter { identifiers.contains($0.id) }
+        FleetKitLog.entities.info("VehicleEntityQuery matched \(matches.count, privacy: .public) of \(identifiers.count, privacy: .public) requested vehicle(s)")
+        return matches
     }
 
     public func reindexEntities(for identifiers: [VehicleEntity.ID], indexDescription: CSSearchableIndexDescription) async throws {

@@ -1,6 +1,7 @@
 import AppIntents
 import CoreSpotlight
 import Foundation
+import OSLog
 
 /// A completed drive. Indexed in Spotlight with distance, duration, speed,
 /// energy, date, and start/end locations.
@@ -98,13 +99,16 @@ public struct DriveEntityQuery: EntityQuery, IndexedEntityQuery {
             }
         }
 
+        FleetKitLog.entities.info("DriveEntityQuery matched \(found.count, privacy: .public) of \(identifiers.count, privacy: .public) requested drive(s)")
         return found
     }
 
     public func suggestedEntities() async throws -> [DriveEntity] {
         let service = FleetIntentService.make()
         let vehicle = try await service.resolvedVehicle(nil)
-        return try await service.drives(vin: vehicle.vin, limit: 10).map(DriveEntity.init(info:))
+        let drives = try await service.drives(vin: vehicle.vin, limit: 10).map(DriveEntity.init(info:))
+        FleetKitLog.entities.info("DriveEntityQuery suggesting \(drives.count, privacy: .public) drive(s) for \(vehicle.name, privacy: .public)")
+        return drives
     }
 
     public func reindexEntities(for identifiers: [DriveEntity.ID], indexDescription: CSSearchableIndexDescription) async throws {

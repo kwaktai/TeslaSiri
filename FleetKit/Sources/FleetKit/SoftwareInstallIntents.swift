@@ -33,21 +33,28 @@ public struct InstallSoftwareUpdateIntent: LongRunningIntent, PredictableIntent 
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
 
-        let info = try await service.software(vin: resolved.vin)
-        guard info.updateAvailable || info.installable else {
-            return .result(dialog: IntentDialog("\(resolved.name) is already up to date."))
+            let info = try await service.software(vin: resolved.vin)
+            guard info.updateAvailable || info.installable else {
+                log.success("\(resolved.name) already up to date")
+                return .result(dialog: IntentDialog("\(resolved.name) is already up to date."))
+            }
+
+            let version = info.availableVersion.map { " to \($0)" } ?? ""
+            try await requestConfirmation(dialog: IntentDialog("Install the software update\(version) on \(resolved.name)?"))
+
+            try await performBackgroundTask {
+                try await service.installSoftwareUpdate(vin: resolved.vin, offsetSec: 0)
+            }
+            log.success("started software update on \(resolved.name)")
+            return .result(dialog: IntentDialog("Starting the software update on \(resolved.name)."))
+        } catch {
+            throw log.failure(error)
         }
-
-        let version = info.availableVersion.map { " to \($0)" } ?? ""
-        try await requestConfirmation(dialog: IntentDialog("Install the software update\(version) on \(resolved.name)?"))
-
-        try await performBackgroundTask {
-            try await service.installSoftwareUpdate(vin: resolved.vin, offsetSec: 0)
-        }
-        return .result(dialog: IntentDialog("Starting the software update on \(resolved.name)."))
     }
 }
 
@@ -83,10 +90,16 @@ public struct CancelSoftwareUpdateIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await requestConfirmation(dialog: IntentDialog("Cancel the software update on \(resolved.name)?"))
-        try await service.cancelSoftwareUpdate(vin: resolved.vin)
-        return .result(dialog: IntentDialog("Canceled the software update on \(resolved.name)."))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            try await requestConfirmation(dialog: IntentDialog("Cancel the software update on \(resolved.name)?"))
+            try await service.cancelSoftwareUpdate(vin: resolved.vin)
+            log.success("canceled software update on \(resolved.name)")
+            return .result(dialog: IntentDialog("Canceled the software update on \(resolved.name)."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }

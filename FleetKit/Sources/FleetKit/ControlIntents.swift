@@ -38,10 +38,16 @@ public struct LockVehicleIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await service.runControl(action: "door_lock", vin: resolved.vin, humanName: "locking")
-        return .result(dialog: IntentDialog("Locked \(resolved.name)."))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            try await service.runControl(action: "door_lock", vin: resolved.vin, humanName: "locking")
+            log.success("locked \(resolved.name)")
+            return .result(dialog: IntentDialog("Locked \(resolved.name)."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -76,11 +82,17 @@ public struct UnlockVehicleIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await requestConfirmation(dialog: IntentDialog("Unlock \(resolved.name)?"))
-        try await service.runControl(action: "door_unlock", vin: resolved.vin, humanName: "unlocking")
-        return .result(dialog: IntentDialog("Unlocked \(resolved.name)."))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            try await requestConfirmation(dialog: IntentDialog("Unlock \(resolved.name)?"))
+            try await service.runControl(action: "door_unlock", vin: resolved.vin, humanName: "unlocking")
+            log.success("unlocked \(resolved.name)")
+            return .result(dialog: IntentDialog("Unlocked \(resolved.name)."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -115,10 +127,16 @@ public struct StartClimateIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await service.runControl(action: "auto_conditioning_start", vin: resolved.vin, humanName: "starting climate")
-        return .result(dialog: IntentDialog("Climate is starting in \(resolved.name)."))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            try await service.runControl(action: "auto_conditioning_start", vin: resolved.vin, humanName: "starting climate")
+            log.success("started climate in \(resolved.name)")
+            return .result(dialog: IntentDialog("Climate is starting in \(resolved.name)."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -153,15 +171,21 @@ public struct VentWindowsIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await service.runControl(
-            action: "window_control",
-            vin: resolved.vin,
-            params: ["command": .string("vent")],
-            humanName: "venting the windows"
-        )
-        return .result(dialog: IntentDialog("Venting \(resolved.name)'s windows."))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            try await service.runControl(
+                action: "window_control",
+                vin: resolved.vin,
+                params: ["command": .string("vent")],
+                humanName: "venting the windows"
+            )
+            log.success("venting windows on \(resolved.name)")
+            return .result(dialog: IntentDialog("Venting \(resolved.name)'s windows."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -196,16 +220,22 @@ public struct OpenTrunkIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await requestConfirmation(dialog: IntentDialog("Open the trunk on \(resolved.name)?"))
-        try await service.runControl(
-            action: "actuate_trunk",
-            vin: resolved.vin,
-            params: ["which_trunk": .string("rear")],
-            humanName: "opening the trunk"
-        )
-        return .result(dialog: IntentDialog("Opening the trunk on \(resolved.name)."))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            try await requestConfirmation(dialog: IntentDialog("Open the trunk on \(resolved.name)?"))
+            try await service.runControl(
+                action: "actuate_trunk",
+                vin: resolved.vin,
+                params: ["which_trunk": .string("rear")],
+                humanName: "opening the trunk"
+            )
+            log.success("opened trunk on \(resolved.name)")
+            return .result(dialog: IntentDialog("Opening the trunk on \(resolved.name)."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -240,16 +270,22 @@ public struct OpenFrunkIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await requestConfirmation(dialog: IntentDialog("Open the frunk on \(resolved.name)?"))
-        try await service.runControl(
-            action: "actuate_trunk",
-            vin: resolved.vin,
-            params: ["which_trunk": .string("front")],
-            humanName: "opening the frunk"
-        )
-        return .result(dialog: IntentDialog("Opening the frunk on \(resolved.name)."))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            try await requestConfirmation(dialog: IntentDialog("Open the frunk on \(resolved.name)?"))
+            try await service.runControl(
+                action: "actuate_trunk",
+                vin: resolved.vin,
+                params: ["which_trunk": .string("front")],
+                humanName: "opening the frunk"
+            )
+            log.success("opened frunk on \(resolved.name)")
+            return .result(dialog: IntentDialog("Opening the frunk on \(resolved.name)."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }
 
@@ -288,15 +324,21 @@ public struct SetChargeLimitIntent: AppIntent, PredictableIntent {
     }
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        let service = FleetIntentService.make()
-        let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await requestConfirmation(dialog: IntentDialog("Set \(resolved.name)'s charge limit to \(percent)%?"))
-        try await service.runControl(
-            action: "set_charge_limit",
-            vin: resolved.vin,
-            params: ["percent": .int(percent)],
-            humanName: "setting the charge limit"
-        )
-        return .result(dialog: IntentDialog("Set \(resolved.name)'s charge limit to \(percent)%."))
+        let log = FleetIntentLog(Self.self, vehicle: vehicle)
+        do {
+            let service = FleetIntentService.make()
+            let resolved = try await service.resolvedVehicle(vehicle?.id)
+            try await requestConfirmation(dialog: IntentDialog("Set \(resolved.name)'s charge limit to \(percent)%?"))
+            try await service.runControl(
+                action: "set_charge_limit",
+                vin: resolved.vin,
+                params: ["percent": .int(percent)],
+                humanName: "setting the charge limit"
+            )
+            log.success("charge limit \(percent)% on \(resolved.name)")
+            return .result(dialog: IntentDialog("Set \(resolved.name)'s charge limit to \(percent)%."))
+        } catch {
+            throw log.failure(error)
+        }
     }
 }

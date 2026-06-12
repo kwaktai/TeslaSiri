@@ -8,7 +8,7 @@ import FleetKit
 ///
 /// Apple limits each app to 10 App Shortcuts; less common intents remain
 /// available via the Shortcuts app and Spotlight entity/indexing discovery.
-struct TeslaSiriShortcuts: AppShortcutsProvider {
+nonisolated struct TeslaSiriShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: GetVehicleStatusIntent(),

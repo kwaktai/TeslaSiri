@@ -62,8 +62,6 @@ struct DashboardView: View {
                 }
             )
 
-            AppIntentDiscoveryCard()
-
             if let vehicle = store.selectedVehicle {
                 VehicleStatusCard(
                     vehicleName: vehicle.name,
@@ -89,6 +87,8 @@ struct DashboardView: View {
             } else if store.isLoadingCharging {
                 LoadingCard(title: "Charging", message: "Loading charging…")
             }
+
+            AppIntentDiscoveryCard()
         }
     }
 }

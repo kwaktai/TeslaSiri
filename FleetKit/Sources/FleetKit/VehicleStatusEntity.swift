@@ -8,8 +8,11 @@ public struct VehicleStatusEntity: AppEntity, IndexedEntity, Identifiable {
     public static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Vehicle Status")
     public static let defaultQuery = VehicleStatusEntityQuery()
 
-    /// VIN — one current-status entity per vehicle.
+    /// "status:<VIN>" — one current-status entity per vehicle. Namespaced so it
+    /// can't collide with other VIN-keyed entity types in the shared Spotlight
+    /// index, where the identifier is the primary key and collisions overwrite.
     public let id: String
+    public let vin: String
     public let vehicleName: String
     public let batteryPercent: Int?
     public let chargeLimitPercent: Int?
@@ -25,7 +28,8 @@ public struct VehicleStatusEntity: AppEntity, IndexedEntity, Identifiable {
     public let updatedAt: Date?
 
     public init(snapshot: FleetSnapshotInfo, vehicleName: String) {
-        self.id = snapshot.vin
+        self.id = Self.entityID(forVIN: snapshot.vin)
+        self.vin = snapshot.vin
         self.vehicleName = vehicleName
         self.batteryPercent = snapshot.batteryLevel.map { Int($0.rounded()) }
         self.chargeLimitPercent = snapshot.chargeLimitSOC.map { Int($0.rounded()) }
@@ -39,6 +43,15 @@ public struct VehicleStatusEntity: AppEntity, IndexedEntity, Identifiable {
         self.longitude = snapshot.longitude
         self.tireSummary = snapshot.tires?.displaySummary
         self.updatedAt = snapshot.updatedAtDate
+    }
+
+    public static func entityID(forVIN vin: String) -> String {
+        "status:\(vin)"
+    }
+
+    /// Accepts bare VINs too so identifiers saved before namespacing still resolve.
+    public static func vin(fromEntityID id: String) -> String {
+        id.hasPrefix("status:") ? String(id.dropFirst("status:".count)) : id
     }
 
     public var batteryDisplay: String {
@@ -81,7 +94,7 @@ public struct VehicleStatusEntity: AppEntity, IndexedEntity, Identifiable {
         if let updatedAt { descriptionParts.append("Updated \(updatedAt.formatted(date: .abbreviated, time: .shortened))") }
         attributes.contentDescription = descriptionParts.joined(separator: ". ")
         attributes.keywords = [
-            vehicleName, id, "Tesla", "vehicle status", "battery", "charge", "charging",
+            vehicleName, vin, "Tesla", "vehicle status", "battery", "charge", "charging",
             "lock", "unlock", "locked", "unlocked", "mileage", "odometer", "miles",
             "tire", "tires", "tire pressure", "PSI", "climate", "temperature", "location"
         ]
@@ -102,7 +115,8 @@ public struct VehicleStatusEntityQuery: EntityQuery, IndexedEntityQuery {
         let service = FleetIntentService.make()
         let vehicles = try await service.vehicles()
         var results: [VehicleStatusEntity] = []
-        for vin in identifiers {
+        for identifier in identifiers {
+            let vin = VehicleStatusEntity.vin(fromEntityID: identifier)
             guard let vehicle = vehicles.first(where: { $0.vin == vin }) else { continue }
             let snapshot = try await service.snapshot(vin: vin)
             results.append(VehicleStatusEntity(snapshot: snapshot, vehicleName: vehicle.name))
