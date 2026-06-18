@@ -112,10 +112,12 @@ nonisolated enum TessieModelAdapter {
 
         return FleetLatestSnapshot(
             batteryLevel: charge.double("battery_level"),
+            batteryRange: charge.double("battery_range"),
             chargeLimitSOC: charge.double("charge_limit_soc"),
             chargeRateMPH: charge.double("charge_rate"),
             chargerPowerKW: charge.double("charger_power"),
             chargingState: charge.string("charging_state"),
+            climateOn: climate.bool("is_climate_on"),
             freshnessMS: updatedAt.map { max(Int64(Date().timeIntervalSince1970 * 1_000) - $0, 0) },
             gear: drive.string("shift_state"),
             insideTemp: state.displayTemperature(climate.double("inside_temp")),
@@ -127,6 +129,7 @@ nonisolated enum TessieModelAdapter {
             sentryMode: vehicle.bool("sentry_mode"),
             software: software(from: state),
             speed: drive.double("speed"),
+            targetTemperature: state.displayTemperature(climate.double("driver_temp_setting")),
             timeToFullCharge: charge.double("time_to_full_charge"),
             timestamp: updatedAt,
             updatedAt: updatedAt,

@@ -17,10 +17,12 @@ enum PreviewData {
 
     static let snapshotFull: FleetLatestSnapshot = FleetLatestSnapshot(
         batteryLevel: 74,
+        batteryRange: 260,
         chargeLimitSOC: 80,
         chargeRateMPH: 28,
         chargerPowerKW: 7.2,
         chargingState: "Charging",
+        climateOn: true,
         freshnessMS: 1_500,
         gear: "P",
         insideTemp: 70,
@@ -32,6 +34,7 @@ enum PreviewData {
         sentryMode: true,
         software: nil,
         speed: 0,
+        targetTemperature: 72,
         timeToFullCharge: 1.4,
         timestamp: 1_781_000_000_000,
         updatedAt: 1_781_000_000_000,
@@ -40,10 +43,12 @@ enum PreviewData {
 
     static let snapshotDriving: FleetLatestSnapshot = FleetLatestSnapshot(
         batteryLevel: 62,
+        batteryRange: 218,
         chargeLimitSOC: 80,
         chargeRateMPH: nil,
         chargerPowerKW: nil,
         chargingState: nil,
+        climateOn: true,
         freshnessMS: 3_200,
         gear: "D",
         insideTemp: 72,
@@ -55,6 +60,7 @@ enum PreviewData {
         sentryMode: false,
         software: nil,
         speed: 47,
+        targetTemperature: 72,
         timeToFullCharge: nil,
         timestamp: 1_781_000_000_000,
         updatedAt: 1_781_000_000_000,

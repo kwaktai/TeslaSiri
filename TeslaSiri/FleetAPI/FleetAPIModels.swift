@@ -433,10 +433,12 @@ nonisolated struct FleetVehicle: Codable, Equatable, Identifiable, Sendable {
 
 nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
     var batteryLevel: Double?
+    var batteryRange: Double?
     var chargeLimitSOC: Double?
     var chargeRateMPH: Double?
     var chargerPowerKW: Double?
     var chargingState: String?
+    var climateOn: Bool?
     var freshnessMS: Int64?
     var gear: String?
     var insideTemp: Double?
@@ -448,6 +450,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
     var sentryMode: Bool?
     var software: FleetSoftwareUpdate?
     var speed: Double?
+    var targetTemperature: Double?
     var timeToFullCharge: Double?
     var timestamp: Int64?
     var updatedAt: Int64?
@@ -458,10 +461,12 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
 
     enum CodingKeys: String, CodingKey {
         case batteryLevel = "battery_level"
+        case batteryRange = "battery_range"
         case chargeLimitSOC = "charge_limit_soc"
         case chargeRateMPH = "charge_rate_mph"
         case chargerPowerKW = "charger_power_kw"
         case chargingState = "charging_state"
+        case climateOn = "climate_on"
         case freshnessMS = "freshness_ms"
         case gear
         case insideTemp = "inside_temp"
@@ -473,6 +478,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         case sentryMode = "sentry_mode"
         case software
         case speed
+        case targetTemperature = "target_temperature"
         case timeToFullCharge = "time_to_full_charge"
         case timestamp
         case updatedAt = "updated_at"
@@ -481,10 +487,12 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
 
     init(
         batteryLevel: Double? = nil,
+        batteryRange: Double? = nil,
         chargeLimitSOC: Double? = nil,
         chargeRateMPH: Double? = nil,
         chargerPowerKW: Double? = nil,
         chargingState: String? = nil,
+        climateOn: Bool? = nil,
         freshnessMS: Int64? = nil,
         gear: String? = nil,
         insideTemp: Double? = nil,
@@ -496,16 +504,19 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         sentryMode: Bool? = nil,
         software: FleetSoftwareUpdate? = nil,
         speed: Double? = nil,
+        targetTemperature: Double? = nil,
         timeToFullCharge: Double? = nil,
         timestamp: Int64? = nil,
         updatedAt: Int64? = nil,
         vin: String = ""
     ) {
         self.batteryLevel = batteryLevel
+        self.batteryRange = batteryRange
         self.chargeLimitSOC = chargeLimitSOC
         self.chargeRateMPH = chargeRateMPH
         self.chargerPowerKW = chargerPowerKW
         self.chargingState = chargingState
+        self.climateOn = climateOn
         self.freshnessMS = freshnessMS
         self.gear = gear
         self.insideTemp = insideTemp
@@ -517,6 +528,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         self.sentryMode = sentryMode
         self.software = software
         self.speed = speed
+        self.targetTemperature = targetTemperature
         self.timeToFullCharge = timeToFullCharge
         self.timestamp = timestamp
         self.updatedAt = updatedAt
@@ -526,10 +538,12 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         batteryLevel = container.decodeFlexibleDoubleIfPresent(forKey: .batteryLevel)
+        batteryRange = container.decodeFlexibleDoubleIfPresent(forKey: .batteryRange)
         chargeLimitSOC = container.decodeFlexibleDoubleIfPresent(forKey: .chargeLimitSOC)
         chargeRateMPH = container.decodeFlexibleDoubleIfPresent(forKey: .chargeRateMPH)
         chargerPowerKW = container.decodeFlexibleDoubleIfPresent(forKey: .chargerPowerKW)
         chargingState = try container.decodeIfPresent(String.self, forKey: .chargingState)
+        climateOn = try container.decodeIfPresent(Bool.self, forKey: .climateOn)
         freshnessMS = container.decodeFlexibleInt64IfPresent(forKey: .freshnessMS)
         gear = try container.decodeIfPresent(String.self, forKey: .gear)
         insideTemp = container.decodeFlexibleDoubleIfPresent(forKey: .insideTemp)
@@ -541,6 +555,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         sentryMode = try container.decodeIfPresent(Bool.self, forKey: .sentryMode)
         software = try container.decodeIfPresent(FleetSoftwareUpdate.self, forKey: .software)
         speed = container.decodeFlexibleDoubleIfPresent(forKey: .speed)
+        targetTemperature = container.decodeFlexibleDoubleIfPresent(forKey: .targetTemperature)
         timeToFullCharge = container.decodeFlexibleDoubleIfPresent(forKey: .timeToFullCharge)
         timestamp = container.decodeFlexibleInt64IfPresent(forKey: .timestamp)
         updatedAt = container.decodeFlexibleInt64IfPresent(forKey: .updatedAt)

@@ -15,6 +15,11 @@ protocol FleetDataLoading {
     func installSoftwareUpdate(vin: String, offsetSec: Int) async throws -> FleetAPIPage<[String: JSONValue]>
     func cancelSoftwareUpdate(vin: String) async throws -> FleetAPIPage<[String: JSONValue]>
     func rawVehicleDataExport(vin: String) async throws -> FleetRawDataExport
+    func runControl(
+        action: String,
+        vin: String,
+        params: [String: JSONValue]
+    ) async throws -> FleetAPIPage<[String: JSONValue]>
     func telemetrySeries(
         vin: String,
         topic: String?,
@@ -60,6 +65,7 @@ final class FleetDataStore {
     @ObservationIgnored private var selectionRefreshTask: Task<Void, Never>?
 
     private(set) var activeCharging: [FleetChargeSession] = []
+    private(set) var activeControlAction: String?
     private(set) var activeDrivesByVIN: [String: FleetActiveDriveSession] = [:]
     private(set) var cacheDate: Date?
     private(set) var capabilities: FleetCapabilities?
@@ -73,6 +79,7 @@ final class FleetDataStore {
     private(set) var isLoadingTelemetry = false
     private(set) var isMutatingSoftware = false
     private(set) var isRefreshing = false
+    private(set) var isRunningControl = false
     private(set) var isShowingCachedData = false
     private(set) var lastErrorMessage: String?
     private(set) var lastRefreshDate: Date?
@@ -86,6 +93,7 @@ final class FleetDataStore {
     private(set) var softwareUpdatesByVIN: [String: FleetSoftwareUpdate] = [:]
     private(set) var telemetrySeriesByVIN: [String: [FleetTelemetrySeriesPoint]] = [:]
     private(set) var user: FleetUser?
+    private(set) var vehicleControlMessage: String?
     private(set) var vehicles: [FleetVehicle] = []
 
     var selectedVIN: String?
@@ -285,6 +293,38 @@ final class FleetDataStore {
             await saveCurrentState()
         } catch {
             lastErrorMessage = error.localizedDescription
+        }
+    }
+
+    @discardableResult
+    func runSelectedVehicleControl(
+        action: String,
+        params: [String: JSONValue] = [:]
+    ) async -> Bool {
+        guard let vin = selectedVehicle?.vin, !isRunningControl else {
+            return false
+        }
+
+        activeControlAction = action
+        isRunningControl = true
+        vehicleControlMessage = "Sending command…"
+        defer {
+            activeControlAction = nil
+            isRunningControl = false
+        }
+
+        do {
+            let page = try await apiClient.runControl(action: action, vin: vin, params: params)
+            lastErrorMessage = nil
+            lastRequestID = page.requestID ?? lastRequestID
+            vehicleControlMessage = "Command sent"
+            await refreshSelectedVehicleLive()
+            return true
+        } catch {
+            let message = error.localizedDescription
+            lastErrorMessage = message
+            vehicleControlMessage = message
+            return false
         }
     }
 
@@ -558,6 +598,7 @@ final class FleetDataStore {
         selectionRefreshTask = nil
         loadingCounts = [:]
         activeCharging = []
+        activeControlAction = nil
         activeDrivesByVIN = [:]
         cacheDate = nil
         capabilities = nil
@@ -571,6 +612,7 @@ final class FleetDataStore {
         isLoadingTelemetry = false
         isMutatingSoftware = false
         isRefreshing = false
+        isRunningControl = false
         isShowingCachedData = false
         lastErrorMessage = nil
         lastRefreshDate = nil
@@ -585,6 +627,7 @@ final class FleetDataStore {
         softwareUpdatesByVIN = [:]
         telemetrySeriesByVIN = [:]
         user = nil
+        vehicleControlMessage = nil
         vehicles = []
 
         if clearCache {
@@ -1367,6 +1410,7 @@ nonisolated private enum FleetDataNormalizer {
             return nil
         }
         snapshot.batteryLevel = percent(snapshot.batteryLevel)
+        snapshot.batteryRange = nonNegative(snapshot.batteryRange)
         snapshot.chargeLimitSOC = percent(snapshot.chargeLimitSOC)
         snapshot.chargeRateMPH = nonNegative(snapshot.chargeRateMPH)
         snapshot.chargerPowerKW = nonNegative(snapshot.chargerPowerKW)
@@ -1382,6 +1426,7 @@ nonisolated private enum FleetDataNormalizer {
             snapshot.software = softwareUpdate(software)
         }
         snapshot.speed = nonNegative(snapshot.speed)
+        snapshot.targetTemperature = finite(snapshot.targetTemperature)
         snapshot.timeToFullCharge = nonNegative(snapshot.timeToFullCharge)
         snapshot.timestamp = normalizedEpochMilliseconds(snapshot.timestamp)
         snapshot.updatedAt = normalizedEpochMilliseconds(snapshot.updatedAt) ?? snapshot.timestamp
@@ -1652,20 +1697,23 @@ extension FleetDataStore {
                 displayName: "Model 3",
                 latest: FleetLatestSnapshot(
                     batteryLevel: 74,
+                    batteryRange: 260,
                     chargeLimitSOC: 80,
                     chargeRateMPH: 28,
                     chargerPowerKW: 7.2,
                     chargingState: "Charging",
+                    climateOn: true,
                     freshnessMS: 1_500,
                     gear: nil,
                     insideTemp: 70,
-                    latitude: nil,
+                    latitude: 37.3349,
                     locked: true,
-                    longitude: nil,
+                    longitude: -122.0090,
                     odometer: 19_204,
                     outsideTemp: 64,
                     sentryMode: false,
                     speed: nil,
+                    targetTemperature: 72,
                     timeToFullCharge: 1.4,
                     timestamp: 1_781_000_000_000,
                     updatedAt: 1_781_000_000_000,
@@ -1865,6 +1913,20 @@ private struct PreviewFleetDataClient: FleetDataLoading {
             cached: false,
             stale: false,
             requestID: "preview-locations"
+        )
+    }
+
+    func runControl(
+        action: String,
+        vin: String,
+        params: [String: JSONValue]
+    ) async throws -> FleetAPIPage<[String: JSONValue]> {
+        FleetAPIPage(
+            data: ["result": true],
+            cursor: nil,
+            cached: false,
+            stale: false,
+            requestID: "preview-control-\(action)"
         )
     }
 
