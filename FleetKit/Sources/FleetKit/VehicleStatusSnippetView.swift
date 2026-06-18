@@ -76,32 +76,33 @@ struct VehicleStatusSnippetView: View {
             }
         }
         .padding()
+        .appEntityIdentifier(EntityIdentifier(for: VehicleStatusEntity.self, identifier: status.id))
     }
 
     private var vehicle: VehicleEntity {
-        VehicleEntity(id: status.id, name: status.vehicleName)
+        VehicleEntity(id: status.vin, name: status.vehicleName)
     }
 
     private var lockIntent: LockVehicleIntent {
-        var intent = LockVehicleIntent()
+        let intent = LockVehicleIntent()
         intent.vehicle = vehicle
         return intent
     }
 
     private var unlockIntent: UnlockVehicleIntent {
-        var intent = UnlockVehicleIntent()
+        let intent = UnlockVehicleIntent()
         intent.vehicle = vehicle
         return intent
     }
 
     private var startClimateIntent: StartClimateIntent {
-        var intent = StartClimateIntent()
+        let intent = StartClimateIntent()
         intent.vehicle = vehicle
         return intent
     }
 
     private var honkIntent: HonkHornIntent {
-        var intent = HonkHornIntent()
+        let intent = HonkHornIntent()
         intent.vehicle = vehicle
         return intent
     }

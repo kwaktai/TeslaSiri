@@ -1,3 +1,5 @@
+import AppIntents
+import FleetKit
 import SwiftUI
 
 struct NormalizedDataSection: View {
@@ -8,21 +10,27 @@ struct NormalizedDataSection: View {
             if let vehicle = store.selectedVehicle {
                 VStack(alignment: .leading, spacing: 12) {
                     DiagnosticMonospacedValue(title: "Selected VIN", value: vehicle.vin)
+                        .appEntityIdentifier(vehicleEntityIdentifier(for: vehicle.vin))
                     DiagnosticRow(label: "Units", value: unitDescription)
                     DiagnosticRow(label: "Temperature display", value: temperatureSuffix.trimmingCharacters(in: .whitespaces))
                     DiagnosticRow(label: "Live snapshot", value: snapshotSummary(vehicle.latest))
+                        .appEntityIdentifier(statusEntityIdentifier(for: vehicle.latest))
                     DiagnosticRow(label: "Software source", value: softwareSource(for: vehicle))
 
                     if let software = store.selectedVehicleSoftwareUpdate {
                         DiagnosticRow(label: "Software", value: softwareSummary(software))
+                            .appEntityIdentifier(softwareEntityIdentifier(for: vehicle.vin))
                     }
 
                     if let activeDrive = store.selectedVehicleActiveDrive {
-                        DiagnosticRow(label: "Active drive", value: activeDriveSummary(activeDrive))
-                        DiagnosticRow(label: "Route samples", value: routeSampleSummary(activeDrive.route))
-                        DiagnosticRow(label: "Buffered samples", value: "\(activeDrive.bufferedPoints.count)")
-                        DiagnosticRow(label: "Start location", value: formattedCoordinate(latitude: activeDrive.startLocation?.latitude, longitude: activeDrive.startLocation?.longitude))
-                        DiagnosticRow(label: "Latest route point", value: formattedCoordinate(latitude: activeDrive.latestRoutePoint?.latitude, longitude: activeDrive.latestRoutePoint?.longitude))
+                        Group {
+                            DiagnosticRow(label: "Active drive", value: activeDriveSummary(activeDrive))
+                            DiagnosticRow(label: "Route samples", value: routeSampleSummary(activeDrive.route))
+                            DiagnosticRow(label: "Buffered samples", value: "\(activeDrive.bufferedPoints.count)")
+                            DiagnosticRow(label: "Start location", value: formattedCoordinate(latitude: activeDrive.startLocation?.latitude, longitude: activeDrive.startLocation?.longitude))
+                            DiagnosticRow(label: "Latest route point", value: formattedCoordinate(latitude: activeDrive.latestRoutePoint?.latitude, longitude: activeDrive.latestRoutePoint?.longitude))
+                        }
+                        .appEntityIdentifier(driveEntityIdentifier(for: activeDrive))
                     } else {
                         DiagnosticRow(label: "Active drive", value: store.isLoadingActiveDrive ? "Loading" : "None")
                     }
@@ -39,6 +47,32 @@ struct NormalizedDataSection: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .appEntityIdentifier(selectedVehicleEntityIdentifier)
+    }
+
+    private var selectedVehicleEntityIdentifier: EntityIdentifier? {
+        guard let vin = store.selectedVehicle?.vin else { return nil }
+        return vehicleEntityIdentifier(for: vin)
+    }
+
+    private func vehicleEntityIdentifier(for vin: String) -> EntityIdentifier? {
+        guard !vin.isEmpty else { return nil }
+        return EntityIdentifier(for: VehicleEntity.self, identifier: vin)
+    }
+
+    private func statusEntityIdentifier(for snapshot: FleetLatestSnapshot?) -> EntityIdentifier? {
+        guard let vin = snapshot?.vin, !vin.isEmpty else { return nil }
+        return EntityIdentifier(for: VehicleStatusEntity.self, identifier: VehicleStatusEntity.entityID(forVIN: vin))
+    }
+
+    private func softwareEntityIdentifier(for vin: String) -> EntityIdentifier? {
+        guard !vin.isEmpty else { return nil }
+        return EntityIdentifier(for: SoftwareUpdateEntity.self, identifier: SoftwareUpdateEntity.entityID(forVIN: vin))
+    }
+
+    private func driveEntityIdentifier(for drive: FleetActiveDriveSession) -> EntityIdentifier? {
+        guard !drive.sessionID.isEmpty else { return nil }
+        return EntityIdentifier(for: DriveEntity.self, identifier: drive.sessionID)
     }
 
     private var unitDescription: String {

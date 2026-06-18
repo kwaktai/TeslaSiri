@@ -24,6 +24,7 @@ struct DriveSnippetView: View {
             .foregroundStyle(.secondary)
         }
         .padding()
+        .appEntityIdentifier(EntityIdentifier(for: DriveEntity.self, identifier: drive.id))
     }
 }
 
@@ -64,20 +65,21 @@ struct SoftwareSnippetView: View {
             }
         }
         .padding()
+        .appEntityIdentifier(EntityIdentifier(for: SoftwareUpdateEntity.self, identifier: software.id))
     }
 
     private var vehicle: VehicleEntity {
-        VehicleEntity(id: software.id, name: software.vehicleName)
+        VehicleEntity(id: software.vin, name: software.vehicleName)
     }
 
     private var installIntent: InstallSoftwareUpdateIntent {
-        var intent = InstallSoftwareUpdateIntent()
+        let intent = InstallSoftwareUpdateIntent()
         intent.vehicle = vehicle
         return intent
     }
 
     private var cancelIntent: CancelSoftwareUpdateIntent {
-        var intent = CancelSoftwareUpdateIntent()
+        let intent = CancelSoftwareUpdateIntent()
         intent.vehicle = vehicle
         return intent
     }

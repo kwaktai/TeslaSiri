@@ -13,7 +13,7 @@ struct DiagnosticsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            LazyVStack(spacing: 20) {
                 BackendSection(
                     store: store,
                     diagnostics: diagnostics,
@@ -36,19 +36,32 @@ struct DiagnosticsView: View {
                 SpotlightDebugSection(isSignedIn: diagnostics.isSignedIn)
 
                 if let user = store.user {
-                    AccountSection(email: user.email, units: user.units, scopes: user.scopes)
+                    AccountSection(
+                        email: user.email,
+                        units: user.units,
+                        scopes: user.scopes
+                    )
                 }
             }
-            .padding(16)
+            .padding(.horizontal, 18)
+            .padding(.top, 12)
+            .padding(.bottom, 32)
         }
-        .background(Color(uiColor: .systemGroupedBackground))
+        .scrollIndicators(.hidden)
+        .background(AppScreenBackground())
         .navigationTitle("Diagnostics")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     Task { await onReloadFleet() }
                 } label: {
-                    Image(systemName: "arrow.clockwise")
+                    if store.loadState.isLoading || store.isRefreshing {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Image(systemName: "arrow.clockwise")
+                    }
                 }
                 .disabled(store.loadState.isLoading || store.isRefreshing)
                 .accessibilityLabel("Refresh diagnostics")
@@ -73,6 +86,7 @@ private struct DiagnosticsPreviewer: View {
             tokenIssuer: "https://fleet.maxweinbach.com",
             tokenScopes: ["vehicles:read", "telemetry:read", "vehicle_control"]
         )
+
         return NavigationStack {
             DiagnosticsView(
                 store: FleetDataStore.previewLoaded(),
@@ -89,6 +103,11 @@ private struct DiagnosticsPreviewer: View {
     }
 }
 
-#Preview {
+#Preview("Diagnostics — Light") {
     DiagnosticsPreviewer()
+}
+
+#Preview("Diagnostics — Dark") {
+    DiagnosticsPreviewer()
+        .preferredColorScheme(.dark)
 }

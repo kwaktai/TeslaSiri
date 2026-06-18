@@ -1,3 +1,5 @@
+import AppIntents
+import FleetKit
 import SwiftUI
 
 struct DashboardView: View {
@@ -50,6 +52,12 @@ struct DashboardView: View {
             guard isSignedIn else { return }
             await onReload()
         }
+        .appEntityIdentifier(selectedVehicleEntityIdentifier)
+    }
+
+    private var selectedVehicleEntityIdentifier: EntityIdentifier? {
+        guard let vin = store.selectedVehicle?.vin, !vin.isEmpty else { return nil }
+        return EntityIdentifier(for: VehicleEntity.self, identifier: vin)
     }
 }
 
@@ -230,6 +238,11 @@ private struct DashboardPreviewer: View {
 #Preview("Control Center — Dark") {
     DashboardPreviewer()
         .preferredColorScheme(.dark)
+}
+
+#Preview("Control Center — Accessibility") {
+    DashboardPreviewer()
+        .environment(\.dynamicTypeSize, .accessibility2)
 }
 
 #Preview("Signed out with cached data") {

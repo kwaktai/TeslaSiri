@@ -37,7 +37,6 @@ struct VehiclePickerCard: View {
                             }
                             .buttonStyle(.plain)
                             .accessibilityValue(selectedVIN == vehicle.vin ? "Selected" : "")
-                            .appEntityIdentifier(EntityIdentifier(for: VehicleEntity.self, identifier: vehicle.vin))
                         }
                     }
                     .padding(.vertical, 2)
@@ -124,6 +123,7 @@ private struct VehicleChip: View {
         )
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(name), VIN ending \(String(vin.suffix(6)))")
+        .appEntityIdentifier(EntityIdentifier(for: VehicleEntity.self, identifier: vin))
     }
 }
 

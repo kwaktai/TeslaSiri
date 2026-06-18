@@ -5,46 +5,74 @@ struct DriveMetricTile: View {
     let value: String
     let systemImage: String
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 11) {
             Image(systemName: systemImage)
-                .frame(width: 24)
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.tint)
-            VStack(alignment: .leading, spacing: 2) {
+                .frame(width: 34, height: 34)
+                .background(Color.accentColor.opacity(0.11), in: Circle())
+
+            VStack(alignment: .leading, spacing: 3) {
                 Text(title)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
+
                 Text(value)
                     .font(.subheadline.weight(.semibold))
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
             }
+
             Spacer(minLength: 0)
         }
-        .padding(10)
-        .frame(maxWidth: .infinity, minHeight: 58, alignment: .leading)
-        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .padding(12)
+        .frame(maxWidth: .infinity, minHeight: 70, alignment: .leading)
+        .background(
+            Color(uiColor: .tertiarySystemGroupedBackground),
+            in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+        )
     }
 }
 
 #Preview("Grid") {
-    VStack(spacing: 12) {
-        HStack(spacing: 12) {
-            DriveMetricTile(title: "Distance", value: "12.4 mi", systemImage: "point.topleft.down.curvedto.point.bottomright.up")
-            DriveMetricTile(title: "Duration", value: "27 min", systemImage: "timer")
+    ZStack {
+        AppScreenBackground()
+
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                DriveMetricTile(
+                    title: "Distance",
+                    value: "12.4 mi",
+                    systemImage: "point.topleft.down.to.point.bottomright.curvepath"
+                )
+                DriveMetricTile(title: "Duration", value: "27 min", systemImage: "timer")
+            }
+            HStack(spacing: 12) {
+                DriveMetricTile(title: "Average", value: "34 mph", systemImage: "speedometer")
+                DriveMetricTile(title: "Route", value: "Mapped", systemImage: "map")
+            }
         }
-        HStack(spacing: 12) {
-            DriveMetricTile(title: "Average", value: "34 mph", systemImage: "speedometer")
-            DriveMetricTile(title: "Route", value: "Mapped", systemImage: "map")
-        }
+        .padding()
     }
-    .padding()
-    .background(Color(uiColor: .systemGroupedBackground))
 }
 
 #Preview("Missing data") {
-    HStack(spacing: 12) {
-        DriveMetricTile(title: "Distance", value: "--", systemImage: "point.topleft.down.curvedto.point.bottomright.up")
-        DriveMetricTile(title: "Route", value: "Missing", systemImage: "map")
+    ZStack {
+        AppScreenBackground()
+
+        HStack(spacing: 12) {
+            DriveMetricTile(
+                title: "Distance",
+                value: "--",
+                systemImage: "point.topleft.down.to.point.bottomright.curvepath"
+            )
+            DriveMetricTile(title: "Route", value: "Missing", systemImage: "map")
+        }
+        .padding()
     }
-    .padding()
-    .background(Color(uiColor: .systemGroupedBackground))
 }

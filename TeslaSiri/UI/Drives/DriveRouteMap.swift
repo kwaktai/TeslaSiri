@@ -1,11 +1,20 @@
+import AppIntents
+import FleetKit
 import MapKit
 import SwiftUI
 
 struct DriveRouteMap: View {
     let route: [FleetRoutePoint]
     let selectedPointIndex: Int
+    let driveSessionID: String?
 
     @State private var cameraPosition: MapCameraPosition = .automatic
+
+    init(route: [FleetRoutePoint], selectedPointIndex: Int, driveSessionID: String? = nil) {
+        self.route = route
+        self.selectedPointIndex = selectedPointIndex
+        self.driveSessionID = driveSessionID
+    }
 
     var body: some View {
         let coordinates = route.compactMap(\.coordinate)
@@ -47,6 +56,12 @@ struct DriveRouteMap: View {
                 }
             }
         }
+        .appEntityIdentifier(driveEntityIdentifier)
+    }
+
+    private var driveEntityIdentifier: EntityIdentifier? {
+        guard let driveSessionID, !driveSessionID.isEmpty else { return nil }
+        return EntityIdentifier(for: DriveEntity.self, identifier: driveSessionID)
     }
 
     private var cameraKey: String {

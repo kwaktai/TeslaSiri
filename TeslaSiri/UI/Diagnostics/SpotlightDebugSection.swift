@@ -1,3 +1,4 @@
+import AppIntents
 import FleetKit
 import SwiftUI
 
@@ -151,6 +152,24 @@ private struct SpotlightResultRow: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 6)
+        .appEntityIdentifier(entityIdentifier)
+    }
+
+    private var entityIdentifier: EntityIdentifier? {
+        switch result.kind {
+        case "Tesla Vehicle":
+            return EntityIdentifier(for: VehicleEntity.self, identifier: result.id)
+        case "Tesla Vehicle Status":
+            return EntityIdentifier(for: VehicleStatusEntity.self, identifier: result.id)
+        case "Tesla Drive":
+            return EntityIdentifier(for: DriveEntity.self, identifier: result.id)
+        case "Tesla Software Update":
+            return EntityIdentifier(for: SoftwareUpdateEntity.self, identifier: result.id)
+        case "Tesla Release Note":
+            return EntityIdentifier(for: ReleaseNoteEntity.self, identifier: result.id)
+        default:
+            return nil
+        }
     }
 }
 

@@ -44,6 +44,7 @@ private struct VehicleStatusHero: View {
         VStack(alignment: .leading, spacing: 18) {
             VehicleHeroHeader(
                 vehicleName: vehicleName,
+                vin: snapshot.vin,
                 updatedAt: snapshot.updatedAtDate
             )
 
@@ -92,9 +93,30 @@ private struct VehicleStatusHero: View {
 
 private struct VehicleHeroHeader: View {
     let vehicleName: String
+    let vin: String
     let updatedAt: Date?
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 12) {
+                    vehicleIdentity
+                    updateStatus
+                }
+            } else {
+                HStack(spacing: 12) {
+                    vehicleIdentity
+                    Spacer(minLength: 12)
+                    updateStatus
+                }
+            }
+        }
+        .appEntityIdentifier(vehicleEntityIdentifier)
+    }
+
+    private var vehicleIdentity: some View {
         HStack(spacing: 12) {
             Image(systemName: "car.side.fill")
                 .font(.title3)
@@ -108,21 +130,27 @@ private struct VehicleHeroHeader: View {
                     .font(.caption)
                     .foregroundStyle(.white.opacity(0.62))
             }
+        }
+    }
 
-            Spacer(minLength: 12)
-
-            if let updatedAt {
-                VStack(alignment: .trailing, spacing: 3) {
-                    Image(systemName: "antenna.radiowaves.left.and.right")
-                        .font(.caption)
-                        .foregroundStyle(.green)
-                    Text(updatedAt, style: .relative)
-                        .font(.caption2)
-                        .foregroundStyle(.white.opacity(0.62))
-                        .lineLimit(1)
-                }
+    @ViewBuilder
+    private var updateStatus: some View {
+        if let updatedAt {
+            HStack(spacing: 7) {
+                Image(systemName: "antenna.radiowaves.left.and.right")
+                    .font(.caption)
+                    .foregroundStyle(.green)
+                Text(updatedAt, style: .relative)
+                    .font(.caption2)
+                    .foregroundStyle(.white.opacity(0.62))
+                    .lineLimit(1)
             }
         }
+    }
+
+    private var vehicleEntityIdentifier: EntityIdentifier? {
+        guard !vin.isEmpty else { return nil }
+        return EntityIdentifier(for: VehicleEntity.self, identifier: vin)
     }
 }
 
@@ -159,36 +187,18 @@ private struct BatterySummary: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .lastTextBaseline, spacing: 16) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(formattedNumber(snapshot.batteryLevel, suffix: "%"))
-                        .font(.system(size: 54, weight: .bold, design: .rounded))
-                        .monospacedDigit()
-                        .foregroundStyle(batteryColor)
-                        .contentTransition(.numericText())
-
-                    Text(summary)
-                        .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.70))
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .lastTextBaseline, spacing: 16) {
+                    batteryReading
+                    Spacer()
+                    chargeStats
                 }
 
-                Spacer()
-
-                if snapshot.chargeRateMPH != nil || snapshot.chargerPowerKW != nil {
-                    VStack(alignment: .trailing, spacing: 3) {
-                        if let rate = snapshot.chargeRateMPH {
-                            Text(formattedNumber(rate, fractionLength: 0, suffix: " mi/hr"))
-                                .font(.headline)
-                                .monospacedDigit()
-                        }
-                        if let power = snapshot.chargerPowerKW {
-                            Text(formattedNumber(power, fractionLength: 1, suffix: " kW"))
-                                .font(.caption)
-                                .monospacedDigit()
-                                .foregroundStyle(.white.opacity(0.62))
-                        }
-                    }
+                VStack(alignment: .leading, spacing: 12) {
+                    batteryReading
+                    chargeStats
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             ProgressView(value: progress)
@@ -196,6 +206,39 @@ private struct BatterySummary: View {
                 .background(Color.white.opacity(0.12), in: Capsule())
                 .accessibilityLabel("Battery level")
                 .accessibilityValue(formattedNumber(snapshot.batteryLevel, suffix: "%"))
+        }
+    }
+
+    private var batteryReading: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(formattedNumber(snapshot.batteryLevel, suffix: "%"))
+                .font(.system(size: 54, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(batteryColor)
+                .contentTransition(.numericText())
+
+            Text(summary)
+                .font(.subheadline)
+                .foregroundStyle(.white.opacity(0.70))
+        }
+    }
+
+    @ViewBuilder
+    private var chargeStats: some View {
+        if snapshot.chargeRateMPH != nil || snapshot.chargerPowerKW != nil {
+            VStack(alignment: .trailing, spacing: 3) {
+                if let rate = snapshot.chargeRateMPH {
+                    Text(formattedNumber(rate, fractionLength: 0, suffix: " mi/hr"))
+                        .font(.headline)
+                        .monospacedDigit()
+                }
+                if let power = snapshot.chargerPowerKW {
+                    Text(formattedNumber(power, fractionLength: 1, suffix: " kW"))
+                        .font(.caption)
+                        .monospacedDigit()
+                        .foregroundStyle(.white.opacity(0.62))
+                }
+            }
         }
     }
 }
@@ -236,6 +279,8 @@ private struct MetricsGrid: View {
     let snapshot: FleetLatestSnapshot
     let units: String?
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     private struct Metric: Identifiable {
         let id: String
         let value: String
@@ -248,9 +293,12 @@ private struct MetricsGrid: View {
         }
     }
 
-    private let columns = [
-        GridItem(.adaptive(minimum: 132), spacing: 10)
-    ]
+    private var columns: [GridItem] {
+        if dynamicTypeSize.isAccessibilitySize {
+            return [GridItem(.flexible())]
+        }
+        return [GridItem(.adaptive(minimum: 132), spacing: 10)]
+    }
 
     private var temperatureSuffix: String {
         units == "metric" ? "°C" : "°F"
@@ -299,12 +347,14 @@ private struct MetricTile: View {
     let value: String
     let systemImage: String
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
         VStack(alignment: .leading, spacing: 7) {
             Label(title, systemImage: systemImage)
                 .font(.caption)
                 .foregroundStyle(.white.opacity(0.58))
-                .lineLimit(1)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
 
             Text(value)
                 .font(.subheadline.weight(.semibold))

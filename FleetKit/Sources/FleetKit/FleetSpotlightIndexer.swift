@@ -43,6 +43,7 @@ public struct FleetSpotlightSearchResult: Identifiable, Sendable {
     public let subtitle: String?
     public let contentDescription: String?
     public let keywords: [String]
+    public let kind: String?
     public let domainIdentifier: String?
 
     public init(
@@ -51,6 +52,7 @@ public struct FleetSpotlightSearchResult: Identifiable, Sendable {
         subtitle: String?,
         contentDescription: String?,
         keywords: [String],
+        kind: String?,
         domainIdentifier: String?
     ) {
         self.id = id
@@ -58,6 +60,7 @@ public struct FleetSpotlightSearchResult: Identifiable, Sendable {
         self.subtitle = subtitle
         self.contentDescription = contentDescription
         self.keywords = keywords
+        self.kind = kind
         self.domainIdentifier = domainIdentifier
     }
 }
@@ -180,6 +183,7 @@ public enum FleetSpotlightIndexer {
                     subtitle: attributes.displayName == title ? nil : attributes.displayName,
                     contentDescription: attributes.contentDescription,
                     keywords: attributes.keywords ?? [],
+                    kind: attributes.kind,
                     domainIdentifier: item.domainIdentifier
                 )
             )

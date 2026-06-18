@@ -1,3 +1,5 @@
+import AppIntents
+import FleetKit
 import SwiftUI
 
 struct DrivesView: View {
@@ -13,11 +15,11 @@ struct DrivesView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            LazyVStack(spacing: 20) {
                 if drives.isEmpty && store.isLoadingDrives {
                     LoadingCard(title: "Drives", message: "Loading drives…")
                 } else if drives.isEmpty {
-                    CardContainer(title: "Drives", systemImage: "map") {
+                    CardContainer(title: "Drives", systemImage: "map.fill") {
                         ContentUnavailableView(
                             "No drives",
                             systemImage: "map",
@@ -31,71 +33,78 @@ struct DrivesView: View {
                         endpointAddresses: endpointAddresses,
                         selectedSessionID: selectedSessionBinding
                     )
-                    .padding(.horizontal, 16)
-                    .padding(.top, 4)
 
                     if let selectedDrive {
                         let route = resolvedRoute(for: selectedDrive)
-                        DriveRouteMap(route: route, selectedPointIndex: selectedPointIndex)
-                            .frame(height: 260)
-                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                            .padding(.horizontal, 16)
-                            .task(id: selectedDrive.sessionID) {
-                                selectedPointIndex = 0
-                                if route.isEmpty {
-                                    await store.refreshRoute(for: selectedDrive)
-                                }
+
+                        DriveMapCard(
+                            drive: selectedDrive,
+                            route: route,
+                            selectedPointIndex: $selectedPointIndex,
+                            onLoadRoute: {
+                                await store.refreshRoute(for: selectedDrive)
+                            }
+                        )
+
+                        DriveSessionSummary(
+                            drive: selectedDrive,
+                            endpointAddresses: endpointAddresses[selectedDrive.sessionID],
+                            hasRoute: !route.isEmpty
+                        )
+
+                        if route.isEmpty {
+                            Button {
+                                Task { await store.refreshRoute(for: selectedDrive) }
+                            } label: {
+                                Label("Load Route", systemImage: "arrow.clockwise")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.large)
+                            .appEntityIdentifier(driveEntityIdentifier(for: selectedDrive))
+                        } else {
+                            CardContainer(title: "Route position", systemImage: "mappin.and.ellipse") {
+                                DriveRoutePositionScrubber(
+                                    sampleCount: route.count,
+                                    selectedSampleIndex: $selectedPointIndex,
+                                    driveSessionID: selectedDrive.sessionID
+                                )
                             }
 
-                        VStack(spacing: 16) {
-                            DriveSessionSummary(
-                                drive: selectedDrive,
-                                endpointAddresses: endpointAddresses[selectedDrive.sessionID],
-                                hasRoute: !route.isEmpty
-                            )
-
-                            if route.isEmpty {
-                                Button {
-                                    Task { await store.refreshRoute(for: selectedDrive) }
-                                } label: {
-                                    Label("Load Route", systemImage: "arrow.clockwise")
-                                        .frame(maxWidth: .infinity)
-                                }
-                                .buttonStyle(.bordered)
-                                .controlSize(.large)
-                            } else {
-                                CardContainer(title: "Route Position", systemImage: "mappin.and.ellipse") {
-                                    DriveRoutePositionScrubber(
-                                        sampleCount: route.count,
-                                        selectedSampleIndex: $selectedPointIndex
+                            if let selectedPoint = route[safe: selectedPointIndex] {
+                                CardContainer(title: "Selected position", systemImage: "scope") {
+                                    DriveRoutePositionSummary(
+                                        point: selectedPoint,
+                                        index: selectedPointIndex,
+                                        count: route.count,
+                                        driveSessionID: selectedDrive.sessionID
                                     )
                                 }
-
-                                if let selectedPoint = route[safe: selectedPointIndex] {
-                                    CardContainer(title: "Selected Position", systemImage: "scope") {
-                                        DriveRoutePositionSummary(
-                                            point: selectedPoint,
-                                            index: selectedPointIndex,
-                                            count: route.count
-                                        )
-                                    }
-                                }
+                                .appEntityIdentifier(driveEntityIdentifier(for: selectedDrive))
                             }
                         }
-                        .padding(.horizontal, 16)
                     }
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.horizontal, 18)
+            .padding(.top, 12)
+            .padding(.bottom, 32)
         }
-        .background(Color(uiColor: .systemGroupedBackground))
+        .scrollIndicators(.hidden)
+        .background(AppScreenBackground())
         .navigationTitle("Drives")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     Task { await store.refresh() }
                 } label: {
-                    Image(systemName: "arrow.clockwise")
+                    if store.isLoadingDrives {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Image(systemName: "arrow.clockwise")
+                    }
                 }
                 .disabled(store.isLoadingDrives)
                 .accessibilityLabel("Refresh drives")
@@ -104,6 +113,7 @@ struct DrivesView: View {
         .task(id: endpointLookupKey) {
             await refreshEndpointAddresses()
         }
+        .appEntityIdentifier(selectedDriveEntityIdentifier)
     }
 
     private var selectedSessionBinding: Binding<String> {
@@ -120,12 +130,29 @@ struct DrivesView: View {
         return drives.first { $0.sessionID == sessionID } ?? drives.first
     }
 
+    private var selectedDriveEntityIdentifier: EntityIdentifier? {
+        guard let selectedDrive else { return nil }
+        return driveEntityIdentifier(for: selectedDrive)
+    }
+
+    private func driveEntityIdentifier(for drive: FleetDriveSession) -> EntityIdentifier? {
+        guard !drive.sessionID.isEmpty else { return nil }
+        return EntityIdentifier(for: DriveEntity.self, identifier: drive.sessionID)
+    }
+
     private var endpointLookupKey: String {
         drives.map { drive in
             let route = resolvedRoute(for: drive)
-            return [drive.sessionID, drive.startAddress, drive.endAddress, route.first?.id, route.last?.id, String(route.count)]
-                .compactMap { $0 }
-                .joined(separator: ":")
+            return [
+                drive.sessionID,
+                drive.startAddress,
+                drive.endAddress,
+                route.first?.id,
+                route.last?.id,
+                String(route.count)
+            ]
+            .compactMap { $0 }
+            .joined(separator: ":")
         }
         .joined(separator: "|")
     }
@@ -151,8 +178,69 @@ struct DrivesView: View {
     }
 }
 
-#Preview {
+private struct DriveMapCard: View {
+    let drive: FleetDriveSession
+    let route: [FleetRoutePoint]
+    @Binding var selectedPointIndex: Int
+    let onLoadRoute: () async -> Void
+
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        DriveRouteMap(
+            route: route,
+            selectedPointIndex: selectedPointIndex,
+            driveSessionID: drive.sessionID
+        )
+        .frame(height: 286)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay(alignment: .topLeading) {
+            if !route.isEmpty {
+                Label("Route", systemImage: "map.fill")
+                    .font(.caption.weight(.semibold))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .glassEffect(.regular, in: .capsule)
+                    .padding(12)
+            }
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .strokeBorder(
+                    colorScheme == .dark ? Color.white.opacity(0.10) : Color.white.opacity(0.85),
+                    lineWidth: 0.75
+                )
+        }
+        .shadow(
+            color: Color.black.opacity(colorScheme == .dark ? 0.20 : 0.08),
+            radius: 18,
+            y: 9
+        )
+        .task(id: drive.sessionID) {
+            selectedPointIndex = 0
+            if route.isEmpty {
+                await onLoadRoute()
+            }
+        }
+    }
+}
+
+#Preview("Drive detail — Light") {
     NavigationStack {
         DrivesView(store: FleetDataStore.previewLoaded())
     }
+}
+
+#Preview("Drive detail — Dark") {
+    NavigationStack {
+        DrivesView(store: FleetDataStore.previewLoaded())
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Drive detail — Accessibility") {
+    NavigationStack {
+        DrivesView(store: FleetDataStore.previewLoaded())
+    }
+    .environment(\.dynamicTypeSize, .accessibility2)
 }

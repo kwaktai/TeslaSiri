@@ -21,15 +21,19 @@ struct SoftwareUpdateCard: View {
             VStack(alignment: .leading, spacing: 12) {
                 VersionRow(label: "Current", value: update.currentVersion ?? "--")
                 VersionRow(label: "Available", value: update.availableVersion ?? "--")
-                HStack(spacing: 8) {
-                    StatusBadge(update.status ?? "Unknown", systemImage: statusIcon, tint: statusTint)
-                    if update.updateAvailable {
-                        StatusBadge("Update available", systemImage: "arrow.down.circle.fill", tint: .blue)
-                    }
-                    if update.installable {
-                        StatusBadge("Installable", systemImage: "checkmark.circle", tint: .green)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        StatusBadge(
+                            update.updateAvailable ? "Update available" : (update.status ?? "Unknown"),
+                            systemImage: statusIcon,
+                            tint: statusTint
+                        )
+                        if update.installable {
+                            StatusBadge("Ready to install", systemImage: "checkmark.circle", tint: .green)
+                        }
                     }
                 }
+                .contentMargins(.horizontal, 1, for: .scrollContent)
 
                 if let downloadPercent = update.downloadPercent {
                     ProgressLine(label: "Downloaded", percent: downloadPercent)
@@ -53,7 +57,8 @@ struct SoftwareUpdateCard: View {
                     LabeledContent("Updated", value: updatedAt.formatted(date: .abbreviated, time: .shortened))
                 }
 
-                if !store.softwareActionMessage.isEmpty {
+                if !store.softwareActionMessage.isEmpty,
+                   store.softwareActionMessage != "Not run" {
                     Text(store.softwareActionMessage)
                         .font(.caption)
                         .foregroundStyle(.secondary)

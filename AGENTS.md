@@ -86,6 +86,7 @@ Do not commit tokens, keychain dumps, OAuth secrets, raw vehicle exports, privat
 - The root tab shell lives in `TeslaSiri/UI/AppRootView.swift` and owns the `@State` for auth, diagnostics, selected tab, and OAuth flow. Tab content views receive pre-built dependencies and closures — do not create their own auth/backend singletons.
 - The Diagnostics tab is intentionally dense because the project is currently in a "validate the backend" phase. Once data shapes stabilize, move the user-facing pieces into Dashboard and treat Diagnostics as developer/QA chrome.
 - Dashboard cards live in `TeslaSiri/UI/Dashboard/`; reusable chrome (`CardContainer`, `StatusBadge`, `LoadingCard`, `LoadingStateView`, `ErrorStateView`, `EmptyStateView`) lives in `TeslaSiri/UI/Shared/CardContainer.swift` — use these instead of repeating backgrounds/padding.
+- The Dashboard's production visual direction is a status-first control center: keep the vehicle hero high-contrast, secondary cards quiet, and all grids adaptive. Preserve the named light, dark, and Accessibility Dynamic Type previews when changing Dashboard or Drives UI.
 
 ## FleetKit and App Intents
 
