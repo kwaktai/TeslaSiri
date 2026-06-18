@@ -6,7 +6,7 @@ struct DashboardView: View {
     let store: FleetDataStore
     let isSignedIn: Bool
     let isAuthenticating: Bool
-    let onSignIn: () -> Void
+    let onSignIn: (String) -> Void
     let onReload: () async -> Void
 
     var body: some View {
@@ -224,7 +224,7 @@ private struct DashboardPreviewer: View {
                 store: store,
                 isSignedIn: isSignedIn,
                 isAuthenticating: isAuthenticating,
-                onSignIn: {},
+                onSignIn: { _ in },
                 onReload: {}
             )
         }

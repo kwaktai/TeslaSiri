@@ -143,8 +143,8 @@ public struct SendNavigationIntent: AppIntent, PredictableIntent {
             guard !trimmed.isEmpty else {
                 throw FleetKitError.api("Tell me where to send \(resolved.name).")
             }
-            // The backend wraps a plain string into the Tesla share payload and
-            // fills type/locale/timestamp_ms server-side.
+            // Tessie's share command accepts an address, coordinates, or URL as
+            // a plain value and applies its default locale server-side.
             try await service.runControl(
                 action: "navigation_request",
                 vin: resolved.vin,

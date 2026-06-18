@@ -4,10 +4,15 @@ import Foundation
 ///
 /// `FleetKit` is intentionally self-contained so the App Intents extension can
 /// authenticate and talk to Tessie without dragging in the app's full data
-/// layer. The app mirrors the current access token into the shared App Group so
+/// layer. The app mirrors the current access token into the shared keychain so
 /// this module can read it from either process.
 public enum FleetKitConfig {
-    public static let baseURL = URL(string: "https://api.tessie.com")!
+    public static let baseURL: URL = {
+        guard let url = URL(string: "https://api.tessie.com") else {
+            preconditionFailure("Invalid Tessie API base URL.")
+        }
+        return url
+    }()
 
     /// App Group shared between the app and the App Intents extension.
     public static let appGroupIdentifier = "group.com.maxweinbach.TeslaSiri"

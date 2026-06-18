@@ -2,14 +2,11 @@ import SwiftUI
 
 struct DiagnosticsView: View {
     let store: FleetDataStore
-    let notificationWebhooks: FleetNotificationWebhookStore
     let diagnostics: BackendDiagnosticsState
     let onProbeAccount: () -> Void
     let onReloadFleet: () async -> Void
     let onExportRawData: () -> Void
     let onSignOut: () -> Void
-    let onRequestNotificationAuthorization: () -> Void
-    let onSendLocalNotificationTest: () -> Void
 
     var body: some View {
         ScrollView {
@@ -21,14 +18,6 @@ struct DiagnosticsView: View {
                     onReloadFleet: onReloadFleet,
                     onExportRawData: onExportRawData,
                     onSignOut: onSignOut
-                )
-
-                WebhooksSection(
-                    store: notificationWebhooks,
-                    capabilities: store.capabilities,
-                    selectedVIN: store.selectedVIN,
-                    onRequestAuthorization: onRequestNotificationAuthorization,
-                    onSendLocalTest: onSendLocalNotificationTest
                 )
 
                 NormalizedDataSection(store: store)
@@ -79,25 +68,21 @@ private struct DiagnosticsPreviewer: View {
         let diagnostics = BackendDiagnosticsState(
             deviceID: "device-abc-123",
             isSignedIn: true,
-            probeMessage: "Account OK: driver@example.com. Notification hooks: 2.",
-            tokenAudience: ["https://fleet-api.tesla.com", "https://fleet.maxweinbach.com"],
-            tokenExpiresAt: Date().addingTimeInterval(3600),
-            tokenFormat: "JWT",
-            tokenIssuer: "https://fleet.maxweinbach.com",
-            tokenScopes: ["vehicles:read", "telemetry:read", "vehicle_control"]
+            probeMessage: "Tessie API OK. Vehicles: 2.",
+            tokenAudience: ["https://api.tessie.com"],
+            tokenFormat: "Tessie access token",
+            tokenIssuer: "Tessie Developer Settings",
+            tokenScopes: ["vehicles", "vehicle_commands", "vehicle_history"]
         )
 
         return NavigationStack {
             DiagnosticsView(
                 store: FleetDataStore.previewLoaded(),
-                notificationWebhooks: FleetNotificationWebhookStore(),
                 diagnostics: diagnostics,
                 onProbeAccount: {},
                 onReloadFleet: {},
                 onExportRawData: {},
-                onSignOut: {},
-                onRequestNotificationAuthorization: {},
-                onSendLocalNotificationTest: {}
+                onSignOut: {}
             )
         }
     }

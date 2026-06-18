@@ -28,16 +28,15 @@ When CLI fallback is necessary for project files, explain the reason.
 
 ## Project Summary
 
-TeslaSiri is a SwiftUI iOS app that connects to a Fleet backend for Tesla vehicle data. It includes:
+TeslaSiri is a SwiftUI iOS app that connects to Tessie for Tesla vehicle data. It includes:
 
-- OAuth sign-in and PKCE token exchange.
-- Keychain-backed token storage.
-- Fleet API request/response models.
+- Tessie access-token setup with Keychain-backed storage.
+- Tessie response adapters into app-owned Fleet models.
 - Observable Fleet data store.
 - Local cache hydration and refresh.
 - Vehicle dashboard UI.
 - Drive, route, charging, software update, telemetry, and raw export flows.
-- Notification payload handling and webhook registration state.
+- Local notification payload handling; Tessie does not expose the old custom webhook-management API.
 - FleetKit local Swift package: Siri/Shortcuts/App Intents, ExtensionKit host, shared keychain token bridge (see `AGENTS.md` → FleetKit and App Intents).
 
 ## Key Files
@@ -46,17 +45,18 @@ TeslaSiri is a SwiftUI iOS app that connects to a Fleet backend for Tesla vehicl
 - `TeslaSiri/UI/AppRootView.swift`: TabView shell (`AppTab` enum + `AppRootView`) and shared auth/diagnostics state.
 - `TeslaSiri/UI/Dashboard/`: User-facing dashboard cards (vehicle picker, status, software, active drive, charging, cached data, sign-in banner).
 - `TeslaSiri/UI/Drives/`: Drive demo: drive picker, route map, session summary, scrubber, metric tiles.
-- `TeslaSiri/UI/Diagnostics/`: Backend diagnostics, normalized data, webhook management, account.
+- `TeslaSiri/UI/Diagnostics/`: Tessie diagnostics, normalized data, Spotlight debugging, account.
 - `TeslaSiri/UI/Shared/`: Reusable building blocks (`CardContainer`, `StatusBadge`, formatters, geocoder actor, `DiagnosticMonospacedValue`).
-- `TeslaSiri/FleetAPI/FleetAPIClient.swift`: Backend API client.
+- `TeslaSiri/FleetAPI/FleetAPIClient.swift`: Tessie API client and normalized compatibility surface.
+- `TeslaSiri/FleetAPI/TessieAPIModels.swift`: Tessie DTO adapters.
 - `TeslaSiri/FleetAPI/FleetAPIModels.swift`: Data models.
 - `TeslaSiri/FleetAPI/FleetDataStore.swift`: Observable app data state.
 - `TeslaSiri/FleetAPI/FleetDataCache.swift`: Cache layer.
 - `TeslaSiri/FleetAPI/FleetAccessTokenKeychain.swift`: Keychain token storage.
 - `TeslaSiri/FleetAPI/FleetDeviceIdentity.swift`: Device identity.
-- `TeslaSiri/FleetAPI/FleetNotifications.swift`: Local notifications and webhook payloads.
-- `TeslaSiri/FleetAPI/FleetOAuth.swift`: OAuth flow.
-- `TeslaSiri/Info.plist`: URL scheme and app plist settings.
+- `TeslaSiri/FleetAPI/FleetNotifications.swift`: Local notifications and legacy webhook payload decoding.
+- `TeslaSiri/FleetAPI/TessieAccessTokenStore.swift`: Tessie token persistence and extension mirroring.
+- `TeslaSiri/Info.plist`: App metadata and background task settings.
 - `FleetKit/Sources/FleetKit/`: App Intents, entities, `FleetIntentClient`, snippet views (`FleetKitPackage`).
 - `FleetKit/Sources/FleetKit/FleetKitLog.swift`: OSLog loggers (subsystem `com.maxweinbach.TeslaSiri`) + `FleetIntentLog` perform tracker; see `AGENTS.md` → Logging (FleetKitLog) for conventions and the device-debug `ENABLE_DEBUG_DYLIB` note.
 - `TeslaSiri/AppIntents/`: `FleetTokenBridge`, `TeslaSiriShortcuts`, `BatteryReminderManager`.

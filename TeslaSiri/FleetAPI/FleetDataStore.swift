@@ -523,7 +523,7 @@ final class FleetDataStore {
         }
 
         isExportingRawData = true
-        rawDataExportMessage = "Exporting raw fleet data."
+        rawDataExportMessage = "Exporting raw Tessie data."
         defer { isExportingRawData = false }
 
         do {
@@ -1746,8 +1746,8 @@ private struct PreviewFleetDataClient: FleetDataLoading {
 
     func rawVehicleDataExport(vin: String) async throws -> FleetRawDataExport {
         FleetRawDataExport(
-            apiBaseURL: "https://fleet.maxweinbach.com",
-            appSchemaVersion: 1,
+            apiBaseURL: "https://api.tessie.com",
+            appSchemaVersion: 2,
             generatedAt: 1_781_000_000_000,
             responses: [
                 FleetRawAPIResponse(
@@ -1773,12 +1773,12 @@ private struct PreviewFleetDataClient: FleetDataLoading {
                     durationMS: 12,
                     errorMessage: nil,
                     method: "GET",
-                    path: "/api/v1/vehicles/\(vin)/live",
+                    path: "/\(vin)/state",
                     query: [:],
                     requestID: "preview-raw",
                     statusCode: 200,
                     timestamp: 1_781_000_000_000,
-                    url: "https://fleet.maxweinbach.com/api/v1/vehicles/\(vin)/live"
+                    url: "https://api.tessie.com/\(vin)/state"
                 )
             ],
             vin: vin

@@ -23,7 +23,7 @@ struct DiagnosticMonospacedValue: View {
             DiagnosticMonospacedValue(title: "Device ID", value: "device-abc-123")
             DiagnosticMonospacedValue(title: "Request ID", value: "req_8f3a1b2c4d5e6f7g")
             DiagnosticMonospacedValue(title: "Cursor", value: "1781000000000")
-            DiagnosticMonospacedValue(title: "Long URL", value: "https://fleet.maxweinbach.com/api/v1/webhooks/device-abc-123/callback")
+            DiagnosticMonospacedValue(title: "Long URL", value: "https://api.tessie.com/vehicles")
         }
     }
     .padding()

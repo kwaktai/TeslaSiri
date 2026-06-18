@@ -3,23 +3,17 @@ import FleetKit
 import Foundation
 import OSLog
 
-/// Mirrors the app's current OAuth access token (and selected VIN) into shared
+/// Mirrors the app's current Tessie access token (and selected VIN) into shared
 /// storage so the App Intents extension can authenticate from its own process.
-///
-/// The app is the source of truth for tokens: this refreshes via the same
-/// provider the API client uses, then stores the resulting token.
 @MainActor
 enum FleetTokenBridge {
     private static let logger = Logger(subsystem: FleetKitLog.subsystem, category: "TokenBridge")
 
     static func sync(store: FleetDataStore) async {
-        let provider = FleetOAuthAccessTokenProvider(
-            oauthClient: FleetBackend.makeOAuthClient(),
-            tokenStore: FleetBackend.makeOAuthTokenStore()
-        )
+        let tokenStore = FleetBackend.makeAccessTokenStore()
 
         do {
-            let token = try await provider.accessToken()
+            let token = try await tokenStore.accessToken()
             FleetSharedTokenStore.shared.save(accessToken: token)
             logger.notice("Mirrored access token to shared keychain")
         } catch {

@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct SignInBanner: View {
-    let onSignIn: () -> Void
+    let onSignIn: (String) -> Void
     let isAuthenticating: Bool
+
+    @State private var accessToken = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -13,34 +15,63 @@ struct SignInBanner: View {
                     .background(Color.white.opacity(0.12), in: Circle())
 
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("Connect your Tesla")
+                    Text("Connect with Tessie")
                         .font(.title3.weight(.bold))
-                    Text("Live status, drives, charging, and software updates—all in one place.")
+                    Text("Use a Tessie access token for live status, drive history, charging, and vehicle controls.")
                         .font(.subheadline)
                         .foregroundStyle(.white.opacity(0.72))
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
 
-            Button {
-                onSignIn()
-            } label: {
+            SecureField(text: $accessToken, prompt: Text("Tessie access token").foregroundStyle(.white.opacity(0.58))) {
+                Text("Tessie access token")
+            }
+                .foregroundStyle(.white)
+                .tint(.white)
+                .textContentType(.password)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .privacySensitive()
+                .padding(.horizontal, 14)
+                .frame(height: 48)
+                .background(Color.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(Color.white.opacity(0.16))
+                }
+                .onSubmit(connect)
+
+            HStack {
+                Link(destination: TessieAccessTokenStore.developerSettingsURL) {
+                    Label("Generate a token", systemImage: "arrow.up.right.square")
+                }
+                .font(.footnote.weight(.semibold))
+
+                Spacer()
+
+                Text("Stored in Keychain")
+                    .font(.footnote)
+                    .foregroundStyle(.white.opacity(0.62))
+            }
+
+            Button(action: connect) {
                 HStack(spacing: 8) {
                     if isAuthenticating {
                         ProgressView()
                             .controlSize(.small)
                     } else {
-                        Image(systemName: "person.crop.circle.badge.plus")
+                        Image(systemName: "key.fill")
                     }
 
-                    Text(isAuthenticating ? "Signing in…" : "Sign In to Tesla Fleet")
+                    Text(isAuthenticating ? "Connecting…" : "Connect Tessie")
                         .fontWeight(.semibold)
                 }
                 .frame(maxWidth: .infinity)
             }
             .buttonStyle(.glassProminent)
             .controlSize(.large)
-            .disabled(isAuthenticating)
+            .disabled(isAuthenticating || trimmedToken.isEmpty)
         }
         .padding(20)
         .foregroundStyle(.white)
@@ -72,13 +103,22 @@ struct SignInBanner: View {
         }
         .shadow(color: Color.black.opacity(0.16), radius: 18, y: 9)
     }
+
+    private var trimmedToken: String {
+        accessToken.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func connect() {
+        guard !trimmedToken.isEmpty, !isAuthenticating else { return }
+        onSignIn(trimmedToken)
+    }
 }
 
 #Preview("Idle") {
     ZStack {
         AppScreenBackground()
 
-        SignInBanner(onSignIn: {}, isAuthenticating: false)
+        SignInBanner(onSignIn: { _ in }, isAuthenticating: false)
             .padding()
     }
 }
@@ -87,7 +127,7 @@ struct SignInBanner: View {
     ZStack {
         AppScreenBackground()
 
-        SignInBanner(onSignIn: {}, isAuthenticating: true)
+        SignInBanner(onSignIn: { _ in }, isAuthenticating: true)
             .padding()
     }
 }

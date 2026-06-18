@@ -6,17 +6,6 @@
 	<array>
 		<string>com.maxweinbach.TeslaSiri.batterycheck</string>
 	</array>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>TeslaSiri OAuth Callback</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>teslasiri</string>
-			</array>
-		</dict>
-	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

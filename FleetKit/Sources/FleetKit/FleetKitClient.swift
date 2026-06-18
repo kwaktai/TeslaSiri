@@ -356,7 +356,12 @@ private enum TessieValue: Decodable {
     var stringValue: String? {
         switch self {
         case .string(let value): value
-        case .number(let value): String(value)
+        case .number(let value):
+            if value.rounded() == value, value < Double(Int64.max), value >= Double(Int64.min) {
+                String(Int64(value))
+            } else {
+                String(value)
+            }
         case .bool(let value): value ? "true" : "false"
         default: nil
         }
@@ -371,7 +376,13 @@ private enum TessieValue: Decodable {
     }
 
     var int64Value: Int64? {
-        doubleValue.map(Int64.init)
+        guard let value = doubleValue,
+              value.isFinite,
+              value < Double(Int64.max),
+              value >= Double(Int64.min) else {
+            return nil
+        }
+        return Int64(value)
     }
 
     var boolValue: Bool? {
@@ -419,9 +430,29 @@ private extension Dictionary where Key == String, Value == TessieValue {
         string("display_name") ?? object("vehicle_state").string("vehicle_name")
     }
 
+    var usesFahrenheit: Bool {
+        let settings = object("gui_settings")
+        if let temperature = settings.string("gui_temperature_units")?.lowercased() {
+            return temperature.hasPrefix("f")
+        }
+        if let distance = settings.string("gui_distance_units")?.lowercased() {
+            return !distance.contains("km")
+        }
+        return true
+    }
+
+    func displayTemperature(_ celsius: Double?) -> Double? {
+        guard let celsius else { return nil }
+        return usesFahrenheit ? (celsius * 9 / 5) + 32 : celsius
+    }
+
     var units: String? {
-        guard let value = object("gui_settings").string("gui_distance_units")?.lowercased() else { return nil }
-        return value.contains("km") ? "metric" : "imperial"
+        let settings = object("gui_settings")
+        if let temperature = settings.string("gui_temperature_units")?.lowercased() {
+            return temperature.hasPrefix("f") ? "imperial" : "metric"
+        }
+        guard let distance = settings.string("gui_distance_units")?.lowercased() else { return nil }
+        return distance.contains("km") ? "metric" : "imperial"
     }
 
     func snapshot(vin: String, tireState: TessieObject?) -> FleetSnapshotInfo {
@@ -444,8 +475,8 @@ private extension Dictionary where Key == String, Value == TessieValue {
             locked: vehicle.bool("locked"),
             chargeRateMPH: charge.double("charge_rate"),
             timeToFullCharge: charge.double("time_to_full_charge"),
-            insideTemp: climate.double("inside_temp"),
-            outsideTemp: climate.double("outside_temp"),
+            insideTemp: displayTemperature(climate.double("inside_temp")),
+            outsideTemp: displayTemperature(climate.double("outside_temp")),
             hvacOn: climate.bool("is_climate_on") ?? climate.bool("is_auto_conditioning_on"),
             latitude: drive.double("latitude"),
             longitude: drive.double("longitude"),
@@ -493,7 +524,9 @@ private extension Dictionary where Key == String, Value == TessieValue {
         let update = vehicle.object("software_update")
         let availableVersion = update.string("version")
         let status = update.string("status")
-        let available = availableVersion != nil || !(status ?? "").isEmpty
+        let unavailableStatuses = ["", "idle", "unknown"]
+        let available = availableVersion != nil
+            || !unavailableStatuses.contains(status?.lowercased() ?? "")
         let currentVersion = vehicle.string("car_version")?.split(separator: " ").first.map(String.init)
         let expectedSeconds = update.double("expected_duration_sec")
 

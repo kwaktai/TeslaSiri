@@ -9,7 +9,7 @@ struct BackendSection: View {
     let onSignOut: () -> Void
 
     var body: some View {
-        CardContainer(title: "Backend", systemImage: "server.rack") {
+        CardContainer(title: "Tessie API", systemImage: "server.rack") {
             VStack(alignment: .leading, spacing: 12) {
                 DiagnosticRow(label: "Auth", value: diagnostics.isSignedIn ? "Signed in" : "Not signed in")
                 if let tokenExpiresAt = diagnostics.tokenExpiresAt {
@@ -36,7 +36,7 @@ struct BackendSection: View {
                     DiagnosticRow(label: "Last refresh", value: lastRefreshDate.formatted(date: .abbreviated, time: .shortened))
                 }
 
-                DiagnosticRow(label: "Cursor", value: store.cursor.map(String.init) ?? "--")
+                DiagnosticRow(label: "Poll cursor", value: store.cursor.map(String.init) ?? "--")
                 DiagnosticRow(label: "Vehicles", value: "\(store.vehicles.count)")
                 DiagnosticRow(label: "Active drives", value: "\(store.activeDrivesByVIN.count)")
                 DiagnosticRow(label: "Software states", value: "\(store.softwareUpdatesByVIN.count)")
@@ -87,7 +87,7 @@ struct BackendSection: View {
                     Button {
                         onProbeAccount()
                     } label: {
-                        Label("Probe Account", systemImage: "network")
+                        Label("Probe Tessie", systemImage: "network")
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
@@ -136,7 +136,7 @@ struct BackendSection: View {
     }
 
     private func capabilitiesSummary(_ capabilities: FleetCapabilities) -> String {
-        "\(capabilities.scopes.count) scopes, \(capabilities.controlActions.count) controls, \(capabilities.notificationEvents.count) notifications"
+        "\(capabilities.scopes.count) access areas, \(capabilities.controlActions.count) controls"
     }
 
     private var dataStatus: String {
@@ -214,12 +214,11 @@ private struct BackendSectionPreviewer: View {
     let diagnostics = BackendDiagnosticsState(
         deviceID: "device-abc-123",
         isSignedIn: true,
-        probeMessage: "Account OK: driver@example.com. Notification hooks: 2.",
-        tokenAudience: ["https://fleet-api.tesla.com", "https://fleet.maxweinbach.com"],
-        tokenExpiresAt: Date().addingTimeInterval(3600),
-        tokenFormat: "JWT",
-        tokenIssuer: "https://fleet.maxweinbach.com",
-        tokenScopes: ["vehicles:read", "telemetry:read", "vehicle_control"]
+        probeMessage: "Tessie API OK. Vehicles: 2.",
+        tokenAudience: ["https://api.tessie.com"],
+        tokenFormat: "Tessie access token",
+        tokenIssuer: "Tessie Developer Settings",
+        tokenScopes: ["vehicles", "vehicle_commands", "vehicle_history"]
     )
     return BackendSectionPreviewer(diagnostics: diagnostics, isSignedIn: true)
         .padding()

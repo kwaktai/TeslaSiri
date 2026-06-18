@@ -279,7 +279,7 @@ enum PreviewData {
         platform: "ios",
         secret: nil,
         updatedAt: 1_781_000_000_000,
-        url: URL(string: "https://fleet.maxweinbach.com/api/v1/webhooks/device-1")!,
+        url: URL(string: "https://example.com/teslasiri/webhook/device-1")!,
         vins: [vin1, vin2]
     )
 
@@ -297,7 +297,7 @@ enum PreviewData {
         platform: "ios",
         secret: nil,
         updatedAt: 1_780_900_000_000,
-        url: URL(string: "https://fleet.maxweinbach.com/api/v1/webhooks/legacy")!,
+        url: URL(string: "https://example.com/teslasiri/webhook/legacy")!,
         vins: []
     )
 }

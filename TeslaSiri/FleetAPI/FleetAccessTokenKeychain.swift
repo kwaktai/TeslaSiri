@@ -5,7 +5,7 @@ nonisolated struct FleetAccessTokenKeychain: FleetAccessTokenProviding {
     var service: String
     var account: String
 
-    init(service: String = "com.maxweinbach.TeslaSiri.fleet", account: String = "oauthAccessToken") {
+    init(service: String = "com.maxweinbach.TeslaSiri.fleet", account: String = "tessieAccessToken") {
         self.service = service
         self.account = account
     }

@@ -43,6 +43,8 @@ struct FleetIntentClientTests {
         ])
         #expect(snapshot.vin == "VIN/ABC 123")
         #expect(snapshot.batteryLevel == 82.4)
+        #expect(abs((snapshot.insideTemp ?? 0) - 68.9) < 0.001)
+        #expect(snapshot.outsideTemp == 50)
         #expect(snapshot.petModeOn == true)
         #expect(abs((snapshot.tires?.frontLeftPSI ?? 0) - 39.4) < 0.001)
     }

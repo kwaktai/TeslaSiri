@@ -1,5 +1,4 @@
 import AppIntents
-import AuthenticationServices
 import FleetKit
 import SwiftUI
 
@@ -48,12 +47,8 @@ struct BackendDiagnosticsState: Equatable {
 
 struct AppRootView: View {
     let store: FleetDataStore
-    let notificationWebhooks: FleetNotificationWebhookStore
-    let notifications: FleetNotificationCenter
-    let oauthClient: FleetOAuthClient
-    let tokenStore: FleetOAuthTokenKeychain
+    let tokenStore: TessieAccessTokenStore
 
-    @Environment(\.webAuthenticationSession) private var webAuthenticationSession
     @Environment(\.scenePhase) private var scenePhase
 
     @State private var authErrorMessage: String?
@@ -88,7 +83,7 @@ struct AppRootView: View {
         .onAppIntentExecution(OpenDriveIntent.self) { intent in
             openVehicle(intent.target.vin, tab: .drives)
         }
-        .alert("Sign In Failed", isPresented: authErrorBinding) {
+        .alert("Connection Failed", isPresented: authErrorBinding) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(authErrorMessage ?? "Unknown error")
@@ -96,7 +91,6 @@ struct AppRootView: View {
         .task {
             refreshDiagnostics()
             await store.loadInitialDataIfNeeded()
-            await notificationWebhooks.refresh()
             configureFleetPolling(for: scenePhase)
         }
         .onChange(of: scenePhase) { _, newPhase in
@@ -112,8 +106,8 @@ struct AppRootView: View {
                 store: store,
                 isSignedIn: diagnostics.isSignedIn,
                 isAuthenticating: isAuthenticating,
-                onSignIn: {
-                    Task { await signIn() }
+                onSignIn: { token in
+                    Task { await signIn(accessToken: token) }
                 },
                 onReload: {
                     await reloadFleet()
@@ -124,7 +118,6 @@ struct AppRootView: View {
         case .diagnostics:
             DiagnosticsView(
                 store: store,
-                notificationWebhooks: notificationWebhooks,
                 diagnostics: diagnostics,
                 onProbeAccount: {
                     Task { await runBackendProbe() }
@@ -137,12 +130,6 @@ struct AppRootView: View {
                 },
                 onSignOut: {
                     Task { await signOut() }
-                },
-                onRequestNotificationAuthorization: {
-                    Task { await enableNotifications() }
-                },
-                onSendLocalNotificationTest: {
-                    Task { await sendLocalNotificationTest() }
                 }
             )
         }
@@ -160,24 +147,20 @@ struct AppRootView: View {
 
     // MARK: - Actions
 
-    private func signIn() async {
+    private func signIn(accessToken: String) async {
         isAuthenticating = true
         defer { isAuthenticating = false }
 
         do {
-            let flow = try oauthClient.makeAuthorizationFlow()
-            let callbackURL = try await webAuthenticationSession.authenticate(
-                using: flow.authorizationURL,
-                callbackURLScheme: oauthClient.callbackURLScheme
-            )
-            let tokenSet = try await oauthClient.exchangeCode(from: callbackURL, flow: flow)
-            try tokenStore.saveTokenSet(tokenSet)
-            diagnostics.probeMessage = "Signed in. Loading fleet data."
+            let validationClient = FleetAPIClient(accessTokenProvider: StaticFleetAccessTokenProvider(token: accessToken))
+            let vehicles = try await validationClient.vehicles(includeLive: true)
+            try tokenStore.saveAccessToken(accessToken)
+            await store.reset(clearCache: true)
+            diagnostics.probeMessage = "Connected to Tessie. Loading \(vehicles.data.count) vehicle(s)."
             refreshDiagnostics()
             await store.loadInitialData()
             await FleetTokenBridge.sync(store: store)
             _ = await FleetSpotlightIndexer.reindexAll()
-            await notificationWebhooks.refresh()
             refreshDiagnostics()
             configureFleetPolling(for: scenePhase)
         } catch {
@@ -192,7 +175,6 @@ struct AppRootView: View {
         await FleetTokenBridge.sync(store: store)
         _ = await FleetSpotlightIndexer.reindexAll()
         await FleetIntentDonations.donateManualStatusRefresh(for: store.selectedVehicle)
-        await notificationWebhooks.refresh()
         refreshDiagnostics()
     }
 
@@ -214,7 +196,7 @@ struct AppRootView: View {
 
     private func runBackendProbe() async {
         diagnostics.isProbeRunning = true
-        diagnostics.probeMessage = "Checking account and notification hooks."
+        diagnostics.probeMessage = "Checking Tessie API access."
         defer {
             diagnostics.isProbeRunning = false
             refreshDiagnostics()
@@ -222,12 +204,11 @@ struct AppRootView: View {
 
         do {
             let apiClient = FleetBackend.makeAPIClient()
-            let userPage = try await apiClient.currentUser()
-            let deviceID = try FleetBackend.makeDeviceIdentity().deviceID()
-            let webhookPage = try await apiClient.notificationWebhooks(forDeviceID: deviceID, includeDisabled: true)
-            let accountName = userPage.data.email ?? userPage.data.name ?? "signed in"
-            let requestID = webhookPage.requestID ?? userPage.requestID
-            diagnostics.probeMessage = backendProbeMessage(accountName: accountName, webhookCount: webhookPage.data.count, requestID: requestID)
+            let vehiclePage = try await apiClient.vehicles(includeLive: true)
+            diagnostics.probeMessage = backendProbeMessage(
+                vehicleCount: vehiclePage.data.count,
+                requestID: vehiclePage.requestID
+            )
         } catch {
             diagnostics.probeMessage = error.localizedDescription
         }
@@ -235,41 +216,17 @@ struct AppRootView: View {
 
     private func signOut() async {
         do {
-            try tokenStore.deleteTokenSet()
+            try tokenStore.deleteAccessToken()
             FleetTokenBridge.clear()
             try? await FleetSpotlightIndexer.deleteAllIndexedEntities()
             await store.reset(clearCache: true)
-            notificationWebhooks.reset()
             store.stopPolling()
-            diagnostics.probeMessage = "Signed out and cleared cached fleet data."
+            diagnostics.probeMessage = "Disconnected Tessie and cleared cached fleet data."
             refreshDiagnostics()
         } catch {
             authErrorMessage = error.localizedDescription
             diagnostics.probeMessage = error.localizedDescription
             refreshDiagnostics()
-        }
-    }
-
-    private func enableNotifications() async {
-        await notificationWebhooks.requestAuthorization()
-    }
-
-    private func sendLocalNotificationTest() async {
-        let payload = FleetWebhookNotificationPayload(
-            id: "teslasiri-local-test-\(Int(Date().timeIntervalSince1970))",
-            event: FleetNotificationEvent.driveStarted,
-            vin: store.selectedVIN,
-            vehicleName: store.selectedVehicle?.name,
-            title: "TeslaSiri notification test",
-            body: "Local notification scheduling is working.",
-            timestamp: Int64(Date().timeIntervalSince1970 * 1_000)
-        )
-
-        do {
-            try await notifications.scheduleNotification(for: payload)
-            notificationWebhooks.recordLocalNotificationResult("Scheduled local notification test.")
-        } catch {
-            notificationWebhooks.recordLocalNotificationResult(error.localizedDescription, error: error.localizedDescription)
         }
     }
 
@@ -282,16 +239,15 @@ struct AppRootView: View {
 
     private func refreshDiagnostics() {
         do {
-            let tokenSet = try tokenStore.loadTokenSet()
-            diagnostics.isSignedIn = tokenSet != nil
-            diagnostics.tokenExpiresAt = tokenSet?.expiresAt
+            let token = try tokenStore.loadAccessToken()
+            diagnostics.isSignedIn = token != nil
+            diagnostics.tokenExpiresAt = nil
 
-            if let tokenSet {
-                let inspection = tokenSet.inspection
-                diagnostics.tokenAudience = inspection.audience
-                diagnostics.tokenFormat = inspection.format
-                diagnostics.tokenIssuer = inspection.issuer
-                diagnostics.tokenScopes = inspection.scopes
+            if token != nil {
+                diagnostics.tokenAudience = ["https://api.tessie.com"]
+                diagnostics.tokenFormat = "Tessie access token"
+                diagnostics.tokenIssuer = "Tessie Developer Settings"
+                diagnostics.tokenScopes = TessieModelAdapter.capabilities.scopes
             } else {
                 diagnostics.clearTokenInspection()
             }
@@ -310,8 +266,8 @@ struct AppRootView: View {
         }
     }
 
-    private func backendProbeMessage(accountName: String, webhookCount: Int, requestID: String?) -> String {
-        var message = "Account OK: \(accountName). Notification hooks: \(webhookCount)."
+    private func backendProbeMessage(vehicleCount: Int, requestID: String?) -> String {
+        var message = "Tessie API OK. Vehicles: \(vehicleCount)."
         if let requestID {
             message += " Request ID: \(requestID)."
         }
@@ -322,9 +278,6 @@ struct AppRootView: View {
 #Preview {
     AppRootView(
         store: .previewLoaded(),
-        notificationWebhooks: FleetNotificationWebhookStore(),
-        notifications: FleetNotificationCenter(),
-        oauthClient: FleetOAuthClient(),
-        tokenStore: FleetOAuthTokenKeychain()
+        tokenStore: TessieAccessTokenStore()
     )
 }

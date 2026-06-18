@@ -35,7 +35,7 @@ struct FleetKitFixtures {
       "charge_state":{"battery_level":82.4,"charge_limit_soc":90,"charging_state":"Charging","charge_rate":22.5,"time_to_full_charge":1.25,"timestamp":1710000000000},
       "climate_state":{"inside_temp":20.5,"outside_temp":10,"is_climate_on":true,"climate_keeper_mode":"dog","defrost_mode":2,"timestamp":1710000000000},
       "vehicle_state":{"locked":true,"odometer":12345.6,"car_version":"2026.2.1 abc123","timestamp":1710000000000,"software_update":{"status":"available","version":"2026.8.4","download_perc":100,"install_perc":0,"expected_duration_sec":1500}},
-      "gui_settings":{"gui_distance_units":"mi/hr"}
+      "gui_settings":{"gui_distance_units":"mi/hr","gui_temperature_units":"F"}
     }
     """
 

@@ -1,5 +1,4 @@
 import AppIntents
-import AuthenticationServices
 import FleetKit
 import SwiftUI
 
@@ -7,11 +6,8 @@ import SwiftUI
 struct TeslaSiriApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
-    @State private var notificationWebhooks = FleetNotificationWebhookStore()
-    @State private var notifications = FleetNotificationCenter()
-    @State private var oauthClient = FleetBackend.makeOAuthClient()
     @State private var store = FleetBackend.makeDataStore()
-    @State private var tokenStore = FleetBackend.makeOAuthTokenStore()
+    @State private var tokenStore = FleetBackend.makeAccessTokenStore()
 
     init() {
         BatteryReminderManager.shared.registerBackgroundTask()
@@ -21,9 +17,6 @@ struct TeslaSiriApp: App {
         WindowGroup {
             AppRootView(
                 store: store,
-                notificationWebhooks: notificationWebhooks,
-                notifications: notifications,
-                oauthClient: oauthClient,
                 tokenStore: tokenStore
             )
             .task {

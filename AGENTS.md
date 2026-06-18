@@ -39,9 +39,9 @@ Current project files are organized under:
 - `TeslaSiri/UI/AppRootView.swift` — TabView shell (`AppTab` enum + `AppRootView`) and shared auth/diagnostics state.
 - `TeslaSiri/UI/Dashboard/` — User-facing dashboard cards (vehicle picker, status, software, active drive, charging, cached data, sign-in banner).
 - `TeslaSiri/UI/Drives/` — Drive demo: drive picker, route map, session summary, scrubber, metric tiles.
-- `TeslaSiri/UI/Diagnostics/` — Backend diagnostics, normalized data, webhook management, account.
+- `TeslaSiri/UI/Diagnostics/` — Tessie diagnostics, normalized data, Spotlight debugging, account.
 - `TeslaSiri/UI/Shared/` — Reusable building blocks: `CardContainer`, `StatusBadge`, formatters, geocoder actor, `DiagnosticMonospacedValue`.
-- `TeslaSiri/FleetAPI/` — Backend client, models, data store, cache, keychain, device identity, OAuth, notifications.
+- `TeslaSiri/FleetAPI/` — Tessie client/adapters, normalized models, data store, cache, Keychain token storage, device identity, notifications.
 - `TeslaSiri/Info.plist`
 - `TeslaSiri.xcodeproj`
 
@@ -53,7 +53,7 @@ The user may provide Xcode workspace-relative paths that do not exactly match fi
 
 Other agents may be working in the same tree. Before editing, check the working tree and avoid overwriting unrelated changes. Never revert user or agent edits unless explicitly asked.
 
-Keep changes limited to the requested task. Do not refactor unrelated UI, API, OAuth, or notification code while making documentation or repo setup changes.
+Keep changes limited to the requested task. Do not refactor unrelated UI, API, authentication, or notification code while making documentation or repo setup changes.
 
 ## Coding Rules
 
@@ -78,19 +78,19 @@ For documentation-only changes, a full app build is usually not required.
 
 ## Sensitive Data
 
-Do not commit tokens, keychain dumps, OAuth secrets, raw vehicle exports, private keys, provisioning profiles, `.env` files, or local Xcode user state.
+Do not commit Tessie access tokens, keychain dumps, raw vehicle exports, private keys, provisioning profiles, `.env` files, or local Xcode user state.
 
 ## Architecture Notes
 
 - The `TeslaSiri` target uses a `PBXFileSystemSynchronizedRootGroup` rooted at the `TeslaSiri/` folder. Files placed anywhere under that folder are auto-included in the target on the next Xcode build/scan; do not edit the project.pbxproj by hand to add Swift sources.
-- The root tab shell lives in `TeslaSiri/UI/AppRootView.swift` and owns the `@State` for auth, diagnostics, selected tab, and OAuth flow. Tab content views receive pre-built dependencies and closures — do not create their own auth/backend singletons.
+- The root tab shell lives in `TeslaSiri/UI/AppRootView.swift` and owns auth diagnostics, selected tab, and Tessie token setup. Tab content views receive pre-built dependencies and closures — do not create their own auth/backend singletons.
 - The Diagnostics tab is intentionally dense because the project is currently in a "validate the backend" phase. Once data shapes stabilize, move the user-facing pieces into Dashboard and treat Diagnostics as developer/QA chrome.
 - Dashboard cards live in `TeslaSiri/UI/Dashboard/`; reusable chrome (`CardContainer`, `StatusBadge`, `LoadingCard`, `LoadingStateView`, `ErrorStateView`, `EmptyStateView`) lives in `TeslaSiri/UI/Shared/CardContainer.swift` — use these instead of repeating backgrounds/padding.
 - The Dashboard's production visual direction is a status-first control center: keep the vehicle hero high-contrast, secondary cards quiet, and all grids adaptive. Preserve the named light, dark, and Accessibility Dynamic Type previews when changing Dashboard or Drives UI.
 
 ## FleetKit and App Intents
 
-Siri, Shortcuts, Spotlight, and background intent execution live in a **local Swift package** (`FleetKit/`) plus a thin **ExtensionKit** host (`TeslaSiriAppIntents/`). The main app owns OAuth; the extension reads mirrored credentials and calls the Fleet API on its own.
+Siri, Shortcuts, Spotlight, and background intent execution live in a **local Swift package** (`FleetKit/`) plus a thin **ExtensionKit** host (`TeslaSiriAppIntents/`). The main app owns the Tessie access token; the extension reads the mirrored token and calls Tessie on its own.
 
 ### Layout
 
@@ -111,7 +111,7 @@ Both **TeslaSiri** and **TeslaSiriAppIntents** targets link the local `FleetKit`
 ### Architecture (process boundaries)
 
 ```
-Main app (OAuth keychain, FleetDataStore)
+Main app (TessieAccessTokenStore, FleetDataStore)
     → FleetTokenBridge.sync / clear
     → FleetSharedTokenStore (shared keychain token + App Group selected VIN)
     → FleetIntentClient (extension + BG tasks + intents)
@@ -121,7 +121,7 @@ TeslaSiriApp + TeslaSiriAppIntentsExtension
 ```
 
 - **FleetKit is self-contained**: its own minimal models, HTTP client, and intents. The extension must **not** import `FleetDataStore`, dashboard UI, or the app’s full `FleetAPIClient`.
-- **App is source of truth** for OAuth. The extension cannot refresh tokens; on 401 it surfaces `FleetKitError.sessionExpired` (“open the app”).
+- **App is source of truth** for the Tessie token. Tessie tokens do not refresh; on 401 the extension surfaces `FleetKitError.sessionExpired` and asks the user to replace the token in the app.
 - **Vehicle resolution** (`FleetIntentService.resolvedVehicle`): explicit VIN parameter → shared selected VIN → first vehicle on the account. VINs are always validated against `client.vehicles()` (no arbitrary-VIN IDOR).
 
 ### Token bridge (critical — do not break)
@@ -133,18 +133,23 @@ TeslaSiriApp + TeslaSiriAppIntentsExtension
 | App launch | `FleetTokenBridge.sync(store:)` in `ContentView` `.task` |
 | App foreground | `FleetTokenBridge.sync` on `scenePhase == .active` |
 | Sign-in | `FleetTokenBridge.sync` after `loadInitialData()` in `AppRootView.signIn()` |
-| Sign-out | `FleetTokenBridge.clear()` after `tokenStore.deleteTokenSet()` |
+| Sign-out | `FleetTokenBridge.clear()` after `tokenStore.deleteAccessToken()` |
 | Fleet reload | `FleetTokenBridge.sync` in `AppRootView.reloadFleet()` |
 | Vehicle picker change | `FleetTokenBridge.sync` in `DashboardView` `onSelect` |
-| OAuth save/refresh | `FleetOAuthTokenKeychain.saveTokenSet` / `deleteTokenSet` also write/clear `FleetSharedTokenStore` |
+| Tessie token save/delete | `TessieAccessTokenStore.saveAccessToken` / `deleteAccessToken` also write/clear `FleetSharedTokenStore` |
 
 `FleetTokenBridge.sync` **clears** the shared access token when `accessToken()` throws (do not leave stale tokens). It calls `TeslaSiriShortcuts.updateAppShortcutParameters()` so shortcut defaults pick up the current vehicle name.
 
 Access tokens live in **shared keychain** (`FleetSharedTokenStore`); selected VIN stays in App Group `UserDefaults`. Legacy UserDefaults tokens are migrated on read.
 
-### HTTP URLs in FleetKit
+### Tessie transport
 
-`FleetIntentClient` must join API paths with `URLComponents` (see `makeURL` in `FleetKitClient.swift`). **Never** use `baseURL.appendingPathComponent("/api/v1/...")` — that percent-encodes slashes and breaks every request. Match the pattern in `TeslaSiri/FleetAPI/FleetAPIClient.makeURL`.
+Both clients use `https://api.tessie.com` with `Authorization: Bearer <token>`. `FleetIntentClient` must join API paths with `URLComponents` (see `makeURL` in `FleetKitClient.swift`). **Never** use `baseURL.appendingPathComponent("/...")` for a complete endpoint path — it percent-encodes separators. Match `TeslaSiri/FleetAPI/FleetAPIClient.makeURL`.
+
+- Retain the app's normalized `Fleet*` model layer. Tessie DTOs and adapters live in `TessieAPIModels.swift`; FleetKit keeps its own extension-safe subset.
+- Tessie has no cursor-delta endpoint, so `changes(since:)` performs a full `/vehicles` state refresh and advances a local polling cursor.
+- Tessie has no public webhook-management API. Do not restore the old custom notification-webhook calls or surface that UI as working.
+- Drive and charge IDs are numeric in Tessie. Prefix normalized session IDs with the VIN (`VIN:id`) so route lookups and App Entity identifiers remain account-safe.
 
 ### Adding or changing an App Intent
 
@@ -168,9 +173,9 @@ Control intent files in `FleetKit/Sources/FleetKit/`:
 
 - `ControlIntents.swift` — lock/unlock (`door_lock`/`door_unlock`), start climate (`auto_conditioning_start`), vent windows (`window_control` vent), trunk/frunk (`actuate_trunk`), charge limit (`set_charge_limit`).
 - `ClimateControlIntents.swift` — stop climate (`auto_conditioning_stop`), cabin temperature (`set_temps`, `Measurement<UnitTemperature>` parameter converted to Celsius, clamped 15–28 °C, half-degree steps), max defrost (`remote_defrost`), dog mode (`set_pet_mode`), Bioweapon Defense (`set_bioweapon_mode` with `manual_override: false`).
-- `ConvenienceControlIntents.swift` — flash lights (`flash_lights`), honk horn (`honk_horn`), send destination (`navigation_request` with a plain string `value`; backend wraps it into the Tesla share payload).
+- `ConvenienceControlIntents.swift` — flash lights (`flash_lights`), honk horn (`honk_horn`), send destination (`navigation_request` with a plain string `value`; the Tessie client maps it to `/{vin}/command/share`).
 
-`window_control` close is intentionally not exposed as an intent: the backend requires the caller's lat/lon to prove proximity and the intents extension has no location access.
+Only `window_control` vent is currently exposed as an intent. Tessie also supports closing windows; add a separate reviewed intent if that behavior is wanted rather than silently changing the existing action.
 
 ### App Shortcuts vs discoverability
 
@@ -217,7 +222,7 @@ All FleetKit + intent logging goes through `FleetKit/Sources/FleetKit/FleetKitLo
 |----------|--------|--------------|
 | `AppIntents` | `FleetIntentLog` + `FleetIntentService` | every intent `perform()` started/succeeded/failed/cancelled with ms timing; vehicle resolution path; control action validation + acceptance |
 | `Spotlight` | `FleetSpotlightIndexer` | reindex start/finish summary (per-group counts, errors, duration), donations, searches |
-| `FleetIntentClient` | `FleetIntentClient.execute` | method, path, status code, ms per request; 401 warnings; envelope errors |
+| `FleetIntentClient` | `FleetIntentClient.execute` | method, path, status code, ms per Tessie request; 401 and response errors |
 | `Entities` | entity queries + options providers | query match counts, default vehicle selection |
 | `TokenBridge` | `FleetTokenBridge` (app) | token mirrored/cleared, shared VIN set/cleared |
 | `BatteryReminder` | `BatteryReminderManager` (app) | BG task scheduled/fired, battery check outcome |
@@ -226,7 +231,7 @@ Conventions: every new intent `perform()` must create `let log = FleetIntentLog(
 
 ### Common pitfalls (from prior reviews)
 
-- Forgetting `FleetTokenBridge.sync` after sign-in, vehicle change, or token refresh → Siri “not signed in” or wrong account.
+- Forgetting `FleetTokenBridge.sync` after sign-in, vehicle change, or token replacement → Siri “not signed in” or wrong account.
 - Sign-out without `FleetTokenBridge.clear()` → extension keeps old session.
 - Broken FleetKit URLs via `appendingPathComponent`.
 - More than 10 `AppShortcut` entries → compile error.
@@ -246,8 +251,8 @@ Conventions: every new intent `perform()` must create `let log = FleetIntentLog(
 4. `XcodeRefreshCodeIssuesInFile` on edited Swift files.
 5. Run the relevant Swift package tests (`swift test --package-path FleetKit`) and AppIntentsTesting/XCUITest suite when one exists.
 6. `BuildProject` (catches shortcut count, `@Parameter` macro issues).
-7. Manually verify token bridge call sites if touching auth, `FleetOAuth`, `AppRootView`, or `DashboardView`.
+7. Manually verify token bridge call sites if touching auth, `TessieAccessTokenStore`, `AppRootView`, or `DashboardView`.
 
 ### Navigation handoff
 
-`SendNavigationIntent` (`ConvenienceControlIntents.swift`) sends a destination to the car via the backend `navigation_request` action. The `destination` String parameter uses `inputConnectionBehavior: .connectToPreviousIntentResult` so Shortcuts can pipe output from a previous action into it. The backend defaults `type`/`locale`/`timestamp_ms` server-side and wraps a plain string into the Tesla share payload. `navigation_gps_request` (lat/lon) exists in the backend registry but has no intent — address form covers the Siri use case.
+`SendNavigationIntent` (`ConvenienceControlIntents.swift`) sends a destination to the car through Tessie's `share` command. The `destination` String parameter uses `inputConnectionBehavior: .connectToPreviousIntentResult` so Shortcuts can pipe output from a previous action into it. Tessie accepts an address, coordinates, or URL as the plain `value` query parameter; address form covers the Siri use case.
