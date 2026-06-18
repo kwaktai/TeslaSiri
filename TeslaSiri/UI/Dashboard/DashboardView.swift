@@ -9,50 +9,85 @@ struct DashboardView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            LazyVStack(spacing: 20) {
                 if !isSignedIn {
-                    SignInBanner(onSignIn: onSignIn, isAuthenticating: isAuthenticating)
+                    SignInBanner(
+                        onSignIn: onSignIn,
+                        isAuthenticating: isAuthenticating
+                    )
                 }
 
-                content
+                DashboardContent(
+                    store: store,
+                    isSignedIn: isSignedIn
+                )
             }
-            .padding(16)
+            .padding(.horizontal, 18)
+            .padding(.top, 12)
+            .padding(.bottom, 32)
         }
-        .background(Color(uiColor: .systemGroupedBackground))
+        .scrollIndicators(.hidden)
+        .background(AppScreenBackground())
         .navigationTitle("Dashboard")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     Task { await onReload() }
                 } label: {
-                    Image(systemName: "arrow.clockwise")
+                    if store.isRefreshing {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Image(systemName: "arrow.clockwise")
+                    }
                 }
-                .disabled(store.loadState.isLoading || store.isRefreshing)
+                .disabled(!isSignedIn || store.loadState.isLoading || store.isRefreshing)
                 .accessibilityLabel("Refresh")
             }
         }
         .refreshable {
+            guard isSignedIn else { return }
             await onReload()
         }
     }
+}
 
-    @ViewBuilder
-    private var content: some View {
+private struct DashboardContent: View {
+    let store: FleetDataStore
+    let isSignedIn: Bool
+
+    var body: some View {
         if store.loadState.isLoading && store.vehicles.isEmpty {
             LoadingStateView(message: "Loading fleet data…")
         } else if case .failed(let message) = store.loadState, store.vehicles.isEmpty {
-            ErrorStateView(message: message, retry: { Task { await store.loadInitialData() } })
-        } else if store.vehicles.isEmpty {
-            EmptyStateView(
-                title: "No vehicles",
-                systemImage: "car",
-                description: "No linked vehicles were returned."
+            ErrorStateView(
+                message: message,
+                retry: { Task { await store.loadInitialData() } }
             )
-        } else {
-            if store.isShowingCachedData {
-                CachedDataCard(cacheDate: store.cacheDate)
+        } else if store.vehicles.isEmpty {
+            if isSignedIn {
+                EmptyStateView(
+                    title: "No vehicles",
+                    systemImage: "car.side",
+                    description: "No linked vehicles were returned."
+                )
             }
+        } else {
+            DashboardLoadedContent(store: store)
+        }
+    }
+}
 
+private struct DashboardLoadedContent: View {
+    let store: FleetDataStore
+
+    var body: some View {
+        if store.isShowingCachedData {
+            CachedDataCard(cacheDate: store.cacheDate)
+        }
+
+        if store.vehicles.count > 1 {
             VehiclePickerCard(
                 vehicles: store.vehicles,
                 selectedVIN: store.selectedVIN,
@@ -61,35 +96,39 @@ struct DashboardView: View {
                     Task { await FleetTokenBridge.sync(store: store) }
                 }
             )
-
-            if let vehicle = store.selectedVehicle {
-                VehicleStatusCard(
-                    vehicleName: vehicle.name,
-                    snapshot: vehicle.latest,
-                    units: store.user?.units
-                )
-            }
-
-            if let softwareUpdate = store.selectedVehicleSoftwareUpdate {
-                SoftwareUpdateCard(store: store, update: softwareUpdate, vin: store.selectedVIN)
-            } else if store.isLoadingSoftware {
-                LoadingCard(title: "Software", message: "Loading software…")
-            }
-
-            if let activeDrive = store.selectedVehicleActiveDrive {
-                ActiveDriveCard(drive: activeDrive)
-            } else if store.isLoadingActiveDrive {
-                LoadingCard(title: "Active Drive", message: "Loading active drive…")
-            }
-
-            if !store.activeCharging.isEmpty || store.isLoadingCharging {
-                ChargingCard(sessions: store.activeCharging)
-            } else if store.isLoadingCharging {
-                LoadingCard(title: "Charging", message: "Loading charging…")
-            }
-
-            AppIntentDiscoveryCard()
         }
+
+        if let vehicle = store.selectedVehicle {
+            VehicleStatusCard(
+                vehicleName: vehicle.name,
+                snapshot: vehicle.latest,
+                units: store.user?.units
+            )
+        }
+
+        if let activeDrive = store.selectedVehicleActiveDrive {
+            ActiveDriveCard(drive: activeDrive)
+        } else if store.isLoadingActiveDrive {
+            LoadingCard(title: "Active drive", message: "Loading active drive…")
+        }
+
+        if let softwareUpdate = store.selectedVehicleSoftwareUpdate {
+            SoftwareUpdateCard(
+                store: store,
+                update: softwareUpdate,
+                vin: store.selectedVIN
+            )
+        } else if store.isLoadingSoftware {
+            LoadingCard(title: "Software", message: "Loading software…")
+        }
+
+        if !store.activeCharging.isEmpty {
+            ChargingCard(sessions: store.activeCharging)
+        } else if store.isLoadingCharging {
+            LoadingCard(title: "Charging", message: "Loading charging…")
+        }
+
+        AppIntentDiscoveryCard()
     }
 }
 
@@ -108,11 +147,12 @@ struct ErrorStateView: View {
     let retry: () -> Void
 
     var body: some View {
-        CardContainer(title: "Unable to load fleet", systemImage: "exclamationmark.triangle") {
-            VStack(alignment: .leading, spacing: 12) {
+        CardContainer(title: "Unable to load fleet", systemImage: "exclamationmark.triangle.fill") {
+            VStack(alignment: .leading, spacing: 14) {
                 Text(message)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+
                 Button {
                     retry()
                 } label: {
@@ -133,8 +173,12 @@ struct EmptyStateView: View {
 
     var body: some View {
         CardContainer {
-            ContentUnavailableView(title, systemImage: systemImage, description: Text(description))
-                .frame(maxWidth: .infinity)
+            ContentUnavailableView(
+                title,
+                systemImage: systemImage,
+                description: Text(description)
+            )
+            .frame(maxWidth: .infinity)
         }
     }
 }
@@ -156,9 +200,11 @@ private struct DashboardPreviewer: View {
     let isSignedIn: Bool
     let isAuthenticating: Bool
 
-    init(store: FleetDataStore? = nil,
-         isSignedIn: Bool = true,
-         isAuthenticating: Bool = false) {
+    init(
+        store: FleetDataStore? = nil,
+        isSignedIn: Bool = true,
+        isAuthenticating: Bool = false
+    ) {
         self.store = store ?? FleetDataStore.previewLoaded()
         self.isSignedIn = isSignedIn
         self.isAuthenticating = isAuthenticating
@@ -177,32 +223,49 @@ private struct DashboardPreviewer: View {
     }
 }
 
-#Preview("Loaded - signed in") {
+#Preview("Control Center — Light") {
     DashboardPreviewer()
 }
 
-#Preview("Loaded - signed out") {
+#Preview("Control Center — Dark") {
+    DashboardPreviewer()
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Signed out with cached data") {
     DashboardPreviewer(isSignedIn: false)
 }
 
-#Preview("LoadingStateView") {
-    LoadingStateView(message: "Loading fleet data…")
-        .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+#Preview("Loading") {
+    ZStack {
+        AppScreenBackground()
+
+        LoadingStateView(message: "Loading fleet data…")
+            .padding()
+    }
 }
 
-#Preview("ErrorStateView") {
-    ErrorStateView(message: "Network request failed. Check your connection and try again.", retry: {})
+#Preview("Error") {
+    ZStack {
+        AppScreenBackground()
+
+        ErrorStateView(
+            message: "Network request failed. Check your connection and try again.",
+            retry: {}
+        )
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+    }
 }
 
-#Preview("EmptyStateView") {
-    EmptyStateView(
-        title: "No vehicles",
-        systemImage: "car",
-        description: "No linked vehicles were returned."
-    )
-    .padding()
-    .background(Color(uiColor: .systemGroupedBackground))
+#Preview("Empty") {
+    ZStack {
+        AppScreenBackground()
+
+        EmptyStateView(
+            title: "No vehicles",
+            systemImage: "car.side",
+            description: "No linked vehicles were returned."
+        )
+        .padding()
+    }
 }

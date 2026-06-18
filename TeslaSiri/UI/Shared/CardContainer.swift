@@ -1,9 +1,32 @@
 import SwiftUI
 
+struct AppScreenBackground: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        ZStack {
+            Color(uiColor: .systemGroupedBackground)
+
+            LinearGradient(
+                colors: [
+                    Color.accentColor.opacity(colorScheme == .dark ? 0.10 : 0.07),
+                    .clear,
+                    Color.green.opacity(colorScheme == .dark ? 0.035 : 0.025)
+                ],
+                startPoint: .topTrailing,
+                endPoint: .bottomLeading
+            )
+        }
+        .ignoresSafeArea()
+    }
+}
+
 struct CardContainer<Content: View>: View {
     let title: String?
     let systemImage: String?
     @ViewBuilder let content: Content
+
+    @Environment(\.colorScheme) private var colorScheme
 
     init(title: String? = nil, systemImage: String? = nil, @ViewBuilder content: () -> Content) {
         self.title = title
@@ -12,22 +35,42 @@ struct CardContainer<Content: View>: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             if let title {
-                HStack(spacing: 8) {
+                HStack(spacing: 10) {
                     if let systemImage {
                         Image(systemName: systemImage)
+                            .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.tint)
+                            .frame(width: 30, height: 30)
+                            .background(Color.accentColor.opacity(0.12), in: Circle())
                     }
+
                     Text(title)
                         .font(.headline)
                 }
             }
+
             content
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(18)
+        .background {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Color(uiColor: .secondarySystemGroupedBackground).opacity(colorScheme == .dark ? 0.92 : 0.98))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .strokeBorder(
+                            colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.90),
+                            lineWidth: 0.75
+                        )
+                }
+                .shadow(
+                    color: Color.black.opacity(colorScheme == .dark ? 0.18 : 0.06),
+                    radius: 16,
+                    y: 8
+                )
+        }
     }
 }
 
@@ -36,6 +79,8 @@ struct StatusBadge: View {
     let systemImage: String?
     let tint: Color
 
+    @Environment(\.colorScheme) private var colorScheme
+
     init(_ text: String, systemImage: String? = nil, tint: Color = .secondary) {
         self.text = text
         self.systemImage = systemImage
@@ -43,16 +88,21 @@ struct StatusBadge: View {
     }
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 5) {
             if let systemImage {
                 Image(systemName: systemImage)
             }
             Text(text)
+                .lineLimit(1)
         }
-        .font(.caption.weight(.medium))
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(tint.opacity(0.15), in: Capsule())
+        .font(.caption.weight(.semibold))
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(tint.opacity(colorScheme == .dark ? 0.20 : 0.12), in: Capsule())
+        .overlay {
+            Capsule()
+                .strokeBorder(tint.opacity(colorScheme == .dark ? 0.28 : 0.16), lineWidth: 0.5)
+        }
         .foregroundStyle(tint)
     }
 }
@@ -71,55 +121,53 @@ struct LoadingRow: View {
 }
 
 #Preview("Card") {
-    ScrollView {
-        CardContainer(title: "Card title", systemImage: "car.fill") {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Body content goes here. Cards are full-width with rounded corners, a tinted title row, and 16pt padding.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                Button("Action") {}
-                    .buttonStyle(.borderedProminent)
+    ZStack {
+        AppScreenBackground()
+
+        ScrollView {
+            CardContainer(title: "Vehicle status", systemImage: "car.side.fill") {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Everything is looking good.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    StatusBadge("Connected", systemImage: "checkmark.circle.fill", tint: .green)
+                }
             }
+            .padding()
         }
     }
-    .padding()
-    .background(Color(uiColor: .systemGroupedBackground))
 }
 
 #Preview("Card - no header") {
-    CardContainer {
-        Text("Plain card with no header.")
-            .font(.subheadline)
+    ZStack {
+        AppScreenBackground()
+
+        CardContainer {
+            Text("Content without a header")
+        }
+        .padding()
     }
-    .padding()
-    .background(Color(uiColor: .systemGroupedBackground))
 }
 
 #Preview("Status badges") {
-    VStack(alignment: .leading, spacing: 12) {
-        HStack(spacing: 8) {
+    ZStack {
+        AppScreenBackground()
+
+        HStack {
             StatusBadge("Charging", systemImage: "bolt.fill", tint: .orange)
             StatusBadge("Locked", systemImage: "lock.fill", tint: .green)
-            StatusBadge("Sentry", systemImage: "shield.lefthalf.filled", tint: .blue)
         }
-        HStack(spacing: 8) {
-            StatusBadge("Unlocked", systemImage: "lock.open.fill", tint: .secondary)
-            StatusBadge("Available", systemImage: "arrow.down.app", tint: .blue)
-            StatusBadge("Active", systemImage: "play.fill", tint: .green)
-        }
-        HStack(spacing: 8) {
-            StatusBadge("Plain")
-            StatusBadge("No icon", tint: .purple)
-        }
+        .padding()
     }
-    .padding()
-    .background(Color(uiColor: .systemGroupedBackground))
 }
 
 #Preview("Loading row") {
-    CardContainer(title: "Loading") {
-        LoadingRow(label: "Loading software…")
+    ZStack {
+        AppScreenBackground()
+
+        CardContainer {
+            LoadingRow(label: "Loading fleet data…")
+        }
+        .padding()
     }
-    .padding()
-    .background(Color(uiColor: .systemGroupedBackground))
 }

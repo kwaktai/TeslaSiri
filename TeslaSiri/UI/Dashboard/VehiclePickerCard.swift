@@ -8,14 +8,20 @@ struct VehiclePickerCard: View {
     let onSelect: (String) -> Void
 
     var body: some View {
-        CardContainer(title: "Vehicles", systemImage: "car.2") {
-            if vehicles.isEmpty {
+        if vehicles.isEmpty {
+            CardContainer(title: "Vehicles", systemImage: "car.2.fill") {
                 Text("No vehicles linked.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-            } else {
+            }
+        } else {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Your vehicles")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
+                    HStack(spacing: 10) {
                         ForEach(vehicles) { vehicle in
                             Button {
                                 onSelect(vehicle.vin)
@@ -30,11 +36,13 @@ struct VehiclePickerCard: View {
                                 )
                             }
                             .buttonStyle(.plain)
+                            .accessibilityValue(selectedVIN == vehicle.vin ? "Selected" : "")
                             .appEntityIdentifier(EntityIdentifier(for: VehicleEntity.self, identifier: vehicle.vin))
                         }
                     }
                     .padding(.vertical, 2)
                 }
+                .contentMargins(.horizontal, 1, for: .scrollContent)
             }
         }
     }
@@ -48,68 +56,108 @@ private struct VehicleChip: View {
     let isLocked: Bool?
     let isSelected: Bool
 
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var isCharging: Bool {
+        chargingState?.localizedCaseInsensitiveContains("charging") == true
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 6) {
-                Image(systemName: "car.side")
-                    .font(.title3)
-                    .foregroundStyle(isSelected ? Color.white : Color.accentColor)
+        HStack(spacing: 10) {
+            Image(systemName: "car.side.fill")
+                .font(.title3)
+                .frame(width: 34, height: 34)
+                .background(
+                    isSelected ? Color.white.opacity(0.16) : Color.accentColor.opacity(0.12),
+                    in: Circle()
+                )
+
+            VStack(alignment: .leading, spacing: 3) {
                 Text(name)
                     .font(.subheadline.weight(.semibold))
                     .lineLimit(1)
-            }
 
-            Text("VIN " + String(vin.suffix(6)))
-                .font(.caption2)
-                .foregroundStyle(isSelected ? .white.opacity(0.85) : .secondary)
-
-            HStack(spacing: 8) {
-                Label {
+                HStack(spacing: 6) {
                     Text(formattedNumber(batteryLevel, suffix: "%"))
-                        .font(.caption.weight(.medium))
-                } icon: {
-                    Image(systemName: "battery.75")
-                        .font(.caption2)
+                        .monospacedDigit()
+
+                    if isCharging {
+                        Image(systemName: "bolt.fill")
+                            .foregroundStyle(isSelected ? Color.white : Color.orange)
+                    }
+
+                    if let isLocked {
+                        Image(systemName: isLocked ? "lock.fill" : "lock.open.fill")
+                    }
                 }
-                if let isLocked {
-                    Image(systemName: isLocked ? "lock.fill" : "lock.open.fill")
-                        .font(.caption2)
-                }
+                .font(.caption)
+                .foregroundStyle(isSelected ? Color.white.opacity(0.84) : Color(uiColor: .secondaryLabel))
             }
-            .foregroundStyle(isSelected ? .white : .secondary)
+
+            if isSelected {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.90))
+            }
         }
-        .padding(12)
-        .frame(width: 180, alignment: .leading)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .frame(minWidth: 156, alignment: .leading)
         .background(
-            isSelected ? Color.accentColor : Color(uiColor: .tertiarySystemGroupedBackground),
-            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+            isSelected ? Color.accentColor : Color(uiColor: .secondarySystemGroupedBackground),
+            in: RoundedRectangle(cornerRadius: 18, style: .continuous)
         )
-        .foregroundStyle(isSelected ? .white : .primary)
+        .overlay {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(
+                    isSelected
+                        ? Color.white.opacity(0.16)
+                        : (colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.06)),
+                    lineWidth: 0.75
+                )
+        }
+        .foregroundStyle(isSelected ? Color.white : Color.primary)
+        .shadow(
+            color: Color.black.opacity(isSelected ? 0.12 : 0.04),
+            radius: isSelected ? 10 : 5,
+            y: isSelected ? 5 : 2
+        )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(name), VIN ending \(String(vin.suffix(6)))")
     }
 }
 
 #Preview("Multiple vehicles") {
-    VehiclePickerCard(
-        vehicles: PreviewData.vehicles,
-        selectedVIN: PreviewData.vin1,
-        onSelect: { _ in }
-    )
-    .padding()
-    .background(Color(uiColor: .systemGroupedBackground))
+    ZStack {
+        AppScreenBackground()
+
+        VehiclePickerCard(
+            vehicles: PreviewData.vehicles,
+            selectedVIN: PreviewData.vin1,
+            onSelect: { _ in }
+        )
+        .padding()
+    }
 }
 
 #Preview("Empty") {
-    VehiclePickerCard(vehicles: [], selectedVIN: nil, onSelect: { _ in })
-        .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+    ZStack {
+        AppScreenBackground()
+
+        VehiclePickerCard(vehicles: [], selectedVIN: nil, onSelect: { _ in })
+            .padding()
+    }
 }
 
 #Preview("Single vehicle") {
-    VehiclePickerCard(
-        vehicles: [PreviewData.vehicles[0]],
-        selectedVIN: nil,
-        onSelect: { _ in }
-    )
-    .padding()
-    .background(Color(uiColor: .systemGroupedBackground))
+    ZStack {
+        AppScreenBackground()
+
+        VehiclePickerCard(
+            vehicles: [PreviewData.vehicles[0]],
+            selectedVIN: PreviewData.vin1,
+            onSelect: { _ in }
+        )
+        .padding()
+    }
 }

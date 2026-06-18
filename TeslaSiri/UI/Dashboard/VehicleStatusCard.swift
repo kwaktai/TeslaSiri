@@ -8,32 +8,25 @@ struct VehicleStatusCard: View {
     let units: String?
 
     var body: some View {
-        CardContainer(title: vehicleName, systemImage: "gauge.with.dots.needle.bottom.50percent") {
+        Group {
             if let snapshot {
-                VStack(alignment: .leading, spacing: 16) {
-                    BatteryHeader(snapshot: snapshot)
-
-                    StatusBadgesRow(snapshot: snapshot)
-
-                    MetricsGrid(snapshot: snapshot, units: units)
-
-                    if let updatedAt = snapshot.updatedAtDate {
-                        Text("Updated \(updatedAt.formatted(date: .abbreviated, time: .shortened))")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
+                VehicleStatusHero(
+                    vehicleName: vehicleName,
+                    snapshot: snapshot,
+                    units: units
+                )
             } else {
-                Text("No live telemetry available.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                CardContainer(title: vehicleName, systemImage: "car.side.fill") {
+                    ContentUnavailableView(
+                        "No live telemetry",
+                        systemImage: "antenna.radiowaves.left.and.right.slash",
+                        description: Text("Pull to refresh or check your connection.")
+                    )
+                    .frame(maxWidth: .infinity)
+                }
             }
         }
         .appEntityIdentifier(statusEntityIdentifier)
-    }
-
-    private var temperatureSuffix: String {
-        units == "metric" ? "°C" : "°F"
     }
 
     private var statusEntityIdentifier: EntityIdentifier? {
@@ -42,48 +35,167 @@ struct VehicleStatusCard: View {
     }
 }
 
-private struct BatteryHeader: View {
+private struct VehicleStatusHero: View {
+    let vehicleName: String
+    let snapshot: FleetLatestSnapshot
+    let units: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            VehicleHeroHeader(
+                vehicleName: vehicleName,
+                updatedAt: snapshot.updatedAtDate
+            )
+
+            BatterySummary(snapshot: snapshot)
+
+            StatusBadgesRow(snapshot: snapshot)
+
+            MetricsGrid(snapshot: snapshot, units: units)
+        }
+        .padding(20)
+        .foregroundStyle(.white)
+        .background {
+            ZStack(alignment: .topTrailing) {
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 0.055, green: 0.065, blue: 0.085),
+                                Color(red: 0.10, green: 0.12, blue: 0.17)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+
+                Circle()
+                    .fill(Color.accentColor.opacity(0.28))
+                    .frame(width: 190, height: 190)
+                    .blur(radius: 36)
+                    .offset(x: 75, y: -85)
+
+                Image(systemName: "car.side.fill")
+                    .font(.system(size: 116, weight: .regular))
+                    .foregroundStyle(.white.opacity(0.055))
+                    .offset(x: 48, y: 74)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.12), lineWidth: 0.75)
+        }
+        .shadow(color: Color.black.opacity(0.22), radius: 22, y: 12)
+    }
+}
+
+private struct VehicleHeroHeader: View {
+    let vehicleName: String
+    let updatedAt: Date?
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "car.side.fill")
+                .font(.title3)
+                .frame(width: 42, height: 42)
+                .background(Color.white.opacity(0.10), in: Circle())
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(vehicleName)
+                    .font(.title3.weight(.bold))
+                Text("Vehicle overview")
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.62))
+            }
+
+            Spacer(minLength: 12)
+
+            if let updatedAt {
+                VStack(alignment: .trailing, spacing: 3) {
+                    Image(systemName: "antenna.radiowaves.left.and.right")
+                        .font(.caption)
+                        .foregroundStyle(.green)
+                    Text(updatedAt, style: .relative)
+                        .font(.caption2)
+                        .foregroundStyle(.white.opacity(0.62))
+                        .lineLimit(1)
+                }
+            }
+        }
+    }
+}
+
+private struct BatterySummary: View {
     let snapshot: FleetLatestSnapshot
 
+    private var isCharging: Bool {
+        snapshot.chargingState?.localizedCaseInsensitiveContains("charging") == true
+    }
+
     private var batteryColor: Color {
-        if snapshot.chargingState?.lowercased() == "charging" {
+        if isCharging {
             return .green
         }
         if let level = snapshot.batteryLevel, level <= 20 {
-            return .red
+            return .orange
         }
-        return .primary
+        return .white
+    }
+
+    private var progress: Double {
+        max(0, min((snapshot.batteryLevel ?? 0) / 100, 1))
+    }
+
+    private var summary: String {
+        if isCharging, let timeToFull = snapshot.timeToFullCharge, timeToFull > 0 {
+            return "Charging · \(formattedNumber(timeToFull, fractionLength: 1, suffix: " hr remaining"))"
+        }
+        if let speed = snapshot.speed, speed > 0 {
+            return "Driving · \(formattedNumber(speed, fractionLength: 0, suffix: " mph"))"
+        }
+        return "Battery"
     }
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(formattedNumber(snapshot.batteryLevel, suffix: "%"))
-                    .font(.system(size: 44, weight: .bold, design: .rounded))
-                    .monospacedDigit()
-                    .foregroundStyle(batteryColor)
-                    .contentTransition(.numericText())
-                Text("Battery")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-            VStack(alignment: .trailing, spacing: 4) {
-                if let range = snapshot.chargeRateMPH {
-                    Text(formattedNumber(range, fractionLength: 0, suffix: " mph"))
-                        .font(.subheadline.weight(.semibold))
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .lastTextBaseline, spacing: 16) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(formattedNumber(snapshot.batteryLevel, suffix: "%"))
+                        .font(.system(size: 54, weight: .bold, design: .rounded))
                         .monospacedDigit()
-                    Text("Charge rate")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(batteryColor)
+                        .contentTransition(.numericText())
+
+                    Text(summary)
+                        .font(.subheadline)
+                        .foregroundStyle(.white.opacity(0.70))
                 }
-                if let power = snapshot.chargerPowerKW {
-                    Text(formattedNumber(power, fractionLength: 1, suffix: " kW"))
-                        .font(.subheadline.weight(.medium))
-                        .monospacedDigit()
-                        .foregroundStyle(.secondary)
+
+                Spacer()
+
+                if snapshot.chargeRateMPH != nil || snapshot.chargerPowerKW != nil {
+                    VStack(alignment: .trailing, spacing: 3) {
+                        if let rate = snapshot.chargeRateMPH {
+                            Text(formattedNumber(rate, fractionLength: 0, suffix: " mi/hr"))
+                                .font(.headline)
+                                .monospacedDigit()
+                        }
+                        if let power = snapshot.chargerPowerKW {
+                            Text(formattedNumber(power, fractionLength: 1, suffix: " kW"))
+                                .font(.caption)
+                                .monospacedDigit()
+                                .foregroundStyle(.white.opacity(0.62))
+                        }
+                    }
                 }
             }
+
+            ProgressView(value: progress)
+                .tint(batteryColor)
+                .background(Color.white.opacity(0.12), in: Capsule())
+                .accessibilityLabel("Battery level")
+                .accessibilityValue(formattedNumber(snapshot.batteryLevel, suffix: "%"))
         }
     }
 }
@@ -92,20 +204,31 @@ private struct StatusBadgesRow: View {
     let snapshot: FleetLatestSnapshot
 
     var body: some View {
-        HStack(spacing: 8) {
-            if let state = snapshot.chargingState {
-                StatusBadge(state.capitalized, systemImage: "bolt.fill", tint: .orange)
-            }
-            if let locked = snapshot.locked {
-                StatusBadge(locked ? "Locked" : "Unlocked", systemImage: locked ? "lock.fill" : "lock.open.fill", tint: locked ? .green : .secondary)
-            }
-            if let sentry = snapshot.sentryMode {
-                StatusBadge(sentry ? "Sentry" : "Sentry off", systemImage: "shield.lefthalf.filled", tint: sentry ? .blue : .secondary)
-            }
-            if let gear = snapshot.gear {
-                StatusBadge(gear, systemImage: "car", tint: .purple)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                if let state = snapshot.chargingState {
+                    StatusBadge(state.capitalized, systemImage: "bolt.fill", tint: .orange)
+                }
+                if let locked = snapshot.locked {
+                    StatusBadge(
+                        locked ? "Locked" : "Unlocked",
+                        systemImage: locked ? "lock.fill" : "lock.open.fill",
+                        tint: locked ? .green : .orange
+                    )
+                }
+                if let sentry = snapshot.sentryMode {
+                    StatusBadge(
+                        sentry ? "Sentry on" : "Sentry off",
+                        systemImage: "shield.lefthalf.filled",
+                        tint: sentry ? .blue : .gray
+                    )
+                }
+                if let gear = snapshot.gear {
+                    StatusBadge(gear, systemImage: "car.fill", tint: .purple)
+                }
             }
         }
+        .contentMargins(.horizontal, 1, for: .scrollContent)
     }
 }
 
@@ -126,15 +249,13 @@ private struct MetricsGrid: View {
     }
 
     private let columns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
+        GridItem(.adaptive(minimum: 132), spacing: 10)
     ]
 
     private var temperatureSuffix: String {
         units == "metric" ? "°C" : "°F"
     }
 
-    /// Only metrics the backend actually reported — no "--" placeholder tiles.
     private var metrics: [Metric] {
         var items: [Metric] = []
         if let limit = snapshot.chargeLimitSOC {
@@ -165,7 +286,7 @@ private struct MetricsGrid: View {
     }
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 12) {
+        LazyVGrid(columns: columns, spacing: 10) {
             ForEach(metrics) { metric in
                 MetricTile(title: metric.id, value: metric.value, systemImage: metric.systemImage)
             }
@@ -179,59 +300,95 @@ private struct MetricTile: View {
     let systemImage: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 6) {
-                Image(systemName: systemImage)
-                    .font(.caption)
-                    .foregroundStyle(.tint)
-                Text(title)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
+        VStack(alignment: .leading, spacing: 7) {
+            Label(title, systemImage: systemImage)
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.58))
+                .lineLimit(1)
+
             Text(value)
                 .font(.subheadline.weight(.semibold))
                 .monospacedDigit()
+                .foregroundStyle(.white)
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
+                .minimumScaleFactor(0.72)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
-        .background(Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .frame(maxWidth: .infinity, minHeight: 54, alignment: .leading)
+        .padding(12)
+        .background(Color.white.opacity(0.075), in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 15, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.07), lineWidth: 0.5)
+        }
     }
 }
 
-#Preview("Full snapshot - charging") {
-    VehicleStatusCard(
-        vehicleName: "Model 3",
-        snapshot: PreviewData.snapshotFull,
-        units: "imperial"
-    )
-    .padding()
-    .background(Color(uiColor: .systemGroupedBackground))
+#Preview("Control Center — Charging") {
+    ZStack {
+        AppScreenBackground()
+
+        ScrollView {
+            VehicleStatusCard(
+                vehicleName: "Model 3",
+                snapshot: PreviewData.snapshotFull,
+                units: "imperial"
+            )
+            .padding()
+        }
+    }
 }
 
-#Preview("Driving snapshot") {
-    VehicleStatusCard(
-        vehicleName: "Model Y",
-        snapshot: PreviewData.snapshotDriving,
-        units: "imperial"
-    )
-    .padding()
-    .background(Color(uiColor: .systemGroupedBackground))
+#Preview("Control Center — Dark") {
+    ZStack {
+        AppScreenBackground()
+
+        ScrollView {
+            VehicleStatusCard(
+                vehicleName: "Model 3",
+                snapshot: PreviewData.snapshotFull,
+                units: "imperial"
+            )
+            .padding()
+        }
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Driving") {
+    ZStack {
+        AppScreenBackground()
+
+        ScrollView {
+            VehicleStatusCard(
+                vehicleName: "Model Y",
+                snapshot: PreviewData.snapshotDriving,
+                units: "imperial"
+            )
+            .padding()
+        }
+    }
 }
 
 #Preview("Metric units") {
-    VehicleStatusCard(
-        vehicleName: "Model 3",
-        snapshot: PreviewData.snapshotFull,
-        units: "metric"
-    )
-    .padding()
-    .background(Color(uiColor: .systemGroupedBackground))
+    ZStack {
+        AppScreenBackground()
+
+        ScrollView {
+            VehicleStatusCard(
+                vehicleName: "Model 3",
+                snapshot: PreviewData.snapshotFull,
+                units: "metric"
+            )
+            .padding()
+        }
+    }
 }
 
-#Preview("No snapshot") {
-    VehicleStatusCard(vehicleName: "Model 3", snapshot: nil, units: "imperial")
-        .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+#Preview("No telemetry") {
+    ZStack {
+        AppScreenBackground()
+
+        VehicleStatusCard(vehicleName: "Model 3", snapshot: nil, units: "imperial")
+            .padding()
+    }
 }
