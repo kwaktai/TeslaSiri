@@ -8,8 +8,8 @@ import Security
 /// `keychain-access-groups` entitlement). The selected VIN is stored in the App
 /// Group's `UserDefaults` because it is not secret.
 ///
-/// The app is the source of truth: it refreshes the OAuth access token and
-/// mirrors the current value here so the extension can authenticate.
+/// The app is the source of truth and mirrors the Tessie access token here so
+/// the extension can authenticate.
 public struct FleetSharedTokenStore: Sendable {
     public static let shared = FleetSharedTokenStore()
 
@@ -31,8 +31,13 @@ public struct FleetSharedTokenStore: Sendable {
         // Migrate a legacy UserDefaults mirror from earlier builds.
         if let legacy = defaults?.string(forKey: FleetKitConfig.accessTokenDefaultsKey),
            !legacy.isEmpty {
-            try? SharedAccessTokenKeychain.save(legacy)
-            defaults?.removeObject(forKey: FleetKitConfig.accessTokenDefaultsKey)
+            do {
+                try SharedAccessTokenKeychain.save(legacy)
+                defaults?.removeObject(forKey: FleetKitConfig.accessTokenDefaultsKey)
+            } catch {
+                // Keep the legacy value until keychain migration succeeds. This
+                // also keeps extension-safe clients usable in test processes.
+            }
             return legacy
         }
 

@@ -13,12 +13,35 @@ struct FleetKitFixtures {
         """.utf8)
     }
 
-    static func statusEnvelope(ok: Bool = true, error: String? = nil) -> Data {
-        let errorField = error.map { "\"\($0)\"" } ?? "null"
-        return Data("""
-        {"ok":\(ok),"error":\(errorField)}
+    static func commandResponse(result: Bool = true) -> Data {
+        Data("""
+        {"result":\(result)}
         """.utf8)
     }
+
+    static let tessieVehiclesJSON = """
+    {
+      "results": [
+        {"vin":"VIN-1","is_active":true,"last_state":{"display_name":"Roadrunner"}},
+        {"vin":"VIN-2","is_active":true,"last_state":{"display_name":"Blue Y"}}
+      ]
+    }
+    """
+
+    static let tessieStateJSON = """
+    {
+      "display_name":"Roadrunner",
+      "drive_state":{"latitude":37.3317,"longitude":-122.0301,"speed":41.2,"timestamp":1710000000000},
+      "charge_state":{"battery_level":82.4,"charge_limit_soc":90,"charging_state":"Charging","charge_rate":22.5,"time_to_full_charge":1.25,"timestamp":1710000000000},
+      "climate_state":{"inside_temp":20.5,"outside_temp":10,"is_climate_on":true,"climate_keeper_mode":"dog","defrost_mode":2,"timestamp":1710000000000},
+      "vehicle_state":{"locked":true,"odometer":12345.6,"car_version":"2026.2.1 abc123","timestamp":1710000000000,"software_update":{"status":"available","version":"2026.8.4","download_perc":100,"install_perc":0,"expected_duration_sec":1500}},
+      "gui_settings":{"gui_distance_units":"mi/hr"}
+    }
+    """
+
+    static let tessieTiresJSON = """
+    {"front_left":39.4,"front_right":40,"rear_left":41.2,"rear_right":42,"timestamp":1710000001}
+    """
 
     static let vehiclesJSON = """
     [

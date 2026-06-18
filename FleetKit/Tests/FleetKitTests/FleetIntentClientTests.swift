@@ -6,12 +6,12 @@ import Testing
 // so parallel execution would cross-wire fixtures between tests.
 @Suite(.serialized)
 struct FleetIntentClientTests {
-    @Test func `vehicles request uses bearer token and include live query`() async throws {
+    @Test func `vehicles request uses Tessie bearer token and active query`() async throws {
         let client = makeMockClient { request in
-            #expect(request.url?.path == "/api/v1/vehicles")
-            #expect(request.url?.query?.contains("include_live=true") == true)
+            #expect(request.url?.path == "/vehicles")
+            #expect(request.url?.query?.contains("only_active=true") == true)
             #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer test-token")
-            return (200, FleetKitFixtures.envelope(FleetKitFixtures.vehiclesJSON))
+            return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
         }
 
         let vehicles = try await client.vehicles()
@@ -21,29 +21,39 @@ struct FleetIntentClientTests {
         #expect(MockURLProtocol.requests.count == 1)
     }
 
-    @Test func `snapshot request preserves encoded VIN path separators`() async throws {
+    @Test func `snapshot maps Tessie state and optional tire pressure`() async throws {
         let client = makeMockClient { request in
-            #expect(request.url?.path(percentEncoded: true) == "/api/v1/vehicles/VIN%2FABC%20123/live")
-            return (200, FleetKitFixtures.envelope(FleetKitFixtures.snapshotJSON))
+            switch request.url?.path(percentEncoded: true) {
+            case "/VIN%2FABC%20123/state":
+                return (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
+            case "/VIN%2FABC%20123/tire_pressure":
+                #expect(request.url?.query?.contains("pressure_format=psi") == true)
+                return (200, Data(FleetKitFixtures.tessieTiresJSON.utf8))
+            default:
+                Issue.record("Unexpected path: \(request.url?.absoluteString ?? "nil")")
+                return (404, Data())
+            }
         }
 
         let snapshot = try await client.snapshot(vin: "VIN/ABC 123")
 
-        #expect(snapshot.vin == "VIN-1")
+        #expect(MockURLProtocol.requests.map { $0.url?.path(percentEncoded: true) } == [
+            "/VIN%2FABC%20123/state",
+            "/VIN%2FABC%20123/tire_pressure"
+        ])
+        #expect(snapshot.vin == "VIN/ABC 123")
         #expect(snapshot.batteryLevel == 82.4)
+        #expect(snapshot.petModeOn == true)
+        #expect(abs((snapshot.tires?.frontLeftPSI ?? 0) - 39.4) < 0.001)
     }
 
-    @Test func `control request posts action and parameters as JSON`() async throws {
+    @Test func `control request maps action and parameters to Tessie command`() async throws {
         let client = makeMockClient { request in
             #expect(request.httpMethod == "POST")
-            #expect(request.url?.path == "/api/v1/vehicles/VIN-1/controls")
-            #expect(request.value(forHTTPHeaderField: "Content-Type") == "application/json")
-
-            let body = try requestBodyData(request)
-            let json = try JSONSerialization.jsonObject(with: body) as? [String: Any]
-            #expect(json?["action"] as? String == "set_charge_limit")
-            #expect((json?["params"] as? [String: Any])?["percent"] as? Int == 80)
-            return (200, FleetKitFixtures.statusEnvelope())
+            #expect(request.url?.path == "/VIN-1/command/set_charge_limit")
+            #expect(request.url?.query?.contains("percent=80") == true)
+            #expect(request.httpBody == nil)
+            return (200, FleetKitFixtures.commandResponse())
         }
 
         try await client.runControl(
@@ -53,13 +63,11 @@ struct FleetIntentClientTests {
         )
     }
 
-    @Test func `empty control parameters are omitted from request body`() async throws {
+    @Test func `parameterless controls map to direct Tessie commands`() async throws {
         let client = makeMockClient { request in
-            let body = try requestBodyData(request)
-            let json = try JSONSerialization.jsonObject(with: body) as? [String: Any]
-            #expect(json?["action"] as? String == "honk_horn")
-            #expect(json?["params"] == nil)
-            return (200, FleetKitFixtures.statusEnvelope())
+            #expect(request.url?.path == "/VIN-1/command/honk")
+            #expect(request.url?.query == nil)
+            return (200, FleetKitFixtures.commandResponse())
         }
 
         try await client.runControl(action: "honk_horn", vin: "VIN-1", params: [:])
@@ -67,7 +75,7 @@ struct FleetIntentClientTests {
 
     @Test func `401 responses surface session expired`() async throws {
         let client = makeMockClient { _ in
-            (401, FleetKitFixtures.statusEnvelope(ok: false, error: "expired"))
+            (401, Data("{\"error\":\"invalid token\"}".utf8))
         }
 
         let error = await #expect(throws: FleetKitError.self) {
@@ -76,14 +84,28 @@ struct FleetIntentClientTests {
         #expect(error?.localizedDescription == FleetKitError.sessionExpired.localizedDescription)
     }
 
-    @Test func `backend envelope errors surface API message`() async throws {
+    @Test func `Tessie errors surface API message`() async throws {
         let client = makeMockClient { _ in
-            (200, FleetKitFixtures.statusEnvelope(ok: false, error: "not ready"))
+            (400, Data("{\"error\":\"not ready\"}".utf8))
         }
 
         let error = await #expect(throws: FleetKitError.self) {
             try await client.cancelSoftwareUpdate(vin: "VIN-1")
         }
         #expect(error?.localizedDescription == "not ready")
+    }
+
+    @Test func `software state maps Tessie version and progress`() async throws {
+        let client = makeMockClient { request in
+            #expect(request.url?.path == "/VIN-1/state")
+            return (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
+        }
+
+        let software = try await client.software(vin: "VIN-1")
+
+        #expect(software.currentVersion == "2026.2.1")
+        #expect(software.availableVersion == "2026.8.4")
+        #expect(software.updateAvailable)
+        #expect(software.expectedDurationMinutes == 25)
     }
 }

@@ -31,6 +31,32 @@ public struct FleetDriveInfo: Decodable, Sendable, Identifiable {
         case endAddress = "end_address"
     }
 
+    init(
+        sessionID: String,
+        vin: String,
+        distanceMiles: Double?,
+        durationMS: Int64?,
+        avgSpeedMPH: Double?,
+        maxSpeedMPH: Double?,
+        energyUsedKWH: Double?,
+        startedAt: Int64,
+        endedAt: Int64?,
+        startAddress: String?,
+        endAddress: String?
+    ) {
+        self.sessionID = sessionID
+        self.vin = vin
+        self.distanceMiles = distanceMiles
+        self.durationMS = durationMS
+        self.avgSpeedMPH = avgSpeedMPH
+        self.maxSpeedMPH = maxSpeedMPH
+        self.energyUsedKWH = energyUsedKWH
+        self.startedAt = startedAt
+        self.endedAt = endedAt
+        self.startAddress = startAddress
+        self.endAddress = endAddress
+    }
+
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         sessionID = try c.decodeIfPresent(String.self, forKey: .sessionID) ?? ""
@@ -91,6 +117,28 @@ public struct FleetSoftwareInfo: Decodable, Sendable {
         case releaseNotes = "release_notes"
     }
 
+    init(
+        currentVersion: String?,
+        availableVersion: String?,
+        updateAvailable: Bool,
+        installable: Bool,
+        status: String?,
+        downloadPercent: Double?,
+        installPercent: Double?,
+        expectedDurationMinutes: Double?,
+        releaseNotes: [FleetReleaseNoteInfo] = []
+    ) {
+        self.currentVersion = currentVersion
+        self.availableVersion = availableVersion
+        self.updateAvailable = updateAvailable
+        self.installable = installable
+        self.status = status
+        self.downloadPercent = downloadPercent
+        self.installPercent = installPercent
+        self.expectedDurationMinutes = expectedDurationMinutes
+        self.releaseNotes = releaseNotes
+    }
+
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         currentVersion = try c.decodeIfPresent(String.self, forKey: .currentVersion)
@@ -114,6 +162,12 @@ public struct FleetControlActionsInfo: Decodable, Sendable {
         case actions
         case chargeActions = "charge_actions"
         case schemas
+    }
+
+    init(actions: [String], chargeActions: [String], schemas: [String: [String]]) {
+        self.actions = actions
+        self.chargeActions = chargeActions
+        self.schemas = schemas
     }
 
     public init(from decoder: Decoder) throws {

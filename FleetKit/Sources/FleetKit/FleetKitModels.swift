@@ -17,6 +17,12 @@ public struct FleetVehicleInfo: Decodable, Sendable, Identifiable {
         case displayName = "display_name"
         case vehicleTag = "vehicle_tag"
     }
+
+    init(vin: String, displayName: String?, vehicleTag: String? = nil) {
+        self.vin = vin
+        self.displayName = displayName
+        self.vehicleTag = vehicleTag
+    }
 }
 
 public struct FleetSnapshotInfo: Decodable, Sendable {
@@ -71,6 +77,46 @@ public struct FleetSnapshotInfo: Decodable, Sendable {
         case climateKeeperMode = "climate_keeper_mode"
         case defrostMode = "defrost_mode"
         case tires
+    }
+
+    init(
+        vin: String,
+        batteryLevel: Double? = nil,
+        chargeLimitSOC: Double? = nil,
+        chargingState: String? = nil,
+        locked: Bool? = nil,
+        chargeRateMPH: Double? = nil,
+        timeToFullCharge: Double? = nil,
+        insideTemp: Double? = nil,
+        outsideTemp: Double? = nil,
+        hvacOn: Bool? = nil,
+        latitude: Double? = nil,
+        longitude: Double? = nil,
+        odometer: Double? = nil,
+        speed: Double? = nil,
+        updatedAt: Int64? = nil,
+        climateKeeperMode: String? = nil,
+        defrostMode: String? = nil,
+        tires: FleetTirePressuresInfo? = nil
+    ) {
+        self.vin = vin
+        self.batteryLevel = batteryLevel
+        self.chargeLimitSOC = chargeLimitSOC
+        self.chargingState = chargingState
+        self.locked = locked
+        self.chargeRateMPH = chargeRateMPH
+        self.timeToFullCharge = timeToFullCharge
+        self.insideTemp = insideTemp
+        self.outsideTemp = outsideTemp
+        self.hvacOn = hvacOn
+        self.latitude = latitude
+        self.longitude = longitude
+        self.odometer = odometer
+        self.speed = speed
+        self.updatedAt = updatedAt
+        self.climateKeeperMode = climateKeeperMode
+        self.defrostMode = defrostMode
+        self.tires = tires
     }
 
     public init(from decoder: Decoder) throws {
@@ -132,6 +178,24 @@ public struct FleetTirePressuresInfo: Decodable, Sendable {
         case lastMeasuredAt = "last_measured_at"
     }
 
+    init(
+        frontLeftPSI: Double?,
+        frontRightPSI: Double?,
+        rearLeftPSI: Double?,
+        rearRightPSI: Double?,
+        hardWarnings: Int? = nil,
+        softWarnings: Int? = nil,
+        lastMeasuredAt: Int64? = nil
+    ) {
+        self.frontLeftPSI = frontLeftPSI
+        self.frontRightPSI = frontRightPSI
+        self.rearLeftPSI = rearLeftPSI
+        self.rearRightPSI = rearRightPSI
+        self.hardWarnings = hardWarnings
+        self.softWarnings = softWarnings
+        self.lastMeasuredAt = lastMeasuredAt
+    }
+
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         frontLeftPSI = c.flexibleDouble(.frontLeftPSI)
@@ -150,6 +214,10 @@ public struct FleetTirePressuresInfo: Decodable, Sendable {
 
 public struct FleetUserInfo: Decodable, Sendable {
     public let units: String?
+
+    init(units: String?) {
+        self.units = units
+    }
 }
 
 extension KeyedDecodingContainer {
