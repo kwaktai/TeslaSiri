@@ -4,25 +4,12 @@ struct SignInBanner: View {
     let onSignIn: (String) -> Void
     let isAuthenticating: Bool
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var accessToken = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            HStack(alignment: .top, spacing: 14) {
-                Image(systemName: "car.side.fill")
-                    .font(.title2)
-                    .frame(width: 48, height: 48)
-                    .background(Color.white.opacity(0.12), in: Circle())
-
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Connect with Tessie")
-                        .font(.title3.weight(.bold))
-                    Text("Use a Tessie access token for live status, drive history, charging, and vehicle controls.")
-                        .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.72))
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
+            bannerHeader
 
             SecureField(text: $accessToken, prompt: Text("Tessie access token").foregroundStyle(.white.opacity(0.58))) {
                 Text("Tessie access token")
@@ -34,7 +21,7 @@ struct SignInBanner: View {
                 .autocorrectionDisabled()
                 .privacySensitive()
                 .padding(.horizontal, 14)
-                .frame(height: 48)
+                .frame(minHeight: 48)
                 .background(Color.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .overlay {
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -42,18 +29,7 @@ struct SignInBanner: View {
                 }
                 .onSubmit(connect)
 
-            HStack {
-                Link(destination: TessieAccessTokenStore.developerSettingsURL) {
-                    Label("Generate a token", systemImage: "arrow.up.right.square")
-                }
-                .font(.footnote.weight(.semibold))
-
-                Spacer()
-
-                Text("Stored in Keychain")
-                    .font(.footnote)
-                    .foregroundStyle(.white.opacity(0.62))
-            }
+            tokenHelp
 
             Button(action: connect) {
                 HStack(spacing: 8) {
@@ -66,6 +42,8 @@ struct SignInBanner: View {
 
                     Text(isAuthenticating ? "Connecting…" : "Connect Tessie")
                         .fontWeight(.semibold)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -104,6 +82,71 @@ struct SignInBanner: View {
         .shadow(color: Color.black.opacity(0.16), radius: 18, y: 9)
     }
 
+    @ViewBuilder
+    private var bannerHeader: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 12) {
+                bannerIcon
+                bannerCopy
+            }
+        } else {
+            HStack(alignment: .top, spacing: 14) {
+                bannerIcon
+                bannerCopy
+            }
+        }
+    }
+
+    private var bannerIcon: some View {
+        Image(systemName: "car.side.fill")
+            .font(.title2)
+            .padding(11)
+            .background(Color.white.opacity(0.12), in: Circle())
+    }
+
+    private var bannerCopy: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text("Connect with Tessie")
+                .font(.title3.weight(.bold))
+                .fixedSize(horizontal: false, vertical: true)
+            Text("Use a Tessie access token for live status, drive history, charging, and vehicle controls.")
+                .font(.subheadline)
+                .foregroundStyle(.white.opacity(0.72))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    @ViewBuilder
+    private var tokenHelp: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 10) {
+                generateTokenLink
+                keychainNote
+            }
+        } else {
+            HStack {
+                generateTokenLink
+                Spacer()
+                keychainNote
+            }
+        }
+    }
+
+    private var generateTokenLink: some View {
+        Link(destination: TessieAccessTokenStore.developerSettingsURL) {
+            Label("Generate a token", systemImage: "arrow.up.right.square")
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .font(.footnote.weight(.semibold))
+    }
+
+    private var keychainNote: some View {
+        Text("Stored in Keychain")
+            .font(.footnote)
+            .foregroundStyle(.white.opacity(0.62))
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
     private var trimmedToken: String {
         accessToken.trimmingCharacters(in: .whitespacesAndNewlines)
     }
@@ -115,19 +158,21 @@ struct SignInBanner: View {
 }
 
 #Preview("Idle") {
-    ZStack {
-        AppScreenBackground()
-
+    ScrollView {
         SignInBanner(onSignIn: { _ in }, isAuthenticating: false)
             .padding()
+    }
+    .background {
+        AppScreenBackground()
     }
 }
 
 #Preview("Authenticating") {
-    ZStack {
-        AppScreenBackground()
-
+    ScrollView {
         SignInBanner(onSignIn: { _ in }, isAuthenticating: true)
             .padding()
+    }
+    .background {
+        AppScreenBackground()
     }
 }

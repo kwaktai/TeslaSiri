@@ -116,20 +116,35 @@ private struct VehicleHeroHeader: View {
         .appEntityIdentifier(vehicleEntityIdentifier)
     }
 
+    @ViewBuilder
     private var vehicleIdentity: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "car.side.fill")
-                .font(.title3)
-                .frame(width: 42, height: 42)
-                .background(Color.white.opacity(0.10), in: Circle())
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(vehicleName)
-                    .font(.title3.weight(.bold))
-                Text("Vehicle overview")
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.62))
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 10) {
+                vehicleIcon
+                vehicleLabels
             }
+        } else {
+            HStack(spacing: 12) {
+                vehicleIcon
+                vehicleLabels
+            }
+        }
+    }
+
+    private var vehicleIcon: some View {
+        Image(systemName: "car.side.fill")
+            .font(.title3)
+            .padding(10)
+            .background(Color.white.opacity(0.10), in: Circle())
+    }
+
+    private var vehicleLabels: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(vehicleName)
+                .font(.title3.weight(.bold))
+            Text("Vehicle overview")
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.62))
         }
     }
 
@@ -246,32 +261,48 @@ private struct BatterySummary: View {
 private struct StatusBadgesRow: View {
     let snapshot: FleetLatestSnapshot
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                if let state = snapshot.chargingState {
-                    StatusBadge(state.capitalized, systemImage: "bolt.fill", tint: .orange)
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 8) {
+                    badges
                 }
-                if let locked = snapshot.locked {
-                    StatusBadge(
-                        locked ? "Locked" : "Unlocked",
-                        systemImage: locked ? "lock.fill" : "lock.open.fill",
-                        tint: locked ? .green : .orange
-                    )
+                .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        badges
+                    }
                 }
-                if let sentry = snapshot.sentryMode {
-                    StatusBadge(
-                        sentry ? "Sentry on" : "Sentry off",
-                        systemImage: "shield.lefthalf.filled",
-                        tint: sentry ? .blue : .gray
-                    )
-                }
-                if let gear = snapshot.gear {
-                    StatusBadge(gear, systemImage: "car.fill", tint: .purple)
-                }
+                .contentMargins(.horizontal, 1, for: .scrollContent)
             }
         }
-        .contentMargins(.horizontal, 1, for: .scrollContent)
+    }
+
+    @ViewBuilder
+    private var badges: some View {
+        if let state = snapshot.chargingState {
+            StatusBadge(state.capitalized, systemImage: "bolt.fill", tint: .orange)
+        }
+        if let locked = snapshot.locked {
+            StatusBadge(
+                locked ? "Locked" : "Unlocked",
+                systemImage: locked ? "lock.fill" : "lock.open.fill",
+                tint: locked ? .green : .orange
+            )
+        }
+        if let sentry = snapshot.sentryMode {
+            StatusBadge(
+                sentry ? "Sentry on" : "Sentry off",
+                systemImage: "shield.lefthalf.filled",
+                tint: sentry ? .blue : .gray
+            )
+        }
+        if let gear = snapshot.gear {
+            StatusBadge(gear, systemImage: "car.fill", tint: .purple)
+        }
     }
 }
 
