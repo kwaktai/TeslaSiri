@@ -35,6 +35,7 @@ TeslaSiri is a SwiftUI iOS app that connects to Tessie for Tesla vehicle data. I
 - Observable Fleet data store.
 - Local cache hydration and refresh.
 - Vehicle dashboard UI.
+- Local `TeslaVehicleKit` RealityKit dependency for configuration-aware vehicle rendering and animation.
 - Drive, route, charging, software update, telemetry, and raw export flows.
 - Local notification payload handling; Tessie does not expose the old custom webhook-management API.
 - FleetKit local Swift package: Siri/Shortcuts/App Intents, ExtensionKit host, shared keychain token bridge (see `AGENTS.md` → FleetKit and App Intents).
@@ -44,6 +45,7 @@ TeslaSiri is a SwiftUI iOS app that connects to Tessie for Tesla vehicle data. I
 - `TeslaSiri/ContentView.swift`: `@main` App entry point only; wires shared services into `AppRootView`.
 - `TeslaSiri/UI/AppRootView.swift`: TabView shell (`AppTab` enum + `AppRootView`) and shared auth/diagnostics state.
 - `TeslaSiri/UI/Dashboard/`: User-facing dashboard cards (vehicle picker, status, software, active drive, charging, cached data, sign-in banner).
+- `TeslaSiri/UI/Dashboard/TeslaVehicleRenderer.swift`: Maps Tessie model, paint, interior, trim, and wheel data into the local `TeslaVehicleKit` package at `/Users/mweinbach/Documents/Codex/2026-06-18/look`.
 - `TeslaSiri/UI/Drives/`: Drive demo: drive picker, route map, session summary, scrubber, metric tiles.
 - `TeslaSiri/UI/Diagnostics/`: Tessie diagnostics, normalized data, Spotlight debugging, account.
 - `TeslaSiri/UI/Shared/`: Reusable building blocks (`CardContainer`, `StatusBadge`, formatters, geocoder actor, `DiagnosticMonospacedValue`).

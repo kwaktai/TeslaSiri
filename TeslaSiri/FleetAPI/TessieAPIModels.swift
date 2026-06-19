@@ -102,6 +102,7 @@ nonisolated enum TessieModelAdapter {
         let climate = state.object("climate_state")
         let drive = state.object("drive_state")
         let vehicle = state.object("vehicle_state")
+        let configuration = state.object("vehicle_config")
         let timestamps = [
             charge.int64("timestamp"),
             climate.int64("timestamp"),
@@ -116,8 +117,21 @@ nonisolated enum TessieModelAdapter {
             chargeLimitSOC: charge.double("charge_limit_soc"),
             chargeRateMPH: charge.double("charge_rate"),
             chargerPowerKW: charge.double("charger_power"),
+            chargePortDoorOpen: charge.bool("charge_port_door_open"),
             chargingState: charge.string("charging_state"),
             climateOn: climate.bool("is_climate_on"),
+            closures: FleetVehicleClosureState(
+                frontDriverDoorOpen: vehicle.bool("df"),
+                frontDriverWindowOpen: vehicle.bool("fd_window"),
+                frontPassengerDoorOpen: vehicle.bool("pf"),
+                frontPassengerWindowOpen: vehicle.bool("fp_window"),
+                frontTrunkOpen: vehicle.bool("ft"),
+                rearDriverDoorOpen: vehicle.bool("dr"),
+                rearDriverWindowOpen: vehicle.bool("rd_window"),
+                rearPassengerDoorOpen: vehicle.bool("pr"),
+                rearPassengerWindowOpen: vehicle.bool("rp_window"),
+                rearTrunkOpen: vehicle.bool("rt")
+            ),
             freshnessMS: updatedAt.map { max(Int64(Date().timeIntervalSince1970 * 1_000) - $0, 0) },
             gear: drive.string("shift_state"),
             insideTemp: state.displayTemperature(climate.double("inside_temp")),
@@ -133,6 +147,17 @@ nonisolated enum TessieModelAdapter {
             timeToFullCharge: charge.double("time_to_full_charge"),
             timestamp: updatedAt,
             updatedAt: updatedAt,
+            vehicleConfiguration: FleetVehicleConfiguration(
+                carType: configuration.string("car_type"),
+                chassisType: configuration.string("chassis_type"),
+                exteriorColor: configuration.string("exterior_color"),
+                fasciaType: configuration.string("fascia_type"),
+                interiorTrimType: configuration.string("interior_trim_type"),
+                paintColorOverride: configuration.string("paint_color_override"),
+                rightHandDrive: configuration.bool("rhd"),
+                trimBadging: configuration.string("trim_badging"),
+                wheelType: configuration.string("wheel_type")
+            ),
             vin: vin
         )
     }

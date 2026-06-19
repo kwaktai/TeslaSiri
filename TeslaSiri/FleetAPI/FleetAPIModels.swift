@@ -431,14 +431,66 @@ nonisolated struct FleetVehicle: Codable, Equatable, Identifiable, Sendable {
     }
 }
 
+nonisolated struct FleetVehicleConfiguration: Codable, Equatable, Sendable {
+    var carType: String?
+    var chassisType: String?
+    var exteriorColor: String?
+    var fasciaType: String?
+    var interiorTrimType: String?
+    var paintColorOverride: String?
+    var rightHandDrive: Bool?
+    var trimBadging: String?
+    var wheelType: String?
+
+    enum CodingKeys: String, CodingKey {
+        case carType = "car_type"
+        case chassisType = "chassis_type"
+        case exteriorColor = "exterior_color"
+        case fasciaType = "fascia_type"
+        case interiorTrimType = "interior_trim_type"
+        case paintColorOverride = "paint_color_override"
+        case rightHandDrive = "right_hand_drive"
+        case trimBadging = "trim_badging"
+        case wheelType = "wheel_type"
+    }
+}
+
+nonisolated struct FleetVehicleClosureState: Codable, Equatable, Sendable {
+    var frontDriverDoorOpen: Bool?
+    var frontDriverWindowOpen: Bool?
+    var frontPassengerDoorOpen: Bool?
+    var frontPassengerWindowOpen: Bool?
+    var frontTrunkOpen: Bool?
+    var rearDriverDoorOpen: Bool?
+    var rearDriverWindowOpen: Bool?
+    var rearPassengerDoorOpen: Bool?
+    var rearPassengerWindowOpen: Bool?
+    var rearTrunkOpen: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case frontDriverDoorOpen = "front_driver_door_open"
+        case frontDriverWindowOpen = "front_driver_window_open"
+        case frontPassengerDoorOpen = "front_passenger_door_open"
+        case frontPassengerWindowOpen = "front_passenger_window_open"
+        case frontTrunkOpen = "front_trunk_open"
+        case rearDriverDoorOpen = "rear_driver_door_open"
+        case rearDriverWindowOpen = "rear_driver_window_open"
+        case rearPassengerDoorOpen = "rear_passenger_door_open"
+        case rearPassengerWindowOpen = "rear_passenger_window_open"
+        case rearTrunkOpen = "rear_trunk_open"
+    }
+}
+
 nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
     var batteryLevel: Double?
     var batteryRange: Double?
     var chargeLimitSOC: Double?
     var chargeRateMPH: Double?
     var chargerPowerKW: Double?
+    var chargePortDoorOpen: Bool?
     var chargingState: String?
     var climateOn: Bool?
+    var closures: FleetVehicleClosureState?
     var freshnessMS: Int64?
     var gear: String?
     var insideTemp: Double?
@@ -454,6 +506,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
     var timeToFullCharge: Double?
     var timestamp: Int64?
     var updatedAt: Int64?
+    var vehicleConfiguration: FleetVehicleConfiguration?
     var vin: String
 
     var timestampDate: Date? { timestamp.map { Date(timeIntervalSince1970: TimeInterval($0) / 1000) } }
@@ -465,8 +518,10 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         case chargeLimitSOC = "charge_limit_soc"
         case chargeRateMPH = "charge_rate_mph"
         case chargerPowerKW = "charger_power_kw"
+        case chargePortDoorOpen = "charge_port_door_open"
         case chargingState = "charging_state"
         case climateOn = "climate_on"
+        case closures
         case freshnessMS = "freshness_ms"
         case gear
         case insideTemp = "inside_temp"
@@ -482,6 +537,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         case timeToFullCharge = "time_to_full_charge"
         case timestamp
         case updatedAt = "updated_at"
+        case vehicleConfiguration = "vehicle_configuration"
         case vin
     }
 
@@ -491,8 +547,10 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         chargeLimitSOC: Double? = nil,
         chargeRateMPH: Double? = nil,
         chargerPowerKW: Double? = nil,
+        chargePortDoorOpen: Bool? = nil,
         chargingState: String? = nil,
         climateOn: Bool? = nil,
+        closures: FleetVehicleClosureState? = nil,
         freshnessMS: Int64? = nil,
         gear: String? = nil,
         insideTemp: Double? = nil,
@@ -508,6 +566,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         timeToFullCharge: Double? = nil,
         timestamp: Int64? = nil,
         updatedAt: Int64? = nil,
+        vehicleConfiguration: FleetVehicleConfiguration? = nil,
         vin: String = ""
     ) {
         self.batteryLevel = batteryLevel
@@ -515,8 +574,10 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         self.chargeLimitSOC = chargeLimitSOC
         self.chargeRateMPH = chargeRateMPH
         self.chargerPowerKW = chargerPowerKW
+        self.chargePortDoorOpen = chargePortDoorOpen
         self.chargingState = chargingState
         self.climateOn = climateOn
+        self.closures = closures
         self.freshnessMS = freshnessMS
         self.gear = gear
         self.insideTemp = insideTemp
@@ -532,6 +593,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         self.timeToFullCharge = timeToFullCharge
         self.timestamp = timestamp
         self.updatedAt = updatedAt
+        self.vehicleConfiguration = vehicleConfiguration
         self.vin = vin
     }
 
@@ -542,8 +604,10 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         chargeLimitSOC = container.decodeFlexibleDoubleIfPresent(forKey: .chargeLimitSOC)
         chargeRateMPH = container.decodeFlexibleDoubleIfPresent(forKey: .chargeRateMPH)
         chargerPowerKW = container.decodeFlexibleDoubleIfPresent(forKey: .chargerPowerKW)
+        chargePortDoorOpen = try container.decodeIfPresent(Bool.self, forKey: .chargePortDoorOpen)
         chargingState = try container.decodeIfPresent(String.self, forKey: .chargingState)
         climateOn = try container.decodeIfPresent(Bool.self, forKey: .climateOn)
+        closures = try container.decodeIfPresent(FleetVehicleClosureState.self, forKey: .closures)
         freshnessMS = container.decodeFlexibleInt64IfPresent(forKey: .freshnessMS)
         gear = try container.decodeIfPresent(String.self, forKey: .gear)
         insideTemp = container.decodeFlexibleDoubleIfPresent(forKey: .insideTemp)
@@ -559,6 +623,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         timeToFullCharge = container.decodeFlexibleDoubleIfPresent(forKey: .timeToFullCharge)
         timestamp = container.decodeFlexibleInt64IfPresent(forKey: .timestamp)
         updatedAt = container.decodeFlexibleInt64IfPresent(forKey: .updatedAt)
+        vehicleConfiguration = try container.decodeIfPresent(FleetVehicleConfiguration.self, forKey: .vehicleConfiguration)
         vin = try container.decodeIfPresent(String.self, forKey: .vin) ?? ""
     }
 }

@@ -21,8 +21,21 @@ enum PreviewData {
         chargeLimitSOC: 80,
         chargeRateMPH: 28,
         chargerPowerKW: 7.2,
+        chargePortDoorOpen: true,
         chargingState: "Charging",
         climateOn: true,
+        closures: FleetVehicleClosureState(
+            frontDriverDoorOpen: false,
+            frontDriverWindowOpen: false,
+            frontPassengerDoorOpen: false,
+            frontPassengerWindowOpen: false,
+            frontTrunkOpen: false,
+            rearDriverDoorOpen: false,
+            rearDriverWindowOpen: false,
+            rearPassengerDoorOpen: false,
+            rearPassengerWindowOpen: false,
+            rearTrunkOpen: false
+        ),
         freshnessMS: 1_500,
         gear: "P",
         insideTemp: 70,
@@ -38,6 +51,17 @@ enum PreviewData {
         timeToFullCharge: 1.4,
         timestamp: 1_781_000_000_000,
         updatedAt: 1_781_000_000_000,
+        vehicleConfiguration: FleetVehicleConfiguration(
+            carType: "model3",
+            chassisType: nil,
+            exteriorColor: "UltraRed",
+            fasciaType: "basePoppyseed",
+            interiorTrimType: "BlackAndWhite",
+            paintColorOverride: nil,
+            rightHandDrive: false,
+            trimBadging: "long_range",
+            wheelType: "PinwheelRefresh18"
+        ),
         vin: vin1
     )
 

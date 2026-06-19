@@ -42,6 +42,7 @@ Current project files are organized under:
 - `TeslaSiri/UI/Diagnostics/` — Tessie diagnostics, normalized data, Spotlight debugging, account.
 - `TeslaSiri/UI/Shared/` — Reusable building blocks: `CardContainer`, `StatusBadge`, formatters, geocoder actor, `DiagnosticMonospacedValue`.
 - `TeslaSiri/FleetAPI/` — Tessie client/adapters, normalized models, data store, cache, Keychain token storage, device identity, notifications.
+- `TeslaVehicleKit` — Local Swift package dependency at `/Users/mweinbach/Documents/Codex/2026-06-18/look`; owns RealityKit vehicle assets, recovered materials/cameras, configuration catalogs, and semantic animations.
 - `TeslaSiri/Info.plist`
 - `TeslaSiri.xcodeproj`
 
@@ -87,7 +88,9 @@ Do not commit Tessie access tokens, keychain dumps, raw vehicle exports, private
 - The Diagnostics tab is intentionally dense because the project is currently in a "validate the backend" phase. Once data shapes stabilize, move the user-facing pieces into Dashboard and treat Diagnostics as developer/QA chrome.
 - Dashboard cards live in `TeslaSiri/UI/Dashboard/`; reusable chrome (`CardContainer`, `StatusBadge`, `LoadingCard`, `LoadingStateView`, `ErrorStateView`, `EmptyStateView`) lives in `TeslaSiri/UI/Shared/CardContainer.swift` — use these instead of repeating backgrounds/padding.
 - The Dashboard's production visual direction is a status-first control center: keep the vehicle hero high-contrast, secondary cards quiet, and all grids adaptive. Preserve the named light, dark, and Accessibility Dynamic Type previews when changing Dashboard or Drives UI.
-- `VehicleControlDashboard` is the Dashboard's vehicle-first control surface. Its light/dark car renders live in `TeslaSiri/UI/Dashboard/VehicleAssets.xcassets`, primary content is capped at 720 points for wide layouts, and commands route through `FleetDataStore.runSelectedVehicleControl` so the UI retains Tessie request state and refreshes live vehicle data after success.
+- `VehicleControlDashboard` is the Dashboard's vehicle-first control surface. Its light/dark car renders in `TeslaSiri/UI/Dashboard/VehicleAssets.xcassets` are loading/unsupported-model/failure fallbacks, primary content is capped at 720 points for wide layouts, and commands route through `FleetDataStore.runSelectedVehicleControl` so the UI retains Tessie request state and refreshes live vehicle data after success.
+- `TeslaVehicleRenderer.swift` is the only Dashboard 3D bridge. It maps Tessie vehicle configuration into `TeslaVehicleKit`'s public `TeslaVehicleConfiguration`, including exact vehicle generation, factory paint or override, interior, market/driver position, trim, seating, and wheel package. Keep its recovered 1672:941 hero aspect ratio.
+- Vehicle assets, material recovery, cameras, wheel fitments, and animations belong in the `TeslaVehicleKit` package. Do not copy those resources into the app target or add a second SceneKit/Godot renderer.
 
 ## FleetKit and App Intents
 

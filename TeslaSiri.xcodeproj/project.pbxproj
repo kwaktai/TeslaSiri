@@ -11,6 +11,7 @@
 		1FA023C52FDB3BCD001FDFD5 /* TeslaSiriAppIntents.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 1FA023BC2FDB3BCD001FDFD5 /* TeslaSiriAppIntents.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1FA023D12FDB4077001FDFD5 /* FleetKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1FA023D02FDB4077001FDFD5 /* FleetKit */; };
 		1FA023D42FDB4089001FDFD5 /* FleetKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1FA023D32FDB4089001FDFD5 /* FleetKit */; };
+		1FA024022FE30000001FDFD5 /* TeslaVehicleKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1FA024012FE30000001FDFD5 /* TeslaVehicleKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,7 @@
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				1FA023D12FDB4077001FDFD5 /* FleetKit in Frameworks */,
+				1FA024022FE30000001FDFD5 /* TeslaVehicleKit in Frameworks */,
 			);
 		};
 		1FA023B92FDB3BCD001FDFD5 /* Frameworks */ = {
@@ -143,6 +145,7 @@
 			name = TeslaSiri;
 			packageProductDependencies = (
 				1FA023D02FDB4077001FDFD5 /* FleetKit */,
+				1FA024012FE30000001FDFD5 /* TeslaVehicleKit */,
 			);
 			productName = MyApp;
 			productReference = 000000000000000000000120 /* TeslaSiri.app */;
@@ -198,6 +201,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				1FA023CF2FDB4077001FDFD5 /* XCLocalSwiftPackageReference "FleetKit" */,
+				1FA024002FE30000001FDFD5 /* XCLocalSwiftPackageReference "../../Documents/Codex/2026-06-18/look" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 000000000000000000000020 /* Products */;
@@ -565,6 +569,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = FleetKit;
 		};
+		1FA024002FE30000001FDFD5 /* XCLocalSwiftPackageReference "../../Documents/Codex/2026-06-18/look" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../Documents/Codex/2026-06-18/look";
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -576,6 +584,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1FA023CF2FDB4077001FDFD5 /* XCLocalSwiftPackageReference "FleetKit" */;
 			productName = FleetKit;
+		};
+		1FA024012FE30000001FDFD5 /* TeslaVehicleKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1FA024002FE30000001FDFD5 /* XCLocalSwiftPackageReference "../../Documents/Codex/2026-06-18/look" */;
+			productName = TeslaVehicleKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

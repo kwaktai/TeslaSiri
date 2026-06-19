@@ -45,7 +45,8 @@ struct VehicleControlDashboard: View {
 
                 VehicleHeroArtwork(
                     vehicleName: vehicle.name,
-                    vin: vehicle.vin
+                    vin: vehicle.vin,
+                    renderState: VehicleRenderState(snapshot: snapshot, vin: vehicle.vin)
                 )
                 .frame(maxWidth: 720)
 
@@ -433,27 +434,6 @@ private struct VehicleRangeSummary: View {
             for: VehicleStatusEntity.self,
             identifier: VehicleStatusEntity.entityID(forVIN: snapshot.vin)
         )
-    }
-}
-
-private struct VehicleHeroArtwork: View {
-    let vehicleName: String
-    let vin: String
-
-    @Environment(\.colorScheme) private var colorScheme
-
-    var body: some View {
-        Image(colorScheme == .dark ? "VehicleHeroDark" : "VehicleHeroLight")
-            .resizable()
-            .scaledToFit()
-            .frame(maxWidth: .infinity)
-            .accessibilityLabel("\(vehicleName) vehicle")
-            .appEntityIdentifier(vehicleEntityIdentifier)
-    }
-
-    private var vehicleEntityIdentifier: EntityIdentifier? {
-        guard !vin.isEmpty else { return nil }
-        return EntityIdentifier(for: VehicleEntity.self, identifier: vin)
     }
 }
 
