@@ -219,6 +219,8 @@ private struct DashboardPreviewer: View {
     let isSignedIn: Bool
     let isAuthenticating: Bool
 
+    @State private var rendererDebugSettings = VehicleRendererDebugSettings()
+
     init(
         store: FleetDataStore? = nil,
         isSignedIn: Bool = true,
@@ -239,6 +241,7 @@ private struct DashboardPreviewer: View {
                 onReload: {}
             )
         }
+        .environment(rendererDebugSettings)
     }
 }
 

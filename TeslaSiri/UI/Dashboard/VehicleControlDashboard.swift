@@ -1033,6 +1033,7 @@ private struct VehicleUnavailableStage: View {
             onControl: { _, _ in true }
         )
     }
+    .environment(VehicleRendererDebugSettings())
 }
 
 #Preview("Showroom — Dark") {
@@ -1053,6 +1054,7 @@ private struct VehicleUnavailableStage: View {
         )
     }
     .preferredColorScheme(.dark)
+    .environment(VehicleRendererDebugSettings())
 }
 
 #Preview("Showroom — Accessibility") {
@@ -1073,4 +1075,5 @@ private struct VehicleUnavailableStage: View {
         )
     }
     .environment(\.dynamicTypeSize, .accessibility2)
+    .environment(VehicleRendererDebugSettings())
 }

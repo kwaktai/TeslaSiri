@@ -91,6 +91,7 @@ Do not commit Tessie access tokens, keychain dumps, raw vehicle exports, private
 - `VehicleControlDashboard` is the Dashboard's vehicle-first control surface. Its light/dark car renders in `TeslaSiri/UI/Dashboard/VehicleAssets.xcassets` are loading/unsupported-model/failure fallbacks, primary content is capped at 720 points for wide layouts, and commands route through `FleetDataStore.runSelectedVehicleControl` so the UI retains Tessie request state and refreshes live vehicle data after success.
 - `TeslaVehicleRenderer.swift` is the only Dashboard 3D bridge. It maps Tessie vehicle configuration into `TeslaVehicleKit`'s public `TeslaVehicleConfiguration`, including exact vehicle generation, factory paint or override, interior, market/driver position, trim, seating, and wheel package. Keep its recovered 1672:941 hero aspect ratio.
 - Vehicle assets, material recovery, cameras, wheel fitments, and animations belong in the `TeslaVehicleKit` package. Do not copy those resources into the app target or add a second SceneKit/Godot renderer.
+- Renderer camera, composition, environment, and lighting overrides are debug-only local settings in `TeslaSiri/UI/Shared/VehicleRendererDebugSettings.swift`. The Diagnostics renderer panel edits separate persisted profiles for each vehicle asset and Tesla scene; keep the dashboard hero and Diagnostics preview connected to the same root-injected model so tuning remains live.
 
 ## FleetKit and App Intents
 

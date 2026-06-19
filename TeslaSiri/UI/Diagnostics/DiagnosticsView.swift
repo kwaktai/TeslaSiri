@@ -11,6 +11,8 @@ struct DiagnosticsView: View {
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 20) {
+                VehicleRendererDebugSection(store: store)
+
                 BackendSection(
                     store: store,
                     diagnostics: diagnostics,
@@ -64,6 +66,8 @@ struct DiagnosticsView: View {
 
 @MainActor
 private struct DiagnosticsPreviewer: View {
+    @State private var rendererDebugSettings = VehicleRendererDebugSettings()
+
     var body: some View {
         let diagnostics = BackendDiagnosticsState(
             deviceID: "device-abc-123",
@@ -85,6 +89,7 @@ private struct DiagnosticsPreviewer: View {
                 onSignOut: {}
             )
         }
+        .environment(rendererDebugSettings)
     }
 }
 

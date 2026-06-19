@@ -447,6 +447,7 @@ private struct VehicleHeroRenderSurface: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(VehicleRendererDebugSettings.self) private var debugSettings
     @StateObject private var session: TeslaVehicleSession
 
     init(renderState: VehicleRenderState) {
@@ -470,10 +471,15 @@ private struct VehicleHeroRenderSurface: View {
                 TeslaVehicleView(
                     session: session,
                     allowsCameraInteraction: false,
-                    showsGroundShadow: false,
+                    showsGroundShadow: debugSettings.tuning.showsGroundShadow,
                     configureARView: configureARView
                 )
                 .id(colorScheme)
+                .scaleEffect(debugSettings.tuning.viewportScale)
+                .offset(
+                    x: debugSettings.tuning.viewportOffsetX,
+                    y: debugSettings.tuning.viewportOffsetY
+                )
                 .allowsHitTesting(false)
                 .opacity(isRendererReady ? 1 : 0)
             }
@@ -487,7 +493,16 @@ private struct VehicleHeroRenderSurface: View {
             synchronizeSession()
         }
         .onChange(of: reduceMotion) {
-            synchronizeSession()
+            synchronizeAnimation()
+        }
+        .onChange(of: debugSettings.tuning) {
+            applyDebugTuning()
+        }
+        .onChange(of: debugSettings.selectedSceneID) {
+            applyDebugTuning()
+        }
+        .onChange(of: debugSettings.tuning.animationEnabled) {
+            synchronizeAnimation()
         }
     }
 
@@ -524,35 +539,28 @@ private struct VehicleHeroRenderSurface: View {
         if let customPaint = renderState.customPaint {
             session.setCustomPaint(customPaint)
         }
-        applyHeroCamera()
+        debugSettings.activate(
+            vehicleID: configuration.vehicleID,
+            cameraPresets: session.cameraPresets
+        )
+        applyDebugTuning()
+        synchronizeAnimation()
+    }
 
-        if reduceMotion {
+    private func applyDebugTuning() {
+        let tuning = debugSettings.tuning
+        session.lightingStrength = tuning.lightingStrength
+        session.setCustomCamera(tuning.cameraPreset(sceneID: debugSettings.selectedSceneID))
+    }
+
+    private func synchronizeAnimation() {
+        if reduceMotion || !debugSettings.tuning.animationEnabled {
             session.stopAnimation()
         } else if let animation = renderState.openAnimation {
             session.play(animation, direction: .open, loop: false)
         } else {
             session.play(.turntable, loop: true)
         }
-    }
-
-    private func applyHeroCamera() {
-        guard let camera = session.cameraPresets.first(where: {
-            $0.id == TeslaCameraViewID.parked.rawValue
-        }) else { return }
-
-        session.setCustomCamera(
-            CameraPreset(
-                id: "TESLA_SIRI_HERO",
-                rotation: camera.rotation,
-                offset: camera.offset.map { $0 * 0.72 },
-                fov: camera.fov,
-                environmentAsset: camera.environmentAsset,
-                environmentRotation: camera.environmentRotation,
-                environmentEnergy: camera.environmentEnergy,
-                ambientEnergy: camera.ambientEnergy,
-                rotatesSkybox: camera.rotatesSkybox
-            )
-        )
     }
 
     private func configureARView(_ view: ARView) {

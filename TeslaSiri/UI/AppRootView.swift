@@ -1,5 +1,6 @@
 import AppIntents
 import FleetKit
+import Foundation
 import SwiftUI
 
 enum AppTab: Hashable, Identifiable, CaseIterable {
@@ -53,6 +54,7 @@ struct AppRootView: View {
 
     @State private var authErrorMessage: String?
     @State private var diagnostics = BackendDiagnosticsState()
+    @State private var rendererDebugSettings = VehicleRendererDebugSettings()
     @State private var selectedTab: AppTab = .dashboard
     @State private var isAuthenticating = false
 
@@ -68,6 +70,7 @@ struct AppRootView: View {
                 .tag(tab)
             }
         }
+        .environment(rendererDebugSettings)
         .onAppIntentExecution(OpenVehicleIntent.self) { intent in
             openVehicle(intent.target.id, tab: .dashboard)
         }
@@ -89,6 +92,11 @@ struct AppRootView: View {
             Text(authErrorMessage ?? "Unknown error")
         }
         .task {
+#if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--renderer-debug") {
+                selectedTab = .diagnostics
+            }
+#endif
             refreshDiagnostics()
             await store.loadInitialDataIfNeeded()
             configureFleetPolling(for: scenePhase)
