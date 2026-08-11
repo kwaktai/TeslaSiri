@@ -198,6 +198,7 @@ Only `window_control` vent is currently exposed as an intent. Tessie also suppor
 ### App schemas
 
 - Open entity intents in `FleetKit/Sources/FleetKit/OpenEntityIntents.swift` use `@AppIntent(schema: .system.open)` because they exactly match Apple's System open schema.
+- `SearchFleetIntent` uses `@AppIntent(schema: .system.searchInApp)` (the Xcode 27 name; `.system.search` is deprecated) and routes its `StringSearchCriteria.term` into the app's Spotlight diagnostics search UI.
 - Vehicle, status, software, drive, charging, climate, lock, horn, lights, trunk/frunk, and Tesla navigation handoff actions remain custom App Intents. Current AppIntents docs do not expose an exact automotive/control schema, and `.maps.startNavigation` is not accurate for `SendNavigationIntent` because the app sends a destination to the vehicle backend rather than starting and returning an in-app navigation session.
 - Before adding future schema macros, search Apple docs with Xcode MCP and only adopt a schema when its required noun/action contract matches FleetKit behavior exactly.
 

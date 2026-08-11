@@ -56,6 +56,7 @@ struct AppRootView: View {
     @State private var diagnostics = BackendDiagnosticsState()
     @State private var rendererDebugSettings = VehicleRendererDebugSettings()
     @State private var selectedTab: AppTab = .dashboard
+    @State private var spotlightSearchTerm = ""
     @State private var isAuthenticating = false
 
     var body: some View {
@@ -85,6 +86,10 @@ struct AppRootView: View {
         }
         .onAppIntentExecution(OpenDriveIntent.self) { intent in
             openVehicle(intent.target.vin, tab: .drives)
+        }
+        .onAppIntentExecution(SearchFleetIntent.self) { intent in
+            spotlightSearchTerm = intent.criteria.term
+            selectedTab = .diagnostics
         }
         .alert("Connection Failed", isPresented: authErrorBinding) {
             Button("OK", role: .cancel) {}
@@ -127,6 +132,7 @@ struct AppRootView: View {
             DiagnosticsView(
                 store: store,
                 diagnostics: diagnostics,
+                spotlightSearchTerm: spotlightSearchTerm,
                 onProbeAccount: {
                     Task { await runBackendProbe() }
                 },

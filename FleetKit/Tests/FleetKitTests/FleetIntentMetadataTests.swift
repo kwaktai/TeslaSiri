@@ -1,8 +1,16 @@
+import AppIntents
 import Foundation
 import Testing
 @testable import FleetKit
 
 struct FleetIntentMetadataTests {
+    @Test func `search intent preserves system search criteria`() {
+        let intent = SearchFleetIntent(criteria: StringSearchCriteria(term: "battery"))
+
+        #expect(intent.criteria.term == "battery")
+        #expect(SearchFleetIntent.searchScopes == [.general])
+    }
+
     @Test func `all vehicle scoped intents default to no explicit vehicle`() {
         #expect(LockVehicleIntent().vehicle == nil)
         #expect(UnlockVehicleIntent().vehicle == nil)

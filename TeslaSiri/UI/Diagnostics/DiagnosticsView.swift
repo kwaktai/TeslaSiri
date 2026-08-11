@@ -3,6 +3,7 @@ import SwiftUI
 struct DiagnosticsView: View {
     let store: FleetDataStore
     let diagnostics: BackendDiagnosticsState
+    let spotlightSearchTerm: String
     let onProbeAccount: () -> Void
     let onReloadFleet: () async -> Void
     let onExportRawData: () -> Void
@@ -11,6 +12,10 @@ struct DiagnosticsView: View {
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 20) {
+                if hasRequestedSpotlightSearch {
+                    spotlightSearchSection
+                }
+
                 VehicleRendererDebugSection(store: store)
 
                 BackendSection(
@@ -24,7 +29,9 @@ struct DiagnosticsView: View {
 
                 NormalizedDataSection(store: store)
 
-                SpotlightDebugSection(isSignedIn: diagnostics.isSignedIn)
+                if !hasRequestedSpotlightSearch {
+                    spotlightSearchSection
+                }
 
                 if let user = store.user {
                     AccountSection(
@@ -62,6 +69,17 @@ struct DiagnosticsView: View {
             await onReloadFleet()
         }
     }
+
+    private var hasRequestedSpotlightSearch: Bool {
+        !spotlightSearchTerm.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var spotlightSearchSection: some View {
+        SpotlightDebugSection(
+            isSignedIn: diagnostics.isSignedIn,
+            requestedQuery: spotlightSearchTerm
+        )
+    }
 }
 
 @MainActor
@@ -83,6 +101,7 @@ private struct DiagnosticsPreviewer: View {
             DiagnosticsView(
                 store: FleetDataStore.previewLoaded(),
                 diagnostics: diagnostics,
+                spotlightSearchTerm: "",
                 onProbeAccount: {},
                 onReloadFleet: {},
                 onExportRawData: {},

@@ -4,6 +4,7 @@ import SwiftUI
 
 struct SpotlightDebugSection: View {
     let isSignedIn: Bool
+    let requestedQuery: String
 
     @State private var query = "Tesla"
     @State private var isIndexing = false
@@ -79,17 +80,24 @@ struct SpotlightDebugSection: View {
                 }
             }
         }
-        .task(id: isSignedIn) {
+        .task(id: automaticSearchID) {
             guard isSignedIn else {
                 report = nil
                 results = []
                 message = "Sign in to index Fleet entities."
                 return
             }
-            if results.isEmpty {
-                await search()
+
+            let requestedQuery = requestedQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !requestedQuery.isEmpty {
+                query = requestedQuery
             }
+            await search()
         }
+    }
+
+    private var automaticSearchID: String {
+        "\(isSignedIn)|\(requestedQuery)"
     }
 
     private func reindex() async {
@@ -191,7 +199,7 @@ private struct SpotlightDebugRow: View {
 }
 
 #Preview {
-    SpotlightDebugSection(isSignedIn: true)
+    SpotlightDebugSection(isSignedIn: true, requestedQuery: "Tesla")
         .padding()
         .background(Color(uiColor: .systemGroupedBackground))
 }
