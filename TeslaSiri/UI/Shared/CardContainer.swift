@@ -1,23 +1,9 @@
 import SwiftUI
 
 struct AppScreenBackground: View {
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
-        ZStack {
-            Color(uiColor: .systemGroupedBackground)
-
-            LinearGradient(
-                colors: [
-                    Color.accentColor.opacity(colorScheme == .dark ? 0.10 : 0.07),
-                    .clear,
-                    Color.green.opacity(colorScheme == .dark ? 0.035 : 0.025)
-                ],
-                startPoint: .topTrailing,
-                endPoint: .bottomLeading
-            )
-        }
-        .ignoresSafeArea()
+        AppTheme.pageBackground
+            .ignoresSafeArea()
     }
 }
 
@@ -25,8 +11,6 @@ struct CardContainer<Content: View>: View {
     let title: String?
     let systemImage: String?
     @ViewBuilder let content: Content
-
-    @Environment(\.colorScheme) private var colorScheme
 
     init(title: String? = nil, systemImage: String? = nil, @ViewBuilder content: () -> Content) {
         self.title = title
@@ -44,33 +28,21 @@ struct CardContainer<Content: View>: View {
                             .foregroundStyle(.tint)
                             .frame(width: 30, height: 30)
                             .background(Color.accentColor.opacity(0.12), in: Circle())
+                            .accessibilityHidden(true)
                     }
 
                     Text(title)
                         .font(.headline)
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityAddTraits(.isHeader)
             }
 
             content
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
-        .background {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(Color(uiColor: .secondarySystemGroupedBackground).opacity(colorScheme == .dark ? 0.92 : 0.98))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .strokeBorder(
-                            colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.90),
-                            lineWidth: 0.75
-                        )
-                }
-                .shadow(
-                    color: Color.black.opacity(colorScheme == .dark ? 0.18 : 0.06),
-                    radius: 16,
-                    y: 8
-                )
-        }
+        .appSurface()
     }
 }
 

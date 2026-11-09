@@ -11,6 +11,7 @@ struct BackendSection: View {
     var body: some View {
         CardContainer(title: "Tessie API", systemImage: "server.rack") {
             VStack(alignment: .leading, spacing: 12) {
+                DiagnosticGroupHeader("Connection")
                 DiagnosticRow(label: "Auth", value: diagnostics.isSignedIn ? "Signed in" : "Not signed in")
                 if let tokenExpiresAt = diagnostics.tokenExpiresAt {
                     DiagnosticRow(label: "Token expires", value: tokenExpiresAt.formatted(date: .abbreviated, time: .shortened))
@@ -30,6 +31,9 @@ struct BackendSection: View {
                 }
 
                 DiagnosticMonospacedValue(title: "Device ID", value: diagnostics.deviceID)
+
+                Divider()
+                DiagnosticGroupHeader("Fleet data")
                 DiagnosticRow(label: "Data", value: dataStatus)
 
                 if let lastRefreshDate = store.lastRefreshDate {
@@ -68,6 +72,9 @@ struct BackendSection: View {
                     }
                 }
 
+                Divider()
+                DiagnosticGroupHeader("Health check")
+
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text("Probe")
                         .font(.subheadline)
@@ -90,7 +97,7 @@ struct BackendSection: View {
                         Label("Probe Tessie", systemImage: "network")
                     }
                     .buttonStyle(.bordered)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .disabled(diagnostics.isProbeRunning)
 
                     Button {
@@ -99,7 +106,7 @@ struct BackendSection: View {
                         Label("Reload Fleet", systemImage: "arrow.clockwise")
                     }
                     .buttonStyle(.bordered)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .disabled(store.loadState.isLoading || store.isRefreshing)
                 }
 
@@ -222,7 +229,7 @@ private struct BackendSectionPreviewer: View {
     )
     return BackendSectionPreviewer(diagnostics: diagnostics, isSignedIn: true)
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }
 
 #Preview("Signed out") {
@@ -233,5 +240,5 @@ private struct BackendSectionPreviewer: View {
     )
     return BackendSectionPreviewer(diagnostics: diagnostics, isSignedIn: false)
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }

@@ -16,8 +16,6 @@ struct DiagnosticsView: View {
                     spotlightSearchSection
                 }
 
-                VehicleRendererDebugSection(store: store)
-
                 BackendSection(
                     store: store,
                     diagnostics: diagnostics,
@@ -44,11 +42,12 @@ struct DiagnosticsView: View {
             .padding(.horizontal, 18)
             .padding(.top, 12)
             .padding(.bottom, 32)
+            .readableContentWidth()
         }
         .scrollIndicators(.hidden)
         .background(AppScreenBackground())
         .navigationTitle("Diagnostics")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -84,8 +83,6 @@ struct DiagnosticsView: View {
 
 @MainActor
 private struct DiagnosticsPreviewer: View {
-    @State private var rendererDebugSettings = VehicleRendererDebugSettings()
-
     var body: some View {
         let diagnostics = BackendDiagnosticsState(
             deviceID: "device-abc-123",
@@ -108,7 +105,6 @@ private struct DiagnosticsPreviewer: View {
                 onSignOut: {}
             )
         }
-        .environment(rendererDebugSettings)
     }
 }
 

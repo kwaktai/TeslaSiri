@@ -201,5 +201,5 @@ private struct SpotlightDebugRow: View {
 #Preview {
     SpotlightDebugSection(isSignedIn: true, requestedQuery: "Tesla")
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }

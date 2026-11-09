@@ -33,7 +33,7 @@ struct ActiveDriveCard: View {
 
                 if let startedAt = drive.startedAtDate {
                     Label {
-                        Text(startedAt, style: .relative)
+                        RelativeTimeText(date: startedAt, style: .started)
                     } icon: {
                         Image(systemName: "clock")
                     }
@@ -56,30 +56,28 @@ private struct ActiveDriveHeadline: View {
 
     var body: some View {
         HStack(alignment: .lastTextBaseline, spacing: 14) {
-            VStack(alignment: .leading, spacing: 2) {
+            HStack(alignment: .lastTextBaseline, spacing: 5) {
                 Text(formattedNumber(
                     drive.latestRoutePoint?.speed ?? drive.latest?.speed,
                     fractionLength: 0
                 ))
-                .font(.system(size: 40, weight: .bold, design: .rounded))
+                .font(.system(size: 44, weight: .semibold, design: .rounded))
                 .monospacedDigit()
+                .contentTransition(.numericText())
 
                 Text("mph")
-                    .font(.caption)
+                    .font(.subheadline.weight(.medium))
                     .foregroundStyle(.secondary)
             }
+            .accessibilityElement(children: .combine)
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: 7) {
-                StatusBadge("Driving", systemImage: "location.fill", tint: .green)
-
-                if let status = drive.status {
-                    Text(status.capitalized)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
+            StatusBadge(
+                drive.status.map(humanizedStatus) ?? "Driving",
+                systemImage: "location.fill",
+                tint: .green
+            )
         }
     }
 }
@@ -109,9 +107,10 @@ private struct DriveSummaryTile: View {
         .frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
         .padding(11)
         .background(
-            Color(uiColor: .tertiarySystemGroupedBackground),
+            AppTheme.insetSurface,
             in: RoundedRectangle(cornerRadius: 15, style: .continuous)
         )
+        .accessibilityElement(children: .combine)
     }
 }
 

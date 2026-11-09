@@ -23,7 +23,7 @@ struct DriveRouteMap: View {
             if coordinates.isEmpty {
                 ContentUnavailableView("No route", systemImage: "map", description: Text("Select a drive with normalized route geometry."))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(uiColor: .secondarySystemGroupedBackground))
+                    .background(AppTheme.surface)
             } else {
                 Map(position: $cameraPosition) {
                     MapPolyline(coordinates: coordinates)
@@ -88,13 +88,13 @@ struct DriveRouteMap: View {
     DriveRouteMap(route: PreviewData.previewRoute, selectedPointIndex: 0)
         .frame(height: 260)
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }
 
 #Preview("Empty route") {
     DriveRouteMap(route: [], selectedPointIndex: 0)
         .frame(height: 260)
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }
 

@@ -43,9 +43,3 @@ tmp/
 # Local Fleet exports
 FleetRawDataExport*.json
 raw-vehicle-data*.json
-
-# Godot editor cache and generated import metadata
-GodotVehicleRenderer/.godot/
-GodotVehicleRenderer/vehicles/*.png
-GodotVehicleRenderer/vehicles/*.import
-GodotVehicleRenderer/scripts/*.uid

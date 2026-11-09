@@ -176,5 +176,5 @@ private struct DiagnosticRow: View {
 #Preview("With selected vehicle") {
     NormalizedDataSection(store: FleetDataStore.previewLoaded())
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }

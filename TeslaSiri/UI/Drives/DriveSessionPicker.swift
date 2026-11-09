@@ -10,8 +10,8 @@ struct DriveSessionPicker: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Recent drives")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .font(.headline)
+                .accessibilityAddTraits(.isHeader)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
@@ -26,13 +26,14 @@ struct DriveSessionPicker: View {
                             )
                         }
                         .buttonStyle(.plain)
-                        .accessibilityLabel("Select drive from \(drive.startedAtDate.formatted(date: .abbreviated, time: .shortened))")
-                        .accessibilityValue(selectedSessionID == drive.sessionID ? "Selected" : "")
+                        .accessibilityLabel("Drive from \(drive.startedAtDate.formatted(date: .abbreviated, time: .shortened))")
+                        .accessibilityAddTraits(selectedSessionID == drive.sessionID ? .isSelected : [])
                     }
                 }
                 .padding(.vertical, 2)
             }
-            .contentMargins(.horizontal, 1, for: .scrollContent)
+            // Keep chip borders and shadows from being cut off at the scroll view's edges.
+            .scrollClipDisabled()
         }
     }
 }
@@ -42,7 +43,6 @@ struct DriveSessionChip: View {
     let endpointAddresses: DriveEndpointAddresses?
     let isSelected: Bool
 
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
@@ -60,47 +60,33 @@ struct DriveSessionChip: View {
 
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .font(.caption)
+                        .font(.subheadline)
+                        .foregroundStyle(.tint)
+                        .accessibilityHidden(true)
                 }
             }
 
             Text(driveEndpointSummary(drive, endpointAddresses: endpointAddresses))
-                .font(.caption2)
+                .font(.caption)
                 .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 2)
-                .foregroundStyle(
-                    isSelected
-                        ? Color.white.opacity(0.76)
-                        : Color(uiColor: .secondaryLabel)
-                )
+                .foregroundStyle(.secondary)
+
+            Spacer(minLength: 0)
 
             Text(formattedNumber(drive.distanceMiles, fractionLength: 1, suffix: " mi"))
-                .font(.subheadline.weight(.semibold))
+                .font(.title3.weight(.semibold))
                 .monospacedDigit()
         }
         .padding(14)
-        .frame(width: dynamicTypeSize.isAccessibilitySize ? 340 : 270, alignment: .leading)
-        .frame(minHeight: dynamicTypeSize.isAccessibilitySize ? 148 : 108, alignment: .leading)
-        .background(
-            isSelected
-                ? Color(red: 0.07, green: 0.10, blue: 0.16)
-                : Color(uiColor: .secondarySystemGroupedBackground),
-            in: RoundedRectangle(cornerRadius: 20, style: .continuous)
-        )
+        .frame(width: dynamicTypeSize.isAccessibilitySize ? 340 : 250, alignment: .leading)
+        .frame(minHeight: dynamicTypeSize.isAccessibilitySize ? 160 : 118, alignment: .leading)
+        .appSurface(cornerRadius: AppTheme.tileCornerRadius)
         .overlay {
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .strokeBorder(
-                    isSelected
-                        ? Color.accentColor.opacity(0.55)
-                        : (colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.06)),
-                    lineWidth: isSelected ? 1 : 0.75
-                )
+            if isSelected {
+                RoundedRectangle(cornerRadius: AppTheme.tileCornerRadius, style: .continuous)
+                    .strokeBorder(Color.accentColor, lineWidth: 2)
+            }
         }
-        .foregroundStyle(isSelected ? Color.white : Color.primary)
-        .shadow(
-            color: Color.black.opacity(isSelected ? 0.14 : 0.04),
-            radius: isSelected ? 12 : 5,
-            y: isSelected ? 6 : 2
-        )
         .appEntityIdentifier(EntityIdentifier(for: DriveEntity.self, identifier: drive.sessionID))
     }
 }

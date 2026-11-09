@@ -1,5 +1,7 @@
 import AppIntents
+import CoreLocation
 import FleetKit
+import MapKit
 import SwiftUI
 
 struct VehicleControlDashboard: View {
@@ -16,7 +18,6 @@ struct VehicleControlDashboard: View {
     let onRefresh: () async -> Void
     let onControl: (String, [String: JSONValue]) async -> Bool
 
-    @Environment(\.colorScheme) private var colorScheme
     @State private var selectedMode: VehicleDashboardMode = .overview
     @State private var pendingCommand: VehicleControlCommand?
     @State private var isShowingConfirmation = false
@@ -45,8 +46,7 @@ struct VehicleControlDashboard: View {
 
                 VehicleHeroArtwork(
                     vehicleName: vehicle.name,
-                    vin: vehicle.vin,
-                    renderState: VehicleRenderState(snapshot: snapshot, vin: vehicle.vin)
+                    vin: vehicle.vin
                 )
                 .frame(maxWidth: 720)
 
@@ -78,9 +78,7 @@ struct VehicleControlDashboard: View {
         .padding(.horizontal, 18)
         .padding(.top, 8)
         .padding(.bottom, 22)
-        .frame(maxWidth: .infinity, minHeight: 710, alignment: .top)
-        .foregroundStyle(primaryColor)
-        .background(stageBackground)
+        .frame(maxWidth: .infinity, alignment: .top)
         .appEntityIdentifier(statusEntityIdentifier)
         .confirmationDialog(
             "Confirm vehicle command",
@@ -104,16 +102,6 @@ struct VehicleControlDashboard: View {
 
     private var snapshot: FleetLatestSnapshot? {
         vehicle.latest
-    }
-
-    private var stageBackground: Color {
-        colorScheme == .dark
-            ? Color(red: 0.018, green: 0.015, blue: 0.016)
-            : Color(red: 0.982, green: 0.974, blue: 0.968)
-    }
-
-    private var primaryColor: Color {
-        colorScheme == .dark ? .white : Color(red: 0.10, green: 0.10, blue: 0.11)
     }
 
     private var statusEntityIdentifier: EntityIdentifier? {
@@ -281,18 +269,20 @@ private struct VehicleDashboardHeader: View {
     let onRefresh: () async -> Void
     let onLockToggle: () -> Void
 
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
         HStack {
             Button(action: onLockToggle) {
                 Image(systemName: isLocked ? "lock.fill" : "lock.open.fill")
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(isLocked ? Color.primary : Color.orange)
+                    .contentTransition(.symbolEffect(.replace))
                     .frame(width: 44, height: 44)
-                    .background(controlBackground, in: Circle())
+                    .appSurface(cornerRadius: 22)
             }
             .buttonStyle(.plain)
             .disabled(isRunningControl)
             .accessibilityLabel(isLocked ? "Unlock vehicle" : "Lock vehicle")
+            .accessibilityValue(isLocked ? "Locked" : "Unlocked")
 
             Spacer(minLength: 8)
 
@@ -314,47 +304,39 @@ private struct VehicleDashboardHeader: View {
                         .font(.headline)
                         .lineLimit(1)
                     Image(systemName: "chevron.down")
-                        .font(.caption.weight(.semibold))
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.secondary)
                 }
                 .padding(.horizontal, 16)
-                .frame(minHeight: 42)
-                .background(controlBackground, in: Capsule())
-                .overlay {
-                    Capsule()
-                        .strokeBorder(borderColor, lineWidth: 0.75)
-                }
+                .frame(minHeight: 44)
+                .appSurface(cornerRadius: 22)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Select vehicle")
+            .accessibilityValue(vehicleName)
 
             Spacer(minLength: 8)
 
             Button {
                 Task { await onRefresh() }
             } label: {
-                if isRefreshing {
-                    ProgressView()
-                        .controlSize(.small)
-                        .frame(width: 44, height: 44)
-                } else {
-                    Image(systemName: "arrow.clockwise")
-                        .frame(width: 44, height: 44)
+                Group {
+                    if isRefreshing {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.body.weight(.semibold))
+                    }
                 }
+                .frame(width: 44, height: 44)
+                .appSurface(cornerRadius: 22)
             }
             .buttonStyle(.plain)
-            .background(controlBackground, in: Circle())
             .disabled(isRefreshing)
             .accessibilityLabel("Refresh vehicle")
         }
         .appEntityIdentifier(vehicleEntityIdentifier)
-    }
-
-    private var controlBackground: Color {
-        colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.045)
-    }
-
-    private var borderColor: Color {
-        colorScheme == .dark ? Color.white.opacity(0.15) : Color.black.opacity(0.10)
     }
 
     private var vehicleEntityIdentifier: EntityIdentifier? {
@@ -386,16 +368,15 @@ private struct VehicleRangeSummary: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
-            HStack(spacing: 6) {
-                Image(systemName: snapshot.latitude == nil ? "car.side.fill" : "location.fill")
-                Text(snapshot.latitude == nil ? "Vehicle status" : "Current location")
-                if let updatedAt = snapshot.updatedAtDate {
-                    Text("·")
-                    Text(updatedAt, style: .relative)
+            if let updatedAt = snapshot.updatedAtDate {
+                Label {
+                    RelativeTimeText(date: updatedAt, style: .updated)
+                } icon: {
+                    Image(systemName: "clock")
                 }
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
-            .font(.caption)
-            .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 18)
@@ -440,39 +421,54 @@ private struct VehicleRangeSummary: View {
 private struct VehicleModeSelector: View {
     @Binding var selection: VehicleDashboardMode
 
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Namespace private var selectionNamespace
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 4) {
             ForEach(VehicleDashboardMode.allCases) { mode in
+                let isSelected = selection == mode
+
                 Button {
-                    withAnimation(.easeInOut(duration: 0.18)) {
+                    withAnimation(reduceMotion ? nil : .snappy(duration: 0.25)) {
                         selection = mode
                     }
                 } label: {
-                    VStack(spacing: 7) {
+                    VStack(spacing: 3) {
                         Image(systemName: mode.systemImage)
-                            .font(.title3.weight(selection == mode ? .semibold : .regular))
-                            .foregroundStyle(selection == mode ? activeColor : .secondary)
-                            .frame(minWidth: 44, minHeight: 34)
+                            .font(.body.weight(.semibold))
+                            .frame(height: 22)
 
-                        Circle()
-                            .fill(selection == mode ? activeColor : .clear)
-                            .frame(width: 4, height: 4)
+                        // Labels are dropped at accessibility sizes so five segments still fit;
+                        // the accessibility label keeps the mode name available to VoiceOver.
+                        if !dynamicTypeSize.isAccessibilitySize {
+                            Text(mode.title)
+                                .font(.caption2.weight(.semibold))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.75)
+                        }
                     }
-                    .frame(maxWidth: .infinity)
+                    .foregroundStyle(isSelected ? Color.primary : Color.secondary)
+                    .frame(maxWidth: .infinity, minHeight: 50)
+                    .background {
+                        if isSelected {
+                            RoundedRectangle(cornerRadius: 15, style: .continuous)
+                                .fill(AppTheme.raisedSurface)
+                                .shadow(color: AppTheme.surfaceShadow, radius: 4, y: 1)
+                                .matchedGeometryEffect(id: "selection", in: selectionNamespace)
+                        }
+                    }
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(Text(mode.title))
-                .accessibilityAddTraits(selection == mode ? .isSelected : [])
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
             }
         }
-        .padding(.vertical, 10)
-    }
-
-    private var activeColor: Color {
-        colorScheme == .dark ? .white : Color(red: 0.12, green: 0.12, blue: 0.14)
+        .padding(4)
+        .background(AppTheme.segmentTrack, in: RoundedRectangle(cornerRadius: 19, style: .continuous))
+        .padding(.vertical, 12)
     }
 }
 
@@ -532,57 +528,64 @@ private struct VehicleOverviewPanel: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        ViewThatFits(in: .horizontal) {
-            HStack(alignment: .top, spacing: 10) {
-                ClimateControlTile(
-                    snapshot: snapshot,
-                    units: units,
-                    isBusy: isBusy(climateCommand),
-                    isEnabled: controlsEnabled,
-                    action: { onCommand(climateCommand) }
-                )
-                .frame(minWidth: 160)
+        if dynamicTypeSize.isAccessibilitySize {
+            stackedLayout
+        } else {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .top, spacing: 10) {
+                    ClimateControlTile(
+                        snapshot: snapshot,
+                        units: units,
+                        isBusy: isBusy(climateCommand),
+                        isEnabled: controlsEnabled,
+                        action: { onCommand(climateCommand) }
+                    )
+                    .frame(minWidth: 160)
 
-                VehicleQuickControlsGrid(
-                    commands: [
-                        (.ventWindows, "Vent", "rectangle.split.3x1.fill", .blue),
-                        (.flashLights, "Flash", "light.max", .yellow),
-                        (.trunk(isFront: true), "Frunk", "archivebox.fill", .orange),
-                        (.trunk(isFront: false), "Trunk", "shippingbox.fill", .orange)
-                    ],
-                    isRunningControl: isRunningControl,
-                    activeControlAction: activeControlAction,
-                    controlsEnabled: controlsEnabled,
-                    onCommand: onCommand,
-                    singleColumn: false
-                )
-                .frame(minWidth: 160)
-            }
+                    VehicleQuickControlsGrid(
+                        commands: quickCommands,
+                        isRunningControl: isRunningControl,
+                        activeControlAction: activeControlAction,
+                        controlsEnabled: controlsEnabled,
+                        onCommand: onCommand,
+                        singleColumn: false
+                    )
+                    .frame(minWidth: 160)
+                }
 
-            VStack(spacing: 10) {
-                ClimateControlTile(
-                    snapshot: snapshot,
-                    units: units,
-                    isBusy: isBusy(climateCommand),
-                    isEnabled: controlsEnabled,
-                    action: { onCommand(climateCommand) }
-                )
-
-                VehicleQuickControlsGrid(
-                    commands: [
-                        (.ventWindows, "Vent", "rectangle.split.3x1.fill", .blue),
-                        (.flashLights, "Flash", "light.max", .yellow),
-                        (.trunk(isFront: true), "Frunk", "archivebox.fill", .orange),
-                        (.trunk(isFront: false), "Trunk", "shippingbox.fill", .orange)
-                    ],
-                    isRunningControl: isRunningControl,
-                    activeControlAction: activeControlAction,
-                    controlsEnabled: controlsEnabled,
-                    onCommand: onCommand,
-                    singleColumn: dynamicTypeSize.isAccessibilitySize
-                )
+                stackedLayout
             }
         }
+    }
+
+    private var stackedLayout: some View {
+        VStack(spacing: 10) {
+            ClimateControlTile(
+                snapshot: snapshot,
+                units: units,
+                isBusy: isBusy(climateCommand),
+                isEnabled: controlsEnabled,
+                action: { onCommand(climateCommand) }
+            )
+
+            VehicleQuickControlsGrid(
+                commands: quickCommands,
+                isRunningControl: isRunningControl,
+                activeControlAction: activeControlAction,
+                controlsEnabled: controlsEnabled,
+                onCommand: onCommand,
+                singleColumn: dynamicTypeSize.isAccessibilitySize
+            )
+        }
+    }
+
+    private var quickCommands: [VehicleQuickControlsGrid.Item] {
+        [
+            (.ventWindows, "Vent", "rectangle.split.3x1.fill", .blue),
+            (.flashLights, "Flash", "light.max", .yellow),
+            (.trunk(isFront: true), "Frunk", "archivebox.fill", .orange),
+            (.trunk(isFront: false), "Trunk", "shippingbox.fill", .orange)
+        ]
     }
 
     private var climateCommand: VehicleControlCommand {
@@ -644,27 +647,68 @@ private struct VehicleLocationPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label("Current location", systemImage: "location.fill")
+            Label("Location", systemImage: "location.fill")
                 .font(.headline)
 
-            if snapshot.latitude != nil, snapshot.longitude != nil {
-                Text(formattedCoordinate(latitude: snapshot.latitude, longitude: snapshot.longitude))
-                    .font(.title3.weight(.semibold))
-                    .monospacedDigit()
-                    .fixedSize(horizontal: false, vertical: true)
+            if let coordinate {
+                Map(
+                    initialPosition: .camera(MapCamera(centerCoordinate: coordinate, distance: 1_400)),
+                    interactionModes: []
+                ) {
+                    Marker("Vehicle", systemImage: "car.fill", coordinate: coordinate)
+                        .tint(.blue)
+                }
+                .frame(height: 180)
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .accessibilityLabel("Map showing the vehicle's location")
+
+                HStack(alignment: .firstTextBaseline) {
+                    Text(formattedCoordinate(latitude: snapshot.latitude, longitude: snapshot.longitude))
+                        .font(.subheadline.weight(.medium))
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                        .textSelection(.enabled)
+
+                    Spacer(minLength: 12)
+
+                    if let mapsURL {
+                        Link(destination: mapsURL) {
+                            Label("Open in Maps", systemImage: "arrow.up.right")
+                                .font(.subheadline.weight(.semibold))
+                        }
+                    }
+                }
             } else {
-                Text("Location unavailable")
-                    .font(.title3.weight(.semibold))
+                ContentUnavailableView(
+                    "Location unavailable",
+                    systemImage: "location.slash",
+                    description: Text("The vehicle hasn't reported a location yet.")
+                )
             }
 
-            Text("Ask Siri to send a destination to your vehicle or open the Drives tab for route history.")
-                .font(.subheadline)
+            Text("Ask Siri to send a destination to your car, or open Drives for route history.")
+                .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .frame(maxWidth: .infinity, minHeight: 170, alignment: .leading)
-        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(18)
         .background(VehiclePanelBackground())
+    }
+
+    private var coordinate: CLLocationCoordinate2D? {
+        guard let latitude = snapshot.latitude, let longitude = snapshot.longitude else { return nil }
+        return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+
+    private var mapsURL: URL? {
+        guard let latitude = snapshot.latitude, let longitude = snapshot.longitude else { return nil }
+        var components = URLComponents(string: "https://maps.apple.com/")
+        components?.queryItems = [
+            URLQueryItem(name: "ll", value: "\(latitude),\(longitude)"),
+            URLQueryItem(name: "q", value: "Vehicle")
+        ]
+        return components?.url
     }
 }
 
@@ -748,9 +792,11 @@ private struct VehicleSecurityPanel: View {
 
                 Spacer()
 
-                Text(snapshot.sentryMode == true ? "Sentry on" : "Sentry off")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                StatusBadge(
+                    snapshot.sentryMode == true ? "Sentry on" : "Sentry off",
+                    systemImage: snapshot.sentryMode == true ? "eye.fill" : "eye.slash",
+                    tint: snapshot.sentryMode == true ? .red : .secondary
+                )
             }
 
             VehicleQuickControlsGrid(
@@ -784,73 +830,95 @@ private struct ClimateControlTile: View {
     let isEnabled: Bool
     let action: () -> Void
 
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Image(systemName: "fan.fill")
-                        .font(.title3)
-                        .foregroundStyle(.blue)
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(alignment: .center) {
+                    Image(systemName: isOn ? "fan.fill" : "fan")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(isOn ? Color.white : Color.blue)
+                        .frame(width: 38, height: 38)
+                        .background(isOn ? Color.blue : Color.blue.opacity(0.14), in: Circle())
+                        .symbolEffect(.rotate, options: .repeat(.continuous), isActive: isOn && !reduceMotion)
+
                     Spacer()
+
                     if isBusy {
                         ProgressView()
                             .controlSize(.small)
+                    } else {
+                        Text(isOn ? "On" : "Off")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(isOn ? Color.blue : Color.secondary)
                     }
                 }
 
-                Text(snapshot.climateOn == true ? "Cooling to" : "Cabin")
-                    .font(.subheadline.weight(.semibold))
+                Spacer(minLength: 14)
 
-                Text(targetTemperature)
+                Text(headline)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                Text(primaryTemperature)
                     .font(.system(.largeTitle, design: .rounded, weight: .medium))
                     .monospacedDigit()
+                    .contentTransition(.numericText())
 
-                Text(interiorTemperature)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.yellow)
-
-                Spacer(minLength: 8)
-
-                Text(snapshot.climateOn == true ? "ON" : "START")
-                    .font(.caption.weight(.bold))
+                Text(caption)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .frame(maxWidth: .infinity, minHeight: 156, alignment: .leading)
-            .padding(18)
-            .background(tileBackground)
+            .frame(maxWidth: .infinity, minHeight: 168, alignment: .leading)
+            .padding(16)
+            .appSurface(cornerRadius: AppTheme.tileCornerRadius)
             .overlay {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .strokeBorder(borderColor, lineWidth: snapshot.climateOn == true ? 1.5 : 0.75)
+                if isOn {
+                    RoundedRectangle(cornerRadius: AppTheme.tileCornerRadius, style: .continuous)
+                        .strokeBorder(Color.blue.opacity(0.6), lineWidth: 1.5)
+                }
             }
+            .opacity(isEnabled ? 1 : 0.5)
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled || isBusy)
-        .accessibilityLabel(snapshot.climateOn == true ? "Stop climate" : "Start climate")
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(isOn ? "Stop climate" : "Start climate")
+        .accessibilityValue("\(headline) \(primaryTemperature). \(caption)")
+    }
+
+    private var isOn: Bool {
+        snapshot.climateOn == true
     }
 
     private var temperatureSuffix: String {
         units == "metric" ? "°C" : "°F"
     }
 
-    private var targetTemperature: String {
-        formattedNumber(
-            snapshot.targetTemperature ?? snapshot.insideTemp,
-            fractionLength: 0,
-            suffix: temperatureSuffix
-        )
+    private var headline: String {
+        guard isOn else { return "Inside" }
+        guard let target = snapshot.targetTemperature, let inside = snapshot.insideTemp else {
+            return "Climate on"
+        }
+        if target < inside - 0.5 { return "Cooling to" }
+        if target > inside + 0.5 { return "Heating to" }
+        return "Holding at"
     }
 
-    private var interiorTemperature: String {
-        formattedNumber(snapshot.insideTemp, fractionLength: 0, suffix: "\(temperatureSuffix) interior")
+    private var primaryTemperature: String {
+        let value = isOn
+            ? (snapshot.targetTemperature ?? snapshot.insideTemp)
+            : (snapshot.insideTemp ?? snapshot.targetTemperature)
+        return formattedNumber(value, fractionLength: 0, suffix: temperatureSuffix)
     }
 
-    private var tileBackground: Color {
-        colorScheme == .dark ? Color.white.opacity(0.055) : Color.white.opacity(0.80)
-    }
-
-    private var borderColor: Color {
-        colorScheme == .dark ? Color.white.opacity(0.42) : Color.black.opacity(0.24)
+    private var caption: String {
+        if isOn {
+            return formattedNumber(snapshot.insideTemp, fractionLength: 0, suffix: "\(temperatureSuffix) inside")
+        }
+        return "Tap to start climate"
     }
 }
 
@@ -899,47 +967,36 @@ private struct VehicleActionTile: View {
     let isEnabled: Bool
     let action: () -> Void
 
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
         Button(action: action) {
             VStack(spacing: 8) {
-                if isBusy {
-                    ProgressView()
-                        .controlSize(.small)
-                        .frame(height: 24)
-                } else {
-                    Image(systemName: systemImage)
-                        .font(.title3.weight(.medium))
-                        .foregroundStyle(tint)
-                        .frame(height: 24)
+                Group {
+                    if isBusy {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Image(systemName: systemImage)
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(.primary)
+                    }
                 }
+                .frame(width: 40, height: 40)
+                .background(tint.opacity(0.2), in: Circle())
 
                 Text(title)
                     .font(.caption.weight(.semibold))
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            .frame(maxWidth: .infinity, minHeight: 74)
+            .frame(maxWidth: .infinity, minHeight: 79)
             .padding(.horizontal, 8)
-            .padding(.vertical, 8)
-            .background(tileBackground)
-            .overlay {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .strokeBorder(borderColor, lineWidth: 0.75)
-            }
+            .padding(.vertical, 10)
+            .appSurface(cornerRadius: 18)
+            .opacity(isEnabled ? 1 : 0.5)
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled || isBusy)
         .accessibilityLabel(Text(title))
-    }
-
-    private var tileBackground: Color {
-        colorScheme == .dark ? Color.white.opacity(0.055) : Color.white.opacity(0.76)
-    }
-
-    private var borderColor: Color {
-        colorScheme == .dark ? Color.white.opacity(0.16) : Color.black.opacity(0.12)
     }
 }
 
@@ -960,7 +1017,7 @@ private struct VehicleMetricTile: View {
         }
         .frame(maxWidth: .infinity, minHeight: 58, alignment: .leading)
         .padding(12)
-        .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(AppTheme.insetSurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 
@@ -988,18 +1045,9 @@ private struct VehicleControlMessage: View {
 }
 
 private struct VehiclePanelBackground: View {
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
-        RoundedRectangle(cornerRadius: 24, style: .continuous)
-            .fill(colorScheme == .dark ? Color.white.opacity(0.045) : Color.white.opacity(0.62))
-            .overlay {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .strokeBorder(
-                        colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.08),
-                        lineWidth: 0.75
-                    )
-            }
+        Color.clear
+            .appSurface()
     }
 }
 
@@ -1033,7 +1081,7 @@ private struct VehicleUnavailableStage: View {
             onControl: { _, _ in true }
         )
     }
-    .environment(VehicleRendererDebugSettings())
+    .background(AppScreenBackground())
 }
 
 #Preview("Showroom — Dark") {
@@ -1053,8 +1101,8 @@ private struct VehicleUnavailableStage: View {
             onControl: { _, _ in true }
         )
     }
+    .background(AppScreenBackground())
     .preferredColorScheme(.dark)
-    .environment(VehicleRendererDebugSettings())
 }
 
 #Preview("Showroom — Accessibility") {
@@ -1074,6 +1122,6 @@ private struct VehicleUnavailableStage: View {
             onControl: { _, _ in true }
         )
     }
+    .background(AppScreenBackground())
     .environment(\.dynamicTypeSize, .accessibility2)
-    .environment(VehicleRendererDebugSettings())
 }

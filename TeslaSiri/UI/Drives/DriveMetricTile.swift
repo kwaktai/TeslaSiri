@@ -33,9 +33,10 @@ struct DriveMetricTile: View {
         .padding(12)
         .frame(maxWidth: .infinity, minHeight: 70, alignment: .leading)
         .background(
-            Color(uiColor: .tertiarySystemGroupedBackground),
+            AppTheme.insetSurface,
             in: RoundedRectangle(cornerRadius: 16, style: .continuous)
         )
+        .accessibilityElement(children: .combine)
     }
 }
 

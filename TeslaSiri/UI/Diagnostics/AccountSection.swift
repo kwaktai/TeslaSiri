@@ -39,11 +39,11 @@ private struct AccountRow: View {
 #Preview("Imperial") {
     AccountSection(email: PreviewData.user.email, units: PreviewData.user.units, scopes: PreviewData.user.scopes)
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }
 
 #Preview("Metric") {
     AccountSection(email: PreviewData.userMetric.email, units: PreviewData.userMetric.units, scopes: PreviewData.userMetric.scopes)
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }

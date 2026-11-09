@@ -30,7 +30,7 @@ struct DashboardView: View {
             .padding(.bottom, 32)
         }
         .scrollIndicators(.hidden)
-        .background(Color(uiColor: .systemBackground).ignoresSafeArea())
+        .background(AppScreenBackground())
         .toolbar(.hidden, for: .navigationBar)
         .refreshable {
             guard isSignedIn else { return }
@@ -115,6 +115,7 @@ private struct DashboardLoadedContent: View {
 
             DashboardSecondaryContent(store: store)
                 .padding(.horizontal, 18)
+                .readableContentWidth()
         }
     }
 }
@@ -219,8 +220,6 @@ private struct DashboardPreviewer: View {
     let isSignedIn: Bool
     let isAuthenticating: Bool
 
-    @State private var rendererDebugSettings = VehicleRendererDebugSettings()
-
     init(
         store: FleetDataStore? = nil,
         isSignedIn: Bool = true,
@@ -241,7 +240,6 @@ private struct DashboardPreviewer: View {
                 onReload: {}
             )
         }
-        .environment(rendererDebugSettings)
     }
 }
 

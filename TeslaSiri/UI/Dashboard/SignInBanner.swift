@@ -11,31 +11,29 @@ struct SignInBanner: View {
         VStack(alignment: .leading, spacing: 18) {
             bannerHeader
 
-            SecureField(text: $accessToken, prompt: Text("Tessie access token").foregroundStyle(.white.opacity(0.58))) {
+            SecureField(text: $accessToken, prompt: Text("Tessie access token")) {
                 Text("Tessie access token")
             }
-                .foregroundStyle(.white)
-                .tint(.white)
                 .textContentType(.password)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .privacySensitive()
+                .submitLabel(.go)
                 .padding(.horizontal, 14)
-                .frame(minHeight: 48)
-                .background(Color.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .frame(minHeight: 50)
+                .background(AppTheme.insetSurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .overlay {
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .strokeBorder(Color.white.opacity(0.16))
+                        .strokeBorder(AppTheme.hairline)
                 }
                 .onSubmit(connect)
-
-            tokenHelp
 
             Button(action: connect) {
                 HStack(spacing: 8) {
                     if isAuthenticating {
                         ProgressView()
                             .controlSize(.small)
+                            .tint(.white)
                     } else {
                         Image(systemName: "key.fill")
                     }
@@ -47,39 +45,15 @@ struct SignInBanner: View {
                 }
                 .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.glassProminent)
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
             .controlSize(.large)
             .disabled(isAuthenticating || trimmedToken.isEmpty)
+
+            tokenHelp
         }
         .padding(20)
-        .foregroundStyle(.white)
-        .background {
-            ZStack(alignment: .bottomTrailing) {
-                RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color(red: 0.10, green: 0.18, blue: 0.34),
-                                Color(red: 0.18, green: 0.09, blue: 0.28)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-
-                Circle()
-                    .fill(Color.accentColor.opacity(0.38))
-                    .frame(width: 160, height: 160)
-                    .blur(radius: 30)
-                    .offset(x: 64, y: 70)
-            }
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.14), lineWidth: 0.75)
-        }
-        .shadow(color: Color.black.opacity(0.16), radius: 18, y: 9)
+        .appSurface(cornerRadius: 28)
     }
 
     @ViewBuilder
@@ -99,19 +73,22 @@ struct SignInBanner: View {
 
     private var bannerIcon: some View {
         Image(systemName: "car.side.fill")
-            .font(.title2)
-            .padding(11)
-            .background(Color.white.opacity(0.12), in: Circle())
+            .font(.title3.weight(.semibold))
+            .foregroundStyle(.white)
+            .frame(width: 48, height: 48)
+            .background(Color.accentColor.gradient, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .accessibilityHidden(true)
     }
 
     private var bannerCopy: some View {
-        VStack(alignment: .leading, spacing: 5) {
+        VStack(alignment: .leading, spacing: 4) {
             Text("Connect with Tessie")
                 .font(.title3.weight(.bold))
                 .fixedSize(horizontal: false, vertical: true)
-            Text("Use a Tessie access token for live status, drive history, charging, and vehicle controls.")
+                .accessibilityAddTraits(.isHeader)
+            Text("Paste a Tessie access token to unlock live status, drive history, charging, and vehicle controls.")
                 .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.72))
+                .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -141,9 +118,9 @@ struct SignInBanner: View {
     }
 
     private var keychainNote: some View {
-        Text("Stored in Keychain")
+        Label("Stored in Keychain", systemImage: "lock.fill")
             .font(.footnote)
-            .foregroundStyle(.white.opacity(0.62))
+            .foregroundStyle(.secondary)
             .fixedSize(horizontal: false, vertical: true)
     }
 

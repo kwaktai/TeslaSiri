@@ -35,9 +35,9 @@ struct ChargingSessionRow: View {
     let avgPowerKW: Double?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Label(status ?? "Charging", systemImage: "bolt.fill")
+                Label(status.map(humanizedStatus) ?? "Charging", systemImage: "bolt.fill")
                     .font(.subheadline.weight(.semibold))
                 Spacer()
                 Text(startedAt, style: .time)
@@ -45,42 +45,57 @@ struct ChargingSessionRow: View {
                     .foregroundStyle(.secondary)
             }
 
-            HStack(spacing: 16) {
-                Label {
-                    Text(formattedNumber(energyAddedKWH, fractionLength: 1, suffix: " kWh"))
-                        .font(.subheadline.weight(.medium))
-                        .monospacedDigit()
-                } icon: {
-                    Image(systemName: "battery.100")
-                        .foregroundStyle(.tint)
-                }
-                Label {
-                    Text(formattedNumber(avgPowerKW, fractionLength: 1, suffix: " kW avg"))
-                        .font(.subheadline.weight(.medium))
-                        .monospacedDigit()
-                } icon: {
-                    Image(systemName: "bolt")
-                        .foregroundStyle(.tint)
-                }
+            HStack(spacing: 10) {
+                ChargingMetric(
+                    title: "Energy added",
+                    value: formattedNumber(energyAddedKWH, fractionLength: 1, suffix: " kWh"),
+                    systemImage: "battery.100.bolt"
+                )
+                ChargingMetric(
+                    title: "Average power",
+                    value: formattedNumber(avgPowerKW, fractionLength: 1, suffix: " kW"),
+                    systemImage: "bolt"
+                )
             }
         }
+    }
+}
+
+private struct ChargingMetric: View {
+    let title: String
+    let value: String
+    let systemImage: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Label(title, systemImage: systemImage)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.headline)
+                .monospacedDigit()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(AppTheme.insetSurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .accessibilityElement(children: .combine)
     }
 }
 
 #Preview("With sessions") {
     ChargingCard(sessions: PreviewData.chargeSessions)
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }
 
 #Preview("Empty") {
     ChargingCard(sessions: [])
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }
 
 #Preview("Single session") {
     ChargingCard(sessions: [PreviewData.chargeSessions[0]])
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }

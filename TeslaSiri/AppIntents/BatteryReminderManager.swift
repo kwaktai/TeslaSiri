@@ -37,14 +37,14 @@ final class BatteryReminderManager {
     func prepare() async {
         _ = try? await UNUserNotificationCenter.current()
             .requestAuthorization(options: [.alert, .sound])
-        schedule()
+        await schedule()
     }
 
-    func schedule() {
+    func schedule() async {
         let request = BGAppRefreshTaskRequest(identifier: Self.taskIdentifier)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 3 * 60 * 60)
         do {
-            try BGTaskScheduler.shared.submit(request)
+            try await BGTaskScheduler.shared.submitTaskRequest(request)
             logger.info("Scheduled next battery check")
         } catch {
             logger.warning("Failed to schedule battery check — \(error.localizedDescription, privacy: .public)")
@@ -53,9 +53,9 @@ final class BatteryReminderManager {
 
     private func handle(_ task: BGAppRefreshTask) {
         logger.notice("Background battery check started")
-        schedule()
 
         let work = Task {
+            await schedule()
             await checkBatteryAndNotify()
             task.setTaskCompleted(success: !Task.isCancelled)
         }

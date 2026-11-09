@@ -26,5 +26,5 @@ struct AppIntentDiscoveryCard: View {
 #Preview {
     AppIntentDiscoveryCard()
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }

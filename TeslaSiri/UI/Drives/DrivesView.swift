@@ -63,25 +63,25 @@ struct DrivesView: View {
                             .controlSize(.large)
                             .appEntityIdentifier(driveEntityIdentifier(for: selectedDrive))
                         } else {
-                            CardContainer(title: "Route position", systemImage: "mappin.and.ellipse") {
-                                DriveRoutePositionScrubber(
-                                    sampleCount: route.count,
-                                    selectedSampleIndex: $selectedPointIndex,
-                                    driveSessionID: selectedDrive.sessionID
-                                )
-                            }
-
-                            if let selectedPoint = route[safe: selectedPointIndex] {
-                                CardContainer(title: "Selected position", systemImage: "scope") {
-                                    DriveRoutePositionSummary(
-                                        point: selectedPoint,
-                                        index: selectedPointIndex,
-                                        count: route.count,
+                            CardContainer(title: "Route playback", systemImage: "mappin.and.ellipse") {
+                                VStack(alignment: .leading, spacing: 16) {
+                                    DriveRoutePositionScrubber(
+                                        sampleCount: route.count,
+                                        selectedSampleIndex: $selectedPointIndex,
                                         driveSessionID: selectedDrive.sessionID
                                     )
+
+                                    if let selectedPoint = route[safe: selectedPointIndex] {
+                                        DriveRoutePositionSummary(
+                                            point: selectedPoint,
+                                            index: selectedPointIndex,
+                                            count: route.count,
+                                            driveSessionID: selectedDrive.sessionID
+                                        )
+                                    }
                                 }
-                                .appEntityIdentifier(driveEntityIdentifier(for: selectedDrive))
                             }
+                            .appEntityIdentifier(driveEntityIdentifier(for: selectedDrive))
                         }
                     }
                 }
@@ -89,11 +89,12 @@ struct DrivesView: View {
             .padding(.horizontal, 18)
             .padding(.top, 12)
             .padding(.bottom, 32)
+            .readableContentWidth()
         }
         .scrollIndicators(.hidden)
         .background(AppScreenBackground())
         .navigationTitle("Drives")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -184,8 +185,6 @@ private struct DriveMapCard: View {
     @Binding var selectedPointIndex: Int
     let onLoadRoute: () async -> Void
 
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
         DriveRouteMap(
             route: route,
@@ -193,29 +192,22 @@ private struct DriveMapCard: View {
             driveSessionID: drive.sessionID
         )
         .frame(height: 286)
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous))
         .overlay(alignment: .topLeading) {
             if !route.isEmpty {
-                Label("Route", systemImage: "map.fill")
+                Label(formattedNumber(drive.distanceMiles, fractionLength: 1, suffix: " mi route"), systemImage: "map.fill")
                     .font(.caption.weight(.semibold))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .glassEffect(.regular, in: .capsule)
+                    .background(.regularMaterial, in: Capsule())
                     .padding(12)
             }
         }
         .overlay {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .strokeBorder(
-                    colorScheme == .dark ? Color.white.opacity(0.10) : Color.white.opacity(0.85),
-                    lineWidth: 0.75
-                )
+            RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous)
+                .strokeBorder(AppTheme.hairline, lineWidth: 0.75)
         }
-        .shadow(
-            color: Color.black.opacity(colorScheme == .dark ? 0.20 : 0.08),
-            radius: 18,
-            y: 9
-        )
+        .shadow(color: AppTheme.surfaceShadow, radius: 10, y: 3)
         .task(id: drive.sessionID) {
             selectedPointIndex = 0
             if route.isEmpty {

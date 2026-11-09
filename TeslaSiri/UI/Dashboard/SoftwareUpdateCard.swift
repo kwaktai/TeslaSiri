@@ -21,19 +21,14 @@ struct SoftwareUpdateCard: View {
             VStack(alignment: .leading, spacing: 12) {
                 VersionRow(label: "Current", value: update.currentVersion ?? "--")
                 VersionRow(label: "Available", value: update.availableVersion ?? "--")
-                ScrollView(.horizontal, showsIndicators: false) {
+                ViewThatFits(in: .horizontal) {
                     HStack(spacing: 8) {
-                        StatusBadge(
-                            update.updateAvailable ? "Update available" : (update.status ?? "Unknown"),
-                            systemImage: statusIcon,
-                            tint: statusTint
-                        )
-                        if update.installable {
-                            StatusBadge("Ready to install", systemImage: "checkmark.circle", tint: .green)
-                        }
+                        softwareBadges
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        softwareBadges
                     }
                 }
-                .contentMargins(.horizontal, 1, for: .scrollContent)
 
                 if let downloadPercent = update.downloadPercent {
                     ProgressLine(label: "Downloaded", percent: downloadPercent)
@@ -43,18 +38,18 @@ struct SoftwareUpdateCard: View {
                 }
 
                 if let scheduledStartDate = update.scheduledStartDate {
-                    LabeledContent("Scheduled", value: scheduledStartDate.formatted(date: .abbreviated, time: .shortened))
+                    VersionRow(label: "Scheduled", value: scheduledStartDate.formatted(date: .abbreviated, time: .shortened))
                 }
                 if let warningMS = update.warningTimeRemainingMS {
-                    LabeledContent("Warning remaining", value: formattedDuration(milliseconds: warningMS))
+                    VersionRow(label: "Warning remaining", value: formattedDuration(milliseconds: warningMS))
                 }
                 if let expectedDurationSec = update.expectedDurationSec {
-                    LabeledContent("Expected duration", value: formattedDuration(milliseconds: Int64(expectedDurationSec) * 1_000))
+                    VersionRow(label: "Expected duration", value: formattedDuration(milliseconds: Int64(expectedDurationSec) * 1_000))
                 } else if let expectedDurationMinutes = update.expectedDurationMinutes {
-                    LabeledContent("Expected duration", value: formattedNumber(expectedDurationMinutes, fractionLength: 0, suffix: " min"))
+                    VersionRow(label: "Expected duration", value: formattedNumber(expectedDurationMinutes, fractionLength: 0, suffix: " min"))
                 }
                 if let updatedAt = update.updatedAtDate {
-                    LabeledContent("Updated", value: updatedAt.formatted(date: .abbreviated, time: .shortened))
+                    VersionRow(label: "Checked", value: updatedAt.formatted(date: .abbreviated, time: .shortened))
                 }
 
                 if !store.softwareActionMessage.isEmpty,
@@ -71,7 +66,7 @@ struct SoftwareUpdateCard: View {
                         Label("Refresh", systemImage: "arrow.clockwise")
                     }
                     .buttonStyle(.bordered)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .disabled(store.isLoadingSoftware || store.isMutatingSoftware)
 
                     if update.installable {
@@ -81,7 +76,7 @@ struct SoftwareUpdateCard: View {
                             Label("Install Now", systemImage: "arrow.down.circle")
                         }
                         .buttonStyle(.borderedProminent)
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .disabled(store.isLoadingSoftware || store.isMutatingSoftware)
                     }
 
@@ -92,7 +87,7 @@ struct SoftwareUpdateCard: View {
                             Label("Cancel", systemImage: "xmark.circle")
                         }
                         .buttonStyle(.bordered)
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .disabled(store.isLoadingSoftware || store.isMutatingSoftware)
                     }
                 }
@@ -100,7 +95,7 @@ struct SoftwareUpdateCard: View {
                 if !update.releaseNotes.isEmpty {
                     Divider()
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Changelog")
+                        Text("Release notes")
                             .font(.subheadline.weight(.semibold))
                         ForEach(Array(update.releaseNotes.prefix(3))) { note in
                             SoftwareReleaseNoteRow(
@@ -141,6 +136,18 @@ struct SoftwareUpdateCard: View {
             case .cancel:
                 Text("Cancel the pending software update countdown for this vehicle.")
             }
+        }
+    }
+
+    @ViewBuilder
+    private var softwareBadges: some View {
+        StatusBadge(
+            update.updateAvailable ? "Update available" : humanizedStatus(update.status ?? "Unknown"),
+            systemImage: statusIcon,
+            tint: statusTint
+        )
+        if update.installable {
+            StatusBadge("Ready to install", systemImage: "checkmark.circle", tint: .green)
         }
     }
 
@@ -281,19 +288,19 @@ private struct SoftwareUpdatePreviewer: View {
 #Preview("Available - installable") {
     SoftwareUpdatePreviewer(update: PreviewData.softwareUpdateAvailable)
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }
 
 #Preview("Scheduled") {
     SoftwareUpdatePreviewer(update: PreviewData.softwareUpdateScheduled)
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }
 
 #Preview("Up to date") {
     SoftwareUpdatePreviewer(update: PreviewData.softwareUpdateUpToDate)
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }
 
 #Preview("Release note") {
@@ -303,5 +310,5 @@ private struct SoftwareUpdatePreviewer: View {
         version: PreviewData.softwareUpdateAvailable.availableVersion
     )
         .padding()
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(AppScreenBackground())
 }

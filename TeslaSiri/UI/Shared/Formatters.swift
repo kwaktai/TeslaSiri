@@ -29,6 +29,16 @@ func formattedDuration(milliseconds: Int64?) -> String {
     return "\(seconds) sec"
 }
 
+/// Turns raw backend states such as "In_Progress" or "charging" into "In progress" / "Charging".
+func humanizedStatus(_ raw: String) -> String {
+    let spaced = raw
+        .replacingOccurrences(of: "_", with: " ")
+        .trimmingCharacters(in: .whitespacesAndNewlines)
+        .lowercased()
+    guard let first = spaced.first else { return raw }
+    return first.uppercased() + spaced.dropFirst()
+}
+
 func formattedCoordinate(latitude: Double?, longitude: Double?) -> String {
     guard let latitude, let longitude else {
         return "--"
