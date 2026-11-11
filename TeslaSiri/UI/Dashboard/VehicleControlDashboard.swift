@@ -4,133 +4,7 @@ import FleetKit
 import MapKit
 import SwiftUI
 
-struct VehicleControlDashboard: View {
-    let vehicle: FleetVehicle
-    let vehicles: [FleetVehicle]
-    let selectedVIN: String?
-    let units: String?
-    let isRefreshing: Bool
-    let isRunningControl: Bool
-    let activeControlAction: String?
-    let controlMessage: String?
-    let controlsEnabled: Bool
-    let onSelectVehicle: (String) -> Void
-    let onRefresh: () async -> Void
-    let onControl: (String, [String: JSONValue]) async -> Bool
-
-    @State private var selectedMode: VehicleDashboardMode = .overview
-    @State private var pendingCommand: VehicleControlCommand?
-    @State private var isShowingConfirmation = false
-
-    var body: some View {
-        VStack(spacing: 0) {
-            VehicleDashboardHeader(
-                vehicleName: vehicle.name,
-                vin: vehicle.vin,
-                vehicles: vehicles,
-                selectedVIN: selectedVIN,
-                isLocked: snapshot?.locked ?? true,
-                isRefreshing: isRefreshing,
-                isRunningControl: isRunningControl,
-                onSelectVehicle: onSelectVehicle,
-                onRefresh: onRefresh,
-                onLockToggle: {
-                    request(.lock(shouldLock: !(snapshot?.locked ?? true)))
-                }
-            )
-            .frame(maxWidth: 720)
-
-            if let snapshot {
-                VehicleRangeSummary(snapshot: snapshot, units: units)
-                    .frame(maxWidth: 720)
-
-                VehicleHeroArtwork(
-                    vehicleName: vehicle.name,
-                    vin: vehicle.vin
-                )
-                .frame(maxWidth: 720)
-
-                VehicleModeSelector(selection: $selectedMode)
-                    .frame(maxWidth: 720)
-
-                VehicleModePanel(
-                    mode: selectedMode,
-                    snapshot: snapshot,
-                    units: units,
-                    isRunningControl: isRunningControl,
-                    activeControlAction: activeControlAction,
-                    controlsEnabled: controlsEnabled,
-                    onCommand: request
-                )
-                .frame(maxWidth: 720)
-
-                if let controlMessage {
-                    VehicleControlMessage(
-                        message: controlMessage,
-                        isRunning: isRunningControl
-                    )
-                    .padding(.top, 12)
-                }
-            } else {
-                VehicleUnavailableStage(vehicleName: vehicle.name)
-            }
-        }
-        .padding(.horizontal, 18)
-        .padding(.top, 8)
-        .padding(.bottom, 22)
-        .frame(maxWidth: .infinity, alignment: .top)
-        .appEntityIdentifier(statusEntityIdentifier)
-        .confirmationDialog(
-            "Confirm vehicle command",
-            isPresented: $isShowingConfirmation,
-            titleVisibility: .visible
-        ) {
-            if let pendingCommand {
-                Button(role: pendingCommand.buttonRole) {
-                    perform(pendingCommand)
-                } label: {
-                    Text(pendingCommand.title)
-                }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            if let pendingCommand {
-                Text(pendingCommand.confirmationMessage(vehicleName: vehicle.name))
-            }
-        }
-    }
-
-    private var snapshot: FleetLatestSnapshot? {
-        vehicle.latest
-    }
-
-    private var statusEntityIdentifier: EntityIdentifier? {
-        guard let vin = snapshot?.vin, !vin.isEmpty else { return nil }
-        return EntityIdentifier(
-            for: VehicleStatusEntity.self,
-            identifier: VehicleStatusEntity.entityID(forVIN: vin)
-        )
-    }
-
-    private func request(_ command: VehicleControlCommand) {
-        guard controlsEnabled, !isRunningControl else { return }
-        if command.requiresConfirmation {
-            pendingCommand = command
-            isShowingConfirmation = true
-        } else {
-            perform(command)
-        }
-    }
-
-    private func perform(_ command: VehicleControlCommand) {
-        pendingCommand = nil
-        Task {
-            _ = await onControl(command.action, command.parameters)
-        }
-    }
-}
-
-private enum VehicleDashboardMode: String, CaseIterable, Identifiable {
+enum VehicleDashboardMode: String, CaseIterable, Identifiable {
     case overview
     case climate
     case location
@@ -160,7 +34,7 @@ private enum VehicleDashboardMode: String, CaseIterable, Identifiable {
     }
 }
 
-private enum VehicleControlCommand: Hashable, Identifiable {
+enum VehicleControlCommand: Hashable, Identifiable {
     case climate(shouldTurnOn: Bool)
     case defrost(shouldTurnOn: Bool)
     case flashLights
@@ -257,168 +131,182 @@ private enum VehicleControlCommand: Hashable, Identifiable {
     }
 }
 
-private struct VehicleDashboardHeader: View {
-    let vehicleName: String
-    let vin: String
+struct VehicleControlDashboard: View {
+    let vehicle: FleetVehicle
     let vehicles: [FleetVehicle]
     let selectedVIN: String?
-    let isLocked: Bool
+    let units: String?
     let isRefreshing: Bool
     let isRunningControl: Bool
+    let activeControlAction: String?
+    let controlMessage: String?
+    let controlsEnabled: Bool
     let onSelectVehicle: (String) -> Void
     let onRefresh: () async -> Void
-    let onLockToggle: () -> Void
+    let onControl: (String, [String: JSONValue]) async -> Bool
+
+    @Environment(\.duoPosture) private var duoPosture
+    @State private var selectedMode: VehicleDashboardMode = .overview
+    @State private var pendingCommand: VehicleControlCommand?
+    @State private var isShowingConfirmation = false
 
     var body: some View {
-        HStack {
-            Button(action: onLockToggle) {
-                Image(systemName: isLocked ? "lock.fill" : "lock.open.fill")
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(isLocked ? Color.primary : Color.orange)
-                    .contentTransition(.symbolEffect(.replace))
-                    .frame(width: 44, height: 44)
-                    .appSurface(cornerRadius: 22)
-            }
-            .buttonStyle(.plain)
-            .disabled(isRunningControl)
-            .accessibilityLabel(isLocked ? "Unlock vehicle" : "Lock vehicle")
-            .accessibilityValue(isLocked ? "Locked" : "Unlocked")
+        VStack(spacing: duoPosture.prefersCompactHero ? 10 : 14) {
+            VehicleHeroStage(
+                vehicle: vehicle,
+                units: units,
+                compact: duoPosture.prefersCompactHero
+            )
+            .frame(maxWidth: AppTheme.contentMaxWidth)
 
-            Spacer(minLength: 8)
+            if let snapshot = vehicle.latest {
+                VehicleModeSelector(selection: $selectedMode)
+                    .frame(maxWidth: AppTheme.contentMaxWidth)
 
-            Menu {
-                ForEach(vehicles, id: \.vin) { vehicle in
-                    Button {
-                        onSelectVehicle(vehicle.vin)
-                    } label: {
-                        if vehicle.vin == selectedVIN {
-                            Label(vehicle.name, systemImage: "checkmark")
-                        } else {
-                            Text(vehicle.name)
-                        }
-                    }
-                }
-            } label: {
-                HStack(spacing: 7) {
-                    Text(vehicleName)
-                        .font(.headline)
-                        .lineLimit(1)
-                    Image(systemName: "chevron.down")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.horizontal, 16)
-                .frame(minHeight: 44)
-                .appSurface(cornerRadius: 22)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Select vehicle")
-            .accessibilityValue(vehicleName)
-
-            Spacer(minLength: 8)
-
-            Button {
-                Task { await onRefresh() }
-            } label: {
-                Group {
-                    if isRefreshing {
-                        ProgressView()
-                            .controlSize(.small)
-                    } else {
-                        Image(systemName: "arrow.clockwise")
-                            .font(.body.weight(.semibold))
-                    }
-                }
-                .frame(width: 44, height: 44)
-                .appSurface(cornerRadius: 22)
-            }
-            .buttonStyle(.plain)
-            .disabled(isRefreshing)
-            .accessibilityLabel("Refresh vehicle")
-        }
-        .appEntityIdentifier(vehicleEntityIdentifier)
-    }
-
-    private var vehicleEntityIdentifier: EntityIdentifier? {
-        guard !vin.isEmpty else { return nil }
-        return EntityIdentifier(for: VehicleEntity.self, identifier: vin)
-    }
-}
-
-private struct VehicleRangeSummary: View {
-    let snapshot: FleetLatestSnapshot
-    let units: String?
-
-    @ScaledMetric(relativeTo: .largeTitle) private var rangeFontSize: CGFloat = 62
-
-    var body: some View {
-        VStack(spacing: 7) {
-            HStack(alignment: .lastTextBaseline, spacing: 7) {
-                Text(rangeValue)
-                    .font(.system(size: rangeFontSize, weight: .light, design: .rounded))
-                    .monospacedDigit()
-                    .contentTransition(.numericText())
-                Text(rangeUnit)
-                    .font(.title2.weight(.medium))
-                    .foregroundStyle(.secondary)
-            }
-
-            Text(statusSummary)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-
-            if let updatedAt = snapshot.updatedAtDate {
-                Label {
-                    RelativeTimeText(date: updatedAt, style: .updated)
-                } icon: {
-                    Image(systemName: "clock")
-                }
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                VehicleControlDeck(
+                    mode: selectedMode,
+                    snapshot: snapshot,
+                    units: units,
+                    isRunningControl: isRunningControl,
+                    activeControlAction: activeControlAction,
+                    controlMessage: controlMessage,
+                    controlsEnabled: controlsEnabled,
+                    onCommand: request
+                )
+                .frame(maxWidth: AppTheme.contentMaxWidth)
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 18)
-        .padding(.bottom, 4)
+        .padding(.horizontal, 18)
+        .padding(.top, 6)
+        .padding(.bottom, 16)
+        .frame(maxWidth: .infinity, alignment: .top)
         .appEntityIdentifier(statusEntityIdentifier)
-    }
-
-    private var rangeValue: String {
-        guard let batteryRange = snapshot.batteryRange else {
-            return formattedNumber(snapshot.batteryLevel, fractionLength: 0)
-        }
-        let value = units == "metric" ? batteryRange * 1.609_344 : batteryRange
-        return formattedNumber(value, fractionLength: 0)
-    }
-
-    private var rangeUnit: String {
-        snapshot.batteryRange == nil ? "%" : (units == "metric" ? "km" : "mi")
-    }
-
-    private var statusSummary: String {
-        if snapshot.chargingState?.localizedCaseInsensitiveContains("charging") == true {
-            if let remaining = snapshot.timeToFullCharge, remaining > 0 {
-                return "Charging · \(formattedNumber(remaining, fractionLength: 1, suffix: " hr remaining"))"
-            }
-            return "Charging"
-        }
-        if let speed = snapshot.speed, speed > 0 {
-            return "Driving · \(formattedNumber(speed, fractionLength: 0, suffix: " mph"))"
-        }
-        return "Parked · \(formattedNumber(snapshot.batteryLevel, fractionLength: 0, suffix: "% battery"))"
+        .vehicleCommandConfirmation(
+            vehicleName: vehicle.name,
+            pendingCommand: $pendingCommand,
+            isPresented: $isShowingConfirmation,
+            onConfirm: perform
+        )
     }
 
     private var statusEntityIdentifier: EntityIdentifier? {
-        guard !snapshot.vin.isEmpty else { return nil }
+        guard let vin = vehicle.latest?.vin, !vin.isEmpty else { return nil }
         return EntityIdentifier(
             for: VehicleStatusEntity.self,
-            identifier: VehicleStatusEntity.entityID(forVIN: snapshot.vin)
+            identifier: VehicleStatusEntity.entityID(forVIN: vin)
         )
+    }
+
+    private func request(_ command: VehicleControlCommand) {
+        guard controlsEnabled, !isRunningControl else { return }
+        if command.requiresConfirmation {
+            pendingCommand = command
+            isShowingConfirmation = true
+        } else {
+            perform(command)
+        }
+    }
+
+    private func perform(_ command: VehicleControlCommand) {
+        pendingCommand = nil
+        Task {
+            _ = await onControl(command.action, command.parameters)
+        }
     }
 }
 
-private struct VehicleModeSelector: View {
+/// Visual telemetry & hero stage used in both compact single-column and split `ArrangementView` primary panes.
+struct VehicleHeroStage: View {
+    let vehicle: FleetVehicle
+    let units: String?
+    var compact: Bool = false
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        if let snapshot = vehicle.latest {
+            Group {
+                if compact && !dynamicTypeSize.isAccessibilitySize {
+                    HStack(alignment: .center, spacing: 14) {
+                        VehicleRangeSummary(
+                            vehicleName: vehicle.name,
+                            snapshot: snapshot,
+                            units: units,
+                            compact: true
+                        )
+
+                        VehicleHeroArtwork(
+                            vehicleName: vehicle.name,
+                            vin: vehicle.vin
+                        )
+                        .frame(maxWidth: 196, maxHeight: 112)
+                    }
+                    .padding(.vertical, 4)
+                } else {
+                    VStack(spacing: 6) {
+                        VehicleRangeSummary(
+                            vehicleName: vehicle.name,
+                            snapshot: snapshot,
+                            units: units,
+                            compact: false
+                        )
+
+                        VehicleHeroArtwork(
+                            vehicleName: vehicle.name,
+                            vin: vehicle.vin
+                        )
+                        .frame(maxHeight: 208)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .appEntityIdentifier(vehicleEntityIdentifier)
+        } else {
+            VehicleUnavailableStage(vehicleName: vehicle.name, compact: compact)
+                .appEntityIdentifier(vehicleEntityIdentifier)
+        }
+    }
+
+    private var vehicleEntityIdentifier: EntityIdentifier? {
+        guard !vehicle.vin.isEmpty else { return nil }
+        return EntityIdentifier(for: VehicleEntity.self, identifier: vehicle.vin)
+    }
+}
+
+/// Interactive vehicle mode panel + command feedback deck.
+struct VehicleControlDeck: View {
+    let mode: VehicleDashboardMode
+    let snapshot: FleetLatestSnapshot
+    let units: String?
+    let isRunningControl: Bool
+    let activeControlAction: String?
+    let controlMessage: String?
+    let controlsEnabled: Bool
+    let onCommand: (VehicleControlCommand) -> Void
+
+    var body: some View {
+        VStack(spacing: 12) {
+            VehicleModePanel(
+                mode: mode,
+                snapshot: snapshot,
+                units: units,
+                isRunningControl: isRunningControl,
+                activeControlAction: activeControlAction,
+                controlsEnabled: controlsEnabled,
+                onCommand: onCommand
+            )
+
+            if let controlMessage {
+                VehicleControlMessage(
+                    message: controlMessage,
+                    isRunning: isRunningControl
+                )
+            }
+        }
+    }
+}
+
+struct VehicleModeSelector: View {
     @Binding var selection: VehicleDashboardMode
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -468,7 +356,122 @@ private struct VehicleModeSelector: View {
         }
         .padding(4)
         .background(AppTheme.segmentTrack, in: RoundedRectangle(cornerRadius: 19, style: .continuous))
-        .padding(.vertical, 12)
+    }
+}
+
+extension View {
+    func vehicleCommandConfirmation(
+        vehicleName: String,
+        pendingCommand: Binding<VehicleControlCommand?>,
+        isPresented: Binding<Bool>,
+        onConfirm: @escaping (VehicleControlCommand) -> Void
+    ) -> some View {
+        confirmationDialog(
+            "Confirm vehicle command",
+            isPresented: isPresented,
+            titleVisibility: .visible
+        ) {
+            if let command = pendingCommand.wrappedValue {
+                Button(role: command.buttonRole) {
+                    onConfirm(command)
+                } label: {
+                    Text(command.title)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            if let command = pendingCommand.wrappedValue {
+                Text(command.confirmationMessage(vehicleName: vehicleName))
+            }
+        }
+    }
+}
+
+private struct VehicleRangeSummary: View {
+    let vehicleName: String
+    let snapshot: FleetLatestSnapshot
+    let units: String?
+    let compact: Bool
+
+    @ScaledMetric(relativeTo: .largeTitle) private var fullRangeFontSize: CGFloat = 58
+    @ScaledMetric(relativeTo: .title) private var compactRangeFontSize: CGFloat = 40
+
+    var body: some View {
+        VStack(alignment: compact ? .leading : .center, spacing: compact ? 4 : 6) {
+            HStack(spacing: 6) {
+                StatusBadge(
+                    snapshot.locked == true ? "Locked" : "Unlocked",
+                    systemImage: snapshot.locked == true ? "lock.fill" : "lock.open.fill",
+                    tint: snapshot.locked == true ? .secondary : .orange
+                )
+
+                if snapshot.sentryMode == true {
+                    StatusBadge("Sentry", systemImage: "eye.fill", tint: .red)
+                }
+            }
+
+            HStack(alignment: .lastTextBaseline, spacing: 6) {
+                Text(rangeValue)
+                    .font(.system(size: compact ? compactRangeFontSize : fullRangeFontSize, weight: .light, design: .rounded))
+                    .monospacedDigit()
+                    .contentTransition(.numericText())
+                Text(rangeUnit)
+                    .font((compact ? Font.title3 : Font.title2).weight(.medium))
+                    .foregroundStyle(.secondary)
+            }
+
+            Text(statusSummary)
+                .font((compact ? Font.footnote : Font.subheadline).weight(.semibold))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(compact ? .leading : .center)
+
+            if let updatedAt = snapshot.updatedAtDate {
+                Label {
+                    RelativeTimeText(date: updatedAt, style: .updated)
+                } icon: {
+                    Image(systemName: "clock")
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: compact ? .leading : .center)
+        .padding(.top, compact ? 2 : 8)
+        .padding(.bottom, 2)
+        .appEntityIdentifier(statusEntityIdentifier)
+    }
+
+    private var rangeValue: String {
+        guard let batteryRange = snapshot.batteryRange else {
+            return formattedNumber(snapshot.batteryLevel, fractionLength: 0)
+        }
+        let value = units == "metric" ? batteryRange * 1.609_344 : batteryRange
+        return formattedNumber(value, fractionLength: 0)
+    }
+
+    private var rangeUnit: String {
+        snapshot.batteryRange == nil ? "%" : (units == "metric" ? "km" : "mi")
+    }
+
+    private var statusSummary: String {
+        if snapshot.chargingState?.localizedCaseInsensitiveContains("charging") == true {
+            if let remaining = snapshot.timeToFullCharge, remaining > 0 {
+                return "Charging · \(formattedNumber(remaining, fractionLength: 1, suffix: " hr remaining"))"
+            }
+            return "Charging"
+        }
+        if let speed = snapshot.speed, speed > 0 {
+            return "Driving · \(formattedNumber(speed, fractionLength: 0, suffix: " mph"))"
+        }
+        return "Parked · \(formattedNumber(snapshot.batteryLevel, fractionLength: 0, suffix: "% battery"))"
+    }
+
+    private var statusEntityIdentifier: EntityIdentifier? {
+        guard !snapshot.vin.isEmpty else { return nil }
+        return EntityIdentifier(
+            for: VehicleStatusEntity.self,
+            identifier: VehicleStatusEntity.entityID(forVIN: snapshot.vin)
+        )
     }
 }
 
@@ -528,45 +531,23 @@ private struct VehicleOverviewPanel: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        if dynamicTypeSize.isAccessibilitySize {
-            stackedLayout
-        } else {
-            ViewThatFits(in: .horizontal) {
-                HStack(alignment: .top, spacing: 10) {
-                    ClimateControlTile(
-                        snapshot: snapshot,
-                        units: units,
-                        isBusy: isBusy(climateCommand),
-                        isEnabled: controlsEnabled,
-                        action: { onCommand(climateCommand) }
-                    )
-                    .frame(minWidth: 160)
-
-                    VehicleQuickControlsGrid(
-                        commands: quickCommands,
-                        isRunningControl: isRunningControl,
-                        activeControlAction: activeControlAction,
-                        controlsEnabled: controlsEnabled,
-                        onCommand: onCommand,
-                        singleColumn: false
-                    )
-                    .frame(minWidth: 160)
-                }
-
-                stackedLayout
-            }
-        }
-    }
-
-    private var stackedLayout: some View {
         VStack(spacing: 10) {
-            ClimateControlTile(
-                snapshot: snapshot,
-                units: units,
-                isBusy: isBusy(climateCommand),
-                isEnabled: controlsEnabled,
-                action: { onCommand(climateCommand) }
-            )
+            LazyVGrid(columns: primaryColumns, spacing: 10) {
+                ClimateControlTile(
+                    snapshot: snapshot,
+                    units: units,
+                    isBusy: isBusy(climateCommand),
+                    isEnabled: controlsEnabled,
+                    action: { onCommand(climateCommand) }
+                )
+
+                LockControlTile(
+                    snapshot: snapshot,
+                    isBusy: isBusy(lockCommand),
+                    isEnabled: controlsEnabled,
+                    action: { onCommand(lockCommand) }
+                )
+            }
 
             VehicleQuickControlsGrid(
                 commands: quickCommands,
@@ -577,6 +558,12 @@ private struct VehicleOverviewPanel: View {
                 singleColumn: dynamicTypeSize.isAccessibilitySize
             )
         }
+    }
+
+    private var primaryColumns: [GridItem] {
+        dynamicTypeSize.isAccessibilitySize
+            ? [GridItem(.flexible())]
+            : [GridItem(.flexible()), GridItem(.flexible())]
     }
 
     private var quickCommands: [VehicleQuickControlsGrid.Item] {
@@ -590,6 +577,10 @@ private struct VehicleOverviewPanel: View {
 
     private var climateCommand: VehicleControlCommand {
         .climate(shouldTurnOn: snapshot.climateOn != true)
+    }
+
+    private var lockCommand: VehicleControlCommand {
+        .lock(shouldLock: snapshot.locked != true)
     }
 
     private func isBusy(_ command: VehicleControlCommand) -> Bool {
@@ -658,24 +649,19 @@ private struct VehicleLocationPanel: View {
                     Marker("Vehicle", systemImage: "car.fill", coordinate: coordinate)
                         .tint(.blue)
                 }
-                .frame(height: 180)
+                .frame(height: 170)
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .accessibilityLabel("Map showing the vehicle's location")
 
-                HStack(alignment: .firstTextBaseline) {
-                    Text(formattedCoordinate(latitude: snapshot.latitude, longitude: snapshot.longitude))
-                        .font(.subheadline.weight(.medium))
-                        .monospacedDigit()
-                        .foregroundStyle(.secondary)
-                        .textSelection(.enabled)
-
-                    Spacer(minLength: 12)
-
-                    if let mapsURL {
-                        Link(destination: mapsURL) {
-                            Label("Open in Maps", systemImage: "arrow.up.right")
-                                .font(.subheadline.weight(.semibold))
-                        }
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .firstTextBaseline) {
+                        coordinateLabel
+                        Spacer(minLength: 12)
+                        openInMapsLink
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        coordinateLabel
+                        openInMapsLink
                     }
                 }
             } else {
@@ -694,6 +680,24 @@ private struct VehicleLocationPanel: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
         .background(VehiclePanelBackground())
+    }
+
+    private var coordinateLabel: some View {
+        Text(formattedCoordinate(latitude: snapshot.latitude, longitude: snapshot.longitude))
+            .font(.subheadline.weight(.medium))
+            .monospacedDigit()
+            .foregroundStyle(.secondary)
+            .textSelection(.enabled)
+    }
+
+    @ViewBuilder
+    private var openInMapsLink: some View {
+        if let mapsURL {
+            Link(destination: mapsURL) {
+                Label("Open in Maps", systemImage: "arrow.up.right")
+                    .font(.subheadline.weight(.semibold))
+            }
+        }
     }
 
     private var coordinate: CLLocationCoordinate2D? {
@@ -783,20 +787,16 @@ private struct VehicleSecurityPanel: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            HStack {
-                Label(
-                    snapshot.locked == true ? "Vehicle secured" : "Vehicle unlocked",
-                    systemImage: snapshot.locked == true ? "lock.fill" : "lock.open.fill"
-                )
-                .font(.headline)
-
-                Spacer()
-
-                StatusBadge(
-                    snapshot.sentryMode == true ? "Sentry on" : "Sentry off",
-                    systemImage: snapshot.sentryMode == true ? "eye.fill" : "eye.slash",
-                    tint: snapshot.sentryMode == true ? .red : .secondary
-                )
+            ViewThatFits(in: .horizontal) {
+                HStack {
+                    securityLabel
+                    Spacer()
+                    sentryBadge
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    securityLabel
+                    sentryBadge
+                }
             }
 
             VehicleQuickControlsGrid(
@@ -854,6 +854,22 @@ private struct VehicleSecurityPanel: View {
         .background(VehiclePanelBackground())
     }
 
+    private var securityLabel: some View {
+        Label(
+            snapshot.locked == true ? "Vehicle secured" : "Vehicle unlocked",
+            systemImage: snapshot.locked == true ? "lock.fill" : "lock.open.fill"
+        )
+        .font(.headline)
+    }
+
+    private var sentryBadge: some View {
+        StatusBadge(
+            snapshot.sentryMode == true ? "Sentry on" : "Sentry off",
+            systemImage: snapshot.sentryMode == true ? "eye.fill" : "eye.slash",
+            tint: snapshot.sentryMode == true ? .red : .secondary
+        )
+    }
+
     private var tireColumns: [GridItem] {
         dynamicTypeSize.isAccessibilitySize
             ? [GridItem(.flexible())]
@@ -877,7 +893,7 @@ private struct ClimateControlTile: View {
                     Image(systemName: isOn ? "fan.fill" : "fan")
                         .font(.body.weight(.semibold))
                         .foregroundStyle(isOn ? Color.white : Color.blue)
-                        .frame(width: 38, height: 38)
+                        .frame(width: 36, height: 36)
                         .background(isOn ? Color.blue : Color.blue.opacity(0.14), in: Circle())
                         .symbolEffect(.rotate, options: .repeat(.continuous), isActive: isOn && !reduceMotion)
 
@@ -893,24 +909,25 @@ private struct ClimateControlTile: View {
                     }
                 }
 
-                Spacer(minLength: 14)
+                Spacer(minLength: 10)
 
                 Text(headline)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.secondary)
 
                 Text(primaryTemperature)
-                    .font(.system(.largeTitle, design: .rounded, weight: .medium))
+                    .font(.system(.title, design: .rounded, weight: .semibold))
                     .monospacedDigit()
                     .contentTransition(.numericText())
 
                 Text(caption)
-                    .font(.footnote)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
+                    .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            .frame(maxWidth: .infinity, minHeight: 168, alignment: .leading)
-            .padding(16)
+            .frame(maxWidth: .infinity, minHeight: 138, alignment: .leading)
+            .padding(14)
             .appSurface(cornerRadius: AppTheme.tileCornerRadius)
             .overlay {
                 if isOn {
@@ -936,7 +953,7 @@ private struct ClimateControlTile: View {
     }
 
     private var headline: String {
-        guard isOn else { return "Inside" }
+        guard isOn else { return "Cabin" }
         guard let target = snapshot.targetTemperature, let inside = snapshot.insideTemp else {
             return "Climate on"
         }
@@ -957,6 +974,83 @@ private struct ClimateControlTile: View {
             return formattedNumber(snapshot.insideTemp, fractionLength: 0, suffix: "\(temperatureSuffix) inside")
         }
         return "Tap to start climate"
+    }
+}
+
+private struct LockControlTile: View {
+    let snapshot: FleetLatestSnapshot
+    let isBusy: Bool
+    let isEnabled: Bool
+    let action: () -> Void
+
+    private var isLocked: Bool {
+        snapshot.locked == true
+    }
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(alignment: .center) {
+                    Image(systemName: isLocked ? "lock.fill" : "lock.open.fill")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(isLocked ? Color.primary : Color.white)
+                        .frame(width: 36, height: 36)
+                        .background(isLocked ? Color.green.opacity(0.18) : Color.orange, in: Circle())
+                        .contentTransition(.symbolEffect(.replace))
+
+                    Spacer()
+
+                    if isBusy {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Text(isLocked ? "Secured" : "Open")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(isLocked ? Color.green : Color.orange)
+                    }
+                }
+
+                Spacer(minLength: 10)
+
+                Text("Doors")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                Text(isLocked ? "Locked" : "Unlocked")
+                    .font(.system(.title2, design: .rounded, weight: .semibold))
+
+                Text(caption)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, minHeight: 138, alignment: .leading)
+            .padding(14)
+            .appSurface(cornerRadius: AppTheme.tileCornerRadius)
+            .overlay {
+                if !isLocked {
+                    RoundedRectangle(cornerRadius: AppTheme.tileCornerRadius, style: .continuous)
+                        .strokeBorder(Color.orange.opacity(0.65), lineWidth: 1.5)
+                }
+            }
+            .opacity(isEnabled ? 1 : 0.5)
+        }
+        .buttonStyle(.plain)
+        .disabled(!isEnabled || isBusy)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(isLocked ? "Unlock vehicle" : "Lock vehicle")
+        .accessibilityValue("\(isLocked ? "Locked" : "Unlocked"). \(caption)")
+    }
+
+    private var caption: String {
+        if !isLocked {
+            return "Tap to lock doors"
+        }
+        if snapshot.sentryMode == true {
+            return "Sentry Mode active"
+        }
+        return "Tap to unlock"
     }
 }
 
@@ -1026,7 +1120,7 @@ private struct VehicleActionTile: View {
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            .frame(maxWidth: .infinity, minHeight: 79)
+            .frame(maxWidth: .infinity, minHeight: 76)
             .padding(.horizontal, 8)
             .padding(.vertical, 10)
             .appSurface(cornerRadius: 18)
@@ -1078,7 +1172,7 @@ private struct VehicleControlMessage: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
+        .padding(.vertical, 6)
     }
 }
 
@@ -1091,6 +1185,7 @@ private struct VehiclePanelBackground: View {
 
 private struct VehicleUnavailableStage: View {
     let vehicleName: String
+    var compact: Bool = false
 
     var body: some View {
         ContentUnavailableView(
@@ -1098,7 +1193,7 @@ private struct VehicleUnavailableStage: View {
             systemImage: "antenna.radiowaves.left.and.right.slash",
             description: Text("Refresh \(vehicleName) to load its latest state.")
         )
-        .frame(maxWidth: .infinity, minHeight: 500)
+        .frame(maxWidth: .infinity, minHeight: compact ? 220 : 340)
     }
 }
 
@@ -1141,25 +1236,4 @@ private struct VehicleUnavailableStage: View {
     }
     .background(AppScreenBackground())
     .preferredColorScheme(.dark)
-}
-
-#Preview("Showroom — Accessibility") {
-    ScrollView {
-        VehicleControlDashboard(
-            vehicle: PreviewData.vehicles[0],
-            vehicles: PreviewData.vehicles,
-            selectedVIN: PreviewData.vin1,
-            units: "imperial",
-            isRefreshing: false,
-            isRunningControl: false,
-            activeControlAction: nil,
-            controlMessage: "Command sent",
-            controlsEnabled: true,
-            onSelectVehicle: { _ in },
-            onRefresh: {},
-            onControl: { _, _ in true }
-        )
-    }
-    .background(AppScreenBackground())
-    .environment(\.dynamicTypeSize, .accessibility2)
 }
