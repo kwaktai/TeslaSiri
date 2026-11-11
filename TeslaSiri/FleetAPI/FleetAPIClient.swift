@@ -22,6 +22,7 @@ struct MissingFleetAccessTokenProvider: FleetAccessTokenProviding {
 enum FleetAPIError: Error, LocalizedError {
     case missingAccessToken
     case invalidURL(String)
+    case invalidHistoryRange
     case transport(Error)
     case decoding(Error, requestID: String?)
     case apiFailure(error: String, requiredScope: String?, requestID: String?)
@@ -36,6 +37,8 @@ enum FleetAPIError: Error, LocalizedError {
             return "No Tessie access token is saved."
         case .invalidURL(let path):
             return "The Tessie API URL could not be built for \(path)."
+        case .invalidHistoryRange:
+            return "Tessie history requires a valid start and end time."
         case .transport(let error):
             return "Network request failed: \(error.localizedDescription)"
         case .decoding(let error, let requestID):
@@ -109,19 +112,25 @@ struct FleetAPIClient {
         var queryItems: [URLQueryItem]
         var body: Data?
         var requiresAuthorization: Bool
+        var accept: String
+        var cachePolicy: URLRequest.CachePolicy
 
         init(
             method: HTTPMethod = .get,
             path: String,
             queryItems: [URLQueryItem] = [],
             body: Data? = nil,
-            requiresAuthorization: Bool = true
+            requiresAuthorization: Bool = true,
+            accept: String = "application/json",
+            cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy
         ) {
             self.method = method
             self.path = path
             self.queryItems = queryItems
             self.body = body
             self.requiresAuthorization = requiresAuthorization
+            self.accept = accept
+            self.cachePolicy = cachePolicy
         }
     }
 
@@ -180,11 +189,9 @@ struct FleetAPIClient {
 
     func changes(since cursor: Int64) async throws -> FleetAPIPage<FleetSyncChanges> {
         let response = try await vehicleRecords()
-        let snapshots = response.data.map { record in
-            TessieModelAdapter.snapshot(vin: record.vin, state: record.lastState ?? [:])
-        }
+        let vehicles = response.data.map(TessieModelAdapter.vehicle)
         return page(
-            FleetSyncChanges(latest: snapshots),
+            FleetSyncChanges(latest: vehicles.compactMap(\.latest), vehicles: vehicles),
             cursor: max(Self.currentTimeMilliseconds(), cursor + 1),
             requestID: response.requestID
         )
@@ -198,10 +205,10 @@ struct FleetAPIClient {
     }
 
     func vehicleSummary(vin: String) async throws -> FleetAPIPage<FleetVehicle> {
-        let response: Response<TessieJSONObject> = try await send(Endpoint(path: "/\(encoded(vin))/state"))
+        let response = try await snapshotState(vin: vin)
         let vehicle = FleetVehicle(
-            displayName: response.data.displayName,
-            latest: TessieModelAdapter.snapshot(vin: vin, state: response.data),
+            displayName: response.state.displayName,
+            latest: TessieModelAdapter.snapshot(vin: vin, state: response.state, tireState: response.tireState),
             permissions: ["read", "control"],
             vin: vin
         )
@@ -209,8 +216,11 @@ struct FleetAPIClient {
     }
 
     func latestSnapshot(vin: String) async throws -> FleetAPIPage<FleetLatestSnapshot> {
-        let response: Response<TessieJSONObject> = try await send(Endpoint(path: "/\(encoded(vin))/state"))
-        return page(TessieModelAdapter.snapshot(vin: vin, state: response.data), requestID: response.requestID)
+        let response = try await snapshotState(vin: vin)
+        return page(
+            TessieModelAdapter.snapshot(vin: vin, state: response.state, tireState: response.tireState),
+            requestID: response.requestID
+        )
     }
 
     func locations(
@@ -219,20 +229,9 @@ struct FleetAPIClient {
         endTime: Int64? = nil,
         limit: Int? = nil
     ) async throws -> FleetAPIPage<[FleetRoutePoint]> {
-        let range = historyRange(startTime: startTime, endTime: endTime)
-        let response: Response<TessieResults<TessieJSONObject>> = try await send(Endpoint(
-            path: "/\(encoded(vin))/path",
-            queryItems: [
-                URLQueryItem(name: "from", value: String(range.from)),
-                URLQueryItem(name: "to", value: String(range.to)),
-                URLQueryItem(name: "details", value: "true"),
-                URLQueryItem(name: "simplify", value: "true")
-            ]
-        ))
-        var points = response.data.results.compactMap(TessieModelAdapter.routePoint)
-        if let limit, points.count > limit {
-            points = Array(points.suffix(limit))
-        }
+        let range = try historyRange(startTime: startTime, endTime: endTime)
+        let response = try await routePoints(vin: vin, range: range, simplify: true)
+        let points = limit.map { Array(response.data.suffix(max($0, 0))) } ?? response.data
         return page(points, requestID: response.requestID)
     }
 
@@ -245,9 +244,10 @@ struct FleetAPIClient {
         maxPoints: Int? = nil,
         fields: [String] = []
     ) async throws -> FleetAPIPage<[FleetTelemetrySeriesPoint]> {
-        let range = historyRange(startTime: startTime, endTime: endTime)
-        let desiredPoints = max(maxPoints ?? limit ?? 100, 1)
-        let interval = max((range.to - range.from) / Int64(desiredPoints), 1)
+        let range = try historyRange(startTime: startTime, endTime: endTime)
+        let pointLimit = [limit, maxPoints].compactMap { $0 }.min() ?? 100
+        guard pointLimit > 0 else { return page([]) }
+        let interval = max((range.to - range.from) / Int64(pointLimit), 1)
         let response: Response<TessieResults<FleetTelemetrySeriesPoint>> = try await send(Endpoint(
             path: "/\(encoded(vin))/states",
             queryItems: [
@@ -259,11 +259,10 @@ struct FleetAPIClient {
                 URLQueryItem(name: "temperature_format", value: "f")
             ]
         ))
-        var points = response.data.results
-        if let limit, points.count > limit {
-            points = Array(points.suffix(limit))
+        let points = response.data.results.sorted {
+            ($0["timestamp"]?.tessieInt64Value ?? 0) < ($1["timestamp"]?.tessieInt64Value ?? 0)
         }
-        return page(points, requestID: response.requestID)
+        return page(Array(points.suffix(pointLimit)), requestID: response.requestID)
     }
 
     // MARK: - Drives and charging
@@ -278,7 +277,9 @@ struct FleetAPIClient {
             queryItems: query
         ))
         return page(
-            response.data.results.compactMap { TessieModelAdapter.drive(from: $0, vin: vin) },
+            response.data.results
+                .compactMap { TessieModelAdapter.drive(from: $0, vin: vin) }
+                .sorted { $0.startedAt > $1.startedAt },
             requestID: response.requestID
         )
     }
@@ -343,12 +344,21 @@ struct FleetAPIClient {
         guard let vin = vin(fromSessionID: sessionID) else {
             throw FleetAPIError.missingData(requestID: nil)
         }
-        return try await locations(
-            vin: vin,
-            startTime: startTime,
-            endTime: endTime,
-            limit: maxPoints ?? limit
-        )
+        guard let from = apiSeconds(startTime), let to = apiSeconds(endTime),
+              from > 0, to >= from else {
+            throw FleetAPIError.invalidHistoryRange
+        }
+        let response = try await routePoints(vin: vin, range: (from, to), simplify: false)
+        let points = response.data
+        guard let cap = maxPoints ?? limit, points.count > cap else {
+            return page(points, requestID: response.requestID)
+        }
+        guard cap > 1 else {
+            return page(Array(points.prefix(max(cap, 0))), requestID: response.requestID)
+        }
+        // Sample across the whole drive so the map and scrubber keep both endpoints.
+        let sampled = (0..<cap).map { points[$0 * (points.count - 1) / (cap - 1)] }
+        return page(sampled, requestID: response.requestID)
     }
 
     func chargingSessions(vin: String, limit: Int? = nil) async throws -> FleetAPIPage<[FleetChargeSession]> {
@@ -356,24 +366,23 @@ struct FleetAPIClient {
         if let limit {
             query.append(URLQueryItem(name: "limit", value: String(limit)))
         }
-        let chargeQuery = query
-
         async let stateResponse: Response<TessieJSONObject> = send(
             Endpoint(path: "/\(encoded(vin))/state")
         )
-        async let chargesResponse: Response<TessieResults<TessieJSONObject>> = send(
-            Endpoint(path: "/\(encoded(vin))/charges", queryItems: chargeQuery)
+        let charges: Response<TessieResults<TessieJSONObject>> = try await send(
+            Endpoint(path: "/\(encoded(vin))/charges", queryItems: query)
         )
-        let (state, charges) = try await (stateResponse, chargesResponse)
+        let state = try? await stateResponse
+        try Task.checkCancellation()
 
-        var sessions = TessieModelAdapter.activeCharge(vin: vin, state: state.data).map { [$0] } ?? []
-        sessions.append(contentsOf: charges.data.results.compactMap {
-            TessieModelAdapter.completedCharge(from: $0, vin: vin)
-        })
-        if let limit, sessions.count > limit {
-            sessions = Array(sessions.prefix(limit))
+        var sessions = state.flatMap { TessieModelAdapter.activeCharge(vin: vin, state: $0.data) }.map { [$0] } ?? []
+        sessions.append(contentsOf: charges.data.results
+            .compactMap { TessieModelAdapter.completedCharge(from: $0, vin: vin) }
+            .sorted { $0.startedAt > $1.startedAt })
+        if let limit {
+            sessions = Array(sessions.prefix(max(limit, 0)))
         }
-        return page(sessions, requestID: charges.requestID ?? state.requestID)
+        return page(sessions, requestID: charges.requestID ?? state?.requestID)
     }
 
     func chargingOptions(vin: String) async throws -> FleetAPIPage<FleetChargingOptions> {
@@ -403,8 +412,27 @@ struct FleetAPIClient {
         includeReleaseNotes: Bool = true,
         refresh: Bool = false
     ) async throws -> FleetAPIPage<FleetSoftwareUpdate> {
-        let response: Response<TessieJSONObject> = try await send(Endpoint(path: "/\(encoded(vin))/state"))
-        return page(TessieModelAdapter.software(from: response.data), requestID: response.requestID)
+        let cachePolicy: URLRequest.CachePolicy = refresh ? .reloadIgnoringLocalCacheData : .useProtocolCachePolicy
+        let response: Response<TessieJSONObject> = try await send(Endpoint(
+            path: "/\(encoded(vin))/state",
+            cachePolicy: cachePolicy
+        ))
+        var update = TessieModelAdapter.software(from: response.data)
+        if includeReleaseNotes,
+           let version = Self.sanitizedReleaseVersion(update.availableVersion)
+               ?? Self.sanitizedReleaseVersion(update.currentVersion) {
+            do {
+                let notes: Response<TessieReleaseNotes> = try await send(
+                    releaseNotesEndpoint(vin: vin, version: version, cachePolicy: cachePolicy)
+                )
+                update.releaseNotes = notes.data.releaseNotes
+                update.releaseNotesCount = notes.data.releaseNotes.count
+            } catch {
+                // The software state is still usable when Tessie has no notes for this version.
+                try Task.checkCancellation()
+            }
+        }
+        return page(update, requestID: response.requestID)
     }
 
     func installSoftwareUpdate(vin: String, offsetSec: Int = 0) async throws -> FleetAPIPage<[String: JSONValue]> {
@@ -475,44 +503,61 @@ struct FleetAPIClient {
     // MARK: - Raw export
 
     func rawVehicleDataExport(vin: String) async throws -> FleetRawDataExport {
-        let encodedVIN = encoded(vin)
+        let accessToken = try await accessTokenProvider.accessToken()
+        let vehiclePath = "/\(encoded(vin))"
+        let state = try await fetchRawResponse(for: Endpoint(path: "\(vehiclePath)/state"), accessToken: accessToken)
+        let software = state.body?.tessieObjectValue.map(TessieModelAdapter.software)
+        let version = Self.sanitizedReleaseVersion(software?.availableVersion)
+            ?? Self.sanitizedReleaseVersion(software?.currentVersion)
+
         let now = Int64(Date().timeIntervalSince1970)
+        let lastDay = historyQuery(from: now - 86_400, to: now)
+        let lastMonth = historyQuery(from: now - 30 * 86_400, to: now)
+        let miles = URLQueryItem(name: "distance_format", value: "mi")
+        let activeVehicles = URLQueryItem(name: "only_active", value: "true")
+        let sessionHistory = lastMonth + [miles, URLQueryItem(name: "limit", value: "10")]
+
+        // The documented Vehicle Data GET endpoints. Account-wide routes have no VIN in the path.
         let endpoints = [
-            Endpoint(path: "/vehicles", queryItems: [URLQueryItem(name: "only_active", value: "true")]),
-            Endpoint(path: "/\(encodedVIN)/state"),
-            Endpoint(path: "/\(encodedVIN)/drives", queryItems: [
-                URLQueryItem(name: "distance_format", value: "mi"),
-                URLQueryItem(name: "limit", value: "10")
+            Endpoint(path: "/vehicles", queryItems: [activeVehicles]),
+            Endpoint(path: "\(vehiclePath)/states", queryItems: lastDay + [
+                URLQueryItem(name: "interval", value: "300"),
+                URLQueryItem(name: "condense", value: "false"),
+                miles,
+                URLQueryItem(name: "temperature_format", value: "f")
             ]),
-            Endpoint(path: "/\(encodedVIN)/charges", queryItems: [
-                URLQueryItem(name: "distance_format", value: "mi"),
-                URLQueryItem(name: "limit", value: "10")
-            ]),
-            Endpoint(path: "/\(encodedVIN)/path", queryItems: [
-                URLQueryItem(name: "from", value: String(now - 604_800)),
-                URLQueryItem(name: "to", value: String(now)),
+            Endpoint(path: "\(vehiclePath)/battery"),
+            Endpoint(path: "/battery_health", queryItems: lastMonth + [miles, activeVehicles]),
+            Endpoint(path: "\(vehiclePath)/battery_health", queryItems: lastMonth + [miles]),
+            Endpoint(path: "\(vehiclePath)/location"),
+            Endpoint(path: "\(vehiclePath)/firmware_alerts", queryItems: lastMonth),
+            releaseNotesEndpoint(vin: vin, version: version),
+            Endpoint(path: "\(vehiclePath)/map", accept: "image/png"),
+            Endpoint(path: "\(vehiclePath)/consumption_since_charge"),
+            Endpoint(path: "\(vehiclePath)/weather"),
+            Endpoint(path: "\(vehiclePath)/drives", queryItems: sessionHistory),
+            Endpoint(path: "\(vehiclePath)/path", queryItems: lastDay + [
                 URLQueryItem(name: "details", value: "true"),
                 URLQueryItem(name: "simplify", value: "true")
             ]),
-            Endpoint(path: "/\(encodedVIN)/states", queryItems: [
-                URLQueryItem(name: "from", value: String(now - 86_400)),
-                URLQueryItem(name: "to", value: String(now)),
-                URLQueryItem(name: "interval", value: "300"),
-                URLQueryItem(name: "condense", value: "false")
-            ]),
-            Endpoint(path: "/\(encodedVIN)/tire_pressure", queryItems: [
-                URLQueryItem(name: "pressure_format", value: "psi")
-            ])
+            Endpoint(path: "\(vehiclePath)/charges", queryItems: sessionHistory),
+            Endpoint(path: "/charging_invoices", queryItems: lastMonth + [URLQueryItem(name: "vin", value: vin)]),
+            Endpoint(path: "\(vehiclePath)/idles", queryItems: sessionHistory),
+            Endpoint(path: "\(vehiclePath)/last_idle_state"),
+            Endpoint(path: "\(vehiclePath)/tire_pressure", queryItems: [URLQueryItem(name: "pressure_format", value: "psi")]),
+            Endpoint(path: "\(vehiclePath)/status"),
+            Endpoint(path: "\(vehiclePath)/plate")
         ]
 
-        var responses: [FleetRawAPIResponse] = []
+        var responses = [state]
         for endpoint in endpoints {
-            responses.append(try await rawJSONResponse(endpoint))
+            try Task.checkCancellation()
+            responses.append(try await fetchRawResponse(for: endpoint, accessToken: accessToken))
         }
 
         return FleetRawDataExport(
             apiBaseURL: configuration.baseURL.absoluteString,
-            appSchemaVersion: 2,
+            appSchemaVersion: 3,
             generatedAt: Self.currentTimeMilliseconds(),
             responses: responses,
             vin: vin
@@ -591,6 +636,80 @@ struct FleetAPIClient {
 
     // MARK: - Transport
 
+    private func routePoints(
+        vin: String,
+        range: (from: Int64, to: Int64),
+        simplify: Bool
+    ) async throws -> Response<[FleetRoutePoint]> {
+        let response: Response<TessieResults<TessieJSONObject>> = try await send(Endpoint(
+            path: "/\(encoded(vin))/path",
+            queryItems: historyQuery(from: range.from, to: range.to) + [
+                URLQueryItem(name: "details", value: "true"),
+                URLQueryItem(name: "simplify", value: simplify ? "true" : "false")
+            ]
+        ))
+        let points = response.data.results
+            .compactMap(TessieModelAdapter.routePoint)
+            .sorted { ($0.timestamp ?? 0) < ($1.timestamp ?? 0) }
+        return Response(data: points, requestID: response.requestID)
+    }
+
+    private func historyQuery(from: Int64, to: Int64) -> [URLQueryItem] {
+        [
+            URLQueryItem(name: "from", value: String(from)),
+            URLQueryItem(name: "to", value: String(to))
+        ]
+    }
+
+    private func releaseNotesEndpoint(
+        vin: String,
+        version: String?,
+        cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy
+    ) -> Endpoint {
+        let safeVersion = Self.sanitizedReleaseVersion(version) ?? ""
+        return Endpoint(
+            path: "/\(encoded(vin))/release_notes/\(encoded(safeVersion))",
+            cachePolicy: cachePolicy
+        )
+    }
+
+    private static func sanitizedReleaseVersion(_ version: String?) -> String? {
+        guard let trimmed = version?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !trimmed.isEmpty,
+              trimmed != ".",
+              trimmed != ".." else {
+            return nil
+        }
+        return trimmed
+    }
+
+    private func snapshotState(
+        vin: String
+    ) async throws -> (state: TessieJSONObject, tireState: TessieJSONObject?, requestID: String?) {
+        let vehiclePath = "/\(encoded(vin))"
+        async let tireRequest: Response<TessieJSONObject> = send(Endpoint(
+            path: "\(vehiclePath)/tire_pressure",
+            queryItems: [URLQueryItem(name: "pressure_format", value: "psi")]
+        ))
+        let stateResponse: Response<TessieJSONObject> = try await send(Endpoint(path: "\(vehiclePath)/state"))
+        let tireState: TessieJSONObject?
+        do {
+            tireState = try await tireRequest.data
+        } catch FleetAPIError.missingAccessToken {
+            throw FleetAPIError.missingAccessToken
+        } catch let error as FleetAPIError {
+            if case .unacceptableStatus(statusCode: 401, _, _, _) = error {
+                throw error
+            }
+            try Task.checkCancellation()
+            tireState = nil
+        } catch {
+            try Task.checkCancellation()
+            tireState = nil
+        }
+        return (stateResponse.data, tireState, stateResponse.requestID)
+    }
+
     private func vehicleRecords() async throws -> Response<[TessieVehicleRecord]> {
         let response: Response<TessieResults<TessieVehicleRecord>> = try await send(Endpoint(
             path: "/vehicles",
@@ -635,19 +754,19 @@ struct FleetAPIClient {
             )
         } catch {
             let requestID = requestID(from: response)
-            Self.logger.error("Tessie decoding failed: \(endpoint.method.rawValue, privacy: .public) \(endpoint.path, privacy: .public) error \(error.localizedDescription, privacy: .public)")
+            Self.logger.error("Tessie decoding failed: \(endpoint.method.rawValue, privacy: .public) \(endpoint.path, privacy: .private) error \(error.localizedDescription, privacy: .private)")
             throw FleetAPIError.decoding(error, requestID: requestID)
         }
     }
 
     private func perform(_ request: URLRequest, endpoint: Endpoint) async throws -> (Data, HTTPURLResponse) {
-        Self.logger.debug("Tessie request preparing: \(endpoint.method.rawValue, privacy: .public) \(endpoint.path, privacy: .public)")
+        Self.logger.debug("Tessie request preparing: \(endpoint.method.rawValue, privacy: .public) \(endpoint.path, privacy: .private)")
         let data: Data
         let response: URLResponse
         do {
             (data, response) = try await session.data(for: request)
         } catch {
-            Self.logger.error("Tessie transport failed: \(endpoint.method.rawValue, privacy: .public) \(endpoint.path, privacy: .public) error \(error.localizedDescription, privacy: .public)")
+            Self.logger.error("Tessie transport failed: \(endpoint.method.rawValue, privacy: .public) \(endpoint.path, privacy: .private) error \(error.localizedDescription, privacy: .private)")
             throw FleetAPIError.transport(error)
         }
 
@@ -661,7 +780,7 @@ struct FleetAPIClient {
             let message = httpResponse.statusCode == 401
                 ? "The Tessie access token is invalid or revoked."
                 : responseMessage
-            Self.logger.warning("Tessie request failed: \(endpoint.method.rawValue, privacy: .public) \(endpoint.path, privacy: .public) status \(httpResponse.statusCode, privacy: .public)")
+            Self.logger.warning("Tessie request failed: \(endpoint.method.rawValue, privacy: .public) \(endpoint.path, privacy: .private) status \(httpResponse.statusCode, privacy: .public)")
             throw FleetAPIError.unacceptableStatus(
                 statusCode: httpResponse.statusCode,
                 error: message,
@@ -670,22 +789,22 @@ struct FleetAPIClient {
             )
         }
 
-        Self.logger.info("Tessie request completed: \(endpoint.method.rawValue, privacy: .public) \(endpoint.path, privacy: .public) status \(httpResponse.statusCode, privacy: .public)")
+        Self.logger.info("Tessie request completed: \(endpoint.method.rawValue, privacy: .public) \(endpoint.path, privacy: .private) status \(httpResponse.statusCode, privacy: .public)")
         return (data, httpResponse)
     }
 
-    private func makeRequest(for endpoint: Endpoint) async throws -> URLRequest {
+    private func makeRequest(for endpoint: Endpoint, accessToken: String? = nil) async throws -> URLRequest {
         let url = try makeURL(path: endpoint.path, queryItems: endpoint.queryItems)
-        var request = URLRequest(url: url, timeoutInterval: configuration.timeout)
+        var request = URLRequest(url: url, cachePolicy: endpoint.cachePolicy, timeoutInterval: configuration.timeout)
         request.httpMethod = endpoint.method.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue(endpoint.accept, forHTTPHeaderField: "Accept")
         if let body = endpoint.body {
             request.httpBody = body
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
         if endpoint.requiresAuthorization {
-            let accessToken = try await accessTokenProvider.accessToken()
-            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+            let token = if let accessToken { accessToken } else { try await accessTokenProvider.accessToken() }
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
         return request
     }
@@ -694,8 +813,7 @@ struct FleetAPIClient {
         guard var components = URLComponents(url: configuration.baseURL, resolvingAgainstBaseURL: false) else {
             throw FleetAPIError.invalidURL(path)
         }
-        let endpointPath = path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-        components.percentEncodedPath = "/" + endpointPath
+        components.percentEncodedPath = path
         components.queryItems = queryItems.isEmpty ? nil : queryItems
         guard let url = components.url else {
             throw FleetAPIError.invalidURL(path)
@@ -703,15 +821,23 @@ struct FleetAPIClient {
         return url
     }
 
-    private func rawJSONResponse(_ endpoint: Endpoint) async throws -> FleetRawAPIResponse {
-        let request = try await makeRequest(for: endpoint)
+    private func fetchRawResponse(for endpoint: Endpoint, accessToken: String) async throws -> FleetRawAPIResponse {
+        let request = try await makeRequest(for: endpoint, accessToken: accessToken)
         let startedAt = Self.currentTimeMilliseconds()
         do {
             let (data, response) = try await session.data(for: request)
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw URLError(.badServerResponse)
             }
-            let decodedBody = try? decoder.decode(JSONValue.self, from: data)
+            let decodedBody: JSONValue?
+            if let contentType = httpResponse.mimeType, contentType.hasPrefix("image/") {
+                decodedBody = .object([
+                    "content_type": .string(contentType),
+                    "base64": .string(data.base64EncodedString())
+                ])
+            } else {
+                decodedBody = try? decoder.decode(JSONValue.self, from: data)
+            }
             return rawResponse(
                 endpoint: endpoint,
                 request: request,
@@ -724,6 +850,7 @@ struct FleetAPIClient {
                 errorMessage: nil
             )
         } catch {
+            try Task.checkCancellation()
             return rawResponse(
                 endpoint: endpoint,
                 request: request,
@@ -771,15 +898,19 @@ struct FleetAPIClient {
             ?? response.value(forHTTPHeaderField: "CF-Ray")
     }
 
-    private func historyRange(startTime: Int64?, endTime: Int64?) -> (from: Int64, to: Int64) {
+    private func historyRange(startTime: Int64?, endTime: Int64?) throws -> (from: Int64, to: Int64) {
         let now = Int64(Date().timeIntervalSince1970)
         let to = apiSeconds(endTime) ?? now
-        return (apiSeconds(startTime) ?? (to - 86_400), to)
+        let from = apiSeconds(startTime) ?? (to - 86_400)
+        guard from > 0, to >= from else {
+            throw FleetAPIError.invalidHistoryRange
+        }
+        return (from, to)
     }
 
     private func apiSeconds(_ timestamp: Int64?) -> Int64? {
         guard let timestamp else { return nil }
-        return abs(timestamp) >= 10_000_000_000 ? timestamp / 1_000 : timestamp
+        return timestamp.magnitude >= 10_000_000_000 ? timestamp / 1_000 : timestamp
     }
 
     private func vin(fromSessionID sessionID: String) -> String? {

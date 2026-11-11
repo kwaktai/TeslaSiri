@@ -143,7 +143,7 @@ public struct FleetSnapshotInfo: Decodable, Sendable {
 }
 
 /// TPMS readings from the live snapshot. `nil` until the backend has received
-/// a TPMS reading; PSI values are converted server-side from bar.
+/// a TPMS reading; values use PSI regardless of the vehicle's display settings.
 public struct FleetTirePressuresInfo: Decodable, Sendable {
     public let frontLeftPSI: Double?
     public let frontRightPSI: Double?

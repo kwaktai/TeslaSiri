@@ -817,9 +817,47 @@ private struct VehicleSecurityPanel: View {
                 onCommand: onCommand,
                 singleColumn: dynamicTypeSize.isAccessibilitySize
             )
+
+            if let tires = snapshot.tires, tires.hasAnyReading {
+                VStack(alignment: .leading, spacing: 10) {
+                    Label("Tire pressure", systemImage: "tirepressure")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 4)
+
+                    LazyVGrid(columns: tireColumns, spacing: 10) {
+                        VehicleMetricTile(
+                            title: "Front left",
+                            value: formattedNumber(tires.frontLeftPSI, fractionLength: 1, suffix: " psi"),
+                            systemImage: "circle.dotted"
+                        )
+                        VehicleMetricTile(
+                            title: "Front right",
+                            value: formattedNumber(tires.frontRightPSI, fractionLength: 1, suffix: " psi"),
+                            systemImage: "circle.dotted"
+                        )
+                        VehicleMetricTile(
+                            title: "Rear left",
+                            value: formattedNumber(tires.rearLeftPSI, fractionLength: 1, suffix: " psi"),
+                            systemImage: "circle.dotted"
+                        )
+                        VehicleMetricTile(
+                            title: "Rear right",
+                            value: formattedNumber(tires.rearRightPSI, fractionLength: 1, suffix: " psi"),
+                            systemImage: "circle.dotted"
+                        )
+                    }
+                }
+            }
         }
         .padding(18)
         .background(VehiclePanelBackground())
+    }
+
+    private var tireColumns: [GridItem] {
+        dynamicTypeSize.isAccessibilitySize
+            ? [GridItem(.flexible())]
+            : [GridItem(.flexible()), GridItem(.flexible())]
     }
 }
 

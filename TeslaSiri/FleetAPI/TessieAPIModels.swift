@@ -25,6 +25,14 @@ nonisolated struct TessieVehicleRecord: Decodable {
     }
 }
 
+nonisolated struct TessieReleaseNotes: Decodable {
+    let releaseNotes: [FleetSoftwareReleaseNote]
+
+    enum CodingKeys: String, CodingKey {
+        case releaseNotes = "release_notes"
+    }
+}
+
 nonisolated struct TessieCommandResponse: Decodable {
     var result: Bool
 }
@@ -97,7 +105,11 @@ nonisolated enum TessieModelAdapter {
         )
     }
 
-    static func snapshot(vin: String, state: TessieJSONObject) -> FleetLatestSnapshot {
+    static func snapshot(
+        vin: String,
+        state: TessieJSONObject,
+        tireState: TessieJSONObject? = nil
+    ) -> FleetLatestSnapshot {
         let charge = state.object("charge_state")
         let climate = state.object("climate_state")
         let drive = state.object("drive_state")
@@ -146,6 +158,7 @@ nonisolated enum TessieModelAdapter {
             targetTemperature: state.displayTemperature(climate.double("driver_temp_setting")),
             timeToFullCharge: charge.double("time_to_full_charge"),
             timestamp: updatedAt,
+            tires: tireState.flatMap(tirePressures) ?? stateTirePressures(from: vehicle),
             updatedAt: updatedAt,
             vehicleConfiguration: FleetVehicleConfiguration(
                 carType: configuration.string("car_type"),
@@ -155,18 +168,45 @@ nonisolated enum TessieModelAdapter {
                 interiorTrimType: configuration.string("interior_trim_type"),
                 paintColorOverride: configuration.string("paint_color_override"),
                 rightHandDrive: configuration.bool("rhd"),
-                trimBadging: configuration.string("trim_badging"),
+                trimBadging: configuration.string("trimBadging") ?? configuration.string("trim_badging"),
                 wheelType: configuration.string("wheel_type")
             ),
             vin: vin
         )
     }
 
+    static func tirePressures(from tireState: TessieJSONObject) -> FleetTirePressures? {
+        let pressures = FleetTirePressures(
+            frontLeftPSI: tireState.double("front_left"),
+            frontRightPSI: tireState.double("front_right"),
+            lastMeasuredAt: tireState.int64("timestamp").map(milliseconds),
+            rearLeftPSI: tireState.double("rear_left"),
+            rearRightPSI: tireState.double("rear_right")
+        )
+        return pressures.hasAnyReading ? pressures : nil
+    }
+
+    static func stateTirePressures(from vehicle: TessieJSONObject) -> FleetTirePressures? {
+        func psi(_ key: String) -> Double? {
+            vehicle.double(key).map {
+                Measurement(value: $0, unit: UnitPressure.bars).converted(to: .poundsForcePerSquareInch).value
+            }
+        }
+
+        let pressures = FleetTirePressures(
+            frontLeftPSI: psi("tpms_pressure_fl"),
+            frontRightPSI: psi("tpms_pressure_fr"),
+            rearLeftPSI: psi("tpms_pressure_rl"),
+            rearRightPSI: psi("tpms_pressure_rr")
+        )
+        return pressures.hasAnyReading ? pressures : nil
+    }
+
     static func software(from state: TessieJSONObject) -> FleetSoftwareUpdate {
         let vehicle = state.object("vehicle_state")
         let update = vehicle.object("software_update")
-        let currentVersion = vehicle.string("car_version")?.split(separator: " ").first.map(String.init)
-        let availableVersion = update.string("version")
+        let currentVersion = vehicle.string("car_version")?.split(whereSeparator: \.isWhitespace).first.map(String.init)
+        let availableVersion = update.string("version")?.split(whereSeparator: \.isWhitespace).first.map(String.init)
         let status = update.string("status")
         let unavailableStatuses = ["", "idle", "unknown"]
         let isAvailable = availableVersion != nil
@@ -182,8 +222,6 @@ nonisolated enum TessieModelAdapter {
             expectedDurationSec: expectedSeconds,
             installPercent: update.double("install_perc"),
             installable: isAvailable,
-            releaseNotes: [],
-            releaseNotesCount: 0,
             scheduledStartTimeMS: update.int64("scheduled_time_ms").map(milliseconds),
             sourceTimestamp: sourceTimestamp,
             status: status,
@@ -297,7 +335,7 @@ nonisolated enum TessieModelAdapter {
     }
 
     static func milliseconds(_ value: Int64) -> Int64 {
-        abs(value) < 10_000_000_000 ? value * 1_000 : value
+        value.magnitude < 10_000_000_000 ? value * 1_000 : value
     }
 }
 
@@ -309,8 +347,8 @@ nonisolated extension JSONValue {
         case .integer(let value):
             return String(value)
         case .double(let value):
-            if value.rounded() == value, value <= Double(Int64.max), value >= Double(Int64.min) {
-                return String(Int64(value))
+            if let integer = Int64(exactly: value) {
+                return String(integer)
             }
             return String(value)
         case .bool(let value):
@@ -323,8 +361,8 @@ nonisolated extension JSONValue {
     var tessieDoubleValue: Double? {
         switch self {
         case .integer(let value): Double(value)
-        case .double(let value): value
-        case .string(let value): Double(value)
+        case .double(let value): value.isFinite ? value : nil
+        case .string(let value): Double(value).flatMap { $0.isFinite ? $0 : nil }
         default: nil
         }
     }

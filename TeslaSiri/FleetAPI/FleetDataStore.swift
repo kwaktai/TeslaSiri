@@ -106,6 +106,13 @@ final class FleetDataStore {
         return recentDrives.filter { $0.vin == selectedVIN }
     }
 
+    var selectedVehicleChargingSessions: [FleetChargeSession] {
+        guard let vin = selectedVehicle?.vin else {
+            return []
+        }
+        return activeCharging.filter { $0.vin == vin }
+    }
+
     var selectedVehicleActiveDrive: FleetActiveDriveSession? {
         guard let selectedVIN = selectedVehicle?.vin else {
             return nil
@@ -215,7 +222,15 @@ final class FleetDataStore {
 
         do {
             let page = try await apiClient.changes(since: cursor)
-            mergeLatestSnapshots(page.data.latest)
+            guard !Task.isCancelled, self.cursor == cursor else {
+                return
+            }
+
+            if let roster = page.data.vehicles {
+                applyVehicleRoster(roster)
+            } else {
+                mergeLatestSnapshots(page.data.latest)
+            }
             self.cursor = page.cursor ?? cursor
             isShowingCachedData = false
             lastRequestID = page.requestID
@@ -224,6 +239,9 @@ final class FleetDataStore {
             await refreshAllSelectedVehicleDetails()
             await saveCurrentState()
         } catch {
+            guard !Task.isCancelled, self.cursor == cursor else {
+                return
+            }
             let message = error.localizedDescription
             lastErrorMessage = message
             if vehicles.isEmpty {
@@ -241,7 +259,7 @@ final class FleetDataStore {
         selectionRefreshTask?.cancel()
         selectionRefreshTask = Task {
             await saveCurrentState()
-            await refreshAllSelectedVehicleDetails(stoppingOnCancellation: true)
+            await refreshAllSelectedVehicleDetails()
         }
     }
 
@@ -304,6 +322,7 @@ final class FleetDataStore {
     func refreshSelectedVehicleLive() async {
         await performSelectedVehicleRefresh { vin in
             let page = try await apiClient.latestSnapshot(vin: vin)
+            try validateReadResult(for: vin)
             var snapshot = page.data
             if FleetDataNormalizer.normalizedString(snapshot.vin) == nil {
                 snapshot.vin = vin
@@ -352,6 +371,7 @@ final class FleetDataStore {
                 includeRoute: includeRoute,
                 routeMaxPoints: includeRoute ? routeMaxPoints : nil
             )
+            try validateReadResult(for: vin)
             mergeActiveDrive(page.data, for: vin)
             return page.requestID
         }
@@ -360,6 +380,7 @@ final class FleetDataStore {
     func refreshSelectedVehicleChargingSessions(limit: Int = 10) async {
         await performSelectedVehicleRefresh(loading: .charging) { vin in
             let page = try await apiClient.chargingSessions(vin: vin, limit: limit)
+            try validateReadResult(for: vin)
             mergeChargingSessions(page.data, for: vin)
             return page.requestID
         }
@@ -373,6 +394,7 @@ final class FleetDataStore {
                 includeReleaseNotes: includeReleaseNotes,
                 refresh: forceRefresh
             )
+            try validateReadResult(for: vin)
             if let softwareUpdate = FleetDataNormalizer.softwareUpdate(page.data) {
                 mergeSoftwareUpdates([vin: softwareUpdate])
             } else {
@@ -404,14 +426,19 @@ final class FleetDataStore {
 
     func refreshSelectedVehicleDrives(limit: Int = 10) async {
         await performSelectedVehicleRefresh(loading: .drives) { vin in
-            let page = try await apiClient.drives(vin: vin, limit: limit, includeRoute: true)
+            let page = try await apiClient.drives(vin: vin, limit: limit, includeRoute: false)
+            try validateReadResult(for: vin)
             mergeRecentDrives(page.data, for: vin)
             return page.requestID
         }
     }
 
     func refreshRoute(for drive: FleetDriveSession, maxPoints: Int = 500) async {
-        guard !drive.sessionID.isEmpty else {
+        guard !drive.sessionID.isEmpty,
+              drive.startedAt > 0,
+              let endedAt = drive.endedAt,
+              endedAt > drive.startedAt,
+              maxPoints > 0 else {
             return
         }
 
@@ -419,27 +446,28 @@ final class FleetDataStore {
             let page = try await apiClient.driveRoute(
                 sessionID: drive.sessionID,
                 startTime: drive.startedAt,
-                endTime: drive.endedAt,
+                endTime: endedAt,
                 limit: nil,
                 maxPoints: maxPoints
             )
+            try validateReadResult(for: drive.vin)
             let normalizedRoute = FleetDataNormalizer.routePoints(page.data, limit: maxPoints)
-            if normalizedRoute.isEmpty {
-                driveRoutesBySessionID.removeValue(forKey: drive.sessionID)
-            } else {
+            if !normalizedRoute.isEmpty {
                 driveRoutesBySessionID[drive.sessionID] = normalizedRoute
+                recentDrives = FleetDataNormalizer.driveSessions(recentDrives.map { existingDrive in
+                    guard existingDrive.sessionID == drive.sessionID else {
+                        return existingDrive
+                    }
+                    var updatedDrive = existingDrive
+                    updatedDrive.route = normalizedRoute
+                    return updatedDrive
+                })
             }
-            recentDrives = FleetDataNormalizer.driveSessions(recentDrives.map { existingDrive in
-                guard existingDrive.sessionID == drive.sessionID else {
-                    return existingDrive
-                }
-                var updatedDrive = existingDrive
-                updatedDrive.route = normalizedRoute
-                return updatedDrive
-            })
             await recordRefreshSuccess(requestID: page.requestID)
         } catch {
-            lastErrorMessage = error.localizedDescription
+            if !Task.isCancelled, !(error is CancellationError) {
+                lastErrorMessage = error.localizedDescription
+            }
         }
     }
 
@@ -457,10 +485,12 @@ final class FleetDataStore {
 
         do {
             let page = try await apiClient.locations(vin: vin, startTime: nil, endTime: nil, limit: limit)
+            try validateReadResult(for: vin)
             locationHistoryByVIN[vin] = FleetDataNormalizer.routePoints(page.data, limit: limit)
             latestRequestID = page.requestID ?? latestRequestID
             didRefresh = true
         } catch {
+            guard !Task.isCancelled, !(error is CancellationError) else { return }
             latestErrorMessage = error.localizedDescription
         }
 
@@ -474,16 +504,19 @@ final class FleetDataStore {
                 maxPoints: limit,
                 fields: []
             )
+            try validateReadResult(for: vin)
             telemetrySeriesByVIN[vin] = FleetDataNormalizer.telemetrySeries(page.data, limit: limit)
             latestRequestID = page.requestID ?? latestRequestID
             didRefresh = true
         } catch {
+            guard !Task.isCancelled, !(error is CancellationError) else { return }
             latestErrorMessage = error.localizedDescription
         }
 
         if didRefresh {
             await recordRefreshSuccess(requestID: latestRequestID)
-        } else if let latestErrorMessage {
+        }
+        if let latestErrorMessage {
             lastErrorMessage = latestErrorMessage
         }
     }
@@ -530,17 +563,25 @@ final class FleetDataStore {
         locationHistoryByVIN = FleetDataNormalizer.routePointsByVIN(state.locationHistoryByVIN)
         recentDrives = FleetDataNormalizer.driveSessions(state.recentDrives)
         selectedVIN = state.selectedVIN
-        softwareUpdatesByVIN = FleetDataNormalizer.softwareUpdatesByVIN(state.softwareUpdatesByVIN)
+        softwareUpdatesByVIN = [:]
+        mergeSoftwareUpdates(state.softwareUpdatesByVIN, fromCachedState: isCached)
         telemetrySeriesByVIN = FleetDataNormalizer.telemetrySeriesByVIN(state.telemetrySeriesByVIN)
         user = FleetDataNormalizer.user(state.user)
         vehicles = FleetDataNormalizer.vehicles(state.vehicles)
-        mergeSoftwareUpdates(FleetDataNormalizer.softwareUpdatesByVIN(from: vehicles))
+        mergeSoftwareUpdates(FleetDataNormalizer.softwareUpdatesByVIN(from: vehicles), fromCachedState: isCached)
         loadState = .loaded
 
         keepValidSelectionOrSelectFirst()
     }
 
     // MARK: - Private Coordination & Execution Helpers
+
+    private func validateReadResult(for vin: String) throws {
+        try Task.checkCancellation()
+        guard vehicles.contains(where: { $0.vin == vin }) else {
+            throw CancellationError()
+        }
+    }
 
     @discardableResult
     private func performSelectedVehicleRefresh(
@@ -565,7 +606,9 @@ final class FleetDataStore {
             await recordRefreshSuccess(requestID: requestID)
             return true
         } catch {
-            lastErrorMessage = error.localizedDescription
+            if !Task.isCancelled, !(error is CancellationError) {
+                lastErrorMessage = error.localizedDescription
+            }
             return false
         }
     }
@@ -665,13 +708,14 @@ final class FleetDataStore {
             return
         }
 
+        if selectedVehicle?.latest?.tires == nil {
+            await refreshSelectedVehicleLive()
+        }
         if activeDrivesByVIN[vin] == nil {
             await refreshSelectedVehicleActiveDrive()
         }
         await refreshSelectedVehicleChargingSessions()
-        if softwareUpdatesByVIN[vin] == nil {
-            await refreshSelectedVehicleSoftware()
-        }
+        await refreshSelectedVehicleSoftware()
         if selectedVehicleRecentDrives.isEmpty || selectedVehicleRecentDrives.contains(where: needsDriveDetails) {
             await refreshSelectedVehicleDrives()
         }
@@ -680,20 +724,22 @@ final class FleetDataStore {
         }
     }
 
-    private func refreshAllSelectedVehicleDetails(stoppingOnCancellation: Bool = false) async {
+    private func refreshAllSelectedVehicleDetails() async {
         let steps: [() async -> Void] = [
             { await self.refreshSelectedVehicleLive() },
             { await self.refreshSelectedVehicleActiveDrive() },
             { await self.refreshSelectedVehicleChargingSessions() },
-            { await self.refreshSelectedVehicleSoftware() },
+            {
+                if self.selectedVehicleSoftwareUpdate?.releaseNotesCount == nil {
+                    await self.refreshSelectedVehicleSoftware()
+                }
+            },
             { await self.refreshSelectedVehicleDrives() },
             { await self.refreshSelectedVehicleTelemetry() }
         ]
 
         for step in steps {
-            if stoppingOnCancellation, Task.isCancelled {
-                return
-            }
+            guard !Task.isCancelled else { return }
             await step()
         }
     }
@@ -735,6 +781,53 @@ final class FleetDataStore {
         keepValidSelectionOrSelectFirst()
     }
 
+    private func applyVehicleRoster(_ roster: [FleetVehicle]) {
+        let previousSnapshots = latestSnapshotsByVIN
+        let nextVehicles = FleetDataNormalizer.vehicles(roster)
+        let currentVINs = Set(nextVehicles.map(\.vin))
+        let removedVINs = Set(vehicles.map(\.vin)).subtracting(currentVINs)
+
+        vehicles = nextVehicles.map { vehicle in
+            guard let previous = previousSnapshots[vehicle.vin] else {
+                return vehicle
+            }
+            if let previousTimestamp = previous.updatedAt,
+               (vehicle.latest?.updatedAt ?? 0) < previousTimestamp {
+                var updatedVehicle = vehicle
+                updatedVehicle.latest = previous
+                return updatedVehicle
+            }
+            if vehicle.latest?.tires == nil, let previousTires = previous.tires {
+                var updatedVehicle = vehicle
+                updatedVehicle.latest?.tires = previousTires
+                return updatedVehicle
+            }
+            return vehicle
+        }
+        if !removedVINs.isEmpty {
+            let removedSessionIDs = Set(recentDrives.lazy.filter { removedVINs.contains($0.vin) }.map(\.sessionID))
+                .union(activeDrivesByVIN.values.lazy.filter { removedVINs.contains($0.vin) }.map(\.sessionID))
+            driveRoutesBySessionID = driveRoutesBySessionID.filter { sessionID, _ in
+                !removedSessionIDs.contains(sessionID) && !removedVINs.contains { vin in
+                    sessionID.hasPrefix("\(vin):")
+                        || sessionID.hasPrefix("drive:\(vin):")
+                        || sessionID == "active:\(vin)"
+                }
+            }
+            activeCharging.removeAll { removedVINs.contains($0.vin) }
+            recentDrives.removeAll { removedVINs.contains($0.vin) }
+            for vin in removedVINs {
+                activeDrivesByVIN.removeValue(forKey: vin)
+                softwareUpdatesByVIN.removeValue(forKey: vin)
+                locationHistoryByVIN.removeValue(forKey: vin)
+                telemetrySeriesByVIN.removeValue(forKey: vin)
+            }
+        }
+
+        mergeSoftwareUpdates(FleetDataNormalizer.softwareUpdatesByVIN(from: vehicles))
+        keepValidSelectionOrSelectFirst()
+    }
+
     private func keepValidSelectionOrSelectFirst() {
         if let selectedVIN, vehicles.contains(where: { $0.vin == selectedVIN }) {
             return
@@ -772,8 +865,27 @@ final class FleetDataStore {
         recentDrives = FleetDataNormalizer.driveSessions(otherDrives + normalizedDrives)
     }
 
-    private func mergeSoftwareUpdates(_ updates: [String: FleetSoftwareUpdate]) {
-        for (vin, update) in FleetDataNormalizer.softwareUpdatesByVIN(updates) {
+    private func mergeSoftwareUpdates(_ updates: [String: FleetSoftwareUpdate], fromCachedState: Bool = false) {
+        for (vin, incoming) in FleetDataNormalizer.softwareUpdatesByVIN(updates) {
+            var update = incoming
+            if fromCachedState, update.releaseNotesCount == 0, update.releaseNotes.isEmpty {
+                // Older builds used zero for release notes they had never requested.
+                update.releaseNotesCount = nil
+            }
+            if let previous = softwareUpdatesByVIN[vin] {
+                if let incomingTimestamp = update.sourceTimestamp,
+                   let previousTimestamp = previous.sourceTimestamp,
+                   incomingTimestamp < previousTimestamp {
+                    continue
+                }
+                if update.releaseNotesCount == nil,
+                   update.releaseNotes.isEmpty,
+                   update.currentVersion == previous.currentVersion,
+                   update.availableVersion == previous.availableVersion {
+                    update.releaseNotes = previous.releaseNotes
+                    update.releaseNotesCount = previous.releaseNotesCount
+                }
+            }
             softwareUpdatesByVIN[vin] = update
         }
     }
@@ -799,14 +911,22 @@ final class FleetDataStore {
     }
 
     private func mergeLatestSnapshots(_ snapshots: [FleetLatestSnapshot]) {
-        let normalizedSnapshots = FleetDataNormalizer.latestSnapshots(snapshots)
+        let previousSnapshots = latestSnapshotsByVIN
+        let knownVINs = Set(vehicles.map(\.vin))
+        let normalizedSnapshots = FleetDataNormalizer.latestSnapshots(snapshots).filter { snapshot in
+            knownVINs.contains(snapshot.vin)
+                && (snapshot.updatedAt ?? 0) >= (previousSnapshots[snapshot.vin]?.updatedAt ?? 0)
+        }
         guard !normalizedSnapshots.isEmpty else {
             return
         }
 
         var snapshotsByVIN: [String: FleetLatestSnapshot] = [:]
         var nestedSoftwareUpdates: [String: FleetSoftwareUpdate] = [:]
-        for snapshot in normalizedSnapshots {
+        for var snapshot in normalizedSnapshots {
+            if snapshot.tires == nil {
+                snapshot.tires = previousSnapshots[snapshot.vin]?.tires
+            }
             snapshotsByVIN[snapshot.vin] = snapshot
             if let software = snapshot.software {
                 nestedSoftwareUpdates[snapshot.vin] = software

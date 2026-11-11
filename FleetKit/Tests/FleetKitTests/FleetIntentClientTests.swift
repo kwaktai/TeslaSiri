@@ -110,4 +110,139 @@ struct FleetIntentClientTests {
         #expect(software.updateAvailable)
         #expect(software.expectedDurationMinutes == 25)
     }
+
+    @Test func `snapshot falls back to state tire pressures in bar`() async throws {
+        let client = makeMockClient { request in
+            switch request.url?.path {
+            case "/VIN-1/state":
+                return (200, Data("""
+                    {"vehicle_state":{"tpms_pressure_fl":"2.7","tpms_pressure_fr":"NaN","tpms_pressure_rr":2.9}}
+                    """.utf8))
+            case "/VIN-1/tire_pressure":
+                return (404, Data())
+            default:
+                Issue.record("Unexpected request")
+                return (404, Data())
+            }
+        }
+
+        let snapshot = try await client.snapshot(vin: "VIN-1")
+        let tires = try #require(snapshot.tires)
+        #expect(abs((tires.frontLeftPSI ?? 0) - 39.16) < 0.01)
+        #expect(abs((tires.rearRightPSI ?? 0) - 42.06) < 0.01)
+        #expect(tires.frontRightPSI == nil)
+        #expect(tires.lastMeasuredAt == nil)
+    }
+
+    @Test func `snapshot reports an expired session from the tire pressure request`() async throws {
+        let client = makeMockClient { request in
+            if request.url?.path == "/VIN-1/state" {
+                return (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
+            }
+            #expect(request.url?.path == "/VIN-1/tire_pressure")
+            return (401, Data())
+        }
+
+        let error = await #expect(throws: FleetKitError.self) {
+            try await client.snapshot(vin: "VIN-1")
+        }
+        #expect(error?.localizedDescription == FleetKitError.sessionExpired.localizedDescription)
+    }
+
+    @Test func `drives requests a miles based limit and returns newest sessions first`() async throws {
+        let client = makeMockClient { request in
+            #expect(request.httpMethod == "GET")
+            #expect(request.url?.path == "/VIN-1/drives")
+            let query = request.url.flatMap { URLComponents(url: $0, resolvingAgainstBaseURL: false) }?.queryItems
+            #expect(query?.contains(URLQueryItem(name: "distance_format", value: "mi")) == true)
+            #expect(query?.contains(URLQueryItem(name: "limit", value: "10")) == true)
+            return (200, Data("""
+                {"results":[
+                    {"id":1,"started_at":1710000000,"ended_at":1710000600},
+                    {"id":2,"started_at":1710001200,"ended_at":1710001500,"odometer_distance":12.5,
+                     "average_speed":30,"max_speed":60,"energy_used":4.2}
+                ]}
+                """.utf8))
+        }
+
+        let drives = try await client.drives(vin: "VIN-1", limit: 10)
+        #expect(drives.map(\.sessionID) == ["VIN-1:2", "VIN-1:1"])
+        let latest = try #require(drives.first)
+        #expect(latest.startedAt == 1_710_001_200_000)
+        #expect(latest.durationMS == 300_000)
+        #expect(latest.distanceMiles == 12.5)
+        #expect(latest.avgSpeedMPH == 30)
+        #expect(latest.energyUsedKWH == 4.2)
+    }
+
+    @Test(.serialized, arguments: ["2026.8.4", ""])
+    func `release note suggestions use staged or installed software version`(stagedVersion: String) async throws {
+        let expectedVersion = stagedVersion.isEmpty ? "2026.2.1" : stagedVersion
+        let client = makeMockClient { request in
+            switch request.url?.path {
+            case "/vehicles":
+                return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
+            case "/VIN-1/state":
+                return (200, Data("""
+                    {"vehicle_state":{"car_version":"2026.2.1 build","software_update":{"version":"\(stagedVersion)"}}}
+                    """.utf8))
+            case "/VIN-1/release_notes/\(expectedVersion)":
+                #expect(request.httpMethod == "GET")
+                #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer test-token")
+                return (200, Data("""
+                    {"release_notes":[{"title":"Route updates","subtitle":null,"description":"Better directions",
+                                       "customer_version":"\(expectedVersion)"}]}
+                    """.utf8))
+            default:
+                Issue.record("Unexpected request")
+                return (404, Data())
+            }
+        }
+        let query = ReleaseNoteEntityQuery(service: FleetIntentService(client: client))
+
+        let notes = try await query.suggestedEntities()
+        let note = try #require(notes.first)
+        #expect(notes.count == 1)
+        #expect(note.version == expectedVersion)
+        #expect(note.title == "Route updates")
+        #expect(note.details == "Better directions")
+    }
+
+    @Test func `saved release notes resolve by exact version for authorized vehicles`() async throws {
+        let client = makeMockClient { request in
+            switch request.url?.path {
+            case "/vehicles":
+                return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
+            case "/VIN-2/release_notes/2025.44":
+                return (200, Data("""
+                    {"release_notes":[
+                        {"title":"Changes: Navigation","customer_version":"2025.44"},
+                        {"title":"Changes: Navigation","customer_version":"2025.40"}
+                    ]}
+                    """.utf8))
+            default:
+                Issue.record("Unexpected request")
+                return (404, Data())
+            }
+        }
+        let query = ReleaseNoteEntityQuery(service: FleetIntentService(client: client))
+        let id = "VIN-2:2025.44:2025.40:Changes: Navigation"
+
+        let notes = try await query.entities(for: [id, "UNKNOWN:2025.44:Missing"])
+        #expect(notes.map(\.id) == [id])
+        #expect(MockURLProtocol.requests.map { $0.url?.path } == ["/vehicles", "/VIN-2/release_notes/2025.44"])
+    }
+
+    @Test(.serialized, arguments: ["", ".", ".."])
+    func `release notes rejects empty and dot segment versions`(invalidVersion: String) async {
+        let client = makeMockClient { request in
+            Issue.record("Unexpected request: \(request.url?.absoluteString ?? "nil")")
+            return (500, Data())
+        }
+
+        await #expect(throws: FleetKitError.self) {
+            _ = try await client.releaseNotes(vin: "VIN-1", version: invalidVersion)
+        }
+        #expect(MockURLProtocol.requests.isEmpty)
+    }
 }

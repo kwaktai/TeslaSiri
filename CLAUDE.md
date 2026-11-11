@@ -35,9 +35,9 @@ TeslaSiri is a SwiftUI iOS app that connects to Tessie for Tesla vehicle data. I
 - Observable Fleet data store.
 - Local cache hydration and refresh.
 - Vehicle dashboard UI.
-- Drive, route, charging, software update, telemetry, and raw export flows.
+- Drive, route, charging, software update + release notes, tire pressure, telemetry, and 21-endpoint raw export flows (see `AGENTS.md` → Tessie transport).
 - Local notification payload handling; Tessie does not expose the old custom webhook-management API.
-- FleetKit local Swift package: Siri/Shortcuts/App Intents, ExtensionKit host, shared keychain token bridge (see `AGENTS.md` → FleetKit and App Intents).
+- FleetKit local Swift package: Siri/Shortcuts/App Intents, Spotlight indexing, ExtensionKit host, shared keychain token bridge (see `AGENTS.md` → FleetKit and App Intents).
 
 ## Key Files
 

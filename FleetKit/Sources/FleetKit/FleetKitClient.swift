@@ -83,10 +83,20 @@ public struct FleetIntentClient: Sendable {
 
     public func snapshot(vin: String) async throws -> FleetSnapshotInfo {
         let state: TessieObject = try await get("/\(encoded(vin))/state")
-        let tireState: TessieObject? = try? await get(
-            "/\(encoded(vin))/tire_pressure",
-            query: [URLQueryItem(name: "pressure_format", value: "psi")]
-        )
+        let tireState: TessieObject?
+        do {
+            tireState = try await get(
+                "/\(encoded(vin))/tire_pressure",
+                query: [URLQueryItem(name: "pressure_format", value: "psi")]
+            )
+        } catch FleetKitError.sessionExpired {
+            throw FleetKitError.sessionExpired
+        } catch FleetKitError.notSignedIn {
+            throw FleetKitError.notSignedIn
+        } catch {
+            try Task.checkCancellation()
+            tireState = nil
+        }
         return state.snapshot(vin: vin, tireState: tireState)
     }
 
@@ -107,11 +117,20 @@ public struct FleetIntentClient: Sendable {
             ]
         )
         return response.results.compactMap { $0.drive(vin: vin) }
+            .sorted { $0.startedAt > $1.startedAt }
     }
 
     public func software(vin: String) async throws -> FleetSoftwareInfo {
         let state: TessieObject = try await get("/\(encoded(vin))/state")
         return state.software
+    }
+
+    public func releaseNotes(vin: String, version: String) async throws -> [FleetReleaseNoteInfo] {
+        guard !version.isEmpty, version != ".", version != ".." else {
+            throw FleetKitError.badResponse
+        }
+        let response: TessieReleaseNotes = try await get("/\(encoded(vin))/release_notes/\(encoded(version))")
+        return response.releaseNotes ?? []
     }
 
     public func controlActions() async throws -> FleetControlActionsInfo {
@@ -218,7 +237,7 @@ public struct FleetIntentClient: Sendable {
         do {
             return try JSONDecoder().decode(Value.self, from: data)
         } catch {
-            FleetKitLog.client.error("GET \(path, privacy: .public) decode failed — \(error.localizedDescription, privacy: .public)")
+            FleetKitLog.client.error("GET \(Self.logPath(path), privacy: .public) decode failed — \(error.localizedDescription, privacy: .private)")
             throw FleetKitError.badResponse
         }
     }
@@ -227,14 +246,14 @@ public struct FleetIntentClient: Sendable {
         let request = try authorizedRequest(path: path, query: query, method: "POST")
         let data = try await execute(request)
         guard let response = try? JSONDecoder().decode(TessieCommandResponse.self, from: data), response.result else {
-            FleetKitLog.client.error("POST \(path, privacy: .public) command was not accepted")
+            FleetKitLog.client.error("POST \(Self.logPath(path), privacy: .public) command was not accepted")
             throw FleetKitError.api("Tessie did not accept the vehicle command.")
         }
     }
 
     private func execute(_ request: URLRequest) async throws -> Data {
         let method = request.httpMethod ?? "GET"
-        let path = request.url?.path(percentEncoded: false) ?? "?"
+        let path = Self.logPath(request.url?.path(percentEncoded: true) ?? "?")
         let start = ContinuousClock.now
         do {
             let (data, response) = try await session.data(for: request)
@@ -257,7 +276,7 @@ public struct FleetIntentClient: Sendable {
             throw error
         } catch {
             let elapsed = FleetKitLog.milliseconds(since: start)
-            FleetKitLog.client.error("\(method, privacy: .public) \(path, privacy: .public) failed after \(elapsed, privacy: .public) ms — \(error.localizedDescription, privacy: .public)")
+            FleetKitLog.client.error("\(method, privacy: .public) \(path, privacy: .public) failed after \(elapsed, privacy: .public) ms — \(error.localizedDescription, privacy: .private)")
             throw error
         }
     }
@@ -294,6 +313,11 @@ public struct FleetIntentClient: Sendable {
         return [URLQueryItem(name: key, value: value.queryValue)]
     }
 
+    private static func logPath(_ path: String) -> String {
+        guard let separator = path.dropFirst().firstIndex(of: "/") else { return path }
+        return "/{vin}" + path[separator...]
+    }
+
     private static func errorMessage(from data: Data) -> String? {
         guard let object = try? JSONDecoder().decode(TessieObject.self, from: data) else { return nil }
         return object.string("error") ?? object.string("message")
@@ -319,6 +343,14 @@ private struct TessieVehicle: Decodable {
     enum CodingKeys: String, CodingKey {
         case vin
         case lastState = "last_state"
+    }
+}
+
+private struct TessieReleaseNotes: Decodable {
+    let releaseNotes: [FleetReleaseNoteInfo]?
+
+    enum CodingKeys: String, CodingKey {
+        case releaseNotes = "release_notes"
     }
 }
 
@@ -357,8 +389,8 @@ private enum TessieValue: Decodable {
         switch self {
         case .string(let value): value
         case .number(let value):
-            if value.rounded() == value, value < Double(Int64.max), value >= Double(Int64.min) {
-                String(Int64(value))
+            if let integer = Int64(exactly: value) {
+                String(integer)
             } else {
                 String(value)
             }
@@ -370,7 +402,7 @@ private enum TessieValue: Decodable {
     var doubleValue: Double? {
         switch self {
         case .number(let value): value
-        case .string(let value): Double(value)
+        case .string(let value): Double(value).flatMap { $0.isFinite ? $0 : nil }
         default: nil
         }
     }
@@ -485,17 +517,42 @@ private extension Dictionary where Key == String, Value == TessieValue {
             updatedAt: timestamps.max(),
             climateKeeperMode: climate.string("climate_keeper_mode"),
             defrostMode: climate.string("defrost_mode"),
-            tires: tireState.map { tire in
-                FleetTirePressuresInfo(
-                    frontLeftPSI: tire.double("front_left"),
-                    frontRightPSI: tire.double("front_right"),
-                    rearLeftPSI: tire.double("rear_left"),
-                    rearRightPSI: tire.double("rear_right"),
-                    hardWarnings: nil,
-                    softWarnings: nil,
-                    lastMeasuredAt: tire.int64("timestamp").map(Self.milliseconds)
-                )
+            tires: tireState?.tirePressures ?? vehicle.stateTirePressures
+        )
+    }
+
+    var tirePressures: FleetTirePressuresInfo? {
+        let frontLeft = double("front_left")
+        let frontRight = double("front_right")
+        let rearLeft = double("rear_left")
+        let rearRight = double("rear_right")
+        guard frontLeft != nil || frontRight != nil || rearLeft != nil || rearRight != nil else { return nil }
+        return FleetTirePressuresInfo(
+            frontLeftPSI: frontLeft,
+            frontRightPSI: frontRight,
+            rearLeftPSI: rearLeft,
+            rearRightPSI: rearRight,
+            lastMeasuredAt: int64("timestamp").map(Self.milliseconds)
+        )
+    }
+
+    var stateTirePressures: FleetTirePressuresInfo? {
+        func psi(_ key: String) -> Double? {
+            double(key).map {
+                Measurement(value: $0, unit: UnitPressure.bars).converted(to: .poundsForcePerSquareInch).value
             }
+        }
+
+        let frontLeft = psi("tpms_pressure_fl")
+        let frontRight = psi("tpms_pressure_fr")
+        let rearLeft = psi("tpms_pressure_rl")
+        let rearRight = psi("tpms_pressure_rr")
+        guard frontLeft != nil || frontRight != nil || rearLeft != nil || rearRight != nil else { return nil }
+        return FleetTirePressuresInfo(
+            frontLeftPSI: frontLeft,
+            frontRightPSI: frontRight,
+            rearLeftPSI: rearLeft,
+            rearRightPSI: rearRight
         )
     }
 
@@ -522,12 +579,12 @@ private extension Dictionary where Key == String, Value == TessieValue {
     var software: FleetSoftwareInfo {
         let vehicle = object("vehicle_state")
         let update = vehicle.object("software_update")
-        let availableVersion = update.string("version")
+        let availableVersion = update.string("version")?.split(whereSeparator: \.isWhitespace).first.map(String.init)
         let status = update.string("status")
         let unavailableStatuses = ["", "idle", "unknown"]
         let available = availableVersion != nil
             || !unavailableStatuses.contains(status?.lowercased() ?? "")
-        let currentVersion = vehicle.string("car_version")?.split(separator: " ").first.map(String.init)
+        let currentVersion = vehicle.string("car_version")?.split(whereSeparator: \.isWhitespace).first.map(String.init)
         let expectedSeconds = update.double("expected_duration_sec")
 
         return FleetSoftwareInfo(
@@ -538,12 +595,11 @@ private extension Dictionary where Key == String, Value == TessieValue {
             status: status,
             downloadPercent: update.double("download_perc"),
             installPercent: update.double("install_perc"),
-            expectedDurationMinutes: expectedSeconds.map { $0 / 60 },
-            releaseNotes: []
+            expectedDurationMinutes: expectedSeconds.map { $0 / 60 }
         )
     }
 
     static func milliseconds(_ value: Int64) -> Int64 {
-        abs(value) < 10_000_000_000 ? value * 1_000 : value
+        value.magnitude < 10_000_000_000 ? value * 1_000 : value
     }
 }

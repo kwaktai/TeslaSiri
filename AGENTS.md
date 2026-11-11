@@ -141,6 +141,7 @@ TeslaSiriApp + TeslaSiriAppIntentsExtension
 | Sign-out | `FleetTokenBridge.clear()` after `tokenStore.deleteAccessToken()` |
 | Fleet reload | `FleetTokenBridge.sync` in `AppRootView.reloadFleet()` |
 | Vehicle picker change | `FleetTokenBridge.sync` in `DashboardView` `onSelect` |
+| Automatic roster selection change | `FleetTokenBridge.syncSelectedVehicle` in `AppRootView` after verifying the local token |
 | Tessie token save/delete | `TessieAccessTokenStore.saveAccessToken` / `deleteAccessToken` also write/clear `FleetSharedTokenStore` |
 
 `FleetTokenBridge.sync` **clears** the shared access token when `accessToken()` throws (do not leave stale tokens). It calls `TeslaSiriShortcuts.updateAppShortcutParameters()` so shortcut defaults pick up the current vehicle name.
@@ -152,9 +153,13 @@ Access tokens live in **shared keychain** (`FleetSharedTokenStore`); selected VI
 Both clients use `https://api.tessie.com` with `Authorization: Bearer <token>`. `FleetIntentClient` must join API paths with `URLComponents` (see `makeURL` in `FleetKitClient.swift`). **Never** use `baseURL.appendingPathComponent("/...")` for a complete endpoint path — it percent-encodes separators. Match `TeslaSiri/FleetAPI/FleetAPIClient.makeURL`.
 
 - Retain the app's normalized `Fleet*` model layer. Tessie DTOs and adapters live in `TessieAPIModels.swift`; FleetKit keeps its own extension-safe subset.
-- Tessie has no cursor-delta endpoint, so `changes(since:)` performs a full `/vehicles` state refresh and advances a local polling cursor.
+- Tessie has no cursor-delta endpoint, so `changes(since:)` refreshes the active roster from `/vehicles` and advances a local polling cursor. Use the returned roster to reconcile vehicles, selection, and per-VIN caches.
+- Use Tessie's [Vehicle Data reference](https://developer.tessie.com/reference/about) and [OpenAPI spec](https://developer.tessie.com/openapi.yaml) for endpoint contracts. Keep `/state` on Tessie's default cache policy. `use_cache=false` is documented for legacy Model S and Model X only. Send history windows in Unix seconds and `condense=false` when decoding `/states` as rows. Request `/path` with `details=true` and the completed drive's time bounds for playback. Preserve both endpoints when sampling.
+- Both `FleetAPIClient` and `FleetIntentClient` read `/{vin}/tire_pressure?pressure_format=psi` alongside `/{vin}/state` (propagating 401 auth errors and falling back to `vehicle_state.tpms_pressure_*` converted from bar to PSI when the dedicated endpoint is unavailable).
+- Fetch software release notes through `/{vin}/release_notes/{version}` using the staged version when reported, otherwise the installed version. Strip the build hash from `car_version`, and reject empty, `.`, or `..` version segments before interpolating the path. In the app a nil note count means notes were unavailable or skipped, so the store can retain cached notes for the same version. FleetKit fetches notes for release-note entities and indexing.
+- The Diagnostics export samples all 21 documented Vehicle Data GETs. `/vehicles` and `/battery_health` include account-level data. The fleet-only `/charging_invoices` request uses the selected VIN filter. The JSON export stores the PNG map as base64 with its content type and records individual HTTP failures.
 - Tessie has no public webhook-management API. Do not restore the old custom notification-webhook calls or surface that UI as working.
-- Drive and charge IDs are numeric in Tessie. Prefix normalized session IDs with the VIN (`VIN:id`) so route lookups and App Entity identifiers remain account-safe.
+- Drive and charge IDs are numeric in Tessie. Prefix normalized session IDs with the VIN (`VIN:id`) so route lookups and App Entity identifiers remain account-safe. `OpenDriveIntent` routes both `intent.target.vin` and `intent.target.id` into `DrivesView` so Spotlight/Shortcuts select the exact drive.
 
 ### Adding or changing an App Intent
 

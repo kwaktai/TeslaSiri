@@ -165,17 +165,41 @@ public struct ReleaseNoteEntity: AppEntity, IndexedEntity, Identifiable {
 }
 
 public struct ReleaseNoteEntityQuery: EntityQuery, IndexedEntityQuery {
-    public init() {}
+    private let service: FleetIntentService
+
+    public init() {
+        self.init(service: .make())
+    }
+
+    init(service: FleetIntentService) {
+        self.service = service
+    }
 
     public func entities(for identifiers: [ReleaseNoteEntity.ID]) async throws -> [ReleaseNoteEntity] {
-        try await allReleaseNotes().filter { identifiers.contains($0.id) }
+        guard !identifiers.isEmpty else { return [] }
+        let authorizedVINs = Set(try await service.vehicles().map(\.vin))
+        var versionsByVIN: [String: Set<String>] = [:]
+        for identifier in identifiers {
+            let parts = identifier.split(separator: ":", maxSplits: 2)
+            guard parts.count == 3, authorizedVINs.contains(String(parts[0])) else { continue }
+            versionsByVIN[String(parts[0]), default: []].insert(String(parts[1]))
+        }
+
+        var notesByID: [ReleaseNoteEntity.ID: ReleaseNoteEntity] = [:]
+        for (vin, versions) in versionsByVIN {
+            for version in versions {
+                for note in try await service.releaseNotes(vin: vin, version: version) {
+                    let entity = ReleaseNoteEntity(info: note, vin: vin, version: version)
+                    notesByID[entity.id] = entity
+                }
+            }
+        }
+        return identifiers.compactMap { notesByID[$0] }
     }
 
     public func suggestedEntities() async throws -> [ReleaseNoteEntity] {
-        let service = FleetIntentService.make()
         let vehicle = try await service.resolvedVehicle(nil)
-        let info = try await service.software(vin: vehicle.vin)
-        return info.releaseNotes.map { ReleaseNoteEntity(info: $0, vin: vehicle.vin, version: info.availableVersion ?? info.currentVersion) }
+        return try await latestReleaseNotes(vin: vehicle.vin)
     }
 
     public func reindexEntities(for identifiers: [ReleaseNoteEntity.ID], indexDescription: CSSearchableIndexDescription) async throws {
@@ -187,12 +211,17 @@ public struct ReleaseNoteEntityQuery: EntityQuery, IndexedEntityQuery {
     }
 
     private func allReleaseNotes() async throws -> [ReleaseNoteEntity] {
-        let service = FleetIntentService.make()
         var all: [ReleaseNoteEntity] = []
         for vehicle in try await service.vehicles() {
-            let info = try await service.software(vin: vehicle.vin)
-            all.append(contentsOf: info.releaseNotes.map { ReleaseNoteEntity(info: $0, vin: vehicle.vin, version: info.availableVersion ?? info.currentVersion) })
+            all.append(contentsOf: try await latestReleaseNotes(vin: vehicle.vin))
         }
         return all
+    }
+
+    private func latestReleaseNotes(vin: String) async throws -> [ReleaseNoteEntity] {
+        let software = try await service.software(vin: vin)
+        guard let version = software.availableVersion ?? software.currentVersion else { return [] }
+        return try await service.releaseNotes(vin: vin, version: version)
+            .map { ReleaseNoteEntity(info: $0, vin: vin, version: version) }
     }
 }

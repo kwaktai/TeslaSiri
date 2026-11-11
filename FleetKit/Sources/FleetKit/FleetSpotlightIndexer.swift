@@ -130,13 +130,24 @@ public enum FleetSpotlightIndexer {
                     if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
                 }
 
+                let info: FleetSoftwareInfo
                 do {
-                    let info = try await service.software(vin: vehicle.vin)
+                    info = try await service.software(vin: vehicle.vin)
                     software.append(SoftwareUpdateEntity(info: info, vin: vehicle.vin, vehicleName: vehicle.name))
-                    notes.append(contentsOf: info.releaseNotes.map { ReleaseNoteEntity(info: $0, vin: vehicle.vin, version: info.availableVersion ?? info.currentVersion) })
                 } catch {
                     errors.append("Software for \(vehicle.name): \(error.localizedDescription)")
                     if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
+                    continue
+                }
+
+                if let version = info.availableVersion ?? info.currentVersion {
+                    do {
+                        let releaseNotes = try await service.releaseNotes(vin: vehicle.vin, version: version)
+                        notes.append(contentsOf: releaseNotes.map { ReleaseNoteEntity(info: $0, vin: vehicle.vin, version: version) })
+                    } catch {
+                        errors.append("Release notes for \(vehicle.name): \(error.localizedDescription)")
+                        if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
+                    }
                 }
             }
 

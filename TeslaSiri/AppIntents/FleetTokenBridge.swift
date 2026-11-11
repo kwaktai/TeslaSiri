@@ -21,7 +21,14 @@ enum FleetTokenBridge {
             logger.warning("No valid session — cleared shared access token (\(error.localizedDescription, privacy: .public))")
         }
 
-        if let vin = store.selectedVehicle?.vin {
+        syncSelectedVehicle(store: store, forceShortcutRefresh: true)
+    }
+
+    static func syncSelectedVehicle(store: FleetDataStore, forceShortcutRefresh: Bool = false) {
+        let vin = store.selectedVehicle?.vin
+        guard forceShortcutRefresh || FleetSharedTokenStore.shared.selectedVIN() != vin else { return }
+
+        if let vin {
             FleetSharedTokenStore.shared.save(selectedVIN: vin)
             logger.info("Shared selected VIN set to \(FleetKitLog.vin(vin), privacy: .public)")
         } else {

@@ -102,11 +102,27 @@ nonisolated enum FleetDataNormalizer {
         snapshot.targetTemperature = finite(snapshot.targetTemperature)
         snapshot.timeToFullCharge = nonNegative(snapshot.timeToFullCharge)
         snapshot.timestamp = normalizedEpochMilliseconds(snapshot.timestamp)
+        snapshot.tires = snapshot.tires.flatMap(tirePressures)
         snapshot.updatedAt = normalizedEpochMilliseconds(snapshot.updatedAt) ?? snapshot.timestamp
         if snapshot.timestamp == nil {
             snapshot.timestamp = snapshot.updatedAt
         }
         return snapshot
+    }
+
+    private static func tirePressures(_ rawTires: FleetTirePressures) -> FleetTirePressures? {
+        var tires = rawTires
+        tires.frontLeftPSI = positive(tires.frontLeftPSI)
+        tires.frontRightPSI = positive(tires.frontRightPSI)
+        tires.rearLeftPSI = positive(tires.rearLeftPSI)
+        tires.rearRightPSI = positive(tires.rearRightPSI)
+        tires.lastMeasuredAt = normalizedEpochMilliseconds(tires.lastMeasuredAt)
+        return tires.hasAnyReading ? tires : nil
+    }
+
+    private static func positive(_ value: Double?) -> Double? {
+        guard let value, value.isFinite, value > 0 else { return nil }
+        return value
     }
 
     // MARK: - Charging & Drives

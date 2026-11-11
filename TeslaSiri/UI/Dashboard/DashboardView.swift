@@ -141,8 +141,9 @@ private struct DashboardSecondaryContent: View {
                 LoadingCard(title: "Software", message: "Loading software…")
             }
 
-            if !store.activeCharging.isEmpty {
-                ChargingCard(sessions: store.activeCharging)
+            let chargingSessions = store.selectedVehicleChargingSessions
+            if !chargingSessions.isEmpty {
+                ChargingCard(sessions: chargingSessions)
             } else if store.isLoadingCharging {
                 LoadingCard(title: "Charging", message: "Loading charging…")
             }

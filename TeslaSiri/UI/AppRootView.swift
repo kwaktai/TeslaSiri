@@ -54,6 +54,7 @@ struct AppRootView: View {
 
     @State private var authErrorMessage: String?
     @State private var diagnostics = BackendDiagnosticsState()
+    @State private var requestedDriveSessionID: String?
     @State private var selectedTab: AppTab = .dashboard
     @State private var spotlightSearchTerm = ""
     @State private var isAuthenticating = false
@@ -61,13 +62,11 @@ struct AppRootView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             ForEach(AppTab.allCases) { tab in
-                NavigationStack {
-                    tabContent(for: tab)
+                Tab(tab.title, systemImage: tab.systemImage, value: tab) {
+                    NavigationStack {
+                        tabContent(for: tab)
+                    }
                 }
-                .tabItem {
-                    Label(tab.title, systemImage: tab.systemImage)
-                }
-                .tag(tab)
             }
         }
         .onAppIntentExecution(OpenVehicleIntent.self) { intent in
@@ -83,6 +82,7 @@ struct AppRootView: View {
             openVehicle(intent.target.vin, tab: .dashboard)
         }
         .onAppIntentExecution(OpenDriveIntent.self) { intent in
+            requestedDriveSessionID = intent.target.id
             openVehicle(intent.target.vin, tab: .drives)
         }
         .onAppIntentExecution(SearchFleetIntent.self) { intent in
@@ -102,6 +102,14 @@ struct AppRootView: View {
         .onChange(of: scenePhase) { _, newPhase in
             configureFleetPolling(for: newPhase)
         }
+        .onChange(of: store.selectedVIN) { previousVIN, _ in
+            guard !isAuthenticating,
+                  !store.vehicles.contains(where: { $0.vin == previousVIN }),
+                  (try? tokenStore.loadAccessToken()) != nil else {
+                return
+            }
+            FleetTokenBridge.syncSelectedVehicle(store: store)
+        }
     }
 
     @ViewBuilder
@@ -120,7 +128,13 @@ struct AppRootView: View {
                 }
             )
         case .drives:
-            DrivesView(store: store)
+            DrivesView(
+                store: store,
+                requestedSessionID: requestedDriveSessionID,
+                onReload: {
+                    await reloadFleet()
+                }
+            )
         case .diagnostics:
             DiagnosticsView(
                 store: store,

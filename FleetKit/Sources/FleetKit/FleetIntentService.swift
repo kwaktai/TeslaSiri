@@ -61,6 +61,10 @@ public struct FleetIntentService: Sendable {
         try await client.software(vin: vin)
     }
 
+    public func releaseNotes(vin: String, version: String) async throws -> [FleetReleaseNoteInfo] {
+        try await client.releaseNotes(vin: vin, version: version)
+    }
+
     public func controlActions() async throws -> FleetControlActionsInfo {
         try await client.controlActions()
     }

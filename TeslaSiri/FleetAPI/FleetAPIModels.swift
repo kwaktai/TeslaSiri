@@ -339,14 +339,17 @@ nonisolated struct FleetBootstrap: Codable, Equatable, Sendable {
 
 nonisolated struct FleetSyncChanges: Codable, Equatable, Sendable {
     var latest: [FleetLatestSnapshot]
+    var vehicles: [FleetVehicle]?
 
-    init(latest: [FleetLatestSnapshot] = []) {
+    init(latest: [FleetLatestSnapshot] = [], vehicles: [FleetVehicle]? = nil) {
         self.latest = latest
+        self.vehicles = vehicles
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         latest = try container.decodeIfPresent([FleetLatestSnapshot].self, forKey: .latest) ?? []
+        vehicles = try container.decodeIfPresent([FleetVehicle].self, forKey: .vehicles)
     }
 }
 
@@ -481,6 +484,72 @@ nonisolated struct FleetVehicleClosureState: Codable, Equatable, Sendable {
     }
 }
 
+nonisolated struct FleetTirePressures: Codable, Equatable, Sendable {
+    var frontLeftPSI: Double?
+    var frontRightPSI: Double?
+    var lastMeasuredAt: Int64?
+    var rearLeftPSI: Double?
+    var rearRightPSI: Double?
+
+    var hasAnyReading: Bool {
+        frontLeftPSI != nil || frontRightPSI != nil || rearLeftPSI != nil || rearRightPSI != nil
+    }
+
+    var measuredAtDate: Date? {
+        lastMeasuredAt.map { Date(timeIntervalSince1970: TimeInterval($0) / 1000) }
+    }
+
+    var displaySummary: String? {
+        let readings = [
+            frontLeftPSI.map { "FL \(Self.formatPSI($0))" },
+            frontRightPSI.map { "FR \(Self.formatPSI($0))" },
+            rearLeftPSI.map { "RL \(Self.formatPSI($0))" },
+            rearRightPSI.map { "RR \(Self.formatPSI($0))" }
+        ].compactMap { $0 }
+        guard !readings.isEmpty else { return nil }
+        return readings.joined(separator: ", ")
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case frontLeftPSI = "front_left_psi"
+        case frontRightPSI = "front_right_psi"
+        case lastMeasuredAt = "last_measured_at"
+        case rearLeftPSI = "rear_left_psi"
+        case rearRightPSI = "rear_right_psi"
+    }
+
+    init(
+        frontLeftPSI: Double? = nil,
+        frontRightPSI: Double? = nil,
+        lastMeasuredAt: Int64? = nil,
+        rearLeftPSI: Double? = nil,
+        rearRightPSI: Double? = nil
+    ) {
+        self.frontLeftPSI = frontLeftPSI
+        self.frontRightPSI = frontRightPSI
+        self.lastMeasuredAt = lastMeasuredAt
+        self.rearLeftPSI = rearLeftPSI
+        self.rearRightPSI = rearRightPSI
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        frontLeftPSI = container.decodeFlexibleDoubleIfPresent(forKey: .frontLeftPSI)
+        frontRightPSI = container.decodeFlexibleDoubleIfPresent(forKey: .frontRightPSI)
+        lastMeasuredAt = container.decodeFlexibleInt64IfPresent(forKey: .lastMeasuredAt)
+        rearLeftPSI = container.decodeFlexibleDoubleIfPresent(forKey: .rearLeftPSI)
+        rearRightPSI = container.decodeFlexibleDoubleIfPresent(forKey: .rearRightPSI)
+    }
+
+    private static func formatPSI(_ value: Double) -> String {
+        let rounded = (value * 10).rounded() / 10
+        if rounded.rounded() == rounded {
+            return "\(Int(rounded)) psi"
+        }
+        return String(format: "%.1f psi", rounded)
+    }
+}
+
 nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
     var batteryLevel: Double?
     var batteryRange: Double?
@@ -505,6 +574,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
     var targetTemperature: Double?
     var timeToFullCharge: Double?
     var timestamp: Int64?
+    var tires: FleetTirePressures?
     var updatedAt: Int64?
     var vehicleConfiguration: FleetVehicleConfiguration?
     var vin: String
@@ -536,6 +606,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         case targetTemperature = "target_temperature"
         case timeToFullCharge = "time_to_full_charge"
         case timestamp
+        case tires
         case updatedAt = "updated_at"
         case vehicleConfiguration = "vehicle_configuration"
         case vin
@@ -565,6 +636,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         targetTemperature: Double? = nil,
         timeToFullCharge: Double? = nil,
         timestamp: Int64? = nil,
+        tires: FleetTirePressures? = nil,
         updatedAt: Int64? = nil,
         vehicleConfiguration: FleetVehicleConfiguration? = nil,
         vin: String = ""
@@ -592,6 +664,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         self.targetTemperature = targetTemperature
         self.timeToFullCharge = timeToFullCharge
         self.timestamp = timestamp
+        self.tires = tires
         self.updatedAt = updatedAt
         self.vehicleConfiguration = vehicleConfiguration
         self.vin = vin
@@ -622,6 +695,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         targetTemperature = container.decodeFlexibleDoubleIfPresent(forKey: .targetTemperature)
         timeToFullCharge = container.decodeFlexibleDoubleIfPresent(forKey: .timeToFullCharge)
         timestamp = container.decodeFlexibleInt64IfPresent(forKey: .timestamp)
+        tires = try container.decodeIfPresent(FleetTirePressures.self, forKey: .tires)
         updatedAt = container.decodeFlexibleInt64IfPresent(forKey: .updatedAt)
         vehicleConfiguration = try container.decodeIfPresent(FleetVehicleConfiguration.self, forKey: .vehicleConfiguration)
         vin = try container.decodeIfPresent(String.self, forKey: .vin) ?? ""

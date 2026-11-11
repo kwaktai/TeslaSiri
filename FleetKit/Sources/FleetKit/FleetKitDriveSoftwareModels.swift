@@ -77,13 +77,18 @@ public struct FleetReleaseNoteInfo: Decodable, Sendable, Identifiable {
     public let title: String
     public let subtitle: String?
     public let details: String?
+    public let customerVersion: String?
 
-    public var id: String { title + (subtitle ?? "") }
+    public var id: String {
+        let noteTitle = title + (subtitle ?? "")
+        return customerVersion.map { "\($0):\(noteTitle)" } ?? noteTitle
+    }
 
     enum CodingKeys: String, CodingKey {
         case title
         case subtitle
         case details = "description"
+        case customerVersion = "customer_version"
     }
 
     public init(from decoder: Decoder) throws {
@@ -91,6 +96,7 @@ public struct FleetReleaseNoteInfo: Decodable, Sendable, Identifiable {
         title = try c.decodeIfPresent(String.self, forKey: .title) ?? ""
         subtitle = try c.decodeIfPresent(String.self, forKey: .subtitle)
         details = try c.decodeIfPresent(String.self, forKey: .details)
+        customerVersion = try c.decodeIfPresent(String.self, forKey: .customerVersion)
     }
 }
 

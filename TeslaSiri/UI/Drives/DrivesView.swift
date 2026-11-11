@@ -4,13 +4,22 @@ import SwiftUI
 
 struct DrivesView: View {
     let store: FleetDataStore
+    var requestedSessionID: String? = nil
+    var onReload: (() async -> Void)? = nil
 
     @State private var endpointAddresses: [String: DriveEndpointAddresses] = [:]
     @State private var selectedPointIndex = 0
     @State private var selectedSessionID: String?
 
     private var drives: [FleetDriveSession] {
-        Array(store.selectedVehicleRecentDrives.prefix(10))
+        var visible = Array(store.selectedVehicleRecentDrives.prefix(10))
+        if let targetID = selectedSessionID ?? requestedSessionID,
+           !targetID.isEmpty,
+           !visible.contains(where: { $0.sessionID == targetID }),
+           let matching = store.selectedVehicleRecentDrives.first(where: { $0.sessionID == targetID }) {
+            visible.append(matching)
+        }
+        return visible
     }
 
     var body: some View {
@@ -98,18 +107,26 @@ struct DrivesView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    Task { await store.refresh() }
+                    Task { await reloadDrives() }
                 } label: {
-                    if store.isLoadingDrives {
+                    if store.isLoadingDrives || store.isRefreshing {
                         ProgressView()
                             .controlSize(.small)
                     } else {
                         Image(systemName: "arrow.clockwise")
                     }
                 }
-                .disabled(store.isLoadingDrives)
+                .disabled(store.isLoadingDrives || store.isRefreshing)
                 .accessibilityLabel("Refresh drives")
             }
+        }
+        .refreshable {
+            await reloadDrives()
+        }
+        .onChange(of: requestedSessionID, initial: true) { _, newValue in
+            guard let newValue, !newValue.isEmpty else { return }
+            selectedSessionID = newValue
+            selectedPointIndex = 0
         }
         .task(id: endpointLookupKey) {
             await refreshEndpointAddresses()
@@ -117,9 +134,17 @@ struct DrivesView: View {
         .appEntityIdentifier(selectedDriveEntityIdentifier)
     }
 
+    private func reloadDrives() async {
+        if let onReload {
+            await onReload()
+        } else {
+            await store.refresh()
+        }
+    }
+
     private var selectedSessionBinding: Binding<String> {
         Binding {
-            selectedSessionID ?? drives.first?.sessionID ?? ""
+            selectedSessionID ?? requestedSessionID ?? drives.first?.sessionID ?? ""
         } set: { newValue in
             selectedSessionID = newValue
             selectedPointIndex = 0
@@ -127,7 +152,7 @@ struct DrivesView: View {
     }
 
     private var selectedDrive: FleetDriveSession? {
-        let sessionID = selectedSessionID ?? drives.first?.sessionID
+        let sessionID = selectedSessionID ?? requestedSessionID ?? drives.first?.sessionID
         return drives.first { $0.sessionID == sessionID } ?? drives.first
     }
 

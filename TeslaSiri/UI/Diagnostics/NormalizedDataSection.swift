@@ -15,6 +15,7 @@ struct NormalizedDataSection: View {
                     DiagnosticRow(label: "Temperature display", value: temperatureSuffix.trimmingCharacters(in: .whitespaces))
                     DiagnosticRow(label: "Live snapshot", value: snapshotSummary(vehicle.latest))
                         .appEntityIdentifier(statusEntityIdentifier(for: vehicle.latest))
+                    DiagnosticRow(label: "Tire pressure", value: vehicle.latest?.tires?.displaySummary ?? "None")
                     DiagnosticRow(label: "Software source", value: softwareSource(for: vehicle))
 
                     if let software = store.selectedVehicleSoftwareUpdate {

@@ -50,6 +50,13 @@ enum PreviewData {
         targetTemperature: 72,
         timeToFullCharge: 1.4,
         timestamp: 1_781_000_000_000,
+        tires: FleetTirePressures(
+            frontLeftPSI: 42.0,
+            frontRightPSI: 42.0,
+            lastMeasuredAt: 1_781_000_000_000,
+            rearLeftPSI: 41.5,
+            rearRightPSI: 41.5
+        ),
         updatedAt: 1_781_000_000_000,
         vehicleConfiguration: FleetVehicleConfiguration(
             carType: "model3",
