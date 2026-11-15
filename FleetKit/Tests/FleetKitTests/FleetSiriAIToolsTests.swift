@@ -108,6 +108,49 @@ func withIsolatedFleetService<R>(
 }
 
 struct FleetSiriAIToolsTests {
+    @Test func `warm up and send a destination execute together for the selected vehicle`() async throws {
+        try await withIsolatedFleetService(responder: { request in
+            if request.url?.path == "/vehicles" {
+                return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
+            }
+            return (200, FleetKitFixtures.commandResponse(result: true))
+        }) { requests in
+            let climate = try #require(try await StartClimateIntent().perform().value)
+            let navigation = SendNavigationIntent()
+            navigation.destination = "Yuki Kitchen, Westport"
+            let destination = try #require(try await navigation.perform().value)
+
+            #expect(climate.succeeded)
+            #expect(destination.succeeded)
+            #expect(climate.vin == destination.vin)
+            #expect(destination.appliedValue == "Yuki Kitchen, Westport")
+
+            let commands = requests().filter { $0.httpMethod == "POST" }
+            #expect(commands.compactMap { $0.url?.path } == [
+                "/VIN-1/command/start_climate",
+                "/VIN-1/command/share"
+            ])
+            let navigationURL = try #require(commands.last?.url)
+            let query = URLComponents(url: navigationURL, resolvingAgainstBaseURL: false)?.queryItems
+            #expect(query?.first { $0.name == "value" }?.value == "Yuki Kitchen, Westport")
+        }
+    }
+
+    @Test func `climate authentication failure keeps its Siri readable recovery message`() async throws {
+        try await withIsolatedFleetService(responder: { _ in
+            (401, Data())
+        }) { requests in
+            do {
+                _ = try await StartClimateIntent().perform()
+                Issue.record("Expected an expired-session error.")
+            } catch let error as FleetKitError {
+                let siriError: any CustomLocalizedStringResourceConvertible = error
+                #expect(String(localized: siriError.localizedStringResource) == "Your Tessie access token is invalid or revoked. Open Wattie to replace it.")
+            }
+            #expect(!requests().contains { $0.httpMethod == "POST" })
+        }
+    }
+
     @Test func `new Siri AI workflow tools default to no explicit vehicle`() {
         #expect(StartChargingIntent().vehicle == nil)
         #expect(StopChargingIntent().vehicle == nil)

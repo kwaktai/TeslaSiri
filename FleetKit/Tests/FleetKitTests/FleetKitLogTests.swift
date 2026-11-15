@@ -3,6 +3,20 @@ import Testing
 @testable import FleetKit
 
 struct FleetKitLogTests {
+    @Test(arguments: [
+        (FleetKitError.notSignedIn, "Open Wattie and add your Tessie access token to use this."),
+        (.sessionExpired, "Your Tessie access token is invalid or revoked. Open Wattie to replace it."),
+        (.api("The vehicle is offline."), "The vehicle is offline."),
+        (.api(nil), "Tessie returned an error."),
+        (.badResponse, "Tessie returned an unexpected response."),
+        (.unsupportedAction("starting climate"), "Your vehicle doesn't support starting climate right now.")
+    ])
+    func `fleet errors expose messages to Siri across process boundaries`(error: FleetKitError, expected: String) {
+        let siriError: any CustomLocalizedStringResourceConvertible = error
+        #expect(String(localized: siriError.localizedStringResource) == expected)
+        #expect(error.localizedDescription == expected)
+    }
+
     @Test func `vin helper redacts to last six characters`() {
         #expect(FleetKitLog.vin("5YJ3E1EA7KF000316") == "…000316")
         #expect(FleetKitLog.vin("ABC123") == "ABC123")

@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 
-public enum FleetKitError: Swift.Error, LocalizedError {
+public enum FleetKitError: Swift.Error, LocalizedError, CustomLocalizedStringResourceConvertible {
     case notSignedIn
     case sessionExpired
     case api(String?)
@@ -9,13 +9,20 @@ public enum FleetKitError: Swift.Error, LocalizedError {
     case unsupportedAction(String)
 
     public var errorDescription: String? {
+        String(localized: localizedStringResource)
+    }
+
+    public var localizedStringResource: LocalizedStringResource {
         switch self {
         case .notSignedIn:
-            return "Open TeslaSiri and add your Tessie access token to use this."
+            return "Open Wattie and add your Tessie access token to use this."
         case .sessionExpired:
-            return "Your Tessie access token is invalid or revoked. Open TeslaSiri to replace it."
+            return "Your Tessie access token is invalid or revoked. Open Wattie to replace it."
         case .api(let message):
-            return message ?? "Tessie returned an error."
+            if let message {
+                return "\(message)"
+            }
+            return "Tessie returned an error."
         case .badResponse:
             return "Tessie returned an unexpected response."
         case .unsupportedAction(let action):

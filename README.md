@@ -1,56 +1,24 @@
-# TeslaSiri
+# Wattie
 
-TeslaSiri is a SwiftUI iOS app for viewing and controlling Tesla vehicles through [Tessie](https://tessie.com). It stores a user-provided Tessie access token in Keychain, adapts Tessie state and history into app-owned models, mirrors credentials to the App Intents extension, and keeps cached vehicle data available between refreshes.
+Wattie is an independent SwiftUI app for viewing and controlling Tesla vehicles through Tessie. It combines a live vehicle dashboard, drive and charging history, and vehicle controls in Siri and Shortcuts. The Xcode project and app target are named `TeslaSiri`.
 
-## Project Layout
+The 3D showroom started as an experiment to see how closely RealityKit could reproduce the vehicle rendering in Tesla's Android app. The extracted models were converted to USD and animated using vehicle telemetry. The same renderer powers the showroom and replays recorded drives.
 
-- `TeslaSiri/ContentView.swift`: SwiftUI `@main` app entry point; wires shared services into `AppRootView`.
-- `TeslaSiri/UI/AppRootView.swift`: TabView shell (`AppTab` enum + `AppRootView`) and shared auth/diagnostics state.
-- `TeslaSiri/UI/Dashboard/`: User-facing dashboard cards (vehicle picker, status, software, active drive, charging, cached data, sign-in banner).
-- `TeslaSiri/UI/Drives/`: Drive demo: drive picker, route map, session summary, scrubber, metric tiles.
-- `TeslaSiri/UI/Diagnostics/`: Tessie diagnostics, normalized data, Spotlight debugging, account.
-- `TeslaSiri/UI/Shared/`: Reusable building blocks (`CardContainer`, `StatusBadge`, formatters, geocoder actor, `DiagnosticMonospacedValue`).
-- `TeslaSiri/FleetAPI/FleetAPIClient.swift`: Tessie HTTP client and normalized compatibility surface.
-- `TeslaSiri/FleetAPI/TessieAPIModels.swift`: Tessie DTO and model adapters.
-- `TeslaSiri/FleetAPI/FleetAPIModels.swift`: Codable Fleet API model types.
-- `TeslaSiri/FleetAPI/FleetDataStore.swift`: Main observable data store for bootstrap, sync, selected vehicle data, software actions, drives, routes, charging, and telemetry.
-- `TeslaSiri/FleetAPI/FleetDataCache.swift`: Local Fleet data cache support.
-- `TeslaSiri/FleetAPI/FleetAccessTokenKeychain.swift`: Keychain-backed Tessie token persistence.
-- `TeslaSiri/FleetAPI/TessieAccessTokenStore.swift`: Token persistence and extension-mirroring facade used by the app.
-- `TeslaSiri/FleetAPI/FleetNotifications.swift`: Notification payload decoding and local notification scheduling.
-- `TeslaSiri/Info.plist`: App metadata and background task declarations.
+## Run locally
 
-## Connecting Tessie
+1. Open [`TeslaSiri.xcodeproj`](TeslaSiri.xcodeproj/) in Xcode 27.3 or later and select the `TeslaSiri` scheme and an iOS 27.3 or later simulator or device. For device builds, set your signing team and bundle IDs on the app and its extension. Use matching App Group and keychain access group entitlements in both targets, and update the App Group ID in [`FleetKitConfig.swift`](FleetKit/Sources/FleetKit/FleetKitConfig.swift).
+2. Run the app and choose **Demo Car** under **Diagnostics → Siri & Command Sandbox** to explore without a Tessie account.
+3. For live data and controls, generate an access token under **Settings → Developer** in Tessie and paste it into the connection card in Wattie. Wattie stores the token in Keychain. [Tessie token setup](https://help.tessie.com/article/29-use-google-home-assistant-tesla)
 
-Generate an access token in [Tessie Developer Settings](https://dash.tessie.com/settings/api), then paste it into the dashboard connection card. The app validates the token against `https://api.tessie.com`, stores it in Keychain, and mirrors only the access token plus selected VIN to the App Intents extension. Tessie does not expose the former custom notification-webhook management API, so that developer UI is intentionally not part of the active diagnostics screen.
+## Project layout
 
-## Development
+- [`TeslaSiri/`](TeslaSiri/) contains the SwiftUI app, Tessie client, and RealityKit showroom and drive replay.
+- [`FleetKit/`](FleetKit/) contains the App Intents, Shortcuts and Spotlight integration, extension-safe Tessie client, and Swift package tests.
+- [`TeslaSiriAppIntents/`](TeslaSiriAppIntents/) hosts the App Intents extension.
+- [`TeslaVehicleKit/`](TeslaVehicleKit/) contains the RealityKit loader and bundles the converted Fleet resources.
 
-Open `TeslaSiri.xcodeproj` in Xcode and build the `TeslaSiri` app target. For agent-driven work, use the Xcode MCP tools first:
+See [AGENTS.md](AGENTS.md) for development and validation conventions. Keep Tessie tokens, raw vehicle exports, and signing files out of commits.
 
-- `XcodeGlob` to inspect project files.
-- `XcodeRead` to read source files.
-- `XcodeGrep` to search project content.
-- `XcodeUpdate` to edit project files when replacing existing content.
-- `XcodeRefreshCodeIssuesInFile` for fast Swift diagnostics when available.
-- `BuildProject` for full project validation.
+## License
 
-Use CLI tools only for repo-level tasks that are not represented in the Xcode project structure, such as `git status`, root documentation, `.gitignore`, and `.gitattributes`.
-
-## Coding Standards
-
-- Follow SwiftUI patterns with clear view state and data flow.
-- Prefer Swift concurrency with `async` and `await`.
-- Avoid adding Combine unless there is a specific need.
-- Use `@State private var` for SwiftUI state and `let` for constants.
-- Keep type names PascalCase and properties/methods camelCase.
-- Avoid force unwrapping.
-- Keep comments focused on non-obvious logic.
-
-## Validation
-
-Before handing off source changes, run Xcode diagnostics or a full Xcode build. Prefer `BuildProject` over ad hoc CLI builds so validation matches the active Xcode project.
-
-## Git
-
-This repo intentionally ignores local Xcode user state, build products, DerivedData, SwiftPM working folders, and common secret files. Do not commit Tessie access tokens, exported raw vehicle data, private keys, provisioning profiles, or local Xcode `xcuserdata`.
+The [MIT License](LICENSE) applies to the project-authored code and documentation. Tesla retains its rights to the vehicle models and related assets in the RealityKit conversions. The [third-party notices](THIRD_PARTY_NOTICES.md) identify the assets and marks excluded from the MIT grant.

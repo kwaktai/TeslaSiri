@@ -7,7 +7,7 @@ import AppIntents
 /// criteria into `SpotlightDebugSection`.
 @AppIntent(schema: .system.searchInApp)
 public struct SearchFleetIntent: ShowInAppSearchResultsIntent {
-    public static let title: LocalizedStringResource = "Search TeslaSiri"
+    public static let title: LocalizedStringResource = "Search Wattie"
     public static let searchScopes: [StringSearchScope] = [.general]
 
     @Parameter(title: "Search")

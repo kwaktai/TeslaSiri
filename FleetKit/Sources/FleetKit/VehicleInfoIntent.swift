@@ -278,7 +278,7 @@ extension VehicleStatusEntity {
 
     private var locationSentence: String? {
         let place = locationAddress.map { "near \($0)" }
-            ?? ((latitude != nil && longitude != nil) ? "at the location shown in the TeslaSiri app" : nil)
+            ?? ((latitude != nil && longitude != nil) ? "at the location shown in the Wattie app" : nil)
         guard let place else { return "\(vehicleName) hasn't reported its location recently." }
         if let speedMPH, speedMPH > 0, gear == "D" || gear == "R" {
             return "\(vehicleName) is driving \(place) at \(Int(speedMPH.rounded())) mph."

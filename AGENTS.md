@@ -82,6 +82,8 @@ Do not commit Tessie access tokens, keychain dumps, raw vehicle exports, private
 
 ## Architecture Notes
 
+- The user-facing app name is **Wattie**, set with `CFBundleDisplayName`. App Shortcut phrases use `.applicationName` so Siri picks up that name automatically. The Xcode target, module, bundle identifiers, App Group, keychain services, and entity identifiers retain `TeslaSiri` for continuity.
+
 - The `TeslaSiri` target uses a synchronized folder (`"kind": "folder"` in `TeslaSiri.xcodeproj/project.xcproj`) rooted at the `TeslaSiri/` folder. Xcode 27.3 migrated the project from `project.pbxproj` to the JSON-style `project.xcproj` format in November 2026; edit it through Xcode, not by hand. Files placed anywhere under that folder are auto-included in the target on the next Xcode build/scan; do not edit the project.pbxproj by hand to add Swift sources.
 - The root tab shell lives in `TeslaSiri/UI/AppRootView.swift` and owns auth diagnostics, selected tab, and Tessie token setup. Tab content views receive pre-built dependencies and closures — do not create their own auth/backend singletons.
 - The Diagnostics tab is intentionally dense because the project is currently in a "validate the backend" phase. Once data shapes stabilize, move the user-facing pieces into Dashboard and treat Diagnostics as developer/QA chrome.
@@ -261,6 +263,8 @@ Control, analytics & workflow intent files in `FleetKit/Sources/FleetKit/`:
 `FleetKitModels` / `FleetKitDriveSoftwareModels` / `FleetKitStatsModels` intentionally mirror a **subset** of `TeslaSiri/FleetAPI/FleetAPIModels.swift` so the package stays extension-safe. When backend fields change, update both layers or accept drift in snippet/intent output.
 
 ### Logging (FleetKitLog)
+
+- Errors escaping intent execution or entity queries must conform to `CustomLocalizedStringResourceConvertible`. `LocalizedError` alone is sanitized by App Intents, so Siri loses the actionable message. `FleetKitError.localizedStringResource` is the shared source for Siri and `errorDescription`.
 
 All FleetKit + intent logging goes through `FleetKit/Sources/FleetKit/FleetKitLog.swift` under the single OSLog subsystem `com.maxweinbach.TeslaSiri`. One Console/`log stream` predicate captures the app, the App Intents extension, and BG tasks:
 
