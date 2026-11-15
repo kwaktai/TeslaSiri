@@ -22,6 +22,7 @@ enum FleetTokenBridge {
         }
 
         syncSelectedVehicle(store: store, forceShortcutRefresh: true)
+        await FleetIntentDonations.syncCarSuggestions(for: store.selectedVehicle)
     }
 
     static func syncSelectedVehicle(store: FleetDataStore, forceShortcutRefresh: Bool = false) {

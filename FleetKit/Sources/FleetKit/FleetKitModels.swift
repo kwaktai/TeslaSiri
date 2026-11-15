@@ -8,33 +8,82 @@ public struct FleetVehicleInfo: Decodable, Sendable, Identifiable {
     public let vin: String
     public let displayName: String?
     public let vehicleTag: String?
+    /// Raw Tessie `vehicle_config.car_type`, such as `modely` or `cybertruck`.
+    public let carType: String?
+    /// Raw Tessie `vehicle_config.exterior_color`, such as `PearlWhite`.
+    public let exteriorColor: String?
 
     public var id: String { vin }
     public var name: String { displayName ?? vehicleTag ?? vin }
+
+    /// Marketing model name derived from `carType` ("Model Y", "Cybertruck").
+    public var modelName: String? {
+        guard let carType = carType?.lowercased(), !carType.isEmpty else { return nil }
+        switch carType {
+        case "models", "models2", "lychee": return "Model S"
+        case "model3": return "Model 3"
+        case "modelx", "tamarind": return "Model X"
+        case "modely": return "Model Y"
+        case "cybertruck": return "Cybertruck"
+        default:
+            if carType.hasPrefix("model"), let suffix = carType.dropFirst(5).first {
+                return "Model \(String(suffix).uppercased())"
+            }
+            return carType.capitalized
+        }
+    }
+
+    /// Readable paint name derived from `exteriorColor` ("PearlWhite" → "Pearl White").
+    public var colorName: String? {
+        guard let exteriorColor, !exteriorColor.isEmpty else { return nil }
+        var words = ""
+        for character in exteriorColor {
+            if character.isUppercase, !words.isEmpty, words.last != " " {
+                words.append(" ")
+            }
+            words.append(character)
+        }
+        return words
+    }
 
     enum CodingKeys: String, CodingKey {
         case vin
         case displayName = "display_name"
         case vehicleTag = "vehicle_tag"
+        case carType = "car_type"
+        case exteriorColor = "exterior_color"
     }
 
-    init(vin: String, displayName: String?, vehicleTag: String? = nil) {
+    init(
+        vin: String,
+        displayName: String?,
+        vehicleTag: String? = nil,
+        carType: String? = nil,
+        exteriorColor: String? = nil
+    ) {
         self.vin = vin
         self.displayName = displayName
         self.vehicleTag = vehicleTag
+        self.carType = carType
+        self.exteriorColor = exteriorColor
     }
 }
 
 public struct FleetSnapshotInfo: Decodable, Sendable {
     public let vin: String
     public let batteryLevel: Double?
+    public let batteryRangeMiles: Double?
     public let chargeLimitSOC: Double?
     public let chargingState: String?
+    public let chargerPowerKW: Double?
+    public let chargePortDoorOpen: Bool?
     public let locked: Bool?
+    public let sentryModeOn: Bool?
     public let chargeRateMPH: Double?
     public let timeToFullCharge: Double?
     public let insideTemp: Double?
     public let outsideTemp: Double?
+    public let targetTemp: Double?
     public let hvacOn: Bool?
     public let latitude: Double?
     public let longitude: Double?
@@ -46,6 +95,15 @@ public struct FleetSnapshotInfo: Decodable, Sendable {
     public let climateKeeperMode: String?
     public let defrostMode: String?
     public let tires: FleetTirePressuresInfo?
+    /// `true` when temperatures are in °F (the car's display units), `false` for °C, `nil` if unknown.
+    public let temperatureInFahrenheit: Bool?
+    /// Gear from `drive_state.shift_state` ("P", "D", "R", "N"); `nil` when parked and asleep.
+    public let shiftState: String?
+    /// Human-readable names of open doors, windows, frunk, and trunk ("Driver door", "Trunk").
+    public let openClosures: [String]?
+    /// Seat heater levels 0–3 keyed by seat ("Driver", "Passenger", "Rear left"…).
+    public let seatHeaterLevels: [String: Int]?
+    public let steeringWheelHeaterOn: Bool?
 
     public var updatedAtDate: Date? {
         updatedAt.map { Date(timeIntervalSince1970: TimeInterval($0) / 1000) }
@@ -61,13 +119,18 @@ public struct FleetSnapshotInfo: Decodable, Sendable {
     enum CodingKeys: String, CodingKey {
         case vin
         case batteryLevel = "battery_level"
+        case batteryRangeMiles = "battery_range"
         case chargeLimitSOC = "charge_limit_soc"
         case chargingState = "charging_state"
+        case chargerPowerKW = "charger_power"
+        case chargePortDoorOpen = "charge_port_door_open"
         case locked
+        case sentryModeOn = "sentry_mode"
         case chargeRateMPH = "charge_rate_mph"
         case timeToFullCharge = "time_to_full_charge"
         case insideTemp = "inside_temp"
         case outsideTemp = "outside_temp"
+        case targetTemp = "target_temp"
         case hvacOn = "hvac_on"
         case latitude
         case longitude
@@ -77,18 +140,24 @@ public struct FleetSnapshotInfo: Decodable, Sendable {
         case climateKeeperMode = "climate_keeper_mode"
         case defrostMode = "defrost_mode"
         case tires
+        case shiftState = "shift_state"
     }
 
     init(
         vin: String,
         batteryLevel: Double? = nil,
+        batteryRangeMiles: Double? = nil,
         chargeLimitSOC: Double? = nil,
         chargingState: String? = nil,
+        chargerPowerKW: Double? = nil,
+        chargePortDoorOpen: Bool? = nil,
         locked: Bool? = nil,
+        sentryModeOn: Bool? = nil,
         chargeRateMPH: Double? = nil,
         timeToFullCharge: Double? = nil,
         insideTemp: Double? = nil,
         outsideTemp: Double? = nil,
+        targetTemp: Double? = nil,
         hvacOn: Bool? = nil,
         latitude: Double? = nil,
         longitude: Double? = nil,
@@ -97,17 +166,27 @@ public struct FleetSnapshotInfo: Decodable, Sendable {
         updatedAt: Int64? = nil,
         climateKeeperMode: String? = nil,
         defrostMode: String? = nil,
-        tires: FleetTirePressuresInfo? = nil
+        tires: FleetTirePressuresInfo? = nil,
+        temperatureInFahrenheit: Bool? = nil,
+        shiftState: String? = nil,
+        openClosures: [String]? = nil,
+        seatHeaterLevels: [String: Int]? = nil,
+        steeringWheelHeaterOn: Bool? = nil
     ) {
         self.vin = vin
         self.batteryLevel = batteryLevel
+        self.batteryRangeMiles = batteryRangeMiles
         self.chargeLimitSOC = chargeLimitSOC
         self.chargingState = chargingState
+        self.chargerPowerKW = chargerPowerKW
+        self.chargePortDoorOpen = chargePortDoorOpen
         self.locked = locked
+        self.sentryModeOn = sentryModeOn
         self.chargeRateMPH = chargeRateMPH
         self.timeToFullCharge = timeToFullCharge
         self.insideTemp = insideTemp
         self.outsideTemp = outsideTemp
+        self.targetTemp = targetTemp
         self.hvacOn = hvacOn
         self.latitude = latitude
         self.longitude = longitude
@@ -117,19 +196,29 @@ public struct FleetSnapshotInfo: Decodable, Sendable {
         self.climateKeeperMode = climateKeeperMode
         self.defrostMode = defrostMode
         self.tires = tires
+        self.temperatureInFahrenheit = temperatureInFahrenheit
+        self.shiftState = shiftState
+        self.openClosures = openClosures
+        self.seatHeaterLevels = seatHeaterLevels
+        self.steeringWheelHeaterOn = steeringWheelHeaterOn
     }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         vin = try c.decodeIfPresent(String.self, forKey: .vin) ?? ""
         batteryLevel = c.flexibleDouble(.batteryLevel)
+        batteryRangeMiles = c.flexibleDouble(.batteryRangeMiles)
         chargeLimitSOC = c.flexibleDouble(.chargeLimitSOC)
         chargingState = try c.decodeIfPresent(String.self, forKey: .chargingState)
+        chargerPowerKW = c.flexibleDouble(.chargerPowerKW)
+        chargePortDoorOpen = try c.decodeIfPresent(Bool.self, forKey: .chargePortDoorOpen)
         locked = try c.decodeIfPresent(Bool.self, forKey: .locked)
+        sentryModeOn = try c.decodeIfPresent(Bool.self, forKey: .sentryModeOn)
         chargeRateMPH = c.flexibleDouble(.chargeRateMPH)
         timeToFullCharge = c.flexibleDouble(.timeToFullCharge)
         insideTemp = c.flexibleDouble(.insideTemp)
         outsideTemp = c.flexibleDouble(.outsideTemp)
+        targetTemp = c.flexibleDouble(.targetTemp)
         hvacOn = try c.decodeIfPresent(Bool.self, forKey: .hvacOn)
         latitude = c.flexibleDouble(.latitude)
         longitude = c.flexibleDouble(.longitude)
@@ -139,6 +228,11 @@ public struct FleetSnapshotInfo: Decodable, Sendable {
         climateKeeperMode = c.flexibleEnumString(.climateKeeperMode)
         defrostMode = c.flexibleEnumString(.defrostMode)
         tires = try c.decodeIfPresent(FleetTirePressuresInfo.self, forKey: .tires)
+        temperatureInFahrenheit = nil
+        shiftState = try c.decodeIfPresent(String.self, forKey: .shiftState)
+        openClosures = nil
+        seatHeaterLevels = nil
+        steeringWheelHeaterOn = nil
     }
 }
 

@@ -1,0 +1,229 @@
+{
+  "panes": {
+    "Body/Door_LF_Locator/Window_LF_Locator/Window_LF/surface_00": [
+      {
+        "mesh": "G8649196ef581369ce9b7",
+        "edge": "4edd796c9468ebae903d.png",
+        "span": [
+          1.137998381345424,
+          0.5006192659179677
+        ],
+        "role": "door"
+      }
+    ],
+    "Body/Door_LF_Locator/Window_Small_LF/surface_00": [
+      {
+        "mesh": "G917be423d8212ff30657",
+        "edge": "8094f966ff8253b8a7f0.png",
+        "span": [
+          0.41029754892798126,
+          0.20605037446681332
+        ],
+        "role": "quarter"
+      }
+    ],
+    "Body/Door_RF_Locator/Window_RF_Locator/Window_RF/surface_00": [
+      {
+        "mesh": "G847eb01065c9a38e8969",
+        "edge": "5b9f9a76e77a1951f27c.png",
+        "span": [
+          1.1407383932734434,
+          0.5027133214516807
+        ],
+        "role": "door"
+      }
+    ],
+    "Body/Door_RF_Locator/Window_Small_RF/surface_00": [
+      {
+        "mesh": "G87e9e18aaf94c78b80fd",
+        "edge": "99331ece88339c1afff1.png",
+        "span": [
+          0.4100001253433143,
+          0.2058740454817602
+        ],
+        "role": "quarter"
+      }
+    ],
+    "Body/Door_Top_LR_Locator/Door_LR_Locator/Door_LR/surface_02": [
+      {
+        "mesh": "Gb2b593338228541f4295",
+        "edge": "d2ee71a5011381d1ff75.png",
+        "span": [
+          0.28828829139690915,
+          0.08371167474685062
+        ],
+        "role": "quarter"
+      }
+    ],
+    "Body/Door_Top_LR_Locator/Door_LR_Locator/Window_LR_Locator/Window_LR/surface_00": [
+      {
+        "mesh": "G394cd9c53cdc37d23c4a",
+        "edge": "c0152b82adf4fad4d792.png",
+        "span": [
+          0.8729694558564349,
+          0.5100309589973276
+        ],
+        "role": "privacy"
+      }
+    ],
+    "Body/Door_Top_LR_Locator/Door_Top_LR/surface_02": [
+      {
+        "mesh": "Gc0d26f2da0e9bd50f619",
+        "edge": "b5d9c7eb54eed78c8d00.png",
+        "span": [
+          1.1637088254554404,
+          0.6049612782549307
+        ],
+        "role": "roof"
+      }
+    ],
+    "Body/Door_Top_RR_Locator/Door_RR_Locator/Door_RR/surface_02": [
+      {
+        "mesh": "Gbbc31d81fc6c90f7a62c",
+        "edge": "cde1b64ab635a7a5ea44.png",
+        "span": [
+          0.28825090899716643,
+          0.08375568231097102
+        ],
+        "role": "quarter"
+      }
+    ],
+    "Body/Door_Top_RR_Locator/Door_RR_Locator/Window_RR_Locator/Window_RR/surface_00": [
+      {
+        "mesh": "G08dea5632a2b0ca0b12f",
+        "edge": "f489bab484bb83d1d844.png",
+        "span": [
+          0.8694539861070144,
+          0.5101733677942059
+        ],
+        "role": "privacy"
+      }
+    ],
+    "Body/Door_Top_RR_Locator/Door_Top_RR/surface_02": [
+      {
+        "mesh": "Geabdfad4f45ce6722415",
+        "edge": "a333620c21844097b30d.png",
+        "span": [
+          1.16370870916717,
+          0.6049607029317647
+        ],
+        "role": "roof"
+      }
+    ],
+    "Body/Trunk_Locator/Windows_Rear/surface_00": [
+      {
+        "mesh": "G4772fea811f8ff8ebcc3",
+        "edge": "49d8c4e3428ffc286dca.png",
+        "span": [
+          1.231490756978101,
+          1.0880771903065702
+        ],
+        "role": "tintedBack"
+      }
+    ],
+    "Body/Windows_Side/surface_00": [
+      {
+        "mesh": "G83c3c05211e66fb6e816",
+        "edge": "a7f7a274136d273fbe26.png",
+        "span": [
+          0.4124115422070844,
+          0.27534322882865436
+        ],
+        "role": "tintedQuarter"
+      },
+      {
+        "mesh": "G9e65cdf29b8e2d88d716",
+        "edge": "90c5fb936af3c689a45e.png",
+        "span": [
+          0.40698457853376735,
+          0.277721349901824
+        ],
+        "role": "tintedQuarter"
+      }
+    ],
+    "Body/Windows_Top/surface_00": [
+      {
+        "mesh": "G483ba585fd608b4ae699",
+        "edge": "ebf4d7732be64ec9a0fd.png",
+        "span": [
+          1.35611867120309,
+          1.33651196827538
+        ],
+        "role": "roof"
+      }
+    ],
+    "Body/Windows_Top/surface_01": [
+      {
+        "mesh": "Gf2ebd0c2fc6efa64beb5",
+        "edge": "8c2356bffa666b30faba.png",
+        "span": [
+          1.7964918396947684,
+          1.6060804141877876
+        ],
+        "role": "windshield"
+      }
+    ]
+  },
+  "accents": {
+    "Body/Body/surface_00": {
+      "base": "G8d981c16cc8c941f628d",
+      "details": {
+        "surround": "Geae39f6c9c9a71de0b93"
+      }
+    },
+    "Body/Body/surface_02": {
+      "base": "G9d5cde1e8057c90d21fd",
+      "details": {
+        "surround": "G0fc247f679f0ee256dd6"
+      }
+    },
+    "Body/Door_LF_Locator/Door_LF/surface_01": {
+      "base": "Gcba3bc1a64d41e57c71a",
+      "details": {
+        "surround": "G4e41d4f97a3c22a37191"
+      }
+    },
+    "Body/Door_RF_Locator/Door_RF/surface_01": {
+      "base": "G13cd4f62f7de10080130",
+      "details": {
+        "surround": "Gba4407599311471c015f"
+      }
+    },
+    "Body/Door_Top_LR_Locator/Door_LR_Locator/Door_LR/surface_01": {
+      "base": "G823ed95a6ca098555832",
+      "details": {
+        "surround": "Gfc8156e42302caef76c1"
+      }
+    },
+    "Body/Door_Top_LR_Locator/Door_LR_Locator/Doorcard_LR/surface_02": {
+      "base": "G98e4019d1ec4c8d4ed41",
+      "details": {
+        "surround": "Gd6692e870a464c146c92"
+      }
+    },
+    "Body/Door_Top_RR_Locator/Door_RR_Locator/Door_RR/surface_01": {
+      "base": "Gdbd39a27383f8ccbc1b0",
+      "details": {
+        "surround": "G94d326cfd72eafe0af63"
+      }
+    },
+    "Body/Door_Top_RR_Locator/Door_RR_Locator/Doorcard_RR/surface_02": {
+      "base": "G4451f0590f96838b734b",
+      "details": {
+        "surround": "G95c56e44b010b9e6d3db"
+      }
+    },
+    "Body/Trunk_Locator/Trunk/surface_00": {
+      "base": "G401c1c25aa514d6fb591",
+      "details": {
+        "surround": "Gf223a2edc51b71e2f5e4"
+      }
+    },
+    "Body/Trunk_Locator/Trunk_Global/surface_00": {
+      "base": "G3fd4d419c5e9b62c2c70",
+      "details": {
+        "surround": "Gb47c6480d48146d32f3a"
+      }
+    }
+  }
+}

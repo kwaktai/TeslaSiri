@@ -6,6 +6,24 @@
 	<array>
 		<string>com.maxweinbach.TeslaSiri.batterycheck</string>
 	</array>
+	<key>INAlternativeAppNames</key>
+	<array>
+		<dict>
+			<key>INAlternativeAppName</key>
+			<string>Tesla Siri</string>
+			<key>INAlternativeAppNamePronunciationHint</key>
+			<string>tesla siri</string>
+		</dict>
+	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>com.maxweinbach.TeslaSiri.warmUpCar</string>
+		<string>com.maxweinbach.TeslaSiri.coolDownCar</string>
+		<string>com.maxweinbach.TeslaSiri.lockCar</string>
+		<string>com.maxweinbach.TeslaSiri.checkCar</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

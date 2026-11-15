@@ -1,3 +1,4 @@
+import AppIntents
 import BackgroundTasks
 import FleetKit
 import OSLog
@@ -65,6 +66,10 @@ final class BatteryReminderManager {
     }
 
     func checkBatteryAndNotify() async {
+        let center = UNUserNotificationCenter.current()
+        let settings = await center.notificationSettings()
+        guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else { return }
+
         let service = FleetIntentService.make()
         guard
             let vehicle = try? await service.resolvedVehicle(nil),
@@ -83,24 +88,24 @@ final class BatteryReminderManager {
         }
 
         logger.notice("Low battery — \(vehicle.name, privacy: .public) at \(level, privacy: .public)%; posting reminder")
-        await postLowBatteryNotification(vehicleName: vehicle.name, battery: level)
+        await postLowBatteryNotification(vin: vehicle.vin, vehicleName: vehicle.name, battery: level)
     }
 
-    private func postLowBatteryNotification(vehicleName: String, battery: Int) async {
-        let center = UNUserNotificationCenter.current()
-        let settings = await center.notificationSettings()
-        guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else { return }
-
+    private func postLowBatteryNotification(vin: String, vehicleName: String, battery: Int) async {
         let content = UNMutableNotificationContent()
         content.title = "Low Battery"
         content.body = "\(vehicleName) is at \(battery)%. You should charge your car."
         content.sound = .default
+        content.appEntityIdentifiers = [
+            EntityIdentifier(for: VehicleEntity.self, identifier: vin),
+            EntityIdentifier(for: VehicleStatusEntity.self, identifier: VehicleStatusEntity.entityID(forVIN: vin))
+        ]
 
         let request = UNNotificationRequest(
             identifier: "battery-reminder",
             content: content,
             trigger: nil
         )
-        try? await center.add(request)
+        try? await UNUserNotificationCenter.current().add(request)
     }
 }

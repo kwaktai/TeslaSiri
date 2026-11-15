@@ -1,0 +1,173 @@
+{
+  "panes": {
+    "Body/Door_LF_Spatial/Door_LF/surface_04": [
+      {
+        "mesh": "G9b89c18f2d0946004213",
+        "edge": "92761401274a607e320f.png",
+        "span": [
+          0.2669075022624353,
+          0.11006041635457191
+        ],
+        "role": "quarter"
+      }
+    ],
+    "Body/Door_LF_Spatial/Window_LF_Spatial/Window_LF/surface_01": [
+      {
+        "mesh": "G681fe62abccd98fdde9e",
+        "edge": "d70b6f47b05e690bfa75.png",
+        "span": [
+          1.0191815161693702,
+          0.40752262353267665
+        ],
+        "role": "door"
+      }
+    ],
+    "Body/Door_LR_Spatial/Window_LR_Spatial/Window_LR/surface_01": [
+      {
+        "mesh": "G6b3a177f7b29b5fb07db",
+        "edge": "086ed3d069e405fa8013.png",
+        "span": [
+          0.7589675354330284,
+          0.40944570397072516
+        ],
+        "role": "door"
+      }
+    ],
+    "Body/Door_RF_Spatial/Door_RF/surface_04": [
+      {
+        "mesh": "G9afc389ada90967e8536",
+        "edge": "40fa15eb471c604e0b6a.png",
+        "span": [
+          0.2669074012521928,
+          0.11006045050913793
+        ],
+        "role": "quarter"
+      }
+    ],
+    "Body/Door_RF_Spatial/Window_RF_Spatial/Window_RF/surface_01": [
+      {
+        "mesh": "Gf79d65a5c0ba787d043f",
+        "edge": "a55b75d02b1be98e0ac8.png",
+        "span": [
+          1.0191808336799821,
+          0.40751922394554424
+        ],
+        "role": "door"
+      }
+    ],
+    "Body/Door_RR_Spatial/Window_RR_Spatial/Window_RR/surface_01": [
+      {
+        "mesh": "Ga135bbbd56edc1abae7e",
+        "edge": "41232a0a99c58109159a.png",
+        "span": [
+          0.7589675667063345,
+          0.4094444504349376
+        ],
+        "role": "door"
+      }
+    ],
+    "Body/Trunk_Spatial/Trunk/surface_06": [
+      {
+        "mesh": "G2b049898a9b80dcc7f87",
+        "edge": "2a9fe324ac53022ac004.png",
+        "span": [
+          1.1626929912557373,
+          0.9037889611515889
+        ],
+        "role": "backlight"
+      }
+    ],
+    "Body/Windows_Top/surface_01": [
+      {
+        "mesh": "G70592d0e6b45bf224706",
+        "edge": "8ea0b64ca0927cf1374d.png",
+        "span": [
+          1.5274817022534648,
+          1.1405997936753491
+        ],
+        "role": "windshield"
+      }
+    ],
+    "Body/Windows_Top/surface_02": [
+      {
+        "mesh": "Gefd3ef2fbd14fb7f108e",
+        "edge": "8389dbf256647b65f00e.png",
+        "span": [
+          1.6234864710970673,
+          1.3342605635899636
+        ],
+        "role": "roof"
+      }
+    ],
+    "Body/Windows_Top/surface_05": [
+      {
+        "mesh": "G2a1b44f4d86cd6da8cbd",
+        "edge": "a96cec77809a80d9aeef.png",
+        "span": [
+          0.4726366490294665,
+          0.2459670339752233
+        ],
+        "role": "quarter"
+      },
+      {
+        "mesh": "G7824bd1dcaaf6078cdfc",
+        "edge": "3c6d1986e4ff6834bd25.png",
+        "span": [
+          0.4726365964765695,
+          0.2459683671520312
+        ],
+        "role": "quarter"
+      }
+    ]
+  },
+  "accents": {
+    "Body/Body/surface_01": {
+      "base": "Gc39487533cb4ad61f8a6",
+      "details": {
+        "surround": "G12ef5079c03238e78782"
+      }
+    },
+    "Body/Body_Original/surface_01": {
+      "base": "G69e6cec516d079741a05",
+      "details": {
+        "surround": "G6e1496878dc895355d11"
+      }
+    },
+    "Body/Door_LF_Spatial/Door_LF/surface_02": {
+      "base": "G7f7991aeb51e2dbac855",
+      "details": {
+        "surround": "Gacf004faec5b63aacca8"
+      }
+    },
+    "Body/Door_RF_Spatial/Door_RF/surface_02": {
+      "base": "G09996ba0c3bb1cfab509",
+      "details": {
+        "surround": "G3f15f4ea2607146bd666"
+      }
+    },
+    "Body/Door_LR_Spatial/Door_LR/surface_02": {
+      "base": "G1fe02834410d18325b8d",
+      "details": {
+        "surround": "Gffcbd09e12f620112003"
+      }
+    },
+    "Body/Door_RR_Spatial/Door_RR/surface_02": {
+      "base": "Gbdcc2ad36a2695865614",
+      "details": {
+        "surround": "G0419e026e40cda23a9d2"
+      }
+    },
+    "Body/Trunk_Spatial/Trunk/surface_00": {
+      "base": "G9f0b2d50c956159ab00c",
+      "details": {
+        "surround": "G3d2cfc2cad3f710d57bd"
+      }
+    },
+    "Body/Trunk_Spatial/Trunk/surface_02": {
+      "base": "G6d716c86bef6d0820e78",
+      "details": {
+        "surround": "G005d8b9e1d36a75dec0c"
+      }
+    }
+  }
+}

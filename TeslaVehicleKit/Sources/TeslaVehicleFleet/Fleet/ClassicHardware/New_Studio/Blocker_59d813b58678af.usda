@@ -1,0 +1,202 @@
+#usda 1.0
+
+def Material "Blocker_59d813b58678af"
+{
+    token outputs:mtlx:surface.connect = </Blocker_59d813b58678af/n23.outputs:out>
+
+    def Shader "n1"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in = (0, 0, 0)
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n2"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Blocker_59d813b58678af/n1.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n3"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n2.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n4"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n3.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n5"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n4.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n6"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n2.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n7"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n5.outputs:out>
+        float inputs:in2.connect = </Blocker_59d813b58678af/n6.outputs:out>
+        float inputs:value1.connect = </Blocker_59d813b58678af/n2.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n8"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in = (0, 0, 0)
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n9"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Blocker_59d813b58678af/n8.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n10"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n9.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n11"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n10.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n12"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n11.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n13"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n9.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n14"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n12.outputs:out>
+        float inputs:in2.connect = </Blocker_59d813b58678af/n13.outputs:out>
+        float inputs:value1.connect = </Blocker_59d813b58678af/n9.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n15"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in = (0, 0, 0)
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n16"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Blocker_59d813b58678af/n15.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n17"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n16.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n18"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n17.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n19"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n18.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n20"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n16.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n21"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n19.outputs:out>
+        float inputs:in2.connect = </Blocker_59d813b58678af/n20.outputs:out>
+        float inputs:value1.connect = </Blocker_59d813b58678af/n16.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n22"
+    {
+        uniform token info:id = "ND_combine3_color3"
+        float inputs:in1.connect = </Blocker_59d813b58678af/n7.outputs:out>
+        float inputs:in2.connect = </Blocker_59d813b58678af/n14.outputs:out>
+        float inputs:in3.connect = </Blocker_59d813b58678af/n21.outputs:out>
+        color3f outputs:out
+    }
+
+    def Shader "n23"
+    {
+        uniform token info:id = "ND_realitykit_unlit_surfaceshader"
+        bool inputs:applyPostProcessToneMap = 0
+        color3f inputs:color.connect = </Blocker_59d813b58678af/n22.outputs:out>
+        float inputs:opacity = 1
+        token outputs:out
+    }
+}
+

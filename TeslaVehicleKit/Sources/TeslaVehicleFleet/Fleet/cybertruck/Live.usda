@@ -1,0 +1,340 @@
+#usda 1.0
+(
+    defaultPrim = "Vehicle"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Vehicle" (
+    prepend references = @./Vehicle.usdz@</Vehicle>
+)
+{
+    over "Body"
+    {
+        over "Wheel_LF_Spatial"
+        {
+            over "Wheels_Marker"
+            {
+                over "Suspension_Dynamic_Collision_Area"
+                {
+                    token visibility = "inherited"
+                }
+            }
+        }
+
+        over "Hood_Spatial"
+        {
+            over "Frunk_Marker"
+            {
+                over "Frunk_Marker_Dynamic_Collision_Area"
+                {
+                    token visibility = "inherited"
+                }
+            }
+
+            over "Headlights_Beam2"
+            {
+                token visibility = "inherited"
+
+                over "LeftGlow"
+                {
+                    token visibility = "inherited"
+                }
+
+                over "RightGlow"
+                {
+                    token visibility = "inherited"
+                }
+            }
+
+            over "DRL2"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Door_LF_Spatial"
+        {
+            over "Window_LF_Spatial"
+            {
+                over "Window_LF2"
+                {
+                    over "Window_LF_Dynamic_Collision_Area"
+                    {
+                        token visibility = "inherited"
+                    }
+                }
+            }
+        }
+
+        over "Door_LR_Spatial"
+        {
+            over "Window_LR_Spatial"
+            {
+                over "Window_LR2"
+                {
+                    over "Window_LR_Dynamic_Collision_Area"
+                    {
+                        token visibility = "inherited"
+                    }
+                }
+            }
+        }
+
+        over "Trunk_Spatial"
+        {
+            over "Trunk_Marker"
+            {
+                over "Trunk_Marker_Dynamic_Collision_Area"
+                {
+                    token visibility = "inherited"
+                }
+            }
+
+            over "Brake_Lights_Trunk2"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Headlights_Trunk2"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Decal_liftgate_foundation"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Decal_liftgate_cerberus"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Truck_Bed2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Center_Console_RWD2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Tonneau_Cover_Button_AWD2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Bed_Light_RWD2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Body2"
+        {
+            over "Lock_Marker"
+            {
+                over "Lock_Marker_Dynamic_Collision_Area"
+                {
+                    token visibility = "inherited"
+                }
+            }
+
+            over "Blocker_Collision_Area"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Plate_EU2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Taillights_Projections2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headlights_Projections2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Bed_Light2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Right_Turn_Signal_Front2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Left_Turn_Signal_Front2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Reverse_Lights2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headllights_Rear_Right2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Brake_Lights_Left2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headllights_Rear_Left2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Brake_Lights_Right2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Door_LED_LF2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Door_LED_LR2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headlights2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Door_LED_RR2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Door_LED_RF2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headlights_Side_Right2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headlights_Side_Left2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Park_Lights2"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Tonneau"
+        {
+            token visibility = "inherited"
+
+            over "TonneauCover"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Chargeport_Static_Collision_Area"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Frunk_Static_Collision_Area"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Trunk_Static_Collision_Area"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Defrost_Front"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Defrost_Rear"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Spatials"
+        {
+            over "Airflow_left"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Airflow_right"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Decals_exterior"
+        {
+            token visibility = "inherited"
+        }
+
+        over "FrontMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "RearMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "LeftMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "RightMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "FrontLeftMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "RearLeftMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "FrontRightMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "RearRightMarker"
+        {
+            token visibility = "inherited"
+        }
+    }
+}
+

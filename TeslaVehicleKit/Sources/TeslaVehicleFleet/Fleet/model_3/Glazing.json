@@ -1,0 +1,122 @@
+{
+  "panes": {
+    "Body/Door_LF_Spatial/Window_LF_Spatial/Window_LF/surface_01": [
+      {
+        "mesh": "Gd384bce4618ae59ff7dd",
+        "edge": "b1d1f0b4905bf55fc5cd.png",
+        "span": [
+          1.1139645476853406,
+          0.4052520851731632
+        ],
+        "role": "door"
+      }
+    ],
+    "Body/Door_LR_Spatial/Window_LR_Spatial/Window_LR/surface_00": [
+      {
+        "mesh": "G23d48d956cab1f0611ec",
+        "edge": "40693b52ea91a33aff1d.png",
+        "span": [
+          0.8634019021562978,
+          0.4032449392769495
+        ],
+        "role": "door"
+      }
+    ],
+    "Body/Door_RF_Spatial/Window_RF_Spatial/Window_RF/surface_00": [
+      {
+        "mesh": "G02e1e745b0bb40a7195e",
+        "edge": "c30609afcab5e53fde90.png",
+        "span": [
+          1.1137904987397804,
+          0.4051565463460478
+        ],
+        "role": "door"
+      }
+    ],
+    "Body/Door_RR_Spatial/Window_RR_Spatial/Window_RR/surface_00": [
+      {
+        "mesh": "G4d6fdc3628b231cbdef1",
+        "edge": "365f41136ee5770efab0.png",
+        "span": [
+          0.8606230166232394,
+          0.4038895926658575
+        ],
+        "role": "door"
+      }
+    ],
+    "Body/Windows_Top/surface_00": [
+      {
+        "mesh": "G097c740834b0d35aec58",
+        "edge": "3d9c729862e5db134b53.png",
+        "span": [
+          2.2592589471541515,
+          1.2803127427957584
+        ],
+        "role": "roof"
+      }
+    ],
+    "Body/Windows_Top/surface_03": [
+      {
+        "mesh": "G15e212f33c61ea7dd046",
+        "edge": "4679ffc44489cae5341c.png",
+        "span": [
+          1.4770182046889477,
+          1.1792566552705215
+        ],
+        "role": "windshield"
+      }
+    ],
+    "Body/Windows_Top/surface_04": [
+      {
+        "mesh": "Gd00f36265bbc7412337f",
+        "edge": "472581fd866581350948.png",
+        "span": [
+          0.42244602349269483,
+          0.26135737682815163
+        ],
+        "role": "tintedQuarter"
+      },
+      {
+        "mesh": "Gea039822d0334393e7ea",
+        "edge": "472581fd866581350948.png",
+        "span": [
+          0.42244602419567767,
+          0.2613573763330802
+        ],
+        "role": "tintedQuarter"
+      },
+      {
+        "mesh": "Gbbca4ec2aae8a74afe39",
+        "edge": "d1d23616d8d233090533.png",
+        "span": [
+          0.4908398620577596,
+          0.14112888252780237
+        ],
+        "role": "tintedQuarter"
+      },
+      {
+        "mesh": "Ge5cb184bcd4ffa27f1dd",
+        "edge": "d1d23616d8d233090533.png",
+        "span": [
+          0.4908398620577599,
+          0.1411288825278023
+        ],
+        "role": "tintedQuarter"
+      }
+    ]
+  },
+  "accents": {
+    "Body/Body/surface_00": {
+      "base": "G2036d8b31e2ad4550ab5",
+      "details": {
+        "surround": "G21876a5bb6ed6315f0db"
+      }
+    },
+    "Body/Body/surface_02": {
+      "base": "G07ec60999b31d21ee175",
+      "details": {
+        "surround": "G2e24c57b8e85b97b54c5"
+      }
+    }
+  }
+}

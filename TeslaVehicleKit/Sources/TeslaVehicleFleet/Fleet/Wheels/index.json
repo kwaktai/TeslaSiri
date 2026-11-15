@@ -1,0 +1,1045 @@
+{
+  "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn": {
+    "file": "Wheel_Cybertruck_Premium_54142998.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 8297,
+      "vertices": 17717
+    },
+    "finishes": {
+      "Premium_Tire_5d951ff8e610d8": false,
+      "Premium_Wheel_269993efe7258a": false
+    }
+  },
+  "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn": {
+    "file": "Wheel_Cybertruck_Premium_No_Cap_59fde48f.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 5,
+      "surfaces": 6,
+      "triangles": 19960,
+      "vertices": 41194
+    },
+    "finishes": {
+      "Everest_Premium_Wheel_b6ce08bd2fa5b1": true,
+      "Everest_Wheel_Metal_5f043e0d7c541f": true,
+      "Premium_Tire_e7e62226005476": true,
+      "Premium_Wheel_bab460767127cf": false,
+      "Blocker_59d813b58678af": false
+    }
+  },
+  "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn": {
+    "file": "Wheel_Cybertruck_RWD_59ac5df3.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 5,
+      "surfaces": 6,
+      "triangles": 9500,
+      "vertices": 27970
+    },
+    "finishes": {
+      "Wheel1_98e50d9b7d0d57": false,
+      "Tire1_67517b8f79589c": false,
+      "Tire1_45b51314ae106e": false,
+      "Blocker_59d813b58678af": false
+    }
+  },
+  "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn": {
+    "file": "Wheel_Cybertruck_RWD_No_Cap_c3ba9c07.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 6,
+      "surfaces": 7,
+      "triangles": 11662,
+      "vertices": 32312
+    },
+    "finishes": {
+      "Wheel_81afb83c30052e": false,
+      "Everest_Wheel_Metal_5f043e0d7c541f": true,
+      "Tire1_67517b8f79589c": false,
+      "Wheel1_98e50d9b7d0d57": false,
+      "Blocker_59d813b58678af": false
+    }
+  },
+  "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn": {
+    "file": "Wheel_Cybertruck_Standard_c95c2bda.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 4188,
+      "vertices": 8692
+    },
+    "finishes": {
+      "Standard_Wheel_f2e5f16fbf3e6f": false,
+      "Standard_Tire_984366d4354b2d": false
+    }
+  },
+  "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn": {
+    "file": "Wheel_Cybertruck_Standard_No_Cap_cb3c1000.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 5,
+      "surfaces": 6,
+      "triangles": 11332,
+      "vertices": 22942
+    },
+    "finishes": {
+      "Everest_Base_Wheel_18e75d1748b703": true,
+      "Everest_Wheel_Metal_5f043e0d7c541f": true,
+      "Standard_Wheel_e3c3b2a1cd77f0": false,
+      "Standard_Tire_984366d4354b2d": false,
+      "Blocker_59d813b58678af": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_Apollo.tscn": {
+    "file": "Wheel_Apollo_7d12e0a9.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2519,
+      "vertices": 2245
+    },
+    "finishes": {
+      "Wheels_7d98ec0ecd8fd6": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn": {
+    "file": "Wheel_Apollo_19_Metallic_Shadow_ed406cbe.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2090,
+      "vertices": 1916
+    },
+    "finishes": {
+      "Apollo_19_001_abef2ba5bee80f": false,
+      "Tires_001_80c80d66d80b65": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn": {
+    "file": "Wheel_D33_Dark_Nova_19_18cb8196.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 6,
+      "surfaces": 6,
+      "triangles": 15837,
+      "vertices": 9128
+    },
+    "finishes": {
+      "Tires_ca20e9fd30c0a7": false,
+      "D33_Cap_Wheel_4c184b60bec56c": false,
+      "D33_Rim_Wheel_a0e4375f0d6dc5": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn": {
+    "file": "Wheel_D33_Dark_Nova_19_No_Caps_30172337.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 5,
+      "surfaces": 5,
+      "triangles": 15005,
+      "vertices": 8558
+    },
+    "finishes": {
+      "Tires_ca20e9fd30c0a7": false,
+      "D33_Cap_Wheel_4c184b60bec56c": false,
+      "D33_Rim_Wheel_a0e4375f0d6dc5": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_D50.tscn": {
+    "file": "Wheel_D50_38e9009f.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 5,
+      "surfaces": 5,
+      "triangles": 10146,
+      "vertices": 7668
+    },
+    "finishes": {
+      "Pirelli_83ee9987fc49dd": true,
+      "D50_Cover_Wheel_07a42d500086fe": false,
+      "D50_Rim_Wheel_c164d4862bd8c2": false,
+      "D50_CarbonFiber_Wheel_705d614fa0e839": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_D50_No_Caps.tscn": {
+    "file": "Wheel_D50_No_Caps_474ac06d.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 3,
+      "surfaces": 3,
+      "triangles": 20084,
+      "vertices": 11638
+    },
+    "finishes": {
+      "Pirelli_83ee9987fc49dd": true,
+      "D50_Rim_Wheel_NoCaps_84924cf954e79d": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_Gemini.tscn": {
+    "file": "Wheel_Gemini_6edb549a.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2090,
+      "vertices": 1886
+    },
+    "finishes": {
+      "Wheels_b55c296067d876": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn": {
+    "file": "Wheel_Gemini_No_Caps_fa9c8bc8.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 3,
+      "surfaces": 3,
+      "triangles": 1754,
+      "vertices": 1607
+    },
+    "finishes": {
+      "Tires_ca20e9fd30c0a7": false,
+      "Wheels_b55c296067d876": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_Induction.tscn": {
+    "file": "Wheel_Induction_4080f24a.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 1869,
+      "vertices": 1537
+    },
+    "finishes": {
+      "Wheels_f312cab5ee6e7c": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_Pinwheel.tscn": {
+    "file": "Wheel_Pinwheel_6e79e516.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2340,
+      "vertices": 2191
+    },
+    "finishes": {
+      "Wheels_0f9fe19f2f83ef": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn": {
+    "file": "Wheel_Pinwheel_No_Cap_df1c155b.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2665,
+      "vertices": 1888
+    },
+    "finishes": {
+      "Wheels_ccb38313b7542a": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn": {
+    "file": "Wheel_Pinwheel_Refresh_77ccf901.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2755,
+      "vertices": 2307
+    },
+    "finishes": {
+      "Pinwheel_Refresh_0bb68bf5f182b2": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn": {
+    "file": "Wheel_Stiletto_Armor_Black_d203a7c8.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 1915,
+      "vertices": 1569
+    },
+    "finishes": {
+      "Wheels_bef32c55d141e6": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn": {
+    "file": "Wheel_Stiletto_Dark_04fcc7bf.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 1915,
+      "vertices": 1569
+    },
+    "finishes": {
+      "Wheels_1ebda30f32b0ae": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn": {
+    "file": "Wheel_Stiletto_Refresh_3687f866.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2630,
+      "vertices": 2501
+    },
+    "finishes": {
+      "Stiletto_Refresh_Wheel_c63f9916a6195c": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn": {
+    "file": "Wheel_Stiletto_Silver_2558bdab.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 1915,
+      "vertices": 1569
+    },
+    "finishes": {
+      "Wheels_41ab49fa173e2d": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_Uberturbine.tscn": {
+    "file": "Wheel_Uberturbine_c5b18521.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2434,
+      "vertices": 2216
+    },
+    "finishes": {
+      "Wheels_7d8536854efbcf": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels/Wheel_ZeroG.tscn": {
+    "file": "Wheel_ZeroG_9af9768d.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2535,
+      "vertices": 2056
+    },
+    "finishes": {
+      "Wheels_add726c360440c": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn": {
+    "file": "Arachnid_V2_21_2b57cfbb.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 9099,
+      "vertices": 7322
+    },
+    "finishes": {
+      "Arachnid_V2_21_51adec37992423": true,
+      "Tire_ba36598f226600": true
+    }
+  },
+  "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn": {
+    "file": "Arachnid_V2_21_NoCaps_a3279409.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 11679,
+      "vertices": 10786
+    },
+    "finishes": {
+      "Tire_ba36598f226600": true,
+      "ArachnidV2_21_Rim_e1e8b6e18b9370": true
+    }
+  },
+  "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn": {
+    "file": "Wheel_E41_be970b17.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 10238,
+      "vertices": 5989
+    },
+    "finishes": {
+      "BayberryE41Material_1cac6a24aeb10d": true,
+      "Pirelli_83ee9987fc49dd": true
+    }
+  },
+  "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn": {
+    "file": "Wheel_E41_NoCaps_1e93db7f.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 11804,
+      "vertices": 8540
+    },
+    "finishes": {
+      "E41_NoCaps_70177691aa8fa5": true,
+      "Pirelli_83ee9987fc49dd": true
+    }
+  },
+  "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn": {
+    "file": "GeminiDark_2b965039.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 5253,
+      "vertices": 4183
+    },
+    "finishes": {
+      "GeminiDark_65e4f8cfe21fb0": true,
+      "Conti_7c3fd8437a8b17": true
+    }
+  },
+  "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn": {
+    "file": "GeminiDark_No_Caps_b2c589fd.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 7172,
+      "vertices": 7616
+    },
+    "finishes": {
+      "Conti_7c3fd8437a8b17": true,
+      "GeminiDark_65e4f8cfe21fb0": true
+    }
+  },
+  "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn": {
+    "file": "Helix2_753d18e3.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 4250,
+      "vertices": 3525
+    },
+    "finishes": {
+      "Helix2_b6395f3dd7ed98": true,
+      "Pirelli_8af5067ef1692c": true
+    }
+  },
+  "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn": {
+    "file": "Helix2_Dark_9d421edc.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 4250,
+      "vertices": 3525
+    },
+    "finishes": {
+      "Helix2_Dark_ffa188d62bfedc": true,
+      "Pirelli_8af5067ef1692c": true
+    }
+  },
+  "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn": {
+    "file": "Machina2_6b29985e.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 4,
+      "surfaces": 4,
+      "triangles": 13368,
+      "vertices": 10312
+    },
+    "finishes": {
+      "Tire_46eaff2a2be18f": true,
+      "Machina_NoCaps_4ef78d9e853b0a": true,
+      "MachinaV2_19_caps_d10dab551b0745": true
+    }
+  },
+  "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn": {
+    "file": "Machina2_No_Caps_65cb49e9.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 3,
+      "surfaces": 3,
+      "triangles": 9695,
+      "vertices": 7848
+    },
+    "finishes": {
+      "Tire_46eaff2a2be18f": true,
+      "Machina_NoCaps_4ef78d9e853b0a": true
+    }
+  },
+  "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn": {
+    "file": "Uberhelix_decaebae.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 4,
+      "surfaces": 4,
+      "triangles": 28096,
+      "vertices": 35412
+    },
+    "finishes": {
+      "Uberhelix_Tire_Inside_27cca73dce8910": true,
+      "Uberhelix_Tire_44710922648f9e": true,
+      "Uberhelix_c8434e0b305a4c": true,
+      "Uberhelix_Cap_b206242933e367": true
+    }
+  },
+  "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn": {
+    "file": "Uberhelix_No_Caps_1f6cd819.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 3,
+      "surfaces": 3,
+      "triangles": 17882,
+      "vertices": 20076
+    },
+    "finishes": {
+      "Uberhelix_Tire_Inside_27cca73dce8910": true,
+      "Uberhelix_Tire_44710922648f9e": true,
+      "Uberhelix_c8434e0b305a4c": true
+    }
+  },
+  "res://Ego/Wheels_P3/Wheel_Cypress.tscn": {
+    "file": "Wheel_Cypress_d8235f2d.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 5969,
+      "vertices": 4534
+    },
+    "finishes": {
+      "Cypress_808f7e25f1e2e4": false,
+      "Tire_42f6abec4cfc58": true
+    }
+  },
+  "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn": {
+    "file": "Wheel_Cypress_NoInsert_032fdd72.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 12030,
+      "vertices": 7033
+    },
+    "finishes": {
+      "Tire_cfb997af70ded9": true,
+      "Wheel_5b6cc859e1f8d7": true
+    }
+  },
+  "res://Ego/Wheels_P3/Wheel_Halo.tscn": {
+    "file": "Wheel_Halo_910bf251.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 3,
+      "surfaces": 3,
+      "triangles": 20080,
+      "vertices": 11161
+    },
+    "finishes": {
+      "Tire_42f6abec4cfc58": true,
+      "Halo_b8da9b02920dd2": false,
+      "Halo_Cap_64f364fc2d0fa8": true
+    }
+  },
+  "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn": {
+    "file": "Wheel_Halo_No_Caps_5a1b4fe9.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 13852,
+      "vertices": 17087
+    },
+    "finishes": {
+      "Tire_42f6abec4cfc58": true,
+      "Halo_b8da9b02920dd2": false
+    }
+  },
+  "res://Ego/Wheels_P3/Wheel_Riptide.tscn": {
+    "file": "Wheel_Riptide_a4194b81.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 3,
+      "surfaces": 3,
+      "triangles": 20647,
+      "vertices": 13522
+    },
+    "finishes": {
+      "Riptide_Caps_036dfcbfa7a12b": true,
+      "Riptide_518e57bb07a43d": false,
+      "Tire_42f6abec4cfc58": true
+    }
+  },
+  "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn": {
+    "file": "Wheel_Riptide_No_Caps_27e4d0a4.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 14335,
+      "vertices": 10297
+    },
+    "finishes": {
+      "Tire_42f6abec4cfc58": true,
+      "Riptide_518e57bb07a43d": false
+    }
+  },
+  "res://Ego/Wheels_P3/Wheel_Standard.tscn": {
+    "file": "Wheel_Standard_2352ef03.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 3859,
+      "vertices": 3794
+    },
+    "finishes": {
+      "Standard_883f616a21d997": false,
+      "Tire_42f6abec4cfc58": true
+    }
+  },
+  "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn": {
+    "file": "Wheel_Standard_No_Caps_8dc86d87.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 15997,
+      "vertices": 19495
+    },
+    "finishes": {
+      "Tire_42f6abec4cfc58": true,
+      "Standard_NoCaps_8e74fac63e63eb": false
+    }
+  },
+  "res://Ego/Wheels_Palladium/Arachnid21.tscn": {
+    "file": "Arachnid21_aa12aefb.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2555,
+      "vertices": 5319
+    },
+    "finishes": {
+      "Arachnid21_10844d6d4d867a": false,
+      "Tire_18d2c1ef46cdf9": true
+    }
+  },
+  "res://Ego/Wheels_Palladium/Cardenio.tscn": {
+    "file": "Cardenio_6b13d843.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2317,
+      "vertices": 4801
+    },
+    "finishes": {
+      "Tempest_783fe08ab48b06": false,
+      "Tire_18d2c1ef46cdf9": true
+    }
+  },
+  "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn": {
+    "file": "Cardenio_No_Caps_aa5d6302.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 3,
+      "surfaces": 3,
+      "triangles": 13567,
+      "vertices": 27211
+    },
+    "finishes": {
+      "Tire_18d2c1ef46cdf9": true,
+      "Cardenio_Rim_91bac544a690e1": true
+    }
+  },
+  "res://Ego/Wheels_Palladium/Cyberstream.tscn": {
+    "file": "Cyberstream_07f3d764.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2535,
+      "vertices": 5279
+    },
+    "finishes": {
+      "Cyberstream_c5de05a133f903": false,
+      "Tire_18d2c1ef46cdf9": true
+    }
+  },
+  "res://Ego/Wheels_Palladium/New_Turbine_22.tscn": {
+    "file": "New_Turbine_22_a01bde44.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2725,
+      "vertices": 5669
+    },
+    "finishes": {
+      "Turbine_7272f83eb1345a": false,
+      "Tire_18d2c1ef46cdf9": true
+    }
+  },
+  "res://Ego/Wheels_Semi/Wheel_F_Semi.glb": {
+    "file": "Wheel_F_Semi_8b2b6488.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 1866,
+      "vertices": 2202
+    },
+    "finishes": {
+      "Semi_Front_Wheel_2111ad583af0f9": false,
+      "Semi_Tires_F_e04980795c2d35": false
+    }
+  },
+  "res://Ego/Wheels_Semi/Wheel_R_Semi.tscn": {
+    "file": "Wheel_R_Semi_a1a3eaa8.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 1978,
+      "vertices": 2286
+    },
+    "finishes": {
+      "Semi_Tires_R_c153c1e9ccf9d6": false,
+      "Semi_Rear_Wheel_3fb5d17725e9b8": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Aero.tscn": {
+    "file": "Wheel_Aero_53472879.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2285,
+      "vertices": 2033
+    },
+    "finishes": {
+      "Aero_Wheel_ab80b3b5413543": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn": {
+    "file": "Wheel_Arachnid_Armor_Black_f9f6da3e.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2335,
+      "vertices": 2094
+    },
+    "finishes": {
+      "Wheel_Arachnid_Armor_Black_eb0665a5723e43": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn": {
+    "file": "Wheel_Arachnid_Silver_6d6c9c83.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2335,
+      "vertices": 2094
+    },
+    "finishes": {
+      "Wheel_Arachnid_Silver_fa9d8fcaf07dc3": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn": {
+    "file": "Wheel_Arachnid_Sonic_Carbon_1f82652d.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2335,
+      "vertices": 2094
+    },
+    "finishes": {
+      "Arachnid_Sonic_Carbon_Wheel_6ce3bc77534030": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn": {
+    "file": "Wheel_Base_Silver_1c0f95af.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2360,
+      "vertices": 2471
+    },
+    "finishes": {
+      "Base_Silver_924b6ea86ad8e0": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn": {
+    "file": "Wheel_Cyclone_Silver_43ad324b.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2360,
+      "vertices": 1996
+    },
+    "finishes": {
+      "Cyclone_Wheel_40b7f9623cbfb7": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn": {
+    "file": "Wheel_Cyclone_Sonic_Carbon_996fc876.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2360,
+      "vertices": 1996
+    },
+    "finishes": {
+      "Cyclone_Wheel_5e200aec489aa0": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn": {
+    "file": "Wheel_Helix_Silver_2767f1af.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2519,
+      "vertices": 2309
+    },
+    "finishes": {
+      "Helix_Wheel_7001b0f2146124": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn": {
+    "file": "Wheel_Slipstream_Silver_79687631.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2148,
+      "vertices": 1794
+    },
+    "finishes": {
+      "Slipstream_Silver_Wheel_19e21a60701fd1": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn": {
+    "file": "Wheel_Slipstream_Sonic_Carbon_a6ad93c3.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2148,
+      "vertices": 1794
+    },
+    "finishes": {
+      "Slipstream_Sonic_Carbon_Wheel_a9d8a1a3ecdb2a": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn": {
+    "file": "Wheel_Slipstream_Two_Tone_26f5f171.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2148,
+      "vertices": 1794
+    },
+    "finishes": {
+      "Slipstream_Two_Tone_Wheel_1b2ad903a0bef4": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn": {
+    "file": "Wheel_Tempest_Sonic_Silver_f3fd5248.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2007,
+      "vertices": 2065
+    },
+    "finishes": {
+      "Tempest_Sonic_Silver_53ed3d93248f57": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn": {
+    "file": "Wheel_Turbine_Onyx_Black_6a8159c3.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2373,
+      "vertices": 2209
+    },
+    "finishes": {
+      "Turbine_Onyx_Black_Wheel_41490250473620": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn": {
+    "file": "Wheel_Turbine_Silver_3652e6c3.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2373,
+      "vertices": 2209
+    },
+    "finishes": {
+      "Turbine_Silver_Wheel_7344ced1783cb6": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn": {
+    "file": "Wheel_Twin_Turbine_Silver_11ddb8b6.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2240,
+      "vertices": 2005
+    },
+    "finishes": {
+      "Twin_Turbine_Silver_Wheel_7ac5d84c14f67d": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn": {
+    "file": "Wheel_Twin_Turbine_Sonic_Carbon_79e5358e.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2240,
+      "vertices": 2005
+    },
+    "finishes": {
+      "Twin_Turbine_Sonic_Carbon_Wheel_2d8bfe561f5508": false,
+      "Tires_ca20e9fd30c0a7": false
+    }
+  },
+  "res://Ego/v2023/Wheels/Glider.tscn": {
+    "file": "Glider_e7dd1359.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 3093,
+      "vertices": 2754
+    },
+    "finishes": {
+      "Glider_c64a70f307aee4": false,
+      "Tires_076b48c225b435": false
+    }
+  },
+  "res://Ego/v2023/Wheels/Glider_No_Caps.tscn": {
+    "file": "Glider_No_Caps_a64ff862.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 3,
+      "surfaces": 3,
+      "triangles": 10883,
+      "vertices": 6907
+    },
+    "finishes": {
+      "Tires_076b48c225b435": false,
+      "Glider_c64a70f307aee4": false
+    }
+  },
+  "res://Ego/v2023/Wheels/Helix_19.tscn": {
+    "file": "Helix_19_b9d50259.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 3013,
+      "vertices": 2655
+    },
+    "finishes": {
+      "Tires_076b48c225b435": false,
+      "Helix_2c56f7b2a9bcea": false
+    }
+  },
+  "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn": {
+    "file": "Helix_19_No_Caps_bcee1f84.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 3,
+      "surfaces": 3,
+      "triangles": 2468,
+      "vertices": 3629
+    },
+    "finishes": {
+      "Tires_076b48c225b435": false,
+      "Helix_2c56f7b2a9bcea": false
+    }
+  },
+  "res://Ego/v2023/Wheels/Wishbone_19.tscn": {
+    "file": "Wishbone_19_0975a334.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 2846,
+      "vertices": 2460
+    },
+    "finishes": {
+      "Wishbone_9470a2686a8148": false,
+      "Tires_076b48c225b435": false
+    }
+  },
+  "res://Ego/v2023/Wheels/Wishbone_20.tscn": {
+    "file": "Wishbone_20_840510c9.usdz",
+    "hidden": [],
+    "counts": {
+      "sourceBoundsChecked": 2,
+      "surfaces": 2,
+      "triangles": 3632,
+      "vertices": 3348
+    },
+    "finishes": {
+      "Wishbone_20_09e62671700a69": false,
+      "Tires_076b48c225b435": false
+    }
+  }
+}

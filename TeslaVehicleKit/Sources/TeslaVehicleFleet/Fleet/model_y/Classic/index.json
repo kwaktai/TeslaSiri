@@ -1,0 +1,1095 @@
+{
+  "bindings": {
+    "Body/Body/surface_00": "Exterior_daaba237c1bd4f",
+    "Body/Body/surface_01": "PaintSkybox_3fffe99eb91e80",
+    "Body/Body/surface_02": "ExteriorFade_ec72ae41a2163e",
+    "Body/Body/surface_03": "PaintFade_4750167e6e7575",
+    "Body/Body/surface_04": "PaintRough_7e3c2276e2f4d1",
+    "Body/Center_Console/surface_00": "Leather_Old_Parts_6c8b9e4bda40e6",
+    "Body/Center_Console/surface_01": "Plastic_Black_Old_Parts_182b120c666b61",
+    "Body/Center_Console/surface_02": "Aluminum_Old_Parts_b62934c8a262bb",
+    "Body/Center_Console/surface_03": "Carpet_Old_Parts_78fcd0fcf4bad7",
+    "Body/Center_Console/surface_04": "Zero_Black_ab165ba9ce3d25",
+    "Body/Center_Console_2_0/surface_00": "Aluminum_6d9aa4102fb417",
+    "Body/Center_Console_2_0/surface_01": "Leather_1e4d4df73a0b69",
+    "Body/Center_Console_2_0/surface_02": "Carpet_83ab913117346d",
+    "Body/Center_Console_2_0/surface_03": "Plastic_Black_4403a1044e39b7",
+    "Body/Center_Console_2_0/surface_04": "Zero_Black_ab165ba9ce3d25",
+    "Body/Dashboard/surface_00": "Leather_1e4d4df73a0b69",
+    "Body/Dashboard/surface_01": "Aluminum_6d9aa4102fb417",
+    "Body/Dashboard/surface_02": "Plastic_Black_4403a1044e39b7",
+    "Body/Dashboard/surface_03": "Zero_Black_ab165ba9ce3d25",
+    "Body/Dashboard/surface_04": "Grille_32b87e4a57ad5c",
+    "Body/Dashboard_Decor/surface_00": "Decor_5b6a18e4d23e46",
+    "Body/Dashboard_RHD/surface_00": "Leather_1e4d4df73a0b69",
+    "Body/Dashboard_RHD/surface_01": "Aluminum_6d9aa4102fb417",
+    "Body/Dashboard_RHD/surface_02": "Plastic_Black_4403a1044e39b7",
+    "Body/Dashboard_RHD/surface_03": "Zero_Black_ab165ba9ce3d25",
+    "Body/Dashboard_RHD/surface_04": "Grille_32b87e4a57ad5c",
+    "Body/Door_LF_Spatial/Door_LF/surface_00": "Exterior_daaba237c1bd4f",
+    "Body/Door_LF_Spatial/Door_LF/surface_01": "PaintSkybox_3fffe99eb91e80",
+    "Body/Door_LF_Spatial/Door_LF/surface_02": "PaintRough_7e3c2276e2f4d1",
+    "Body/Door_LF_Spatial/Door_LF_Mirror_Spatial/Door_LF_Mirror/surface_00": "Exterior_daaba237c1bd4f",
+    "Body/Door_LF_Spatial/Door_LF_Mirror_Spatial/Door_LF_Mirror/surface_01": "PaintSkybox_3fffe99eb91e80",
+    "Body/Door_LF_Spatial/Doorcard_2_0_LF/surface_00": "Plastic_Black_4403a1044e39b7",
+    "Body/Door_LF_Spatial/Doorcard_2_0_LF/surface_01": "Suede_d6db6c664bdd1a",
+    "Body/Door_LF_Spatial/Doorcard_2_0_LF/surface_02": "Grille_32b87e4a57ad5c",
+    "Body/Door_LF_Spatial/Doorcard_2_0_LF/surface_03": "Aluminum_6d9aa4102fb417",
+    "Body/Door_LF_Spatial/Doorcard_2_0_LF/surface_04": "Leather_1e4d4df73a0b69",
+    "Body/Door_LF_Spatial/Doorcard_2_0_LF_Decor/surface_00": "Decor_5b6a18e4d23e46",
+    "Body/Door_LF_Spatial/Doorcard_LF/surface_00": "Suede_Old_Parts_864656c31d6449",
+    "Body/Door_LF_Spatial/Doorcard_LF/surface_01": "Leather_Old_Parts_6c8b9e4bda40e6",
+    "Body/Door_LF_Spatial/Doorcard_LF/surface_02": "Plastic_Black_Old_Parts_182b120c666b61",
+    "Body/Door_LF_Spatial/Doorcard_LF/surface_03": "Grille_Old_Parts_68a4125a84b74e",
+    "Body/Door_LF_Spatial/Window_LF_Spatial/Window_LF/surface_00": "GlassSkybox_084cbbd1ccdea3",
+    "Body/Door_LF_Spatial/Window_LF_Spatial/Window_LF/surface_01": "Glass_Interior_f3ec5a2b7bbbc7",
+    "Body/Door_LR_Spatial/Door_LR/surface_00": "Exterior_daaba237c1bd4f",
+    "Body/Door_LR_Spatial/Door_LR/surface_01": "PaintSkybox_3fffe99eb91e80",
+    "Body/Door_LR_Spatial/Door_LR/surface_02": "PaintRough_7e3c2276e2f4d1",
+    "Body/Door_LR_Spatial/Doorcard_LR/surface_00": "Plastic_Black_4403a1044e39b7",
+    "Body/Door_LR_Spatial/Doorcard_LR/surface_01": "Suede_d6db6c664bdd1a",
+    "Body/Door_LR_Spatial/Doorcard_LR/surface_02": "Grille_32b87e4a57ad5c",
+    "Body/Door_LR_Spatial/Doorcard_LR/surface_03": "Leather_1e4d4df73a0b69",
+    "Body/Door_LR_Spatial/Window_LR_Spatial/Window_LR/surface_00": "GlassTintedSkybox_8a0a7ae7a93795",
+    "Body/Door_LR_Spatial/Window_LR_Spatial/Window_LR/surface_01": "Glass_Interior_Tinted_deb68df12196d9",
+    "Body/Door_RF_Spatial/Door_RF/surface_00": "Exterior_daaba237c1bd4f",
+    "Body/Door_RF_Spatial/Door_RF/surface_01": "PaintSkybox_3fffe99eb91e80",
+    "Body/Door_RF_Spatial/Door_RF/surface_02": "PaintRough_7e3c2276e2f4d1",
+    "Body/Door_RF_Spatial/Door_RF_Mirror_Spatial/Door_RF_Mirror/surface_00": "Exterior_daaba237c1bd4f",
+    "Body/Door_RF_Spatial/Door_RF_Mirror_Spatial/Door_RF_Mirror/surface_01": "PaintSkybox_3fffe99eb91e80",
+    "Body/Door_RF_Spatial/Doorcard_2_0_RF/surface_00": "Plastic_Black_4403a1044e39b7",
+    "Body/Door_RF_Spatial/Doorcard_2_0_RF/surface_01": "Suede_d6db6c664bdd1a",
+    "Body/Door_RF_Spatial/Doorcard_2_0_RF/surface_02": "Grille_32b87e4a57ad5c",
+    "Body/Door_RF_Spatial/Doorcard_2_0_RF/surface_03": "Aluminum_6d9aa4102fb417",
+    "Body/Door_RF_Spatial/Doorcard_2_0_RF/surface_04": "Leather_1e4d4df73a0b69",
+    "Body/Door_RF_Spatial/Doorcard_2_0_RF_Decor/surface_00": "Decor_5b6a18e4d23e46",
+    "Body/Door_RF_Spatial/Doorcard_RF/surface_00": "Suede_Old_Parts_864656c31d6449",
+    "Body/Door_RF_Spatial/Doorcard_RF/surface_01": "Leather_Old_Parts_6c8b9e4bda40e6",
+    "Body/Door_RF_Spatial/Doorcard_RF/surface_02": "Plastic_Black_Old_Parts_182b120c666b61",
+    "Body/Door_RF_Spatial/Doorcard_RF/surface_03": "Grille_Old_Parts_68a4125a84b74e",
+    "Body/Door_RF_Spatial/Window_RF_Spatial/Window_RF/surface_00": "GlassSkybox_084cbbd1ccdea3",
+    "Body/Door_RF_Spatial/Window_RF_Spatial/Window_RF/surface_01": "Glass_Interior_f3ec5a2b7bbbc7",
+    "Body/Door_RR_Spatial/Door_RR/surface_00": "Exterior_daaba237c1bd4f",
+    "Body/Door_RR_Spatial/Door_RR/surface_01": "PaintSkybox_3fffe99eb91e80",
+    "Body/Door_RR_Spatial/Door_RR/surface_02": "PaintRough_7e3c2276e2f4d1",
+    "Body/Door_RR_Spatial/Doorcard_RR/surface_00": "Plastic_Black_4403a1044e39b7",
+    "Body/Door_RR_Spatial/Doorcard_RR/surface_01": "Suede_d6db6c664bdd1a",
+    "Body/Door_RR_Spatial/Doorcard_RR/surface_02": "Grille_32b87e4a57ad5c",
+    "Body/Door_RR_Spatial/Doorcard_RR/surface_03": "Leather_1e4d4df73a0b69",
+    "Body/Door_RR_Spatial/Window_RR_Spatial/Window_RR/surface_00": "GlassTintedSkybox_8a0a7ae7a93795",
+    "Body/Door_RR_Spatial/Window_RR_Spatial/Window_RR/surface_01": "Glass_Interior_Tinted_deb68df12196d9",
+    "Body/Hood_Spatial/Hood/surface_00": "PaintSkybox_3fffe99eb91e80",
+    "Body/Hood_Spatial/Hood/surface_01": "Exterior_daaba237c1bd4f",
+    "Body/Interior_5_seater/surface_00": "Plastic_Black_Seats_daf34f27fd5383",
+    "Body/Interior_5_seater/surface_01": "Plastic_Red_a0c1cff65267cd",
+    "Body/Interior_5_seater/surface_02": "Carpet_Seats_845527d52b12e5",
+    "Body/Interior_5_seater/surface_03": "Seatbelts_Seats_75fbfc99eac57b",
+    "Body/Interior_5_seater/surface_04": "Chrome_Seats_a99ce76e1185d9",
+    "Body/Interior_5_seater_Color/surface_00": "InteriorSeats_d540dd9f60a59a",
+    "Body/Interior_7_seater/surface_00": "Plastic_Black_Seats_daf34f27fd5383",
+    "Body/Interior_7_seater/surface_01": "Plastic_Red_a0c1cff65267cd",
+    "Body/Interior_7_seater/surface_02": "Carpet_Seats_845527d52b12e5",
+    "Body/Interior_7_seater/surface_03": "Seatbelts_Seats_75fbfc99eac57b",
+    "Body/Interior_7_seater/surface_04": "Chrome_Seats_a99ce76e1185d9",
+    "Body/Interior_7_seater_Color/surface_00": "InteriorSeats_d540dd9f60a59a",
+    "Body/Interior_Body/surface_00": "Carpet_83ab913117346d",
+    "Body/Interior_Body/surface_01": "Plastic_Black_4403a1044e39b7",
+    "Body/Interior_Body/surface_02": "Zero_Black_ab165ba9ce3d25",
+    "Body/Interior_Body/surface_03": "PlasticBlackFade_08a024bcf98013",
+    "Body/Interior_Body/surface_04": "MirrorFade_2439e05a2ffb58",
+    "Body/Interior_Body/surface_05": "Chrome_f0467d1edcb348",
+    "Body/Interior_Body/surface_06": "Rubber_c934b491b6c3d1",
+    "Body/Interior_Body/surface_07": "Plastic_White_Fade_011f987556cd4b",
+    "Body/Interior_Body/surface_08": "Seatbelts_3ae309a8c737e3",
+    "Body/Interior_Body/surface_09": "Leather_1e4d4df73a0b69",
+    "Body/Interior_Body/surface_10": "Plastic_White_39d33f8199f24f",
+    "Body/Interior_Body_RHD/surface_00": "Plastic_White_Fade_011f987556cd4b",
+    "Body/Interior_Body_RHD/surface_01": "Plastic_Black_4403a1044e39b7",
+    "Body/Interior_Body_RHD/surface_02": "MirrorFade_2439e05a2ffb58",
+    "Body/Interior_Body_RHD/surface_03": "Chrome_f0467d1edcb348",
+    "Body/Interior_Body_RHD/surface_04": "Seatbelts_3ae309a8c737e3",
+    "Body/Interior_Body_RHD/surface_05": "Carpet_83ab913117346d",
+    "Body/Interior_Body_RHD/surface_06": "Rubber_c934b491b6c3d1",
+    "Body/Interior_Body_RHD/surface_07": "Zero_Black_ab165ba9ce3d25",
+    "Body/Interior_Body_RHD/surface_08": "Leather_1e4d4df73a0b69",
+    "Body/Interior_Body_RHD/surface_09": "Plastic_White_39d33f8199f24f",
+    "Body/Interior_Body_RHD/surface_10": "PlasticBlackFade_08a024bcf98013",
+    "Body/Lights_Glass/surface_00": "Glass_Lights_ba099a5a8e5f9d",
+    "Body/Screen_Front/surface_00": "Leather_1e4d4df73a0b69",
+    "Body/Screen_Front/surface_01": "Front_Screen_de2a3c895470d9",
+    "Body/Screen_Front_RHD/surface_00": "Leather_1e4d4df73a0b69",
+    "Body/Screen_Front_RHD/surface_01": "Front_Screen_RHD_898c625df52faa",
+    "Body/Seat_Bottom_LF/surface_00": "Plastic_Black_Seats_daf34f27fd5383",
+    "Body/Seat_Bottom_LF/surface_01": "Plastic_Grey_90798b233c774e",
+    "Body/Seat_Bottom_LF/surface_02": "Plastic_Red_a0c1cff65267cd",
+    "Body/Seat_Bottom_LF_Color/surface_00": "InteriorSeats_d540dd9f60a59a",
+    "Body/Seat_Bottom_RF/surface_00": "Plastic_Black_Seats_daf34f27fd5383",
+    "Body/Seat_Bottom_RF/surface_01": "Plastic_Grey_90798b233c774e",
+    "Body/Seat_Bottom_RF/surface_02": "Plastic_Red_a0c1cff65267cd",
+    "Body/Seat_Bottom_RF_Color/surface_00": "InteriorSeats_d540dd9f60a59a",
+    "Body/Seat_Top_LF/surface_00": "Plastic_Black_Seats_daf34f27fd5383",
+    "Body/Seat_Top_LF_Color/surface_00": "InteriorSeats_d540dd9f60a59a",
+    "Body/Seat_Top_RF/surface_00": "Plastic_Black_Seats_daf34f27fd5383",
+    "Body/Seat_Top_RF_Color/surface_00": "InteriorSeats_d540dd9f60a59a",
+    "Body/Spatials/Brakes_LF_Spatial/Spatial/Caliper_Std_F/surface_00": "Brakes_9fe803d12b5b8e",
+    "Body/Spatials/Brakes_LF_Spatial/Spatial/Rotor_Std_F/surface_00": "Brakes_9fe803d12b5b8e",
+    "Body/Spatials/Brakes_LR_Spatial/Spatial/Caliper_Std_R/surface_00": "Brakes_9fe803d12b5b8e",
+    "Body/Spatials/Brakes_LR_Spatial/Spatial/Rotor_Std_R/surface_00": "Brakes_9fe803d12b5b8e",
+    "Body/Spatials/Brakes_RF_Spatial/Spatial/Caliper_Std_F/surface_00": "Brakes_9fe803d12b5b8e",
+    "Body/Spatials/Brakes_RF_Spatial/Spatial/Rotor_Std_F/surface_00": "Brakes_9fe803d12b5b8e",
+    "Body/Spatials/Brakes_RR_Spatial/Spatial/Caliper_Std_R/surface_00": "Brakes_9fe803d12b5b8e",
+    "Body/Spatials/Brakes_RR_Spatial/Spatial/Rotor_Std_R/surface_00": "Brakes_9fe803d12b5b8e",
+    "Body/Spatials/Wheel_LF_Spatial/Spatial/Wheel_Gemini/surface_00": "Wheels_b55c296067d876",
+    "Body/Spatials/Wheel_LR_Spatial/Spatial/Wheel_Gemini/surface_00": "Wheels_b55c296067d876",
+    "Body/Spatials/Wheel_RF_Spatial/Spatial/Wheel_Gemini/surface_00": "Wheels_b55c296067d876",
+    "Body/Spatials/Wheel_RR_Spatial/Spatial/Wheel_Gemini/surface_00": "Wheels_b55c296067d876",
+    "Body/Steering_Wheel_RHD_Spatial/Steering_Wheel_Standard_RHD/surface_00": "Leather_1e4d4df73a0b69",
+    "Body/Steering_Wheel_RHD_Spatial/Steering_Wheel_Standard_RHD/surface_01": "Plastic_Black_4403a1044e39b7",
+    "Body/Steering_Wheel_RHD_Spatial/Steering_Wheel_Standard_RHD/surface_02": "Aluminum_6d9aa4102fb417",
+    "Body/Steering_Wheel_Spatial/Steering_Wheel_Standard/surface_00": "Leather_1e4d4df73a0b69",
+    "Body/Steering_Wheel_Spatial/Steering_Wheel_Standard/surface_01": "Plastic_Black_4403a1044e39b7",
+    "Body/Steering_Wheel_Spatial/Steering_Wheel_Standard/surface_02": "Aluminum_6d9aa4102fb417",
+    "Body/Trunk_Spatial/Lights_Glass_Trunk/surface_00": "Glass_Lights_ba099a5a8e5f9d",
+    "Body/Trunk_Spatial/Spoiler1/surface_00": "Spoiler_93612ddc28c6cd",
+    "Body/Trunk_Spatial/Trunk/surface_00": "Exterior_daaba237c1bd4f",
+    "Body/Trunk_Spatial/Trunk/surface_01": "ExteriorFade_ec72ae41a2163e",
+    "Body/Trunk_Spatial/Trunk/surface_02": "PaintSkybox_3fffe99eb91e80",
+    "Body/Trunk_Spatial/Trunk/surface_03": "PaintFade_4750167e6e7575",
+    "Body/Trunk_Spatial/Trunk/surface_04": "PaintRough_7e3c2276e2f4d1",
+    "Body/Trunk_Spatial/Windows_Rear/surface_00": "GlassTintedFadeSkybox_33a8c91be01acd",
+    "Body/Trunk_Spatial/Windows_Rear/surface_01": "Glass_Interior_Tinted_Fade_5eef6cb0de3d44",
+    "Body/Windows_Top/surface_00": "GlassTintedSkybox_8a0a7ae7a93795",
+    "Body/Windows_Top/surface_01": "Glass_Interior_Tinted_deb68df12196d9",
+    "Body/Windows_Top/surface_02": "GlassFadeSkybox_1cfd64356eeb90",
+    "Body/Windows_Top/surface_03": "Glass_Interior_Fade_91d8dbda016a7a",
+    "Body/Windows_Top/surface_04": "GlassTintedFadeSkybox_33a8c91be01acd",
+    "Body/Windows_Top/surface_05": "Glass_Interior_Tinted_Fade_5eef6cb0de3d44"
+  },
+  "bySourceMaterial": {
+    "Aero_Wheel_ab80b3b5413543": "Aero_Wheel_ab80b3b5413543",
+    "Apollo_19_001_abef2ba5bee80f": "Apollo_19_001_abef2ba5bee80f",
+    "Arachnid21_10844d6d4d867a": "Arachnid21_10844d6d4d867a",
+    "ArachnidV2_21_Rim_e1e8b6e18b9370": "ArachnidV2_21_Rim_e1e8b6e18b9370",
+    "Arachnid_Sonic_Carbon_Wheel_6ce3bc77534030": "Arachnid_Sonic_Carbon_Wheel_6ce3bc77534030",
+    "Arachnid_V2_21_51adec37992423": "Arachnid_V2_21_51adec37992423",
+    "Base_Silver_924b6ea86ad8e0": "Base_Silver_924b6ea86ad8e0",
+    "BayberryE41Material_1cac6a24aeb10d": "BayberryE41Material_1cac6a24aeb10d",
+    "Blocker_59d813b58678af": "Blocker_59d813b58678af",
+    "Brakes_9fe803d12b5b8e": "Brakes_9fe803d12b5b8e",
+    "Cardenio_Rim_91bac544a690e1": "Cardenio_Rim_91bac544a690e1",
+    "Cyberstream_c5de05a133f903": "Cyberstream_c5de05a133f903",
+    "Cyclone_Wheel_40b7f9623cbfb7": "Cyclone_Wheel_40b7f9623cbfb7",
+    "Cyclone_Wheel_5e200aec489aa0": "Cyclone_Wheel_5e200aec489aa0",
+    "Cypress_808f7e25f1e2e4": "Cypress_808f7e25f1e2e4",
+    "D33_Cap_Wheel_4c184b60bec56c": "D33_Cap_Wheel_4c184b60bec56c",
+    "D33_Rim_Wheel_a0e4375f0d6dc5": "D33_Rim_Wheel_a0e4375f0d6dc5",
+    "D50_CarbonFiber_Wheel_705d614fa0e839": "D50_CarbonFiber_Wheel_705d614fa0e839",
+    "D50_Cover_Wheel_07a42d500086fe": "D50_Cover_Wheel_07a42d500086fe",
+    "D50_Rim_Wheel_NoCaps_84924cf954e79d": "D50_Rim_Wheel_NoCaps_84924cf954e79d",
+    "D50_Rim_Wheel_c164d4862bd8c2": "D50_Rim_Wheel_c164d4862bd8c2",
+    "E41_NoCaps_70177691aa8fa5": "E41_NoCaps_70177691aa8fa5",
+    "Everest_Base_Wheel_18e75d1748b703": "Everest_Base_Wheel_18e75d1748b703",
+    "Everest_Premium_Wheel_b6ce08bd2fa5b1": "Everest_Premium_Wheel_b6ce08bd2fa5b1",
+    "Everest_Wheel_Metal_5f043e0d7c541f": "Everest_Wheel_Metal_5f043e0d7c541f",
+    "ExteriorFade_ec72ae41a2163e": "ExteriorFade_ec72ae41a2163e",
+    "Exterior_daaba237c1bd4f": "Exterior_daaba237c1bd4f",
+    "GeminiDark_65e4f8cfe21fb0": "GeminiDark_65e4f8cfe21fb0",
+    "Glider_c64a70f307aee4": "Glider_c64a70f307aee4",
+    "Halo_Cap_64f364fc2d0fa8": "Halo_Cap_64f364fc2d0fa8",
+    "Halo_b8da9b02920dd2": "Halo_b8da9b02920dd2",
+    "Helix2_Dark_ffa188d62bfedc": "Helix2_Dark_ffa188d62bfedc",
+    "Helix2_b6395f3dd7ed98": "Helix2_b6395f3dd7ed98",
+    "Helix_2c56f7b2a9bcea": "Helix_2c56f7b2a9bcea",
+    "Helix_Wheel_7001b0f2146124": "Helix_Wheel_7001b0f2146124",
+    "MachinaV2_19_caps_d10dab551b0745": "MachinaV2_19_caps_d10dab551b0745",
+    "Machina_NoCaps_4ef78d9e853b0a": "Machina_NoCaps_4ef78d9e853b0a",
+    "Pinwheel_Refresh_0bb68bf5f182b2": "Pinwheel_Refresh_0bb68bf5f182b2",
+    "Premium_Wheel_269993efe7258a": "Premium_Wheel_269993efe7258a",
+    "Premium_Wheel_bab460767127cf": "Premium_Wheel_bab460767127cf",
+    "Riptide_518e57bb07a43d": "Riptide_518e57bb07a43d",
+    "Riptide_Caps_036dfcbfa7a12b": "Riptide_Caps_036dfcbfa7a12b",
+    "Semi_Front_Wheel_2111ad583af0f9": "Semi_Front_Wheel_2111ad583af0f9",
+    "Slipstream_Silver_Wheel_19e21a60701fd1": "Slipstream_Silver_Wheel_19e21a60701fd1",
+    "Slipstream_Sonic_Carbon_Wheel_a9d8a1a3ecdb2a": "Slipstream_Sonic_Carbon_Wheel_a9d8a1a3ecdb2a",
+    "Slipstream_Two_Tone_Wheel_1b2ad903a0bef4": "Slipstream_Two_Tone_Wheel_1b2ad903a0bef4",
+    "Spoiler_93612ddc28c6cd": "Spoiler_93612ddc28c6cd",
+    "Standard_883f616a21d997": "Standard_883f616a21d997",
+    "Standard_NoCaps_8e74fac63e63eb": "Standard_NoCaps_8e74fac63e63eb",
+    "Standard_Wheel_e3c3b2a1cd77f0": "Standard_Wheel_e3c3b2a1cd77f0",
+    "Standard_Wheel_f2e5f16fbf3e6f": "Standard_Wheel_f2e5f16fbf3e6f",
+    "Stiletto_Refresh_Wheel_c63f9916a6195c": "Stiletto_Refresh_Wheel_c63f9916a6195c",
+    "Tempest_783fe08ab48b06": "Tempest_783fe08ab48b06",
+    "Tempest_Sonic_Silver_53ed3d93248f57": "Tempest_Sonic_Silver_53ed3d93248f57",
+    "Turbine_7272f83eb1345a": "Turbine_7272f83eb1345a",
+    "Turbine_Onyx_Black_Wheel_41490250473620": "Turbine_Onyx_Black_Wheel_41490250473620",
+    "Turbine_Silver_Wheel_7344ced1783cb6": "Turbine_Silver_Wheel_7344ced1783cb6",
+    "Twin_Turbine_Silver_Wheel_7ac5d84c14f67d": "Twin_Turbine_Silver_Wheel_7ac5d84c14f67d",
+    "Twin_Turbine_Sonic_Carbon_Wheel_2d8bfe561f5508": "Twin_Turbine_Sonic_Carbon_Wheel_2d8bfe561f5508",
+    "Uberhelix_Cap_b206242933e367": "Uberhelix_Cap_b206242933e367",
+    "Uberhelix_c8434e0b305a4c": "Uberhelix_c8434e0b305a4c",
+    "Wheel1_98e50d9b7d0d57": "Wheel1_98e50d9b7d0d57",
+    "Wheel_5b6cc859e1f8d7": "Wheel_5b6cc859e1f8d7",
+    "Wheel_81afb83c30052e": "Wheel_81afb83c30052e",
+    "Wheel_Arachnid_Armor_Black_eb0665a5723e43": "Wheel_Arachnid_Armor_Black_eb0665a5723e43",
+    "Wheel_Arachnid_Silver_fa9d8fcaf07dc3": "Wheel_Arachnid_Silver_fa9d8fcaf07dc3",
+    "Wheels_0f9fe19f2f83ef": "Wheels_0f9fe19f2f83ef",
+    "Wheels_1ebda30f32b0ae": "Wheels_1ebda30f32b0ae",
+    "Wheels_41ab49fa173e2d": "Wheels_41ab49fa173e2d",
+    "Wheels_7d8536854efbcf": "Wheels_7d8536854efbcf",
+    "Wheels_7d98ec0ecd8fd6": "Wheels_7d98ec0ecd8fd6",
+    "Wheels_add726c360440c": "Wheels_add726c360440c",
+    "Wheels_b55c296067d876": "Wheels_b55c296067d876",
+    "Wheels_bef32c55d141e6": "Wheels_bef32c55d141e6",
+    "Wheels_ccb38313b7542a": "Wheels_ccb38313b7542a",
+    "Wheels_f312cab5ee6e7c": "Wheels_f312cab5ee6e7c",
+    "Wishbone_20_09e62671700a69": "Wishbone_20_09e62671700a69",
+    "Wishbone_9470a2686a8148": "Wishbone_9470a2686a8148"
+  },
+  "materials": {
+    "Aero_Wheel_ab80b3b5413543": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Aero_Wheel_ab80b3b5413543.usda",
+      "prim": "/Aero_Wheel_ab80b3b5413543",
+      "source": "res://Ego/Wheels_X_S/Aero_Wheel.material",
+      "twoSided": false
+    },
+    "Aluminum_6d9aa4102fb417": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Aluminum_6d9aa4102fb417.usda",
+      "prim": "/Aluminum_6d9aa4102fb417",
+      "source": "res://Ego/Y_High/Aluminum.material",
+      "twoSided": false
+    },
+    "Aluminum_Old_Parts_b62934c8a262bb": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Aluminum_Old_Parts_b62934c8a262bb.usda",
+      "prim": "/Aluminum_Old_Parts_b62934c8a262bb",
+      "source": "res://Ego/Y_High/Aluminum_Old_Parts.material",
+      "twoSided": true
+    },
+    "Apollo_19_001_abef2ba5bee80f": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Apollo_19_001_abef2ba5bee80f.usda",
+      "prim": "/Apollo_19_001_abef2ba5bee80f",
+      "source": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn::SubResource(1)",
+      "twoSided": false
+    },
+    "Arachnid21_10844d6d4d867a": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Arachnid21_10844d6d4d867a.usda",
+      "prim": "/Arachnid21_10844d6d4d867a",
+      "source": "res://Ego/Wheels_Palladium/Arachnid21.material",
+      "twoSided": false
+    },
+    "ArachnidV2_21_Rim_e1e8b6e18b9370": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/ArachnidV2_21_Rim_e1e8b6e18b9370.usda",
+      "prim": "/ArachnidV2_21_Rim_e1e8b6e18b9370",
+      "source": "res://Ego/Wheels_Bayberry/Arachnid_V2/ArachnidV2_21_Rim.tres",
+      "twoSided": true
+    },
+    "Arachnid_Sonic_Carbon_Wheel_6ce3bc77534030": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Arachnid_Sonic_Carbon_Wheel_6ce3bc77534030.usda",
+      "prim": "/Arachnid_Sonic_Carbon_Wheel_6ce3bc77534030",
+      "source": "res://Ego/Wheels_X_S/Arachnid_Sonic_Carbon_Wheel.material",
+      "twoSided": false
+    },
+    "Arachnid_V2_21_51adec37992423": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Arachnid_V2_21_51adec37992423.usda",
+      "prim": "/Arachnid_V2_21_51adec37992423",
+      "source": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tres",
+      "twoSided": true
+    },
+    "Base_Silver_924b6ea86ad8e0": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Base_Silver_924b6ea86ad8e0.usda",
+      "prim": "/Base_Silver_924b6ea86ad8e0",
+      "source": "res://Ego/Wheels_X_S/Base_Silver_Wheel.material",
+      "twoSided": false
+    },
+    "BayberryE41Material_1cac6a24aeb10d": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/BayberryE41Material_1cac6a24aeb10d.usda",
+      "prim": "/BayberryE41Material_1cac6a24aeb10d",
+      "source": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tres",
+      "twoSided": true
+    },
+    "Blocker_59d813b58678af": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Blocker_59d813b58678af.usda",
+      "prim": "/Blocker_59d813b58678af",
+      "source": "res://Ego/Cybertruck/Wheels/Blocker.tres",
+      "twoSided": false
+    },
+    "Brakes_9fe803d12b5b8e": {
+      "category": "brakes",
+      "file": "../../ClassicHardware/New_Studio/Brakes_9fe803d12b5b8e.usda",
+      "prim": "/Brakes_9fe803d12b5b8e",
+      "source": "res://Ego/Brakes/Brakes_Std.material",
+      "twoSided": false
+    },
+    "Cardenio_Rim_91bac544a690e1": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Cardenio_Rim_91bac544a690e1.usda",
+      "prim": "/Cardenio_Rim_91bac544a690e1",
+      "source": "res://Ego/Wheels_Palladium/Cardenio_Rim.tres",
+      "twoSided": true
+    },
+    "Carpet_83ab913117346d": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Carpet_83ab913117346d.usda",
+      "prim": "/Carpet_83ab913117346d",
+      "source": "res://Ego/Y_High/Carpet.material",
+      "twoSided": false
+    },
+    "Carpet_Old_Parts_78fcd0fcf4bad7": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Carpet_Old_Parts_78fcd0fcf4bad7.usda",
+      "prim": "/Carpet_Old_Parts_78fcd0fcf4bad7",
+      "source": "res://Ego/Y_High/Carpet_Old_Parts.material",
+      "twoSided": true
+    },
+    "Carpet_Seats_845527d52b12e5": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Carpet_Seats_845527d52b12e5.usda",
+      "prim": "/Carpet_Seats_845527d52b12e5",
+      "source": "res://Ego/Y_High/Carpet_Seats.material",
+      "twoSided": false
+    },
+    "Chrome_Seats_a99ce76e1185d9": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Chrome_Seats_a99ce76e1185d9.usda",
+      "prim": "/Chrome_Seats_a99ce76e1185d9",
+      "source": "res://Ego/Y_High/Chrome_Seats.material",
+      "twoSided": false
+    },
+    "Chrome_f0467d1edcb348": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Chrome_f0467d1edcb348.usda",
+      "prim": "/Chrome_f0467d1edcb348",
+      "source": "res://Ego/Y_High/Chrome.material",
+      "twoSided": false
+    },
+    "Cyberstream_c5de05a133f903": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Cyberstream_c5de05a133f903.usda",
+      "prim": "/Cyberstream_c5de05a133f903",
+      "source": "res://Ego/Wheels_Palladium/Cyberstream.material",
+      "twoSided": false
+    },
+    "Cyclone_Wheel_40b7f9623cbfb7": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Cyclone_Wheel_40b7f9623cbfb7.usda",
+      "prim": "/Cyclone_Wheel_40b7f9623cbfb7",
+      "source": "res://Ego/Wheels_X_S/Cyclone_Silver_Wheel.material",
+      "twoSided": false
+    },
+    "Cyclone_Wheel_5e200aec489aa0": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Cyclone_Wheel_5e200aec489aa0.usda",
+      "prim": "/Cyclone_Wheel_5e200aec489aa0",
+      "source": "res://Ego/Wheels_X_S/Cyclone_Sonic_Carbon_Wheel.material",
+      "twoSided": false
+    },
+    "Cypress_808f7e25f1e2e4": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Cypress_808f7e25f1e2e4.usda",
+      "prim": "/Cypress_808f7e25f1e2e4",
+      "source": "res://Ego/Wheels_P3/Cypress.tres",
+      "twoSided": false
+    },
+    "D33_Cap_Wheel_4c184b60bec56c": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/D33_Cap_Wheel_4c184b60bec56c.usda",
+      "prim": "/D33_Cap_Wheel_4c184b60bec56c",
+      "source": "res://Ego/Wheels/D33_Cap_Wheel.tres",
+      "twoSided": false
+    },
+    "D33_Rim_Wheel_a0e4375f0d6dc5": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/D33_Rim_Wheel_a0e4375f0d6dc5.usda",
+      "prim": "/D33_Rim_Wheel_a0e4375f0d6dc5",
+      "source": "res://Ego/Wheels/D33_Rim_Wheel.tres",
+      "twoSided": false
+    },
+    "D50_CarbonFiber_Wheel_705d614fa0e839": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/D50_CarbonFiber_Wheel_705d614fa0e839.usda",
+      "prim": "/D50_CarbonFiber_Wheel_705d614fa0e839",
+      "source": "res://Ego/Wheels/D50_CarbonFiber_Wheel.tres",
+      "twoSided": false
+    },
+    "D50_Cover_Wheel_07a42d500086fe": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/D50_Cover_Wheel_07a42d500086fe.usda",
+      "prim": "/D50_Cover_Wheel_07a42d500086fe",
+      "source": "res://Ego/Wheels/D50_Cover_Wheel.tres",
+      "twoSided": false
+    },
+    "D50_Rim_Wheel_NoCaps_84924cf954e79d": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/D50_Rim_Wheel_NoCaps_84924cf954e79d.usda",
+      "prim": "/D50_Rim_Wheel_NoCaps_84924cf954e79d",
+      "source": "res://Ego/Wheels/D50_Rim_Wheel_NoCaps.tres",
+      "twoSided": false
+    },
+    "D50_Rim_Wheel_c164d4862bd8c2": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/D50_Rim_Wheel_c164d4862bd8c2.usda",
+      "prim": "/D50_Rim_Wheel_c164d4862bd8c2",
+      "source": "res://Ego/Wheels/D50_Rim_Wheel.tres",
+      "twoSided": false
+    },
+    "Decor_5b6a18e4d23e46": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Decor_5b6a18e4d23e46.usda",
+      "prim": "/Decor_5b6a18e4d23e46",
+      "source": "res://Ego/Y_High/Wood_Walnut.material",
+      "twoSided": false
+    },
+    "E41_NoCaps_70177691aa8fa5": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/E41_NoCaps_70177691aa8fa5.usda",
+      "prim": "/E41_NoCaps_70177691aa8fa5",
+      "source": "res://Ego/Wheels_Bayberry/BayberryE41/E41_NoCaps.tres",
+      "twoSided": true
+    },
+    "Everest_Base_Wheel_18e75d1748b703": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Everest_Base_Wheel_18e75d1748b703.usda",
+      "prim": "/Everest_Base_Wheel_18e75d1748b703",
+      "source": "res://Ego/Cybertruck/Wheels/Everest_Base_Wheel.tres",
+      "twoSided": true
+    },
+    "Everest_Premium_Wheel_b6ce08bd2fa5b1": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Everest_Premium_Wheel_b6ce08bd2fa5b1.usda",
+      "prim": "/Everest_Premium_Wheel_b6ce08bd2fa5b1",
+      "source": "res://Ego/Cybertruck/Wheels/Everest_Premium_Wheel.tres",
+      "twoSided": true
+    },
+    "Everest_Wheel_Metal_5f043e0d7c541f": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Everest_Wheel_Metal_5f043e0d7c541f.usda",
+      "prim": "/Everest_Wheel_Metal_5f043e0d7c541f",
+      "source": "res://Ego/Cybertruck/Wheels/Everest_Wheel_Metal.tres",
+      "twoSided": true
+    },
+    "ExteriorFade_ec72ae41a2163e": {
+      "category": "trim",
+      "file": "../../ClassicHardware/New_Studio/ExteriorFade_ec72ae41a2163e.usda",
+      "prim": "/ExteriorFade_ec72ae41a2163e",
+      "source": "res://Ego/Y_High/Exterior_Fade.material",
+      "twoSided": false
+    },
+    "Exterior_daaba237c1bd4f": {
+      "category": "trim",
+      "file": "../../ClassicHardware/New_Studio/Exterior_daaba237c1bd4f.usda",
+      "prim": "/Exterior_daaba237c1bd4f",
+      "source": "res://Ego/Y_High/Exterior.material",
+      "twoSided": false
+    },
+    "Front_Screen_RHD_898c625df52faa": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Front_Screen_RHD_898c625df52faa.usda",
+      "prim": "/Front_Screen_RHD_898c625df52faa",
+      "source": "res://Ego/Y_High/Front_Screen_RHD.material",
+      "twoSided": true
+    },
+    "Front_Screen_de2a3c895470d9": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Front_Screen_de2a3c895470d9.usda",
+      "prim": "/Front_Screen_de2a3c895470d9",
+      "source": "res://Ego/Y_High/Front_Screen.material",
+      "twoSided": false
+    },
+    "GeminiDark_65e4f8cfe21fb0": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/GeminiDark_65e4f8cfe21fb0.usda",
+      "prim": "/GeminiDark_65e4f8cfe21fb0",
+      "source": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tres",
+      "twoSided": true
+    },
+    "GlassFadeSkybox_1cfd64356eeb90": {
+      "category": "glass",
+      "file": "../../ClassicGlazing/New_Studio/GlassFadeSkybox_1cfd64356eeb90.usda",
+      "prim": "/GlassFadeSkybox_1cfd64356eeb90",
+      "source": "res://Ego/Y_High/Glass_Fade_Skybox.material",
+      "twoSided": false
+    },
+    "GlassSkybox_084cbbd1ccdea3": {
+      "category": "glass",
+      "file": "../../ClassicGlazing/New_Studio/GlassSkybox_084cbbd1ccdea3.usda",
+      "prim": "/GlassSkybox_084cbbd1ccdea3",
+      "source": "res://Ego/Y_High/Glass_Skybox.material",
+      "twoSided": false
+    },
+    "GlassTintedFadeSkybox_33a8c91be01acd": {
+      "category": "glass",
+      "file": "../../ClassicGlazing/New_Studio/GlassTintedFadeSkybox_33a8c91be01acd.usda",
+      "prim": "/GlassTintedFadeSkybox_33a8c91be01acd",
+      "source": "res://Ego/Y_High/Glass_Tinted_Fade_Skybox.material",
+      "twoSided": false
+    },
+    "GlassTintedSkybox_8a0a7ae7a93795": {
+      "category": "glass",
+      "file": "../../ClassicGlazing/New_Studio/GlassTintedSkybox_8a0a7ae7a93795.usda",
+      "prim": "/GlassTintedSkybox_8a0a7ae7a93795",
+      "source": "res://Ego/Y_High/Glass_Tinted_Skybox.material",
+      "twoSided": false
+    },
+    "Glass_Interior_Fade_91d8dbda016a7a": {
+      "category": "glass",
+      "file": "../../ClassicGlazing/New_Studio/Glass_Interior_Fade_91d8dbda016a7a.usda",
+      "prim": "/Glass_Interior_Fade_91d8dbda016a7a",
+      "source": "res://Ego/Y_High/Glass_Interior_Fade.material",
+      "twoSided": false
+    },
+    "Glass_Interior_Tinted_Fade_5eef6cb0de3d44": {
+      "category": "glass",
+      "file": "../../ClassicGlazing/New_Studio/Glass_Interior_Tinted_Fade_5eef6cb0de3d44.usda",
+      "prim": "/Glass_Interior_Tinted_Fade_5eef6cb0de3d44",
+      "source": "res://Ego/Y_High/Glass_Interior_Tinted_Fade.material",
+      "twoSided": false
+    },
+    "Glass_Interior_Tinted_deb68df12196d9": {
+      "category": "glass",
+      "file": "../../ClassicGlazing/New_Studio/Glass_Interior_Tinted_deb68df12196d9.usda",
+      "prim": "/Glass_Interior_Tinted_deb68df12196d9",
+      "source": "res://Ego/Y_High/Glass_Interior_Tinted.material",
+      "twoSided": false
+    },
+    "Glass_Interior_f3ec5a2b7bbbc7": {
+      "category": "glass",
+      "file": "../../ClassicGlazing/New_Studio/Glass_Interior_f3ec5a2b7bbbc7.usda",
+      "prim": "/Glass_Interior_f3ec5a2b7bbbc7",
+      "source": "res://Ego/Y_High/Glass_Interior.material",
+      "twoSided": false
+    },
+    "Glass_Lights_ba099a5a8e5f9d": {
+      "category": "glass",
+      "file": "../../ClassicGlazing/New_Studio/Glass_Lights_ba099a5a8e5f9d.usda",
+      "prim": "/Glass_Lights_ba099a5a8e5f9d",
+      "source": "res://Ego/Y_High/Glass_Lights.material",
+      "twoSided": false
+    },
+    "Glider_c64a70f307aee4": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Glider_c64a70f307aee4.usda",
+      "prim": "/Glider_c64a70f307aee4",
+      "source": "res://Ego/v2023/Wheels/Glider.material",
+      "twoSided": false
+    },
+    "Grille_32b87e4a57ad5c": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Grille_32b87e4a57ad5c.usda",
+      "prim": "/Grille_32b87e4a57ad5c",
+      "source": "res://Ego/Y_High/Grille.material",
+      "twoSided": false
+    },
+    "Grille_Old_Parts_68a4125a84b74e": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Grille_Old_Parts_68a4125a84b74e.usda",
+      "prim": "/Grille_Old_Parts_68a4125a84b74e",
+      "source": "res://Ego/Y_High/Grille_Old_Parts.material",
+      "twoSided": true
+    },
+    "Halo_Cap_64f364fc2d0fa8": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Halo_Cap_64f364fc2d0fa8.usda",
+      "prim": "/Halo_Cap_64f364fc2d0fa8",
+      "source": "res://Ego/Wheels_P3/Halo_Cap.tres",
+      "twoSided": true
+    },
+    "Halo_b8da9b02920dd2": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Halo_b8da9b02920dd2.usda",
+      "prim": "/Halo_b8da9b02920dd2",
+      "source": "res://Ego/Wheels_P3/Halo.tres",
+      "twoSided": false
+    },
+    "Helix2_Dark_ffa188d62bfedc": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Helix2_Dark_ffa188d62bfedc.usda",
+      "prim": "/Helix2_Dark_ffa188d62bfedc",
+      "source": "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tres",
+      "twoSided": true
+    },
+    "Helix2_b6395f3dd7ed98": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Helix2_b6395f3dd7ed98.usda",
+      "prim": "/Helix2_b6395f3dd7ed98",
+      "source": "res://Ego/Wheels_Bayberry/Helix2/Helix2.tres",
+      "twoSided": true
+    },
+    "Helix_2c56f7b2a9bcea": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Helix_2c56f7b2a9bcea.usda",
+      "prim": "/Helix_2c56f7b2a9bcea",
+      "source": "res://Ego/v2023/Wheels/Helix.material",
+      "twoSided": false
+    },
+    "Helix_Wheel_7001b0f2146124": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Helix_Wheel_7001b0f2146124.usda",
+      "prim": "/Helix_Wheel_7001b0f2146124",
+      "source": "res://Ego/Wheels_X_S/Helix_Silver_Wheel.material",
+      "twoSided": false
+    },
+    "InteriorSeats_d540dd9f60a59a": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/InteriorSeats_d540dd9f60a59a.usda",
+      "prim": "/InteriorSeats_d540dd9f60a59a",
+      "source": "res://Ego/Y_High/Interior_Seats_Black.material",
+      "twoSided": false
+    },
+    "Leather_1e4d4df73a0b69": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Leather_1e4d4df73a0b69.usda",
+      "prim": "/Leather_1e4d4df73a0b69",
+      "source": "res://Ego/Y_High/Leather.material",
+      "twoSided": false
+    },
+    "Leather_Old_Parts_6c8b9e4bda40e6": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Leather_Old_Parts_6c8b9e4bda40e6.usda",
+      "prim": "/Leather_Old_Parts_6c8b9e4bda40e6",
+      "source": "res://Ego/Y_High/Leather_Old_Parts.material",
+      "twoSided": true
+    },
+    "MachinaV2_19_caps_d10dab551b0745": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/MachinaV2_19_caps_d10dab551b0745.usda",
+      "prim": "/MachinaV2_19_caps_d10dab551b0745",
+      "source": "res://Ego/Wheels_Bayberry/Machina2/MachinaV2_19_caps.tres",
+      "twoSided": true
+    },
+    "Machina_NoCaps_4ef78d9e853b0a": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Machina_NoCaps_4ef78d9e853b0a.usda",
+      "prim": "/Machina_NoCaps_4ef78d9e853b0a",
+      "source": "res://Ego/Wheels_Bayberry/Machina2/Machina_NoCaps.tres",
+      "twoSided": true
+    },
+    "MirrorFade_2439e05a2ffb58": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/MirrorFade_2439e05a2ffb58.usda",
+      "prim": "/MirrorFade_2439e05a2ffb58",
+      "source": "res://Ego/Y_High/Mirror_Fade.material",
+      "twoSided": false
+    },
+    "PaintFade_4750167e6e7575": {
+      "category": "paint",
+      "file": "../../Classic/Paint/PaintFade_4750167e6e7575_a15bdb745dd0.usda",
+      "paint": true,
+      "prim": "/PaintFade_4750167e6e7575",
+      "source": "res://Ego/Y_High/Paint_Fade.material",
+      "twoSided": false
+    },
+    "PaintRough_7e3c2276e2f4d1": {
+      "category": "paint",
+      "file": "../../Classic/Paint/PaintRough_7e3c2276e2f4d1_1ac419bbff72.usda",
+      "fixedRoughness": 1.0,
+      "paint": true,
+      "prim": "/PaintRough_7e3c2276e2f4d1",
+      "source": "res://Ego/Y_High/Paint_Rough.material",
+      "twoSided": false
+    },
+    "PaintSkybox_3fffe99eb91e80": {
+      "category": "paint",
+      "file": "../../Classic/Paint/PaintSkybox_3fffe99eb91e80_80b14d75a000.usda",
+      "paint": true,
+      "prim": "/PaintSkybox_3fffe99eb91e80",
+      "source": "res://Ego/Y_High/PaintSkybox.material",
+      "twoSided": false
+    },
+    "Pinwheel_Refresh_0bb68bf5f182b2": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Pinwheel_Refresh_0bb68bf5f182b2.usda",
+      "prim": "/Pinwheel_Refresh_0bb68bf5f182b2",
+      "source": "res://Ego/Wheels/Pinwheel_Refresh_Wheel.material",
+      "twoSided": false
+    },
+    "PlasticBlackFade_08a024bcf98013": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/PlasticBlackFade_08a024bcf98013.usda",
+      "prim": "/PlasticBlackFade_08a024bcf98013",
+      "source": "res://Ego/Y_High/Plastic_Black_Fade.material",
+      "twoSided": false
+    },
+    "Plastic_Black_4403a1044e39b7": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Plastic_Black_4403a1044e39b7.usda",
+      "prim": "/Plastic_Black_4403a1044e39b7",
+      "source": "res://Ego/Y_High/Plastic_Black.material",
+      "twoSided": false
+    },
+    "Plastic_Black_Old_Parts_182b120c666b61": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Plastic_Black_Old_Parts_182b120c666b61.usda",
+      "prim": "/Plastic_Black_Old_Parts_182b120c666b61",
+      "source": "res://Ego/Y_High/Plastic_Black_Old_Parts.material",
+      "twoSided": true
+    },
+    "Plastic_Black_Seats_daf34f27fd5383": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Plastic_Black_Seats_daf34f27fd5383.usda",
+      "prim": "/Plastic_Black_Seats_daf34f27fd5383",
+      "source": "res://Ego/Y_High/Plastic_Black_Seats.material",
+      "twoSided": false
+    },
+    "Plastic_Grey_90798b233c774e": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Plastic_Grey_90798b233c774e.usda",
+      "prim": "/Plastic_Grey_90798b233c774e",
+      "source": "res://Ego/Y_High/Plastic_Grey.material",
+      "twoSided": false
+    },
+    "Plastic_Red_a0c1cff65267cd": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Plastic_Red_a0c1cff65267cd.usda",
+      "prim": "/Plastic_Red_a0c1cff65267cd",
+      "source": "res://Ego/Y_High/Plastic_Red.material",
+      "twoSided": false
+    },
+    "Plastic_White_39d33f8199f24f": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Plastic_White_39d33f8199f24f.usda",
+      "prim": "/Plastic_White_39d33f8199f24f",
+      "source": "res://Ego/Y_High/Plastic_White.material",
+      "twoSided": false
+    },
+    "Plastic_White_Fade_011f987556cd4b": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Plastic_White_Fade_011f987556cd4b.usda",
+      "prim": "/Plastic_White_Fade_011f987556cd4b",
+      "source": "res://Ego/Y_High/Suede_Light_Fade.material",
+      "twoSided": false
+    },
+    "Premium_Wheel_269993efe7258a": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Premium_Wheel_269993efe7258a.usda",
+      "prim": "/Premium_Wheel_269993efe7258a",
+      "source": "res://Ego/Cybertruck/Wheels/Premium_Wheel.material",
+      "twoSided": false
+    },
+    "Premium_Wheel_bab460767127cf": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Premium_Wheel_bab460767127cf.usda",
+      "prim": "/Premium_Wheel_bab460767127cf",
+      "source": "res://Ego/Cybertruck/Wheels/Premium_Wheel.tres",
+      "twoSided": false
+    },
+    "Riptide_518e57bb07a43d": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Riptide_518e57bb07a43d.usda",
+      "prim": "/Riptide_518e57bb07a43d",
+      "source": "res://Ego/Wheels_P3/Riptide.tres",
+      "twoSided": false
+    },
+    "Riptide_Caps_036dfcbfa7a12b": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Riptide_Caps_036dfcbfa7a12b.usda",
+      "prim": "/Riptide_Caps_036dfcbfa7a12b",
+      "source": "res://Ego/Wheels_P3/Riptide_Caps.tres",
+      "twoSided": true
+    },
+    "Rubber_c934b491b6c3d1": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Rubber_c934b491b6c3d1.usda",
+      "prim": "/Rubber_c934b491b6c3d1",
+      "source": "res://Ego/Y_High/Rubber.material",
+      "twoSided": false
+    },
+    "Seatbelts_3ae309a8c737e3": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Seatbelts_3ae309a8c737e3.usda",
+      "prim": "/Seatbelts_3ae309a8c737e3",
+      "source": "res://Ego/Y_High/Seatbelts.material",
+      "twoSided": false
+    },
+    "Seatbelts_Seats_75fbfc99eac57b": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Seatbelts_Seats_75fbfc99eac57b.usda",
+      "prim": "/Seatbelts_Seats_75fbfc99eac57b",
+      "source": "res://Ego/Y_High/Seatbelts_Seats.material",
+      "twoSided": false
+    },
+    "Semi_Front_Wheel_2111ad583af0f9": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Semi_Front_Wheel_2111ad583af0f9.usda",
+      "prim": "/Semi_Front_Wheel_2111ad583af0f9",
+      "source": "res://Ego/Wheels_Semi/Semi_Front_Wheel.material",
+      "twoSided": false
+    },
+    "Slipstream_Silver_Wheel_19e21a60701fd1": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Slipstream_Silver_Wheel_19e21a60701fd1.usda",
+      "prim": "/Slipstream_Silver_Wheel_19e21a60701fd1",
+      "source": "res://Ego/Wheels_X_S/Slipstream_Silver_Wheel.material",
+      "twoSided": false
+    },
+    "Slipstream_Sonic_Carbon_Wheel_a9d8a1a3ecdb2a": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Slipstream_Sonic_Carbon_Wheel_a9d8a1a3ecdb2a.usda",
+      "prim": "/Slipstream_Sonic_Carbon_Wheel_a9d8a1a3ecdb2a",
+      "source": "res://Ego/Wheels_X_S/Slipstream_Sonic_Carbon_Wheel.material",
+      "twoSided": false
+    },
+    "Slipstream_Two_Tone_Wheel_1b2ad903a0bef4": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Slipstream_Two_Tone_Wheel_1b2ad903a0bef4.usda",
+      "prim": "/Slipstream_Two_Tone_Wheel_1b2ad903a0bef4",
+      "source": "res://Ego/Wheels_X_S/Slipstream_Two_Tone_Wheel.material",
+      "twoSided": false
+    },
+    "Spoiler_93612ddc28c6cd": {
+      "category": "trim",
+      "file": "../../ClassicHardware/New_Studio/Spoiler_93612ddc28c6cd.usda",
+      "prim": "/Spoiler_93612ddc28c6cd",
+      "source": "res://Ego/Y_High/Spoiler.material",
+      "twoSided": false
+    },
+    "Standard_883f616a21d997": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Standard_883f616a21d997.usda",
+      "prim": "/Standard_883f616a21d997",
+      "source": "res://Ego/Wheels_P3/Standard.tres",
+      "twoSided": false
+    },
+    "Standard_NoCaps_8e74fac63e63eb": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Standard_NoCaps_8e74fac63e63eb.usda",
+      "prim": "/Standard_NoCaps_8e74fac63e63eb",
+      "source": "res://Ego/Wheels_P3/Standard_NoCaps.tres",
+      "twoSided": false
+    },
+    "Standard_Wheel_e3c3b2a1cd77f0": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Standard_Wheel_e3c3b2a1cd77f0.usda",
+      "prim": "/Standard_Wheel_e3c3b2a1cd77f0",
+      "source": "res://Ego/Cybertruck/Wheels/Standard_Wheel.tres",
+      "twoSided": false
+    },
+    "Standard_Wheel_f2e5f16fbf3e6f": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Standard_Wheel_f2e5f16fbf3e6f.usda",
+      "prim": "/Standard_Wheel_f2e5f16fbf3e6f",
+      "source": "res://Ego/Cybertruck/Wheels/Standard_Wheel.material",
+      "twoSided": false
+    },
+    "Stiletto_Refresh_Wheel_c63f9916a6195c": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Stiletto_Refresh_Wheel_c63f9916a6195c.usda",
+      "prim": "/Stiletto_Refresh_Wheel_c63f9916a6195c",
+      "source": "res://Ego/Wheels/Stiletto_Refresh_Wheel.material",
+      "twoSided": false
+    },
+    "Suede_Old_Parts_864656c31d6449": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Suede_Old_Parts_864656c31d6449.usda",
+      "prim": "/Suede_Old_Parts_864656c31d6449",
+      "source": "res://Ego/Y_High/Suede_Old_Parts.material",
+      "twoSided": true
+    },
+    "Suede_d6db6c664bdd1a": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Suede_d6db6c664bdd1a.usda",
+      "prim": "/Suede_d6db6c664bdd1a",
+      "source": "res://Ego/Y_High/Suede.material",
+      "twoSided": false
+    },
+    "Tempest_783fe08ab48b06": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Tempest_783fe08ab48b06.usda",
+      "prim": "/Tempest_783fe08ab48b06",
+      "source": "res://Ego/Wheels_Palladium/Cardenio.material",
+      "twoSided": false
+    },
+    "Tempest_Sonic_Silver_53ed3d93248f57": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Tempest_Sonic_Silver_53ed3d93248f57.usda",
+      "prim": "/Tempest_Sonic_Silver_53ed3d93248f57",
+      "source": "res://Ego/Wheels_X_S/Tempest_Sonic_Silver_Wheel.material",
+      "twoSided": false
+    },
+    "Turbine_7272f83eb1345a": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Turbine_7272f83eb1345a.usda",
+      "prim": "/Turbine_7272f83eb1345a",
+      "source": "res://Ego/Wheels_Palladium/New_Turbine_22.material",
+      "twoSided": false
+    },
+    "Turbine_Onyx_Black_Wheel_41490250473620": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Turbine_Onyx_Black_Wheel_41490250473620.usda",
+      "prim": "/Turbine_Onyx_Black_Wheel_41490250473620",
+      "source": "res://Ego/Wheels_X_S/Turbine_Onyx_Black_Wheel.material",
+      "twoSided": false
+    },
+    "Turbine_Silver_Wheel_7344ced1783cb6": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Turbine_Silver_Wheel_7344ced1783cb6.usda",
+      "prim": "/Turbine_Silver_Wheel_7344ced1783cb6",
+      "source": "res://Ego/Wheels_X_S/Turbine_Silver_Wheel.material",
+      "twoSided": false
+    },
+    "Twin_Turbine_Silver_Wheel_7ac5d84c14f67d": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Twin_Turbine_Silver_Wheel_7ac5d84c14f67d.usda",
+      "prim": "/Twin_Turbine_Silver_Wheel_7ac5d84c14f67d",
+      "source": "res://Ego/Wheels_X_S/Twin_Turbine_Silver_Wheel.material",
+      "twoSided": false
+    },
+    "Twin_Turbine_Sonic_Carbon_Wheel_2d8bfe561f5508": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Twin_Turbine_Sonic_Carbon_Wheel_2d8bfe561f5508.usda",
+      "prim": "/Twin_Turbine_Sonic_Carbon_Wheel_2d8bfe561f5508",
+      "source": "res://Ego/Wheels_X_S/Twin_Turbine_Sonic_Carbon_Wheel.material",
+      "twoSided": false
+    },
+    "Uberhelix_Cap_b206242933e367": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Uberhelix_Cap_b206242933e367.usda",
+      "prim": "/Uberhelix_Cap_b206242933e367",
+      "source": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_Cap.tres",
+      "twoSided": true
+    },
+    "Uberhelix_c8434e0b305a4c": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Uberhelix_c8434e0b305a4c.usda",
+      "prim": "/Uberhelix_c8434e0b305a4c",
+      "source": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tres",
+      "twoSided": true
+    },
+    "Wheel1_98e50d9b7d0d57": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheel1_98e50d9b7d0d57.usda",
+      "prim": "/Wheel1_98e50d9b7d0d57",
+      "source": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tres",
+      "twoSided": false
+    },
+    "Wheel_5b6cc859e1f8d7": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheel_5b6cc859e1f8d7.usda",
+      "prim": "/Wheel_5b6cc859e1f8d7",
+      "source": "res://Ego/Wheels_P3/Cypress_NoInsert.tres",
+      "twoSided": true
+    },
+    "Wheel_81afb83c30052e": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheel_81afb83c30052e.usda",
+      "prim": "/Wheel_81afb83c30052e",
+      "source": "res://Ego/Cybertruck/Wheels/Wheel.tres",
+      "twoSided": false
+    },
+    "Wheel_Arachnid_Armor_Black_eb0665a5723e43": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheel_Arachnid_Armor_Black_eb0665a5723e43.usda",
+      "prim": "/Wheel_Arachnid_Armor_Black_eb0665a5723e43",
+      "source": "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn::SubResource(1)",
+      "twoSided": false
+    },
+    "Wheel_Arachnid_Silver_fa9d8fcaf07dc3": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheel_Arachnid_Silver_fa9d8fcaf07dc3.usda",
+      "prim": "/Wheel_Arachnid_Silver_fa9d8fcaf07dc3",
+      "source": "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn::SubResource(1)",
+      "twoSided": false
+    },
+    "Wheels_0f9fe19f2f83ef": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheels_0f9fe19f2f83ef.usda",
+      "prim": "/Wheels_0f9fe19f2f83ef",
+      "source": "res://Ego/Wheels/Pinwheel_Wheel.material",
+      "twoSided": false
+    },
+    "Wheels_1ebda30f32b0ae": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheels_1ebda30f32b0ae.usda",
+      "prim": "/Wheels_1ebda30f32b0ae",
+      "source": "res://Ego/Wheels/Stiletto_Dark_Wheel.material",
+      "twoSided": false
+    },
+    "Wheels_41ab49fa173e2d": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheels_41ab49fa173e2d.usda",
+      "prim": "/Wheels_41ab49fa173e2d",
+      "source": "res://Ego/Wheels/Stiletto_Silver_Wheel.material",
+      "twoSided": false
+    },
+    "Wheels_7d8536854efbcf": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheels_7d8536854efbcf.usda",
+      "prim": "/Wheels_7d8536854efbcf",
+      "source": "res://Ego/Wheels/Uberturbine_Wheel.material",
+      "twoSided": false
+    },
+    "Wheels_7d98ec0ecd8fd6": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheels_7d98ec0ecd8fd6.usda",
+      "prim": "/Wheels_7d98ec0ecd8fd6",
+      "source": "res://Ego/Wheels/Apollo_Wheel.material",
+      "twoSided": false
+    },
+    "Wheels_add726c360440c": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheels_add726c360440c.usda",
+      "prim": "/Wheels_add726c360440c",
+      "source": "res://Ego/Wheels/ZeroG_Wheel.material",
+      "twoSided": false
+    },
+    "Wheels_b55c296067d876": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheels_b55c296067d876.usda",
+      "prim": "/Wheels_b55c296067d876",
+      "source": "res://Ego/Wheels/Gemini_Wheel.material",
+      "twoSided": false
+    },
+    "Wheels_bef32c55d141e6": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheels_bef32c55d141e6.usda",
+      "prim": "/Wheels_bef32c55d141e6",
+      "source": "res://Ego/Wheels/Stiletto_Armor_Black_Wheel.material",
+      "twoSided": false
+    },
+    "Wheels_ccb38313b7542a": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheels_ccb38313b7542a.usda",
+      "prim": "/Wheels_ccb38313b7542a",
+      "source": "res://Ego/Wheels/Pinwheel_No_Cap_Wheel.material",
+      "twoSided": false
+    },
+    "Wheels_f312cab5ee6e7c": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wheels_f312cab5ee6e7c.usda",
+      "prim": "/Wheels_f312cab5ee6e7c",
+      "source": "res://Ego/Wheels/Induction_Wheel.material",
+      "twoSided": false
+    },
+    "Wishbone_20_09e62671700a69": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wishbone_20_09e62671700a69.usda",
+      "prim": "/Wishbone_20_09e62671700a69",
+      "source": "res://Ego/v2023/Wheels/Wishbone_20.material",
+      "twoSided": false
+    },
+    "Wishbone_9470a2686a8148": {
+      "category": "wheel",
+      "file": "../../ClassicHardware/New_Studio/Wishbone_9470a2686a8148.usda",
+      "prim": "/Wishbone_9470a2686a8148",
+      "source": "res://Ego/v2023/Wheels/Wishbone.material",
+      "twoSided": false
+    },
+    "Zero_Black_ab165ba9ce3d25": {
+      "category": "cabin",
+      "file": "../../Classic/Cabin/New_Studio/Zero_Black_ab165ba9ce3d25.usda",
+      "prim": "/Zero_Black_ab165ba9ce3d25",
+      "source": "res://Ego/Y_High/Zero_Black.material",
+      "twoSided": false
+    }
+  },
+  "version": 1
+}

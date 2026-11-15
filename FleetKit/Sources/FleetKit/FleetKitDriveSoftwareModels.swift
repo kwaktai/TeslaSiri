@@ -1,5 +1,35 @@
 import Foundation
 
+public struct FleetDriveRoutePoint: Codable, Equatable, Sendable {
+    public let latitude: Double
+    public let longitude: Double
+    public let speedMPH: Double?
+    public let heading: Double?
+    public let autopilotState: String?
+    public let timestampMS: Int64?
+
+    public var isAutopilotActive: Bool {
+        guard let state = autopilotState?.lowercased(), !state.isEmpty else { return false }
+        return state != "off" && state != "none" && state != "standby"
+    }
+
+    public init(
+        latitude: Double,
+        longitude: Double,
+        speedMPH: Double? = nil,
+        heading: Double? = nil,
+        autopilotState: String? = nil,
+        timestampMS: Int64? = nil
+    ) {
+        self.latitude = latitude
+        self.longitude = longitude
+        self.speedMPH = speedMPH
+        self.heading = heading
+        self.autopilotState = autopilotState
+        self.timestampMS = timestampMS
+    }
+}
+
 public struct FleetDriveInfo: Decodable, Sendable, Identifiable {
     public let sessionID: String
     public let vin: String
@@ -12,10 +42,33 @@ public struct FleetDriveInfo: Decodable, Sendable, Identifiable {
     public let endedAt: Int64?
     public let startAddress: String?
     public let endAddress: String?
+    public let startLatitude: Double?
+    public let startLongitude: Double?
+    public let endLatitude: Double?
+    public let endLongitude: Double?
+    public let startingBatteryPercent: Int?
+    public let endingBatteryPercent: Int?
+    public let ratedRangeUsedMiles: Double?
+    public let autopilotDistanceMiles: Double?
+    public let insideTempF: Double?
+    public let outsideTempF: Double?
+    public let tag: String?
 
     public var id: String { sessionID }
     public var startedAtDate: Date { Date(timeIntervalSince1970: TimeInterval(startedAt) / 1000) }
     public var endedAtDate: Date? { endedAt.map { Date(timeIntervalSince1970: TimeInterval($0) / 1000) } }
+
+    public var batteryUsedPercent: Int? {
+        guard let start = startingBatteryPercent, let end = endingBatteryPercent else { return nil }
+        return start - end
+    }
+
+    public var efficiencyWhPerMile: Double? {
+        guard let miles = distanceMiles, miles > 0.05, let energy = energyUsedKWH, energy >= 0 else {
+            return nil
+        }
+        return (energy * 1000.0) / miles
+    }
 
     enum CodingKeys: String, CodingKey {
         case sessionID = "session_id"
@@ -29,6 +82,17 @@ public struct FleetDriveInfo: Decodable, Sendable, Identifiable {
         case endedAt = "ended_at"
         case startAddress = "start_address"
         case endAddress = "end_address"
+        case startLatitude = "starting_latitude"
+        case startLongitude = "starting_longitude"
+        case endLatitude = "ending_latitude"
+        case endLongitude = "ending_longitude"
+        case startingBatteryPercent = "starting_battery"
+        case endingBatteryPercent = "ending_battery"
+        case ratedRangeUsedMiles = "rated_range_used"
+        case autopilotDistanceMiles = "autopilot_distance"
+        case insideTempF = "average_inside_temperature"
+        case outsideTempF = "average_outside_temperature"
+        case tag
     }
 
     init(
@@ -42,7 +106,18 @@ public struct FleetDriveInfo: Decodable, Sendable, Identifiable {
         startedAt: Int64,
         endedAt: Int64?,
         startAddress: String?,
-        endAddress: String?
+        endAddress: String?,
+        startLatitude: Double? = nil,
+        startLongitude: Double? = nil,
+        endLatitude: Double? = nil,
+        endLongitude: Double? = nil,
+        startingBatteryPercent: Int? = nil,
+        endingBatteryPercent: Int? = nil,
+        ratedRangeUsedMiles: Double? = nil,
+        autopilotDistanceMiles: Double? = nil,
+        insideTempF: Double? = nil,
+        outsideTempF: Double? = nil,
+        tag: String? = nil
     ) {
         self.sessionID = sessionID
         self.vin = vin
@@ -55,6 +130,17 @@ public struct FleetDriveInfo: Decodable, Sendable, Identifiable {
         self.endedAt = endedAt
         self.startAddress = startAddress
         self.endAddress = endAddress
+        self.startLatitude = startLatitude
+        self.startLongitude = startLongitude
+        self.endLatitude = endLatitude
+        self.endLongitude = endLongitude
+        self.startingBatteryPercent = startingBatteryPercent
+        self.endingBatteryPercent = endingBatteryPercent
+        self.ratedRangeUsedMiles = ratedRangeUsedMiles
+        self.autopilotDistanceMiles = autopilotDistanceMiles
+        self.insideTempF = insideTempF
+        self.outsideTempF = outsideTempF
+        self.tag = tag
     }
 
     public init(from decoder: Decoder) throws {
@@ -70,6 +156,17 @@ public struct FleetDriveInfo: Decodable, Sendable, Identifiable {
         endedAt = c.flexibleInt64(.endedAt)
         startAddress = try c.decodeIfPresent(String.self, forKey: .startAddress)
         endAddress = try c.decodeIfPresent(String.self, forKey: .endAddress)
+        startLatitude = c.flexibleDouble(.startLatitude)
+        startLongitude = c.flexibleDouble(.startLongitude)
+        endLatitude = c.flexibleDouble(.endLatitude)
+        endLongitude = c.flexibleDouble(.endLongitude)
+        startingBatteryPercent = c.flexibleInt64(.startingBatteryPercent).map(Int.init)
+        endingBatteryPercent = c.flexibleInt64(.endingBatteryPercent).map(Int.init)
+        ratedRangeUsedMiles = c.flexibleDouble(.ratedRangeUsedMiles)
+        autopilotDistanceMiles = c.flexibleDouble(.autopilotDistanceMiles)
+        insideTempF = c.flexibleDouble(.insideTempF)
+        outsideTempF = c.flexibleDouble(.outsideTempF)
+        tag = try c.decodeIfPresent(String.self, forKey: .tag)
     }
 }
 
@@ -89,6 +186,18 @@ public struct FleetReleaseNoteInfo: Decodable, Sendable, Identifiable {
         case subtitle
         case details = "description"
         case customerVersion = "customer_version"
+    }
+
+    public init(
+        title: String,
+        subtitle: String? = nil,
+        details: String? = nil,
+        customerVersion: String? = nil
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.details = details
+        self.customerVersion = customerVersion
     }
 
     public init(from decoder: Decoder) throws {

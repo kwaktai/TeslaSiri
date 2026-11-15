@@ -26,5 +26,11 @@ public enum FleetKitConfig {
     /// Key under which the app stores the currently selected VIN.
     public static let selectedVINDefaultsKey = "fleet.selectedVIN"
 
+    /// Shared sandbox / demo mode keys read by both the app and App Intents extension.
+    public static let sandboxModeDefaultsKey = "fleet.sandbox.mode"
+    public static let sandboxPresetDefaultsKey = "fleet.sandbox.preset"
+    public static let sandboxDemoStateDefaultsKey = "fleet.sandbox.demoState"
+    public static let sandboxCommandLogDefaultsKey = "fleet.sandbox.commandLog"
+
     public static let requestTimeout: TimeInterval = 30
 }

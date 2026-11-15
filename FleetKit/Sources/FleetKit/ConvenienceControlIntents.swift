@@ -3,21 +3,20 @@ import Foundation
 
 // Convenience controls from the Fleet controls registry: `flash_lights`,
 // `honk_horn`, and `navigation_request`. All run immediately.
-//
-// `window_control` close is intentionally not exposed: the backend requires
-// the caller's lat/lon to prove proximity, and the intents extension has no
-// location access.
 
+@AppIntent(.tool)
 public struct FlashLightsIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Flash Tesla Lights"
-    public static let description = IntentDescription("Flash the headlights. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Briefly flashes the exterior headlights on a Tesla vehicle to help locate it in a parking lot or garage. Omit the vehicle parameter to target the user's selected car."
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The Tesla vehicle from the user's fleet account whose headlights should flash. Optional; omit to use the user's currently selected vehicle.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
@@ -38,30 +37,35 @@ public struct FlashLightsIntent: AppIntent, PredictableIntent {
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             try await service.runControl(action: "flash_lights", vin: resolved.vin, humanName: "flashing the lights")
+            let summary = "Flashing \(resolved.name)'s lights."
+            let result = VehicleCommandResultEntity(vehicle: resolved, action: "flash_lights", summary: summary)
             log.success("flashed lights on \(resolved.name)")
-            return .result(dialog: IntentDialog("Flashing \(resolved.name)'s lights."))
+            return .result(value: result, dialog: IntentDialog("\(summary)"))
         } catch {
             throw log.failure(error)
         }
     }
 }
 
+@AppIntent(.tool)
 public struct HonkHornIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Honk Tesla Horn"
-    public static let description = IntentDescription("Honk the horn. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Briefly honks the horn on a Tesla vehicle to help locate it audibly. Omit the vehicle parameter to target the user's selected car."
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The Tesla vehicle from the user's fleet account whose horn should honk. Optional; omit to use the user's currently selected vehicle.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
@@ -82,37 +86,43 @@ public struct HonkHornIntent: AppIntent, PredictableIntent {
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             try await service.runControl(action: "honk_horn", vin: resolved.vin, humanName: "honking the horn")
+            let summary = "Honking \(resolved.name)'s horn."
+            let result = VehicleCommandResultEntity(vehicle: resolved, action: "honk_horn", summary: summary)
             log.success("honked horn on \(resolved.name)")
-            return .result(dialog: IntentDialog("Honking \(resolved.name)'s horn."))
+            return .result(value: result, dialog: IntentDialog("\(summary)"))
         } catch {
             throw log.failure(error)
         }
     }
 }
 
+@AppIntent(.tool)
 public struct SendNavigationIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Send Destination to Tesla"
-    public static let description = IntentDescription("Send an address or place to the car's navigation. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Shares a destination to the user's Tesla so its built-in touchscreen navigation has the route ready when they get in the car. Accepts a street address, a place or business name with its city, a map link, or latitude and longitude. Doesn't open Maps or start navigation on this device.",
+        searchKeywords: ["navigate", "directions", "send address", "route", "take me to", "drive to"]
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The Tesla vehicle from the user's fleet account that should receive the navigation destination. Optional; omit to use the user's currently selected vehicle.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
     @Parameter(
         title: "Destination",
-        description: "An address or place name to send to the car's navigation.",
+        description: "Where to go, as specific as possible: a full street address, a place name with its city such as \"Blue Bottle Coffee, Oakland\", a map link, or \"37.7749,-122.4194\".",
         requestValueDialog: IntentDialog("Where to?"),
         inputConnectionBehavior: .connectToPreviousIntentResult
     )
@@ -134,7 +144,7 @@ public struct SendNavigationIntent: AppIntent, PredictableIntent {
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
             let service = FleetIntentService.make()
@@ -143,16 +153,24 @@ public struct SendNavigationIntent: AppIntent, PredictableIntent {
             guard !trimmed.isEmpty else {
                 throw FleetKitError.api("Tell me where to send \(resolved.name).")
             }
-            // Tessie's share command accepts an address, coordinates, or URL as
-            // a plain value and applies its default locale server-side.
+            // Tessie's share command accepts an address, coordinates, or URL as a
+            // plain value. The locale (e.g. "en-US") helps it resolve addresses.
+            let locale = Locale.current.identifier(.bcp47)
             try await service.runControl(
                 action: "navigation_request",
                 vin: resolved.vin,
-                params: ["value": .string(trimmed)],
+                params: ["value": .string(trimmed), "locale": .string(locale)],
                 humanName: "sending the destination"
             )
+            let summary = "Sent \(trimmed) to \(resolved.name)."
+            let result = VehicleCommandResultEntity(
+                vehicle: resolved,
+                action: "navigation_request",
+                appliedValue: trimmed,
+                summary: summary
+            )
             log.success("sent destination to \(resolved.name)")
-            return .result(dialog: IntentDialog("Sent \(trimmed) to \(resolved.name)."))
+            return .result(value: result, dialog: IntentDialog("\(summary)"))
         } catch {
             throw log.failure(error)
         }

@@ -1,0 +1,195 @@
+#usda 1.0
+(
+    defaultPrim = "Vehicle"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Vehicle" (
+    prepend references = @./Vehicle.usdz@</Vehicle>
+)
+{
+    over "Body"
+    {
+        over "Hood_Spatial"
+        {
+            over "Tesla_Badge"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Trunk_Spatial"
+        {
+            over "Back_Left_Turn_Signal_On"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Back_Right_Turn_Signal_On"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Brake_Lights_On"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Parking_Light_Projection"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Parking_Lights_On"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Defrost_Rear"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Door_LF_Spatial"
+        {
+            over "Doorcard_LF_RHD"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Skullcap_LF_Paint"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Skullcap_LF_SierraBlack"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Door_RF_Spatial"
+        {
+            over "Doorcard_RF_RHD"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Skullcap_RF_Paint"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Skullcap_RF_SierraBlack"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Left_Turn_Signal_On"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headlights_On"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Reverse_Light_On"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Right_Turn_Signal_On"
+        {
+            token visibility = "inherited"
+        }
+
+        over "BrakeLightProjection"
+        {
+            token visibility = "inherited"
+        }
+
+        over "HeadLightProjection"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Plate_EU"
+        {
+            token visibility = "inherited"
+        }
+
+        over "DRL"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headlights_Beam"
+        {
+            token visibility = "inherited"
+
+            over "LeftGlow"
+            {
+                token visibility = "inherited"
+            }
+
+            over "RightGlow"
+            {
+                token visibility = "inherited"
+            }
+
+            over "HorizontalGlow"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Fog_Light_On"
+        {
+            token visibility = "inherited"
+        }
+
+        over "RHD"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Seats_Standard"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Fascia_Standard"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Seats_7S"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Spatials"
+        {
+            over "Airflow_left"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Airflow_right"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Defrost_Front"
+            {
+                token visibility = "inherited"
+            }
+        }
+    }
+}
+

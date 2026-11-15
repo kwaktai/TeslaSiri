@@ -3,11 +3,12 @@ import UIKit
 
 /// Shared "showroom" palette used by every tab: a warm off-white page with white
 /// surfaces in light mode, and a near-black page with lifted surfaces in dark mode.
-/// Hairlines strengthen automatically when Increase Contrast is on.
+/// The page colors match the backdrop of the `VehicleHero*` renders so the car blends
+/// into the page edge to edge. Hairlines strengthen automatically when Increase Contrast is on.
 enum AppTheme {
     static let pageBackground = dynamicColor(
-        light: UIColor(red: 0.961, green: 0.953, blue: 0.945, alpha: 1),
-        dark: UIColor(red: 0.018, green: 0.015, blue: 0.016, alpha: 1)
+        light: UIColor(red: 0.929, green: 0.918, blue: 0.910, alpha: 1),
+        dark: UIColor(red: 0.010, green: 0.008, blue: 0.008, alpha: 1)
     )
 
     static let surface = dynamicColor(
@@ -17,7 +18,7 @@ enum AppTheme {
 
     /// Fill for tiles nested inside a surface (metric tiles, rows).
     static let insetSurface = dynamicColor(
-        light: UIColor(red: 0.961, green: 0.953, blue: 0.945, alpha: 1),
+        light: UIColor(red: 0.949, green: 0.941, blue: 0.933, alpha: 1),
         dark: UIColor(white: 1, alpha: 0.06)
     )
 

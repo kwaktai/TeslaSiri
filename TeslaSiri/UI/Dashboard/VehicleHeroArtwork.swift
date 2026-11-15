@@ -2,63 +2,63 @@ import AppIntents
 import FleetKit
 import SwiftUI
 
-/// Static vehicle hero for the Dashboard. Uses the light/dark renders in
-/// `VehicleAssets.xcassets`, which share the 1672:941 hero aspect ratio.
+/// Static vehicle hero for the Vehicle tab. Uses the light/dark renders in
+/// `VehicleAssets.xcassets` (1672:941). The render is cropped to a wide stage and zoomed
+/// toward the car, and its edges dissolve into `AppTheme.pageBackground`, which matches
+/// the render's studio backdrop, so the car reads as sitting directly on the page.
 struct VehicleHeroArtwork: View {
     let vehicleName: String
     let vin: String
+    /// Width-to-height ratio of the visible stage.
+    var stageAspectRatio: CGFloat = 1.9
 
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        Image(colorScheme == .dark ? "VehicleHeroDark" : "VehicleHeroLight")
-            .resizable()
-            .aspectRatio(1672.0 / 941.0, contentMode: .fit)
-            .mask {
-                // The renders carry a vignette; feather the edges so the artwork
-                // dissolves into the page instead of reading as a pasted rectangle.
-                LinearGradient(
-                    stops: [
-                        .init(color: .clear, location: 0),
-                        .init(color: .black, location: 0.12),
-                        .init(color: .black, location: 0.88),
-                        .init(color: .clear, location: 1)
-                    ],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-                .mask {
-                    LinearGradient(
-                        stops: [
-                            .init(color: .clear, location: 0),
-                            .init(color: .black, location: 0.14),
-                            .init(color: .black, location: 0.82),
-                            .init(color: .clear, location: 1)
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                }
+        Color.clear
+            .aspectRatio(stageAspectRatio, contentMode: .fit)
+            .overlay {
+                Image(colorScheme == .dark ? "VehicleHeroDark" : "VehicleHeroLight")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .scaleEffect(1.22, anchor: UnitPoint(x: 0.49, y: 0.6))
             }
+            .clipped()
+            .mask(Self.edgeFade)
             .frame(maxWidth: .infinity)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("\(vehicleName) vehicle")
+            .accessibilityAddTraits(.isImage)
             .appEntityIdentifier(vehicleEntityIdentifier)
+    }
+
+    private static var edgeFade: some View {
+        LinearGradient(
+            stops: [
+                .init(color: .clear, location: 0),
+                .init(color: .black, location: 0.06),
+                .init(color: .black, location: 0.94),
+                .init(color: .clear, location: 1)
+            ],
+            startPoint: .leading,
+            endPoint: .trailing
+        )
+        .mask {
+            LinearGradient(
+                stops: [
+                    .init(color: .clear, location: 0),
+                    .init(color: .black, location: 0.14),
+                    .init(color: .black, location: 0.8),
+                    .init(color: .clear, location: 1)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        }
     }
 
     private var vehicleEntityIdentifier: EntityIdentifier? {
         guard !vin.isEmpty else { return nil }
         return EntityIdentifier(for: VehicleEntity.self, identifier: vin)
     }
-}
-
-#Preview("Hero — Light") {
-    VehicleHeroArtwork(vehicleName: "Model 3", vin: "5YJ3E1EA0PF000001")
-        .padding()
-}
-
-#Preview("Hero — Dark") {
-    VehicleHeroArtwork(vehicleName: "Model 3", vin: "5YJ3E1EA0PF000001")
-        .padding()
-        .preferredColorScheme(.dark)
 }

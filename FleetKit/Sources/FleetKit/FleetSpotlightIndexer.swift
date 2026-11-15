@@ -66,9 +66,16 @@ public struct FleetSpotlightSearchResult: Identifiable, Sendable {
 }
 
 /// Donates the app's entities to a named Spotlight index so vehicles, live
-/// status, drives, software, and release notes are findable in Spotlight search.
+/// status, drives, charging sessions, software, and release notes are findable in
+/// Spotlight search and by Siri without launching the app.
 public enum FleetSpotlightIndexer {
     public static let indexName = "FleetEntities"
+    /// Most recent drives indexed per vehicle. Older drives stay reachable through
+    /// the Find Tesla Drives tool, which queries Tessie directly.
+    public static let drivesPerVehicle = 50
+    /// Most recent charging sessions indexed per vehicle. Older sessions stay
+    /// reachable through the Get Tesla Charging History tool.
+    public static let chargesPerVehicle = 50
 
     private static let reindexCoordinator = ReindexCoordinator()
 
@@ -105,6 +112,7 @@ public enum FleetSpotlightIndexer {
 
             var statuses: [VehicleStatusEntity] = []
             var drives: [DriveEntity] = []
+            var charges: [ChargeSessionEntity] = []
             var software: [SoftwareUpdateEntity] = []
             var notes: [ReleaseNoteEntity] = []
 
@@ -114,25 +122,39 @@ public enum FleetSpotlightIndexer {
             var stoppedOnAuthFailure = false
 
             vehicleLoop: for vehicle in vehicles {
+                var softwareFromState: FleetSoftwareInfo?
                 do {
-                    let snapshot = try await service.snapshot(vin: vehicle.vin)
-                    statuses.append(VehicleStatusEntity(snapshot: snapshot, vehicleName: vehicle.name))
+                    let state = try await service.snapshotAndSoftware(vin: vehicle.vin)
+                    softwareFromState = state.software
+                    statuses.append(VehicleStatusEntity(snapshot: state.snapshot, vehicleName: vehicle.name))
                 } catch {
                     errors.append("Status for \(vehicle.name): \(error.localizedDescription)")
                     if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
                 }
 
                 do {
-                    let recent = try await service.drives(vin: vehicle.vin, limit: 20)
+                    let recent = try await service.drives(vin: vehicle.vin, limit: drivesPerVehicle)
                     drives.append(contentsOf: recent.map(DriveEntity.init(info:)))
                 } catch {
                     errors.append("Drives for \(vehicle.name): \(error.localizedDescription)")
                     if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
                 }
 
+                do {
+                    let recent = try await service.charges(vin: vehicle.vin, limit: chargesPerVehicle)
+                    charges.append(contentsOf: recent.map(ChargeSessionEntity.init(info:)))
+                } catch {
+                    errors.append("Charging sessions for \(vehicle.name): \(error.localizedDescription)")
+                    if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
+                }
+
                 let info: FleetSoftwareInfo
                 do {
-                    info = try await service.software(vin: vehicle.vin)
+                    if let softwareFromState {
+                        info = softwareFromState
+                    } else {
+                        info = try await service.software(vin: vehicle.vin)
+                    }
                     software.append(SoftwareUpdateEntity(info: info, vin: vehicle.vin, vehicleName: vehicle.name))
                 } catch {
                     errors.append("Software for \(vehicle.name): \(error.localizedDescription)")
@@ -157,6 +179,7 @@ public enum FleetSpotlightIndexer {
 
             await index(statuses, groupName: "Live Status", priority: 10, groups: &groups, errors: &errors)
             await index(drives, groupName: "Recent Drives", priority: 4, groups: &groups, errors: &errors)
+            await index(charges, groupName: "Charging Sessions", priority: 4, groups: &groups, errors: &errors)
             await index(software, groupName: "Software", priority: 8, groups: &groups, errors: &errors)
             await index(notes, groupName: "Release Notes", priority: 2, groups: &groups, errors: &errors)
         } catch {
@@ -222,6 +245,7 @@ public enum FleetSpotlightIndexer {
             try await index.deleteAppEntities(ofType: VehicleEntity.self)
             try await index.deleteAppEntities(ofType: VehicleStatusEntity.self)
             try await index.deleteAppEntities(ofType: DriveEntity.self)
+            try await index.deleteAppEntities(ofType: ChargeSessionEntity.self)
             try await index.deleteAppEntities(ofType: SoftwareUpdateEntity.self)
             try await index.deleteAppEntities(ofType: ReleaseNoteEntity.self)
             FleetKitLog.spotlight.notice("Deleted all FleetKit indexed entities")

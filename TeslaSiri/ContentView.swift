@@ -11,6 +11,12 @@ struct TeslaSiriApp: App {
 
     init() {
         BatteryReminderManager.shared.registerBackgroundTask()
+        if CommandLine.arguments.contains("--verify-demo-siri") {
+            FleetSandboxStore.shared.setMode(.demoVehicle)
+            Task { @MainActor in
+                await DemoSiriVerificationRunner.shared.runAllOnDemoCar()
+            }
+        }
     }
 
     var body: some Scene {

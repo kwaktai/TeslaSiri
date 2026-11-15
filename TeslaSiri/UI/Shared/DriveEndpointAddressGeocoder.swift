@@ -31,6 +31,13 @@ actor DriveEndpointAddressGeocoder {
         return DriveEndpointAddresses(start: startAddress, end: endAddress)
     }
 
+    func address(latitude: Double?, longitude: Double?) async -> String? {
+        guard let latitude, let longitude else {
+            return nil
+        }
+        return await address(for: FleetRoutePoint(latitude: latitude, longitude: longitude))
+    }
+
     private func address(for point: FleetRoutePoint?) async -> String? {
         guard let point, let latitude = point.latitude, let longitude = point.longitude else {
             return nil

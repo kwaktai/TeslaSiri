@@ -1,40 +1,9 @@
 import AppIntents
-import CoreLocation
 import FleetKit
-import MapKit
 import SwiftUI
 
-enum VehicleDashboardMode: String, CaseIterable, Identifiable {
-    case overview
-    case climate
-    case location
-    case energy
-    case security
-
-    var id: Self { self }
-
-    var title: LocalizedStringResource {
-        switch self {
-        case .overview: "Controls"
-        case .climate: "Climate"
-        case .location: "Location"
-        case .energy: "Energy"
-        case .security: "Security"
-        }
-    }
-
-    var systemImage: String {
-        switch self {
-        case .overview: "car.side.fill"
-        case .climate: "fan.fill"
-        case .location: "location.fill"
-        case .energy: "bolt.fill"
-        case .security: "shield.fill"
-        }
-    }
-}
-
 enum VehicleControlCommand: Hashable, Identifiable {
+    case chargePort(open: Bool)
     case climate(shouldTurnOn: Bool)
     case defrost(shouldTurnOn: Bool)
     case flashLights
@@ -46,6 +15,7 @@ enum VehicleControlCommand: Hashable, Identifiable {
 
     var id: String {
         switch self {
+        case .chargePort(let open): "charge-port-\(open)"
         case .climate(let shouldTurnOn): "climate-\(shouldTurnOn)"
         case .defrost(let shouldTurnOn): "defrost-\(shouldTurnOn)"
         case .flashLights: "flash-lights"
@@ -59,6 +29,7 @@ enum VehicleControlCommand: Hashable, Identifiable {
 
     var title: LocalizedStringResource {
         switch self {
+        case .chargePort(let open): open ? "Open charge port" : "Close charge port"
         case .climate(let shouldTurnOn): shouldTurnOn ? "Start climate" : "Stop climate"
         case .defrost(let shouldTurnOn): shouldTurnOn ? "Start defrost" : "Stop defrost"
         case .flashLights: "Flash lights"
@@ -74,6 +45,7 @@ enum VehicleControlCommand: Hashable, Identifiable {
         switch self {
         case .climate(let shouldTurnOn):
             shouldTurnOn ? "auto_conditioning_start" : "auto_conditioning_stop"
+        case .chargePort(let open): open ? "charge_port_door_open" : "charge_port_door_close"
         case .defrost: "remote_defrost"
         case .flashLights: "flash_lights"
         case .honk: "honk_horn"
@@ -101,7 +73,7 @@ enum VehicleControlCommand: Hashable, Identifiable {
 
     var requiresConfirmation: Bool {
         switch self {
-        case .lock(shouldLock: false), .trunk:
+        case .lock(shouldLock: false), .trunk, .chargePort:
             true
         case .climate, .defrost, .flashLights, .honk, .lock, .petMode, .ventWindows:
             false
@@ -125,12 +97,15 @@ enum VehicleControlCommand: Hashable, Identifiable {
             isFront
                 ? "Open the front trunk on \(vehicleName)?"
                 : "Open the rear trunk on \(vehicleName)?"
+        case .chargePort(let open):
+            open
+                ? "Open the charge port on \(vehicleName)?"
+                : "Close the charge port on \(vehicleName)?"
         default:
             "Send this command to \(vehicleName)?"
         }
     }
 }
-
 struct VehicleControlDashboard: View {
     let vehicle: FleetVehicle
     let vehicles: [FleetVehicle]
@@ -146,25 +121,21 @@ struct VehicleControlDashboard: View {
     let onControl: (String, [String: JSONValue]) async -> Bool
 
     @Environment(\.duoPosture) private var duoPosture
-    @State private var selectedMode: VehicleDashboardMode = .overview
     @State private var pendingCommand: VehicleControlCommand?
     @State private var isShowingConfirmation = false
 
     var body: some View {
-        VStack(spacing: duoPosture.prefersCompactHero ? 10 : 14) {
+        VStack(spacing: 16) {
             VehicleHeroStage(
                 vehicle: vehicle,
                 units: units,
-                compact: duoPosture.prefersCompactHero
+                compact: duoPosture.prefersCompactHero,
+                onCommand: request,
+                onLiveRefresh: onRefresh
             )
-            .frame(maxWidth: AppTheme.contentMaxWidth)
 
             if let snapshot = vehicle.latest {
-                VehicleModeSelector(selection: $selectedMode)
-                    .frame(maxWidth: AppTheme.contentMaxWidth)
-
-                VehicleControlDeck(
-                    mode: selectedMode,
+                VehicleQuickActionBar(
                     snapshot: snapshot,
                     units: units,
                     isRunningControl: isRunningControl,
@@ -173,12 +144,9 @@ struct VehicleControlDashboard: View {
                     controlsEnabled: controlsEnabled,
                     onCommand: request
                 )
-                .frame(maxWidth: AppTheme.contentMaxWidth)
+                .padding(.horizontal, 16)
             }
         }
-        .padding(.horizontal, 18)
-        .padding(.top, 6)
-        .padding(.bottom, 16)
         .frame(maxWidth: .infinity, alignment: .top)
         .appEntityIdentifier(statusEntityIdentifier)
         .vehicleCommandConfirmation(
@@ -215,49 +183,32 @@ struct VehicleControlDashboard: View {
     }
 }
 
-/// Visual telemetry & hero stage used in both compact single-column and split `ArrangementView` primary panes.
+/// Showroom stage at the top of the Vehicle tab: the car render edge to edge, with the
+/// three headline numbers (range, battery, cabin) resting on its reflection floor.
 struct VehicleHeroStage: View {
     let vehicle: FleetVehicle
     let units: String?
     var compact: Bool = false
-
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    var activeDrive: FleetActiveDriveSession?
+    var onCommand: ((VehicleControlCommand) -> Void)?
+    var onLiveRefresh: (() async -> Void)?
 
     var body: some View {
         if let snapshot = vehicle.latest {
-            Group {
-                if compact && !dynamicTypeSize.isAccessibilitySize {
-                    HStack(alignment: .center, spacing: 14) {
-                        VehicleRangeSummary(
-                            vehicleName: vehicle.name,
-                            snapshot: snapshot,
-                            units: units,
-                            compact: true
-                        )
+            VStack(spacing: 0) {
+                VehicleShowroomStage(
+                    vehicle: vehicle,
+                    snapshot: snapshot,
+                    activeDrive: activeDrive,
+                    units: units,
+                    stageAspectRatio: compact ? 2.15 : 1.9,
+                    onCommand: onCommand,
+                    onLiveRefresh: onLiveRefresh
+                )
 
-                        VehicleHeroArtwork(
-                            vehicleName: vehicle.name,
-                            vin: vehicle.vin
-                        )
-                        .frame(maxWidth: 196, maxHeight: 112)
-                    }
-                    .padding(.vertical, 4)
-                } else {
-                    VStack(spacing: 6) {
-                        VehicleRangeSummary(
-                            vehicleName: vehicle.name,
-                            snapshot: snapshot,
-                            units: units,
-                            compact: false
-                        )
-
-                        VehicleHeroArtwork(
-                            vehicleName: vehicle.name,
-                            vin: vehicle.vin
-                        )
-                        .frame(maxHeight: 208)
-                    }
-                }
+                VehicleHeroStats(snapshot: snapshot, units: units, compact: compact)
+                    .padding(.horizontal, 16)
+                    .padding(.top, compact ? -12 : -20)
             }
             .frame(maxWidth: .infinity)
             .appEntityIdentifier(vehicleEntityIdentifier)
@@ -273,9 +224,118 @@ struct VehicleHeroStage: View {
     }
 }
 
-/// Interactive vehicle mode panel + command feedback deck.
-struct VehicleControlDeck: View {
-    let mode: VehicleDashboardMode
+/// Range, battery, and cabin temperature as three large rounded numerals.
+private struct VehicleHeroStats: View {
+    let snapshot: FleetLatestSnapshot
+    let units: String?
+    var compact: Bool = false
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .center, spacing: 0) {
+                rangeStat
+                separator
+                batteryStat
+                if snapshot.insideTemp != nil {
+                    separator
+                    cabinStat
+                }
+            }
+
+            VStack(spacing: 12) {
+                rangeStat
+                batteryStat
+                if snapshot.insideTemp != nil {
+                    cabinStat
+                }
+            }
+        }
+        .appEntityIdentifier(statusEntityIdentifier)
+    }
+
+    private var valueFont: Font {
+        .system(compact ? .title : .largeTitle, design: .rounded, weight: .semibold)
+    }
+
+    private var rangeStat: some View {
+        stat(
+            value: rangeValue,
+            unit: rangeUnit,
+            caption: Text("Range"),
+            accessibilityLabel: "Estimated range"
+        )
+    }
+
+    private var batteryStat: some View {
+        stat(
+            value: formattedNumber(snapshot.batteryLevel, fractionLength: 0),
+            unit: "%",
+            caption: snapshot.isActivelyCharging
+                ? Text("\(Image(systemName: "bolt.fill")) Charging").foregroundStyle(.green)
+                : Text("Battery"),
+            accessibilityLabel: snapshot.isActivelyCharging ? "Battery, charging" : "Battery"
+        )
+    }
+
+    private var cabinStat: some View {
+        stat(
+            value: formattedNumber(snapshot.insideTemp, fractionLength: 0, suffix: "°"),
+            unit: nil,
+            caption: Text("Inside"),
+            accessibilityLabel: "Cabin temperature"
+        )
+    }
+
+    private var separator: some View {
+        Rectangle()
+            .fill(.quaternary)
+            .frame(width: 1, height: compact ? 28 : 36)
+            .accessibilityHidden(true)
+    }
+
+    private func stat(value: String, unit: String?, caption: Text, accessibilityLabel: String) -> some View {
+        VStack(spacing: 2) {
+            MetricValueText(
+                value: value,
+                unit: unit,
+                font: valueFont,
+                unitFont: compact ? .subheadline.weight(.semibold) : .headline
+            )
+            caption
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+        .padding(.horizontal, 8)
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityValue([value, unit].compactMap { $0 }.joined(separator: " "))
+    }
+
+    private var rangeValue: String {
+        guard let batteryRange = snapshot.batteryRange else { return "--" }
+        let value = units == "metric" ? batteryRange * 1.609_344 : batteryRange
+        return formattedNumber(value, fractionLength: 0)
+    }
+
+    private var rangeUnit: String {
+        units == "metric" ? "km" : "mi"
+    }
+
+    private var statusEntityIdentifier: EntityIdentifier? {
+        guard !snapshot.vin.isEmpty else { return nil }
+        return EntityIdentifier(
+            for: VehicleStatusEntity.self,
+            identifier: VehicleStatusEntity.entityID(forVIN: snapshot.vin)
+        )
+    }
+}
+
+/// Labeled Liquid Glass quick controls (Lock, Climate, Frunk, Trunk, More).
+/// Controls whose state is "active" (unlocked, climate on, trunk open) switch to the
+/// prominent glass style so the car's state reads at a glance.
+struct VehicleQuickActionBar: View {
     let snapshot: FleetLatestSnapshot
     let units: String?
     let isRunningControl: Bool
@@ -284,78 +344,213 @@ struct VehicleControlDeck: View {
     let controlsEnabled: Bool
     let onCommand: (VehicleControlCommand) -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var hapticTrigger = 0
+
+    private var isLocked: Bool { snapshot.locked == true }
+    private var isClimateOn: Bool { snapshot.climateOn == true }
+    private var isFrunkOpen: Bool { snapshot.closures?.frontTrunkOpen == true }
+    private var isTrunkOpen: Bool { snapshot.closures?.rearTrunkOpen == true }
+
     var body: some View {
-        VStack(spacing: 12) {
-            VehicleModePanel(
-                mode: mode,
-                snapshot: snapshot,
-                units: units,
-                isRunningControl: isRunningControl,
-                activeControlAction: activeControlAction,
-                controlsEnabled: controlsEnabled,
-                onCommand: onCommand
-            )
+        VStack(spacing: 10) {
+            GlassEffectContainer(spacing: 8) {
+                if dynamicTypeSize.isAccessibilitySize {
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
+                        controls
+                    }
+                } else {
+                    HStack(spacing: 8) {
+                        controls
+                    }
+                }
+            }
+            .disabled(!controlsEnabled || isRunningControl)
+            .sensoryFeedback(.impact(flexibility: .solid), trigger: hapticTrigger)
 
             if let controlMessage {
-                VehicleControlMessage(
-                    message: controlMessage,
-                    isRunning: isRunningControl
-                )
+                VehicleControlStatusLine(message: controlMessage, isRunning: isRunningControl)
+            } else if let updatedAt = snapshot.updatedAtDate {
+                RelativeTimeText(date: updatedAt, style: .updated)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
+        .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder
+    private var controls: some View {
+        quickAction(
+            title: isLocked ? "Locked" : "Unlocked",
+            systemImage: isLocked ? "lock.fill" : "lock.open.fill",
+            command: .lock(shouldLock: !isLocked),
+            isActive: !isLocked,
+            tint: .orange,
+            accessibilityLabel: isLocked ? "Unlock vehicle" : "Lock vehicle",
+            accessibilityValue: isLocked ? "Locked" : "Unlocked"
+        )
+
+        quickAction(
+            title: "Climate",
+            systemImage: isClimateOn ? "fan.fill" : "fan",
+            command: .climate(shouldTurnOn: !isClimateOn),
+            isActive: isClimateOn,
+            tint: .blue,
+            rotates: isClimateOn && !reduceMotion,
+            accessibilityLabel: isClimateOn ? "Stop climate" : "Start climate",
+            accessibilityValue: climateAccessibilityValue
+        )
+
+        quickAction(
+            title: "Frunk",
+            systemImage: "car.side.front.open",
+            command: .trunk(isFront: true),
+            isActive: isFrunkOpen,
+            tint: .orange,
+            accessibilityLabel: isFrunkOpen ? "Front trunk" : "Open front trunk",
+            accessibilityValue: isFrunkOpen ? "Open" : "Closed"
+        )
+
+        quickAction(
+            title: "Trunk",
+            systemImage: "car.side.rear.open",
+            command: .trunk(isFront: false),
+            isActive: isTrunkOpen,
+            tint: .orange,
+            accessibilityLabel: isTrunkOpen ? "Rear trunk" : "Open rear trunk",
+            accessibilityValue: isTrunkOpen ? "Open" : "Closed"
+        )
+
+        moreMenu
+    }
+
+    private func quickAction(
+        title: String,
+        systemImage: String,
+        command: VehicleControlCommand,
+        isActive: Bool,
+        tint: Color,
+        rotates: Bool = false,
+        accessibilityLabel: String,
+        accessibilityValue: String
+    ) -> some View {
+        Button {
+            trigger(command)
+        } label: {
+            QuickActionLabel(
+                title: title,
+                systemImage: systemImage,
+                isBusy: isBusy(command),
+                rotates: rotates
+            )
+        }
+        .buttonStyle(QuickActionButtonStyle(isActive: isActive, tint: tint))
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityValue(accessibilityValue)
+    }
+
+    private var moreMenu: some View {
+        Menu {
+            Section("Cabin") {
+                Button("Defrost", systemImage: "windshield.front.and.heat.waves") {
+                    trigger(.defrost(shouldTurnOn: true))
+                }
+                Button("Dog Mode", systemImage: "pawprint.fill") {
+                    trigger(.petMode(shouldTurnOn: true))
+                }
+                Button("Vent Windows", systemImage: "car.window.right") {
+                    trigger(.ventWindows)
+                }
+                if isClimateOn {
+                    Button("Turn Off Climate", systemImage: "fan.slash") {
+                        trigger(.climate(shouldTurnOn: false))
+                    }
+                }
+            }
+
+            Section("Vehicle") {
+                Button("Flash Lights", systemImage: "light.max") {
+                    trigger(.flashLights)
+                }
+                Button("Honk Horn", systemImage: "horn.blast.fill") {
+                    trigger(.honk)
+                }
+            }
+        } label: {
+            QuickActionLabel(title: "More", systemImage: "ellipsis")
+                .glassEffect(.regular.interactive(), in: .rect(cornerRadius: QuickActionButtonStyle.cornerRadius, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("More vehicle controls")
+    }
+
+    private var climateAccessibilityValue: String {
+        let suffix = units == "metric" ? "°C" : "°F"
+        let cabin = formattedNumber(snapshot.insideTemp, fractionLength: 0, suffix: suffix)
+        return isClimateOn ? "On, cabin \(cabin)" : "Off, cabin \(cabin)"
+    }
+
+    private func isBusy(_ command: VehicleControlCommand) -> Bool {
+        isRunningControl && activeControlAction == command.action
+    }
+
+    private func trigger(_ command: VehicleControlCommand) {
+        hapticTrigger += 1
+        onCommand(command)
     }
 }
 
-struct VehicleModeSelector: View {
-    @Binding var selection: VehicleDashboardMode
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Namespace private var selectionNamespace
+private struct QuickActionLabel: View {
+    let title: String
+    let systemImage: String
+    var isBusy: Bool = false
+    var rotates: Bool = false
 
     var body: some View {
-        HStack(spacing: 4) {
-            ForEach(VehicleDashboardMode.allCases) { mode in
-                let isSelected = selection == mode
-
-                Button {
-                    withAnimation(reduceMotion ? nil : .snappy(duration: 0.25)) {
-                        selection = mode
-                    }
-                } label: {
-                    VStack(spacing: 3) {
-                        Image(systemName: mode.systemImage)
-                            .font(.body.weight(.semibold))
-                            .frame(height: 22)
-
-                        // Labels are dropped at accessibility sizes so five segments still fit;
-                        // the accessibility label keeps the mode name available to VoiceOver.
-                        if !dynamicTypeSize.isAccessibilitySize {
-                            Text(mode.title)
-                                .font(.caption2.weight(.semibold))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.75)
-                        }
-                    }
-                    .foregroundStyle(isSelected ? Color.primary : Color.secondary)
-                    .frame(maxWidth: .infinity, minHeight: 50)
-                    .background {
-                        if isSelected {
-                            RoundedRectangle(cornerRadius: 15, style: .continuous)
-                                .fill(AppTheme.raisedSurface)
-                                .shadow(color: AppTheme.surfaceShadow, radius: 4, y: 1)
-                                .matchedGeometryEffect(id: "selection", in: selectionNamespace)
-                        }
-                    }
-                    .contentShape(Rectangle())
+        VStack(spacing: 5) {
+            Group {
+                if isBusy {
+                    ProgressView()
+                        .controlSize(.small)
+                } else {
+                    Image(systemName: systemImage)
+                        .font(.title3.weight(.medium))
+                        .symbolEffect(.rotate, options: .repeat(.continuous), isActive: rotates)
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel(Text(mode.title))
-                .accessibilityAddTraits(isSelected ? .isSelected : [])
             }
+            .frame(height: 26)
+
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
-        .padding(4)
-        .background(AppTheme.segmentTrack, in: RoundedRectangle(cornerRadius: 19, style: .continuous))
+        .padding(.horizontal, 4)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
+        .contentShape(.rect(cornerRadius: QuickActionButtonStyle.cornerRadius))
+    }
+}
+
+/// Liquid Glass tile for quick controls. Active controls get a tinted glass fill.
+private struct QuickActionButtonStyle: ButtonStyle {
+    static let cornerRadius: CGFloat = 20
+
+    let isActive: Bool
+    let tint: Color
+
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundStyle(isActive ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
+            .glassEffect(
+                isActive ? .regular.tint(tint).interactive() : .regular.interactive(),
+                in: .rect(cornerRadius: Self.cornerRadius, style: .continuous)
+            )
+            .opacity(isEnabled ? 1 : 0.55)
     }
 }
 
@@ -387,799 +582,57 @@ extension View {
     }
 }
 
-private struct VehicleRangeSummary: View {
-    let vehicleName: String
-    let snapshot: FleetLatestSnapshot
-    let units: String?
-    let compact: Bool
-
-    @ScaledMetric(relativeTo: .largeTitle) private var fullRangeFontSize: CGFloat = 58
-    @ScaledMetric(relativeTo: .title) private var compactRangeFontSize: CGFloat = 40
-
-    var body: some View {
-        VStack(alignment: compact ? .leading : .center, spacing: compact ? 4 : 6) {
-            HStack(spacing: 6) {
-                StatusBadge(
-                    snapshot.locked == true ? "Locked" : "Unlocked",
-                    systemImage: snapshot.locked == true ? "lock.fill" : "lock.open.fill",
-                    tint: snapshot.locked == true ? .secondary : .orange
-                )
-
-                if snapshot.sentryMode == true {
-                    StatusBadge("Sentry", systemImage: "eye.fill", tint: .red)
-                }
-            }
-
-            HStack(alignment: .lastTextBaseline, spacing: 6) {
-                Text(rangeValue)
-                    .font(.system(size: compact ? compactRangeFontSize : fullRangeFontSize, weight: .light, design: .rounded))
-                    .monospacedDigit()
-                    .contentTransition(.numericText())
-                Text(rangeUnit)
-                    .font((compact ? Font.title3 : Font.title2).weight(.medium))
-                    .foregroundStyle(.secondary)
-            }
-
-            Text(statusSummary)
-                .font((compact ? Font.footnote : Font.subheadline).weight(.semibold))
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(compact ? .leading : .center)
-
-            if let updatedAt = snapshot.updatedAtDate {
-                Label {
-                    RelativeTimeText(date: updatedAt, style: .updated)
-                } icon: {
-                    Image(systemName: "clock")
-                }
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: compact ? .leading : .center)
-        .padding(.top, compact ? 2 : 8)
-        .padding(.bottom, 2)
-        .appEntityIdentifier(statusEntityIdentifier)
+extension FleetLatestSnapshot {
+    var isActivelyCharging: Bool {
+        chargingState?.localizedCaseInsensitiveContains("charging") == true
     }
 
-    private var rangeValue: String {
-        guard let batteryRange = snapshot.batteryRange else {
-            return formattedNumber(snapshot.batteryLevel, fractionLength: 0)
-        }
-        let value = units == "metric" ? batteryRange * 1.609_344 : batteryRange
-        return formattedNumber(value, fractionLength: 0)
-    }
-
-    private var rangeUnit: String {
-        snapshot.batteryRange == nil ? "%" : (units == "metric" ? "km" : "mi")
-    }
-
-    private var statusSummary: String {
-        if snapshot.chargingState?.localizedCaseInsensitiveContains("charging") == true {
-            if let remaining = snapshot.timeToFullCharge, remaining > 0 {
-                return "Charging · \(formattedNumber(remaining, fractionLength: 1, suffix: " hr remaining"))"
-            }
-            return "Charging"
-        }
-        if let speed = snapshot.speed, speed > 0 {
-            return "Driving · \(formattedNumber(speed, fractionLength: 0, suffix: " mph"))"
-        }
-        return "Parked · \(formattedNumber(snapshot.batteryLevel, fractionLength: 0, suffix: "% battery"))"
-    }
-
-    private var statusEntityIdentifier: EntityIdentifier? {
-        guard !snapshot.vin.isEmpty else { return nil }
-        return EntityIdentifier(
-            for: VehicleStatusEntity.self,
-            identifier: VehicleStatusEntity.entityID(forVIN: snapshot.vin)
-        )
-    }
-}
-
-private struct VehicleModePanel: View {
-    let mode: VehicleDashboardMode
-    let snapshot: FleetLatestSnapshot
-    let units: String?
-    let isRunningControl: Bool
-    let activeControlAction: String?
-    let controlsEnabled: Bool
-    let onCommand: (VehicleControlCommand) -> Void
-
-    var body: some View {
-        switch mode {
-        case .overview:
-            VehicleOverviewPanel(
-                snapshot: snapshot,
-                units: units,
-                isRunningControl: isRunningControl,
-                activeControlAction: activeControlAction,
-                controlsEnabled: controlsEnabled,
-                onCommand: onCommand
-            )
-        case .climate:
-            VehicleClimatePanel(
-                snapshot: snapshot,
-                units: units,
-                isRunningControl: isRunningControl,
-                activeControlAction: activeControlAction,
-                controlsEnabled: controlsEnabled,
-                onCommand: onCommand
-            )
-        case .location:
-            VehicleLocationPanel(snapshot: snapshot)
-        case .energy:
-            VehicleEnergyPanel(snapshot: snapshot, units: units)
-        case .security:
-            VehicleSecurityPanel(
-                snapshot: snapshot,
-                isRunningControl: isRunningControl,
-                activeControlAction: activeControlAction,
-                controlsEnabled: controlsEnabled,
-                onCommand: onCommand
-            )
-        }
-    }
-}
-
-private struct VehicleOverviewPanel: View {
-    let snapshot: FleetLatestSnapshot
-    let units: String?
-    let isRunningControl: Bool
-    let activeControlAction: String?
-    let controlsEnabled: Bool
-    let onCommand: (VehicleControlCommand) -> Void
-
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-
-    var body: some View {
-        VStack(spacing: 10) {
-            LazyVGrid(columns: primaryColumns, spacing: 10) {
-                ClimateControlTile(
-                    snapshot: snapshot,
-                    units: units,
-                    isBusy: isBusy(climateCommand),
-                    isEnabled: controlsEnabled,
-                    action: { onCommand(climateCommand) }
-                )
-
-                LockControlTile(
-                    snapshot: snapshot,
-                    isBusy: isBusy(lockCommand),
-                    isEnabled: controlsEnabled,
-                    action: { onCommand(lockCommand) }
-                )
-            }
-
-            VehicleQuickControlsGrid(
-                commands: quickCommands,
-                isRunningControl: isRunningControl,
-                activeControlAction: activeControlAction,
-                controlsEnabled: controlsEnabled,
-                onCommand: onCommand,
-                singleColumn: dynamicTypeSize.isAccessibilitySize
-            )
-        }
-    }
-
-    private var primaryColumns: [GridItem] {
-        dynamicTypeSize.isAccessibilitySize
-            ? [GridItem(.flexible())]
-            : [GridItem(.flexible()), GridItem(.flexible())]
-    }
-
-    private var quickCommands: [VehicleQuickControlsGrid.Item] {
-        [
-            (.ventWindows, "Vent", "rectangle.split.3x1.fill", .blue),
-            (.flashLights, "Flash", "light.max", .yellow),
-            (.trunk(isFront: true), "Frunk", "archivebox.fill", .orange),
-            (.trunk(isFront: false), "Trunk", "shippingbox.fill", .orange)
-        ]
-    }
-
-    private var climateCommand: VehicleControlCommand {
-        .climate(shouldTurnOn: snapshot.climateOn != true)
-    }
-
-    private var lockCommand: VehicleControlCommand {
-        .lock(shouldLock: snapshot.locked != true)
-    }
-
-    private func isBusy(_ command: VehicleControlCommand) -> Bool {
-        isRunningControl && activeControlAction == command.action
-    }
-}
-
-private struct VehicleClimatePanel: View {
-    let snapshot: FleetLatestSnapshot
-    let units: String?
-    let isRunningControl: Bool
-    let activeControlAction: String?
-    let controlsEnabled: Bool
-    let onCommand: (VehicleControlCommand) -> Void
-
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-
-    var body: some View {
-        VStack(spacing: 10) {
-            ClimateControlTile(
-                snapshot: snapshot,
-                units: units,
-                isBusy: isBusy(climateCommand),
-                isEnabled: controlsEnabled,
-                action: { onCommand(climateCommand) }
-            )
-
-            VehicleQuickControlsGrid(
-                commands: [
-                    (.defrost(shouldTurnOn: true), "Defrost", "sun.max.fill", .orange),
-                    (.petMode(shouldTurnOn: true), "Dog Mode", "pawprint.fill", .yellow),
-                    (.ventWindows, "Vent", "rectangle.split.3x1.fill", .blue),
-                    (.climate(shouldTurnOn: false), "Climate off", "fan.slash.fill", .secondary)
-                ],
-                isRunningControl: isRunningControl,
-                activeControlAction: activeControlAction,
-                controlsEnabled: controlsEnabled,
-                onCommand: onCommand,
-                singleColumn: dynamicTypeSize.isAccessibilitySize
-            )
-        }
-    }
-
-    private var climateCommand: VehicleControlCommand {
-        .climate(shouldTurnOn: snapshot.climateOn != true)
-    }
-
-    private func isBusy(_ command: VehicleControlCommand) -> Bool {
-        isRunningControl && activeControlAction == command.action
-    }
-}
-
-private struct VehicleLocationPanel: View {
-    let snapshot: FleetLatestSnapshot
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Label("Location", systemImage: "location.fill")
-                .font(.headline)
-
-            if let coordinate {
-                Map(
-                    initialPosition: .camera(MapCamera(centerCoordinate: coordinate, distance: 1_400)),
-                    interactionModes: []
-                ) {
-                    Marker("Vehicle", systemImage: "car.fill", coordinate: coordinate)
-                        .tint(.blue)
-                }
-                .frame(height: 170)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .accessibilityLabel("Map showing the vehicle's location")
-
-                ViewThatFits(in: .horizontal) {
-                    HStack(alignment: .firstTextBaseline) {
-                        coordinateLabel
-                        Spacer(minLength: 12)
-                        openInMapsLink
-                    }
-                    VStack(alignment: .leading, spacing: 8) {
-                        coordinateLabel
-                        openInMapsLink
-                    }
-                }
+    /// One-line driving/charging + lock summary shown as the navigation subtitle.
+    var heroStatusLine: String {
+        var parts: [String] = []
+        if isActivelyCharging {
+            if let power = chargerPowerKW, power > 0 {
+                parts.append("Charging at \(formattedNumber(power, fractionLength: 1, suffix: " kW"))")
             } else {
-                ContentUnavailableView(
-                    "Location unavailable",
-                    systemImage: "location.slash",
-                    description: Text("The vehicle hasn't reported a location yet.")
-                )
+                parts.append("Charging")
             }
-
-            Text("Ask Siri to send a destination to your car, or open Drives for route history.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+        } else if let speed, speed > 0 {
+            parts.append("Driving \(formattedNumber(speed, fractionLength: 0, suffix: " mph"))")
+        } else if let gear, !gear.isEmpty, gear != "P" {
+            parts.append("In \(gear)")
+        } else {
+            parts.append("Parked")
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(18)
-        .background(VehiclePanelBackground())
-    }
-
-    private var coordinateLabel: some View {
-        Text(formattedCoordinate(latitude: snapshot.latitude, longitude: snapshot.longitude))
-            .font(.subheadline.weight(.medium))
-            .monospacedDigit()
-            .foregroundStyle(.secondary)
-            .textSelection(.enabled)
-    }
-
-    @ViewBuilder
-    private var openInMapsLink: some View {
-        if let mapsURL {
-            Link(destination: mapsURL) {
-                Label("Open in Maps", systemImage: "arrow.up.right")
-                    .font(.subheadline.weight(.semibold))
-            }
+        if let locked {
+            parts.append(locked ? "Locked" : "Unlocked")
         }
-    }
-
-    private var coordinate: CLLocationCoordinate2D? {
-        guard let latitude = snapshot.latitude, let longitude = snapshot.longitude else { return nil }
-        return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-    }
-
-    private var mapsURL: URL? {
-        guard let latitude = snapshot.latitude, let longitude = snapshot.longitude else { return nil }
-        var components = URLComponents(string: "https://maps.apple.com/")
-        components?.queryItems = [
-            URLQueryItem(name: "ll", value: "\(latitude),\(longitude)"),
-            URLQueryItem(name: "q", value: "Vehicle")
-        ]
-        return components?.url
+        if sentryMode == true {
+            parts.append("Sentry On")
+        }
+        return parts.joined(separator: " · ")
     }
 }
 
-private struct VehicleEnergyPanel: View {
-    let snapshot: FleetLatestSnapshot
-    let units: String?
-
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-
-    var body: some View {
-        VStack(spacing: 14) {
-            HStack {
-                Label("Energy", systemImage: "bolt.fill")
-                    .font(.headline)
-                Spacer()
-                Text(formattedNumber(snapshot.batteryLevel, fractionLength: 0, suffix: "%"))
-                    .font(.headline)
-                    .monospacedDigit()
-            }
-
-            ProgressView(value: max(0, min((snapshot.batteryLevel ?? 0) / 100, 1)))
-                .tint(.green)
-
-            LazyVGrid(columns: columns, spacing: 10) {
-                VehicleMetricTile(
-                    title: "Range",
-                    value: formattedRange,
-                    systemImage: "road.lanes"
-                )
-                VehicleMetricTile(
-                    title: "Charge limit",
-                    value: formattedNumber(snapshot.chargeLimitSOC, fractionLength: 0, suffix: "%"),
-                    systemImage: "battery.100"
-                )
-                VehicleMetricTile(
-                    title: "Charge power",
-                    value: formattedNumber(snapshot.chargerPowerKW, fractionLength: 1, suffix: " kW"),
-                    systemImage: "bolt.badge.clock"
-                )
-                VehicleMetricTile(
-                    title: "Time remaining",
-                    value: formattedNumber(snapshot.timeToFullCharge, fractionLength: 1, suffix: " hr"),
-                    systemImage: "clock"
-                )
-            }
-        }
-        .padding(18)
-        .background(VehiclePanelBackground())
-    }
-
-    private var columns: [GridItem] {
-        dynamicTypeSize.isAccessibilitySize
-            ? [GridItem(.flexible())]
-            : [GridItem(.flexible()), GridItem(.flexible())]
-    }
-
-    private var formattedRange: String {
-        guard let range = snapshot.batteryRange else { return "--" }
-        let value = units == "metric" ? range * 1.609_344 : range
-        return formattedNumber(value, fractionLength: 0, suffix: units == "metric" ? " km" : " mi")
-    }
-}
-
-private struct VehicleSecurityPanel: View {
-    let snapshot: FleetLatestSnapshot
-    let isRunningControl: Bool
-    let activeControlAction: String?
-    let controlsEnabled: Bool
-    let onCommand: (VehicleControlCommand) -> Void
-
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-
-    var body: some View {
-        VStack(spacing: 12) {
-            ViewThatFits(in: .horizontal) {
-                HStack {
-                    securityLabel
-                    Spacer()
-                    sentryBadge
-                }
-                VStack(alignment: .leading, spacing: 8) {
-                    securityLabel
-                    sentryBadge
-                }
-            }
-
-            VehicleQuickControlsGrid(
-                commands: [
-                    (
-                        .lock(shouldLock: snapshot.locked != true),
-                        snapshot.locked == true ? "Unlock" : "Lock",
-                        snapshot.locked == true ? "lock.open.fill" : "lock.fill",
-                        snapshot.locked == true ? .orange : .green
-                    ),
-                    (.flashLights, "Flash", "light.max", .yellow),
-                    (.honk, "Honk", "speaker.wave.3.fill", .blue),
-                    (.trunk(isFront: false), "Trunk", "shippingbox.fill", .orange)
-                ],
-                isRunningControl: isRunningControl,
-                activeControlAction: activeControlAction,
-                controlsEnabled: controlsEnabled,
-                onCommand: onCommand,
-                singleColumn: dynamicTypeSize.isAccessibilitySize
-            )
-
-            if let tires = snapshot.tires, tires.hasAnyReading {
-                VStack(alignment: .leading, spacing: 10) {
-                    Label("Tire pressure", systemImage: "tirepressure")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .padding(.top, 4)
-
-                    LazyVGrid(columns: tireColumns, spacing: 10) {
-                        VehicleMetricTile(
-                            title: "Front left",
-                            value: formattedNumber(tires.frontLeftPSI, fractionLength: 1, suffix: " psi"),
-                            systemImage: "circle.dotted"
-                        )
-                        VehicleMetricTile(
-                            title: "Front right",
-                            value: formattedNumber(tires.frontRightPSI, fractionLength: 1, suffix: " psi"),
-                            systemImage: "circle.dotted"
-                        )
-                        VehicleMetricTile(
-                            title: "Rear left",
-                            value: formattedNumber(tires.rearLeftPSI, fractionLength: 1, suffix: " psi"),
-                            systemImage: "circle.dotted"
-                        )
-                        VehicleMetricTile(
-                            title: "Rear right",
-                            value: formattedNumber(tires.rearRightPSI, fractionLength: 1, suffix: " psi"),
-                            systemImage: "circle.dotted"
-                        )
-                    }
-                }
-            }
-        }
-        .padding(18)
-        .background(VehiclePanelBackground())
-    }
-
-    private var securityLabel: some View {
-        Label(
-            snapshot.locked == true ? "Vehicle secured" : "Vehicle unlocked",
-            systemImage: snapshot.locked == true ? "lock.fill" : "lock.open.fill"
-        )
-        .font(.headline)
-    }
-
-    private var sentryBadge: some View {
-        StatusBadge(
-            snapshot.sentryMode == true ? "Sentry on" : "Sentry off",
-            systemImage: snapshot.sentryMode == true ? "eye.fill" : "eye.slash",
-            tint: snapshot.sentryMode == true ? .red : .secondary
-        )
-    }
-
-    private var tireColumns: [GridItem] {
-        dynamicTypeSize.isAccessibilitySize
-            ? [GridItem(.flexible())]
-            : [GridItem(.flexible()), GridItem(.flexible())]
-    }
-}
-
-private struct ClimateControlTile: View {
-    let snapshot: FleetLatestSnapshot
-    let units: String?
-    let isBusy: Bool
-    let isEnabled: Bool
-    let action: () -> Void
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    var body: some View {
-        Button(action: action) {
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(alignment: .center) {
-                    Image(systemName: isOn ? "fan.fill" : "fan")
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(isOn ? Color.white : Color.blue)
-                        .frame(width: 36, height: 36)
-                        .background(isOn ? Color.blue : Color.blue.opacity(0.14), in: Circle())
-                        .symbolEffect(.rotate, options: .repeat(.continuous), isActive: isOn && !reduceMotion)
-
-                    Spacer()
-
-                    if isBusy {
-                        ProgressView()
-                            .controlSize(.small)
-                    } else {
-                        Text(isOn ? "On" : "Off")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(isOn ? Color.blue : Color.secondary)
-                    }
-                }
-
-                Spacer(minLength: 10)
-
-                Text(headline)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.secondary)
-
-                Text(primaryTemperature)
-                    .font(.system(.title, design: .rounded, weight: .semibold))
-                    .monospacedDigit()
-                    .contentTransition(.numericText())
-
-                Text(caption)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity, minHeight: 138, alignment: .leading)
-            .padding(14)
-            .appSurface(cornerRadius: AppTheme.tileCornerRadius)
-            .overlay {
-                if isOn {
-                    RoundedRectangle(cornerRadius: AppTheme.tileCornerRadius, style: .continuous)
-                        .strokeBorder(Color.blue.opacity(0.6), lineWidth: 1.5)
-                }
-            }
-            .opacity(isEnabled ? 1 : 0.5)
-        }
-        .buttonStyle(.plain)
-        .disabled(!isEnabled || isBusy)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(isOn ? "Stop climate" : "Start climate")
-        .accessibilityValue("\(headline) \(primaryTemperature). \(caption)")
-    }
-
-    private var isOn: Bool {
-        snapshot.climateOn == true
-    }
-
-    private var temperatureSuffix: String {
-        units == "metric" ? "°C" : "°F"
-    }
-
-    private var headline: String {
-        guard isOn else { return "Cabin" }
-        guard let target = snapshot.targetTemperature, let inside = snapshot.insideTemp else {
-            return "Climate on"
-        }
-        if target < inside - 0.5 { return "Cooling to" }
-        if target > inside + 0.5 { return "Heating to" }
-        return "Holding at"
-    }
-
-    private var primaryTemperature: String {
-        let value = isOn
-            ? (snapshot.targetTemperature ?? snapshot.insideTemp)
-            : (snapshot.insideTemp ?? snapshot.targetTemperature)
-        return formattedNumber(value, fractionLength: 0, suffix: temperatureSuffix)
-    }
-
-    private var caption: String {
-        if isOn {
-            return formattedNumber(snapshot.insideTemp, fractionLength: 0, suffix: "\(temperatureSuffix) inside")
-        }
-        return "Tap to start climate"
-    }
-}
-
-private struct LockControlTile: View {
-    let snapshot: FleetLatestSnapshot
-    let isBusy: Bool
-    let isEnabled: Bool
-    let action: () -> Void
-
-    private var isLocked: Bool {
-        snapshot.locked == true
-    }
-
-    var body: some View {
-        Button(action: action) {
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(alignment: .center) {
-                    Image(systemName: isLocked ? "lock.fill" : "lock.open.fill")
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(isLocked ? Color.primary : Color.white)
-                        .frame(width: 36, height: 36)
-                        .background(isLocked ? Color.green.opacity(0.18) : Color.orange, in: Circle())
-                        .contentTransition(.symbolEffect(.replace))
-
-                    Spacer()
-
-                    if isBusy {
-                        ProgressView()
-                            .controlSize(.small)
-                    } else {
-                        Text(isLocked ? "Secured" : "Open")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(isLocked ? Color.green : Color.orange)
-                    }
-                }
-
-                Spacer(minLength: 10)
-
-                Text("Doors")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.secondary)
-
-                Text(isLocked ? "Locked" : "Unlocked")
-                    .font(.system(.title2, design: .rounded, weight: .semibold))
-
-                Text(caption)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity, minHeight: 138, alignment: .leading)
-            .padding(14)
-            .appSurface(cornerRadius: AppTheme.tileCornerRadius)
-            .overlay {
-                if !isLocked {
-                    RoundedRectangle(cornerRadius: AppTheme.tileCornerRadius, style: .continuous)
-                        .strokeBorder(Color.orange.opacity(0.65), lineWidth: 1.5)
-                }
-            }
-            .opacity(isEnabled ? 1 : 0.5)
-        }
-        .buttonStyle(.plain)
-        .disabled(!isEnabled || isBusy)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(isLocked ? "Unlock vehicle" : "Lock vehicle")
-        .accessibilityValue("\(isLocked ? "Locked" : "Unlocked"). \(caption)")
-    }
-
-    private var caption: String {
-        if !isLocked {
-            return "Tap to lock doors"
-        }
-        if snapshot.sentryMode == true {
-            return "Sentry Mode active"
-        }
-        return "Tap to unlock"
-    }
-}
-
-private struct VehicleQuickControlsGrid: View {
-    typealias Item = (
-        command: VehicleControlCommand,
-        title: LocalizedStringResource,
-        systemImage: String,
-        tint: Color
-    )
-
-    let commands: [Item]
-    let isRunningControl: Bool
-    let activeControlAction: String?
-    let controlsEnabled: Bool
-    let onCommand: (VehicleControlCommand) -> Void
-    let singleColumn: Bool
-
-    var body: some View {
-        LazyVGrid(columns: columns, spacing: 10) {
-            ForEach(commands, id: \.command.id) { item in
-                VehicleActionTile(
-                    title: item.title,
-                    systemImage: item.systemImage,
-                    tint: item.tint,
-                    isBusy: isRunningControl && activeControlAction == item.command.action,
-                    isEnabled: controlsEnabled,
-                    action: { onCommand(item.command) }
-                )
-            }
-        }
-    }
-
-    private var columns: [GridItem] {
-        singleColumn
-            ? [GridItem(.flexible())]
-            : [GridItem(.flexible()), GridItem(.flexible())]
-    }
-}
-
-private struct VehicleActionTile: View {
-    let title: LocalizedStringResource
-    let systemImage: String
-    let tint: Color
-    let isBusy: Bool
-    let isEnabled: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 8) {
-                Group {
-                    if isBusy {
-                        ProgressView()
-                            .controlSize(.small)
-                    } else {
-                        Image(systemName: systemImage)
-                            .font(.body.weight(.semibold))
-                            .foregroundStyle(.primary)
-                    }
-                }
-                .frame(width: 40, height: 40)
-                .background(tint.opacity(0.2), in: Circle())
-
-                Text(title)
-                    .font(.caption.weight(.semibold))
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity, minHeight: 76)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 10)
-            .appSurface(cornerRadius: 18)
-            .opacity(isEnabled ? 1 : 0.5)
-        }
-        .buttonStyle(.plain)
-        .disabled(!isEnabled || isBusy)
-        .accessibilityLabel(Text(title))
-    }
-}
-
-private struct VehicleMetricTile: View {
-    let title: LocalizedStringResource
-    let value: String
-    let systemImage: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 7) {
-            Label(title, systemImage: systemImage)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Text(value)
-                .font(.headline)
-                .monospacedDigit()
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, minHeight: 58, alignment: .leading)
-        .padding(12)
-        .background(AppTheme.insetSurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-    }
-}
-
-private struct VehicleControlMessage: View {
+private struct VehicleControlStatusLine: View {
     let message: String
     let isRunning: Bool
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             if isRunning {
                 ProgressView()
-                    .controlSize(.small)
+                    .controlSize(.mini)
             } else {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(.green)
+                    .accessibilityHidden(true)
             }
             Text(message)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 6)
-    }
-}
-
-private struct VehiclePanelBackground: View {
-    var body: some View {
-        Color.clear
-            .appSurface()
+        .font(.caption)
+        .foregroundStyle(.secondary)
     }
 }
 
@@ -1188,52 +641,128 @@ private struct VehicleUnavailableStage: View {
     var compact: Bool = false
 
     var body: some View {
-        ContentUnavailableView(
-            "No live telemetry",
-            systemImage: "antenna.radiowaves.left.and.right.slash",
-            description: Text("Refresh \(vehicleName) to load its latest state.")
-        )
-        .frame(maxWidth: .infinity, minHeight: compact ? 220 : 340)
+        VStack(spacing: 8) {
+            VehicleHeroArtwork(vehicleName: vehicleName, vin: "", stageAspectRatio: compact ? 2.15 : 1.9)
+                .opacity(0.6)
+
+            Label("Waiting for \(vehicleName) to report in…", systemImage: "antenna.radiowaves.left.and.right")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 16)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 
-#Preview("Showroom — Light") {
-    ScrollView {
-        VehicleControlDashboard(
-            vehicle: PreviewData.vehicles[0],
-            vehicles: PreviewData.vehicles,
-            selectedVIN: PreviewData.vin1,
-            units: "imperial",
-            isRefreshing: false,
-            isRunningControl: false,
-            activeControlAction: nil,
-            controlMessage: nil,
-            controlsEnabled: true,
-            onSelectVehicle: { _ in },
-            onRefresh: {},
-            onControl: { _, _ in true }
-        )
-    }
-    .background(AppScreenBackground())
-}
+extension FleetVehicleConfiguration {
+    var displaySpecLine: String? {
+        let parts = [
+            humanizedModelName,
+            humanizedTrimName,
+            humanizedPaintName
+        ].compactMap { $0 }
 
-#Preview("Showroom — Dark") {
-    ScrollView {
-        VehicleControlDashboard(
-            vehicle: PreviewData.vehicles[0],
-            vehicles: PreviewData.vehicles,
-            selectedVIN: PreviewData.vin1,
-            units: "imperial",
-            isRefreshing: false,
-            isRunningControl: false,
-            activeControlAction: nil,
-            controlMessage: nil,
-            controlsEnabled: true,
-            onSelectVehicle: { _ in },
-            onRefresh: {},
-            onControl: { _, _ in true }
-        )
+        guard !parts.isEmpty else { return nil }
+        return parts.joined(separator: " · ")
     }
-    .background(AppScreenBackground())
-    .preferredColorScheme(.dark)
+
+    var humanizedModelName: String? {
+        carType.flatMap(Self.humanizedModel)
+    }
+
+    var humanizedTrimName: String? {
+        trimBadging.flatMap(Self.humanizedTrim)
+    }
+
+    var humanizedPaintName: String? {
+        if let override = paintColorOverride.flatMap(Self.humanizedCamelCase) {
+            return override
+        }
+        return exteriorColor.flatMap(Self.humanizedCamelCase)
+    }
+
+    var humanizedWheelName: String? {
+        wheelType.flatMap(Self.humanizedWheel)
+    }
+
+    private static func humanizedWheel(_ raw: String) -> String? {
+        let cleaned = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleaned.isEmpty else { return nil }
+        let lowered = cleaned.lowercased()
+        if lowered.hasPrefix("arachnid") {
+            return cleaned.hasSuffix("21") ? "21\" Arachnid" : "Arachnid"
+        }
+        if lowered.hasPrefix("uberturbine") {
+            if cleaned.hasSuffix("21") { return "21\" Überturbine" }
+            if cleaned.hasSuffix("20") { return "20\" Überturbine" }
+            return "Überturbine"
+        }
+        if lowered.hasPrefix("pinwheel") {
+            return "18\" Aero"
+        }
+        if lowered.hasPrefix("photon") {
+            return "18\" Photon"
+        }
+        if lowered.hasPrefix("nova") {
+            return "19\" Nova"
+        }
+        if lowered.hasPrefix("gemini") {
+            return "19\" Gemini"
+        }
+        if lowered.hasPrefix("induction") {
+            return "20\" Induction"
+        }
+        if lowered.hasPrefix("tempest") {
+            return "19\" Tempest"
+        }
+        if lowered.hasPrefix("stiletto") {
+            return "19\" Sport"
+        }
+        return humanizedCamelCase(cleaned)
+    }
+
+    private static func humanizedModel(_ raw: String) -> String? {
+        switch raw.lowercased() {
+        case "model3": "Model 3"
+        case "modely": "Model Y"
+        case "models", "models2": "Model S"
+        case "modelx": "Model X"
+        case "cybertruck": "Cybertruck"
+        default: humanizedCamelCase(raw)
+        }
+    }
+
+    private static func humanizedTrim(_ raw: String) -> String? {
+        let cleaned = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleaned.isEmpty else { return nil }
+        switch cleaned.lowercased() {
+        case "long_range", "lr", "74d", "75d", "100d":
+            return "Long Range"
+        case "performance", "p74d", "p100d":
+            return "Performance"
+        case "plaid":
+            return "Plaid"
+        case "standard", "sr", "50", "60":
+            return "Rear-Wheel Drive"
+        default:
+            return humanizedStatus(cleaned)
+        }
+    }
+
+    fileprivate static func humanizedCamelCase(_ raw: String) -> String? {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        if trimmed.contains("_") {
+            return humanizedStatus(trimmed)
+        }
+        var result = ""
+        for character in trimmed {
+            if let last = result.last,
+               (character.isUppercase && last.isLowercase) || (character.isNumber && !last.isNumber) {
+                result.append(" ")
+            }
+            result.append(character)
+        }
+        return result
+    }
 }

@@ -4,22 +4,64 @@ import Testing
 @testable import FleetKit
 
 struct FleetEntityIndexingTests {
+    @Test(arguments: ["battery car", "status", "missing", ""])
+    func statusSearchFetchesOnlyMatchingVehicleStates(query: String) async throws {
+        let roster = #"{"results":[{"vin":"A","last_state":{"display_name":"Battery Car"}},{"vin":"B","last_state":{"display_name":"Roadrunner"}}]}"#
+        try await withIsolatedFleetService { request in
+            switch request.url?.lastPathComponent {
+            case "vehicles": (200, Data(roster.utf8))
+            case "state": (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
+            case "tire_pressure": (200, Data(FleetKitFixtures.tessieTiresJSON.utf8))
+            default: (404, Data())
+            }
+        } body: { requests in
+            let expectedVINs: [String] = switch query {
+            case "battery car": ["A"]
+            case "missing": []
+            default: ["A", "B"]
+            }
+            let matches = try await VehicleStatusEntityQuery().entities(matching: query)
+            #expect(matches.map(\.vin).sorted() == expectedVINs)
+            let expectedPaths = ["/vehicles"] + expectedVINs.flatMap { ["/\($0)/state", "/\($0)/tire_pressure"] }
+            #expect(requests().compactMap { $0.url?.path }.sorted() == expectedPaths.sorted())
+        }
+    }
+
+    @Test(arguments: [false, true])
+    func savedDriveLookupsSkipUnrelatedVehiclesUnlessALegacyIDIsPresent(includeLegacy: Bool) async throws {
+        try await withIsolatedFleetService { request in
+            if request.url?.path == "/vehicles" {
+                return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
+            }
+            return (200, Data(#"{"results":[{"id":7,"started_at":1710000000}]}"#.utf8))
+        } body: { requests in
+            var ids = ["VIN-2:7", "OTHER:7", "VIN-2:7"]
+            if includeLegacy { ids.append("legacy-drive") }
+            let matches = try await DriveEntityQuery().entities(for: ids)
+            #expect(matches.map(\.id) == ["VIN-2:7"])
+            let expectedPaths = includeLegacy ? ["/vehicles", "/VIN-1/drives", "/VIN-2/drives"] : ["/vehicles", "/VIN-2/drives"]
+            #expect(requests().compactMap { $0.url?.path } == expectedPaths)
+        }
+    }
+
     @Test func `vehicle entity indexes car control and status keywords`() {
-        let entity = VehicleEntity(id: "VIN-1", name: "Roadrunner")
+        let entity = VehicleEntity(id: "VIN-1", name: "Roadrunner", model: "Model Y", color: "Pearl White")
         let attributes = entity.attributeSet
 
         #expect(entity.id == "VIN-1")
         #expect(entity.name == "Roadrunner")
-        #expect(attributes.contentDescription?.contains("status") == true)
-        #expect(attributes.contentDescription?.contains("horn") == true)
+        #expect(attributes.contentDescription?.contains("battery") == true)
+        #expect(attributes.contentDescription?.contains("unlock") == true)
         #expect(attributes.title == "Roadrunner")
-        #expect(attributes.displayName == "Roadrunner vehicle")
-        #expect(attributes.kind == "Tesla Vehicle")
-        #expect(attributes.textContent?.contains("Shortcuts") == true)
-        #expect(attributes.keywords?.contains("honk") == true)
+        #expect(attributes.displayName == "Roadrunner")
+        #expect(attributes.kind == "Model Y")
+        #expect(attributes.keywords?.contains("Model Y") == true)
+        #expect(attributes.keywords?.contains("Pearl White") == true)
         #expect(attributes.keywords?.contains("tire pressure") == true)
         #expect(attributes.keywords?.contains("release notes") == true)
         #expect(attributes.keywords?.contains("unlock") == true)
+        #expect(String(localized: entity.displayRepresentation.subtitle!) == "Model Y · Pearl White")
+        #expect(VehicleEntity(id: "VIN-1", name: "Roadrunner").attributeSet.kind == "Tesla Vehicle")
     }
 
     @Test func `vehicle status entity formats mileage tires location and searchable metadata`() throws {
@@ -135,10 +177,11 @@ struct FleetEntityIndexingTests {
             from: FleetKitFixtures.driveJSON.replacingOccurrences(of: "VIN-1", with: vin)
         )
 
-        #expect(String(localized: vehicle.displayRepresentation.subtitle!) == "VIN \(shortenedVIN)")
+        // Vehicles are told apart by name, model, and paint; no VIN fragment is shown or indexed.
+        #expect(String(localized: vehicle.displayRepresentation.subtitle!) == "Tesla")
         #expect(vehicle.attributeSet.contentDescription?.contains(vin) == false)
         #expect(vehicle.attributeSet.keywords?.contains(vin) == false)
-        #expect(vehicle.attributeSet.keywords?.contains(shortenedVIN) == true)
+        #expect(vehicle.attributeSet.keywords?.contains(shortenedVIN) == false)
 
         let driveAttributes = DriveEntity(info: longVINDrive).attributeSet
         #expect(driveAttributes.contentDescription?.contains(vin) == false)

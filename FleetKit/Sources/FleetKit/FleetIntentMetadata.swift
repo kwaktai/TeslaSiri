@@ -5,9 +5,9 @@ import OSLog
 enum FleetIntentMetadata {
     static let vehicleParameterTitle: LocalizedStringResource = "Vehicle"
     static let vehicleParameterDescription: LocalizedStringResource =
-        "Your Tesla from your fleet account. Leave blank to use your selected car."
-    static let vehicleRequestDialog = IntentDialog("Which car?")
-    static let vehicleDisambiguationDialog = IntentDialog("Which one?")
+        "The Tesla vehicle from the user's fleet account to target. Optional; omit to target the user's currently selected vehicle (or the first active vehicle on the account)."
+    static let vehicleRequestDialog = IntentDialog("Which vehicle?")
+    static let vehicleDisambiguationDialog = IntentDialog("Which vehicle?")
     static let myCar = "my car"
 }
 

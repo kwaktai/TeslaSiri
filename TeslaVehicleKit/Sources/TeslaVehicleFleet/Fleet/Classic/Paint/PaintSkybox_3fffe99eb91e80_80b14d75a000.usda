@@ -1,0 +1,1986 @@
+#usda 1.0
+
+def Material "PaintSkybox_3fffe99eb91e80"
+{
+    float inputs:AmbientEnergy = 1
+    float inputs:DeepenUltraRed = 0
+    float inputs:Metallic = 0.25
+    float inputs:NormalSign = 1
+    vector3f inputs:PaintRGB = (0.09411765, 0.09411765, 0.09411765)
+    float inputs:Roughness = 0.2
+    float inputs:SkyEnergy = 1
+    vector3f inputs:SkyX = (1, 0, 0)
+    vector3f inputs:SkyY = (0, 1, 0)
+    vector3f inputs:SkyZ = (0, 0, 1)
+    token outputs:mtlx:surface.connect = </PaintSkybox_3fffe99eb91e80/n235.outputs:out>
+
+    def Shader "n1"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80.inputs:PaintRGB>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n2"
+    {
+        uniform token info:id = "ND_normal_vector3"
+        string inputs:space = "world"
+        vector3f outputs:out
+    }
+
+    def Shader "n3"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80.inputs:NormalSign>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n4"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n2.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n3.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n5"
+    {
+        uniform token info:id = "ND_realitykit_viewdirection_vector3"
+        string inputs:space = "world"
+        vector3f outputs:out
+    }
+
+    def Shader "n6"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n5.outputs:out>
+        float inputs:in2 = -1
+        vector3f outputs:out
+    }
+
+    def Shader "n7"
+    {
+        uniform token info:id = "ND_realitykit_reflect_vector3"
+        vector3f inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n6.outputs:out>
+        vector3f inputs:normal.connect = </PaintSkybox_3fffe99eb91e80/n4.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n8"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n4.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n5.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n9"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n8.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n10"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80.inputs:SkyX>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n11"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80.inputs:SkyY>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n12"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80.inputs:SkyZ>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n13"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80.inputs:SkyEnergy>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n14"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80.inputs:AmbientEnergy>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n15"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80.inputs:Metallic>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n16"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80.inputs:Roughness>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n17"
+    {
+        uniform token info:id = "ND_texcoord_vector2"
+        int inputs:index = 0
+        float2 outputs:out
+    }
+
+    def Shader "n18"
+    {
+        uniform token info:id = "ND_image_float"
+        asset inputs:file = @Textures/54cdd202de9a09588ca7.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n17.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "periodic"
+        float outputs:out
+    }
+
+    def Shader "n19"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n7.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n10.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n20"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n7.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n11.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n21"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n7.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n12.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n22"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = -1
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n21.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n23"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n19.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n20.outputs:out>
+        float inputs:in3.connect = </PaintSkybox_3fffe99eb91e80/n22.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n24"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n23.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n25"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n23.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n26"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n23.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n27"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n25.outputs:out>
+        float inputs:low = -1
+        float outputs:out
+    }
+
+    def Shader "n28"
+    {
+        uniform token info:id = "ND_acos_float"
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n27.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n29"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n28.outputs:out>
+        float inputs:in2 = 0.31830987
+        float outputs:out
+    }
+
+    def Shader "n30"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n29.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n31"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </PaintSkybox_3fffe99eb91e80/n26.outputs:out>
+        float inputs:iny.connect = </PaintSkybox_3fffe99eb91e80/n24.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n32"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n31.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n33"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n24.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n34"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n33.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n35"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </PaintSkybox_3fffe99eb91e80/n34.outputs:out>
+        float inputs:iny.connect = </PaintSkybox_3fffe99eb91e80/n26.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n36"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n35.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n37"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n36.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n38"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n37.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n39"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n37.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n38.outputs:out>
+        float inputs:value1.connect = </PaintSkybox_3fffe99eb91e80/n24.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n40"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n26.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n41"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n32.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n39.outputs:out>
+        float inputs:value1.connect = </PaintSkybox_3fffe99eb91e80/n40.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n42"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n41.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n30.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n43"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe0.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n42.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n44"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 6
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n16.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n45"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n44.outputs:out>
+        float inputs:in2 = 0
+        float outputs:out
+    }
+
+    def Shader "n46"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n45.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n47"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe1.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n42.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n48"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </PaintSkybox_3fffe99eb91e80/n43.outputs:out>
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n47.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n46.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n49"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n44.outputs:out>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n50"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n49.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n51"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe2.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n42.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n52"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </PaintSkybox_3fffe99eb91e80/n48.outputs:out>
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n51.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n50.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n53"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n44.outputs:out>
+        float inputs:in2 = 2
+        float outputs:out
+    }
+
+    def Shader "n54"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n53.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n55"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe3.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n42.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n56"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </PaintSkybox_3fffe99eb91e80/n52.outputs:out>
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n55.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n54.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n57"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n44.outputs:out>
+        float inputs:in2 = 3
+        float outputs:out
+    }
+
+    def Shader "n58"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n57.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n59"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n42.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n60"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </PaintSkybox_3fffe99eb91e80/n56.outputs:out>
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n59.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n58.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n61"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n44.outputs:out>
+        float inputs:in2 = 4
+        float outputs:out
+    }
+
+    def Shader "n62"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n61.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n63"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe5.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n42.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n64"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </PaintSkybox_3fffe99eb91e80/n60.outputs:out>
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n63.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n62.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n65"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n44.outputs:out>
+        float inputs:in2 = 5
+        float outputs:out
+    }
+
+    def Shader "n66"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n65.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n67"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe6.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n42.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n68"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </PaintSkybox_3fffe99eb91e80/n64.outputs:out>
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n67.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n66.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n69"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n24.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n70"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n26.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n71"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </PaintSkybox_3fffe99eb91e80/n70.outputs:out>
+        float inputs:iny.connect = </PaintSkybox_3fffe99eb91e80/n69.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n72"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n71.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n73"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n69.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n74"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n73.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n75"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </PaintSkybox_3fffe99eb91e80/n74.outputs:out>
+        float inputs:iny.connect = </PaintSkybox_3fffe99eb91e80/n70.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n76"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n75.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n77"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n76.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n78"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n77.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n79"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n77.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n78.outputs:out>
+        float inputs:value1.connect = </PaintSkybox_3fffe99eb91e80/n69.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n80"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n70.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n81"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n72.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n79.outputs:out>
+        float inputs:value1.connect = </PaintSkybox_3fffe99eb91e80/n80.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n82"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1 = 0.5
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n81.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n83"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n82.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n30.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n84"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe0.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n83.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n85"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 6
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n16.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n86"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n85.outputs:out>
+        float inputs:in2 = 0
+        float outputs:out
+    }
+
+    def Shader "n87"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n86.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n88"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe1.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n83.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n89"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </PaintSkybox_3fffe99eb91e80/n84.outputs:out>
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n88.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n87.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n90"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n85.outputs:out>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n91"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n90.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n92"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe2.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n83.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n93"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </PaintSkybox_3fffe99eb91e80/n89.outputs:out>
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n92.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n91.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n94"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n85.outputs:out>
+        float inputs:in2 = 2
+        float outputs:out
+    }
+
+    def Shader "n95"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n94.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n96"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe3.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n83.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n97"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </PaintSkybox_3fffe99eb91e80/n93.outputs:out>
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n96.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n95.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n98"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n85.outputs:out>
+        float inputs:in2 = 3
+        float outputs:out
+    }
+
+    def Shader "n99"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n98.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n100"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n83.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n101"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </PaintSkybox_3fffe99eb91e80/n97.outputs:out>
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n100.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n99.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n102"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n85.outputs:out>
+        float inputs:in2 = 4
+        float outputs:out
+    }
+
+    def Shader "n103"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n102.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n104"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe5.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n83.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n105"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </PaintSkybox_3fffe99eb91e80/n101.outputs:out>
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n104.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n103.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n106"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n85.outputs:out>
+        float inputs:in2 = 5
+        float outputs:out
+    }
+
+    def Shader "n107"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n106.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n108"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe6.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n83.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n109"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </PaintSkybox_3fffe99eb91e80/n105.outputs:out>
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n108.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n107.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n110"
+    {
+        uniform token info:id = "ND_ifgreater_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n68.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n109.outputs:out>
+        float inputs:value1.connect = </PaintSkybox_3fffe99eb91e80/n26.outputs:out>
+        float inputs:value2 = 0
+        vector3f outputs:out
+    }
+
+    def Shader "n111"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n4.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n10.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n112"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n4.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n11.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n113"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n4.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n12.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n114"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n111.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n112.outputs:out>
+        float inputs:in3.connect = </PaintSkybox_3fffe99eb91e80/n113.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n115"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n114.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n116"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n114.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n117"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n114.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n118"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n116.outputs:out>
+        float inputs:low = -1
+        float outputs:out
+    }
+
+    def Shader "n119"
+    {
+        uniform token info:id = "ND_acos_float"
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n118.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n120"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n119.outputs:out>
+        float inputs:in2 = 0.31830987
+        float outputs:out
+    }
+
+    def Shader "n121"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n120.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n122"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </PaintSkybox_3fffe99eb91e80/n117.outputs:out>
+        float inputs:iny.connect = </PaintSkybox_3fffe99eb91e80/n115.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n123"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n122.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n124"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n115.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n125"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n124.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n126"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </PaintSkybox_3fffe99eb91e80/n125.outputs:out>
+        float inputs:iny.connect = </PaintSkybox_3fffe99eb91e80/n117.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n127"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n126.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n128"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n127.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n129"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n128.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n130"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n128.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n129.outputs:out>
+        float inputs:value1.connect = </PaintSkybox_3fffe99eb91e80/n115.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n131"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n117.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n132"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n123.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n130.outputs:out>
+        float inputs:value1.connect = </PaintSkybox_3fffe99eb91e80/n131.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n133"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n132.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n121.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n134"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n133.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n135"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n115.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n136"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n117.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n137"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </PaintSkybox_3fffe99eb91e80/n136.outputs:out>
+        float inputs:iny.connect = </PaintSkybox_3fffe99eb91e80/n135.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n138"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n137.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n139"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n135.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n140"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n139.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n141"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </PaintSkybox_3fffe99eb91e80/n140.outputs:out>
+        float inputs:iny.connect = </PaintSkybox_3fffe99eb91e80/n136.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n142"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n141.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n143"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n142.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n144"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n143.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n145"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n143.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n144.outputs:out>
+        float inputs:value1.connect = </PaintSkybox_3fffe99eb91e80/n135.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n146"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n136.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n147"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n138.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n145.outputs:out>
+        float inputs:value1.connect = </PaintSkybox_3fffe99eb91e80/n146.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n148"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1 = 0.5
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n147.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n149"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n148.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n121.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n150"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </PaintSkybox_3fffe99eb91e80/n149.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n151"
+    {
+        uniform token info:id = "ND_ifgreater_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n134.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n150.outputs:out>
+        float inputs:value1.connect = </PaintSkybox_3fffe99eb91e80/n117.outputs:out>
+        float inputs:value2 = 0
+        vector3f outputs:out
+    }
+
+    def Shader "n152"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg = (0.04, 0.04, 0.04)
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n1.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n15.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n153"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n16.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n154"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n153.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n153.outputs:out>
+        float inputs:in3.connect = </PaintSkybox_3fffe99eb91e80/n153.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n155"
+    {
+        uniform token info:id = "ND_max_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n154.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n152.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n156"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n9.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n157"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n156.outputs:out>
+        float inputs:in2 = 5
+        float outputs:out
+    }
+
+    def Shader "n158"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </PaintSkybox_3fffe99eb91e80/n152.outputs:out>
+        vector3f inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n155.outputs:out>
+        float inputs:mix.connect = </PaintSkybox_3fffe99eb91e80/n157.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n159"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n153.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n153.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n160"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = -9.28
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n9.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n161"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1 = 2
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n160.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n162"
+    {
+        uniform token info:id = "ND_min_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n159.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n161.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n163"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n162.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n153.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n164"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.0275
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n16.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n165"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.0425
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n164.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n166"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n163.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n165.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n167"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.572
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n16.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n168"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n167.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n169"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n166.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n170"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n168.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n169.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n171"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.022
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n16.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n172"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n171.outputs:out>
+        float inputs:in2 = 0.04
+        float outputs:out
+    }
+
+    def Shader "n173"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n166.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n174"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n172.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n173.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n175"
+    {
+        uniform token info:id = "ND_mix_float"
+        float inputs:bg = 1
+        float inputs:fg.connect = </PaintSkybox_3fffe99eb91e80/n18.outputs:out>
+        float inputs:mix = 1
+        float outputs:out
+    }
+
+    def Shader "n176"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n158.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n170.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n177"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n174.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n174.outputs:out>
+        float inputs:in3.connect = </PaintSkybox_3fffe99eb91e80/n174.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n178"
+    {
+        uniform token info:id = "ND_add_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n176.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n177.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n179"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n175.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n13.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n180"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n178.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n179.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n181"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n15.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n182"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n181.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n18.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n183"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n14.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n13.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n184"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n182.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n183.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n185"
+    {
+        uniform token info:id = "ND_subtract_vector3"
+        vector3f inputs:in1 = (1, 1, 1)
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n158.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n186"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n1.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n185.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n187"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n186.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n184.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n188"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n110.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n180.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n189"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80.inputs:DeepenUltraRed>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n190"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n188.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n191"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n188.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n192"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n188.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n193"
+    {
+        uniform token info:id = "ND_min_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n191.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n192.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n194"
+    {
+        uniform token info:id = "ND_min_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n190.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n193.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n195"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n194.outputs:out>
+        float inputs:in2 = 0.011764706
+        float outputs:out
+    }
+
+    def Shader "n196"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1 = 0
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n195.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n197"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n196.outputs:out>
+        float inputs:in2 = 18.214285
+        float outputs:out
+    }
+
+    def Shader "n198"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n197.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n199"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.5
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n198.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n200"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n199.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n201"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n198.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n200.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n202"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.05490196
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n201.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n203"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n196.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n202.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n204"
+    {
+        uniform token info:id = "ND_smoothstep_float"
+        float inputs:high = 0.85
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n194.outputs:out>
+        float inputs:low = 0.46
+        float outputs:out
+    }
+
+    def Shader "n205"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.75
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n189.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n206"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n204.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n207"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n203.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n206.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n208"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n205.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n207.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n209"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n208.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n208.outputs:out>
+        float inputs:in3.connect = </PaintSkybox_3fffe99eb91e80/n208.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n210"
+    {
+        uniform token info:id = "ND_subtract_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n188.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n209.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n211"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n151.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n187.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n212"
+    {
+        uniform token info:id = "ND_add_vector3"
+        vector3f inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n210.outputs:out>
+        vector3f inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n211.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n213"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n212.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n214"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n213.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n215"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n214.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n216"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n215.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n217"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n216.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n218"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n214.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n219"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n217.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n218.outputs:out>
+        float inputs:value1.connect = </PaintSkybox_3fffe99eb91e80/n214.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n220"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n212.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n221"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n220.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n222"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n221.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n223"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n222.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n224"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n223.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n225"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n221.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n226"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n224.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n225.outputs:out>
+        float inputs:value1.connect = </PaintSkybox_3fffe99eb91e80/n221.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n227"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n212.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n228"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </PaintSkybox_3fffe99eb91e80/n227.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n229"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n228.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n230"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n229.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n231"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n230.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n232"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n228.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n233"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n231.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n232.outputs:out>
+        float inputs:value1.connect = </PaintSkybox_3fffe99eb91e80/n228.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n234"
+    {
+        uniform token info:id = "ND_combine3_color3"
+        float inputs:in1.connect = </PaintSkybox_3fffe99eb91e80/n219.outputs:out>
+        float inputs:in2.connect = </PaintSkybox_3fffe99eb91e80/n226.outputs:out>
+        float inputs:in3.connect = </PaintSkybox_3fffe99eb91e80/n233.outputs:out>
+        color3f outputs:out
+    }
+
+    def Shader "n235"
+    {
+        uniform token info:id = "ND_realitykit_unlit_surfaceshader"
+        bool inputs:applyPostProcessToneMap = 0
+        color3f inputs:color.connect = </PaintSkybox_3fffe99eb91e80/n234.outputs:out>
+        float inputs:opacity = 1
+        token outputs:out
+    }
+}
+

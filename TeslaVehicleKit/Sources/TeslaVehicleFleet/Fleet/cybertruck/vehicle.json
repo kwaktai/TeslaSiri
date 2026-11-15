@@ -1,0 +1,6810 @@
+{
+  "counts": {
+    "sourceBoundsChecked": 305,
+    "surfaces": 311,
+    "triangles": 186225,
+    "vertices": 387078
+  },
+  "hidden": [
+    "Body/Wheel_LF_Spatial/Wheels_Marker/Suspension_Dynamic_Collision_Area",
+    "Body/Hood_Spatial/Frunk_Marker/Frunk_Marker_Dynamic_Collision_Area",
+    "Body/Hood_Spatial/Headlights_Beam2",
+    "Body/Hood_Spatial/Headlights_Beam2/LeftGlow",
+    "Body/Hood_Spatial/Headlights_Beam2/RightGlow",
+    "Body/Hood_Spatial/DRL2",
+    "Body/Door_LF_Spatial/Window_LF_Spatial/Window_LF2/Window_LF_Dynamic_Collision_Area",
+    "Body/Door_LR_Spatial/Window_LR_Spatial/Window_LR2/Window_LR_Dynamic_Collision_Area",
+    "Body/Trunk_Spatial/Trunk_Marker/Trunk_Marker_Dynamic_Collision_Area",
+    "Body/Trunk_Spatial/Brake_Lights_Trunk2",
+    "Body/Trunk_Spatial/Headlights_Trunk2",
+    "Body/Trunk_Spatial/Decal_liftgate_foundation",
+    "Body/Trunk_Spatial/Decal_liftgate_cerberus",
+    "Body/Truck_Bed2",
+    "Body/Center_Console_RWD2",
+    "Body/Tonneau_Cover_Button_AWD2",
+    "Body/Bed_Light_RWD2",
+    "Body/Body2/Lock_Marker/Lock_Marker_Dynamic_Collision_Area",
+    "Body/Body2/Blocker_Collision_Area",
+    "Body/Plate_EU2",
+    "Body/Taillights_Projections2",
+    "Body/Headlights_Projections2",
+    "Body/Bed_Light2",
+    "Body/Right_Turn_Signal_Front2",
+    "Body/Left_Turn_Signal_Front2",
+    "Body/Reverse_Lights2",
+    "Body/Headllights_Rear_Right2",
+    "Body/Brake_Lights_Left2",
+    "Body/Headllights_Rear_Left2",
+    "Body/Brake_Lights_Right2",
+    "Body/Door_LED_LF2",
+    "Body/Door_LED_LR2",
+    "Body/Headlights2",
+    "Body/Door_LED_RR2",
+    "Body/Door_LED_RF2",
+    "Body/Headlights_Side_Right2",
+    "Body/Headlights_Side_Left2",
+    "Body/Park_Lights2",
+    "Body/Tonneau",
+    "Body/Tonneau/TonneauCover",
+    "Body/Chargeport_Static_Collision_Area",
+    "Body/Frunk_Static_Collision_Area",
+    "Body/Trunk_Static_Collision_Area",
+    "Body/Defrost_Front",
+    "Body/Defrost_Rear",
+    "Body/Spatials/Airflow_left",
+    "Body/Spatials/Airflow_right",
+    "Body/Decals_exterior",
+    "Body/FrontMarker",
+    "Body/RearMarker",
+    "Body/LeftMarker",
+    "Body/RightMarker",
+    "Body/FrontLeftMarker",
+    "Body/RearLeftMarker",
+    "Body/FrontRightMarker",
+    "Body/RearRightMarker"
+  ],
+  "paintSurfaces": [
+    "Body/Hood_Spatial/Hood2/surface_00",
+    "Body/Hood_Spatial/Hood2/surface_01",
+    "Body/Door_LF_Spatial/Door_LF2/surface_00",
+    "Body/Door_LF_Spatial/Door_LF2/surface_01",
+    "Body/Door_RF_Spatial/Door_RF2/surface_00",
+    "Body/Door_RF_Spatial/Door_RF2/surface_01",
+    "Body/Door_LR_Spatial/Door_LR2/surface_00",
+    "Body/Door_LR_Spatial/Door_LR2/surface_01",
+    "Body/Door_RR_Spatial/Door_RR2/surface_00",
+    "Body/Door_RR_Spatial/Door_RR2/surface_01",
+    "Body/Trunk_Spatial/Trunk2/surface_01",
+    "Body/Body2/surface_06",
+    "Body/Body2/surface_07"
+  ],
+  "wheelMounts": [
+    {
+      "socket": "Body/Wheel_LF_Spatial",
+      "child": "Wheel_Cybertruck_Premium",
+      "source": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn"
+    },
+    {
+      "socket": "Body/Wheel_LR_Spatial",
+      "child": "Wheel_Cybertruck_Premium",
+      "source": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn"
+    },
+    {
+      "socket": "Body/Wheel_RF_Spatial",
+      "child": "Wheel_Cybertruck_Premium",
+      "source": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn"
+    },
+    {
+      "socket": "Body/Wheel_RR_Spatial",
+      "child": "Wheel_Cybertruck_Premium",
+      "source": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn"
+    }
+  ],
+  "clips": {
+    "Tonneau/TonneauAnimation/Tonneau": {
+      "duration": 30.0,
+      "tracks": [
+        {
+          "target": "Body/Tonneau/Tonneau",
+          "channel": "translation",
+          "times": [
+            0.0,
+            1.0,
+            2.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.057,
+              0.005,
+              0.0
+            ],
+            [
+              0.114,
+              0.011,
+              0.0
+            ],
+            [
+              0.114,
+              0.011,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2",
+          "channel": "translation",
+          "times": [
+            0.0,
+            2.0,
+            3.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.054,
+              0.008,
+              0.0
+            ],
+            [
+              0.054,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3",
+          "channel": "translation",
+          "times": [
+            0.0,
+            3.0,
+            4.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.053,
+              0.008,
+              0.0
+            ],
+            [
+              0.053,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4",
+          "channel": "translation",
+          "times": [
+            0.0,
+            4.0,
+            5.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.056,
+              0.009,
+              0.0
+            ],
+            [
+              0.056,
+              0.009,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5",
+          "channel": "translation",
+          "times": [
+            0.0,
+            5.0,
+            6.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.06,
+              0.009,
+              0.0
+            ],
+            [
+              0.06,
+              0.009,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6",
+          "channel": "translation",
+          "times": [
+            0.0,
+            6.0,
+            7.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.009,
+              0.0
+            ],
+            [
+              0.055,
+              0.009,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7",
+          "channel": "translation",
+          "times": [
+            0.0,
+            7.0,
+            8.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.054,
+              0.008,
+              0.0
+            ],
+            [
+              0.054,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8",
+          "channel": "translation",
+          "times": [
+            0.0,
+            8.0,
+            9.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.057,
+              0.009,
+              0.0
+            ],
+            [
+              0.057,
+              0.009,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9",
+          "channel": "translation",
+          "times": [
+            0.0,
+            9.0,
+            10.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.052,
+              0.008,
+              0.0
+            ],
+            [
+              0.052,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10",
+          "channel": "translation",
+          "times": [
+            0.0,
+            10.0,
+            11.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.057,
+              0.009,
+              0.0
+            ],
+            [
+              0.057,
+              0.009,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11",
+          "channel": "translation",
+          "times": [
+            0.0,
+            11.0,
+            12.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.058,
+              0.009,
+              0.0
+            ],
+            [
+              0.058,
+              0.009,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12",
+          "channel": "translation",
+          "times": [
+            0.0,
+            12.0,
+            13.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.053,
+              0.008,
+              0.0
+            ],
+            [
+              0.053,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13",
+          "channel": "translation",
+          "times": [
+            0.0,
+            13.0,
+            14.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14",
+          "channel": "translation",
+          "times": [
+            0.0,
+            14.0,
+            15.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.058,
+              0.009,
+              0.0
+            ],
+            [
+              0.058,
+              0.009,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15",
+          "channel": "translation",
+          "times": [
+            0.0,
+            15.0,
+            16.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.053,
+              0.008,
+              0.0
+            ],
+            [
+              0.053,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15/Tonneau16",
+          "channel": "translation",
+          "times": [
+            0.0,
+            16.0,
+            17.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.009,
+              0.0
+            ],
+            [
+              0.055,
+              0.009,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15/Tonneau16/Tonneau17",
+          "channel": "translation",
+          "times": [
+            0.0,
+            17.0,
+            18.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.009,
+              0.0
+            ],
+            [
+              0.055,
+              0.009,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15/Tonneau16/Tonneau17/Tonneau18",
+          "channel": "translation",
+          "times": [
+            0.0,
+            18.0,
+            19.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15/Tonneau16/Tonneau17/Tonneau18/Tonneau19",
+          "channel": "translation",
+          "times": [
+            0.0,
+            19.0,
+            20.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.009,
+              0.0
+            ],
+            [
+              0.055,
+              0.009,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15/Tonneau16/Tonneau17/Tonneau18/Tonneau19/Tonneau20",
+          "channel": "translation",
+          "times": [
+            0.0,
+            20.0,
+            21.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15/Tonneau16/Tonneau17/Tonneau18/Tonneau19/Tonneau20/Tonneau21",
+          "channel": "translation",
+          "times": [
+            0.0,
+            21.0,
+            22.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15/Tonneau16/Tonneau17/Tonneau18/Tonneau19/Tonneau20/Tonneau21/Tonneau22",
+          "channel": "translation",
+          "times": [
+            0.0,
+            22.0,
+            23.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15/Tonneau16/Tonneau17/Tonneau18/Tonneau19/Tonneau20/Tonneau21/Tonneau22/Tonneau23",
+          "channel": "translation",
+          "times": [
+            0.0,
+            23.0,
+            24.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.009,
+              0.0
+            ],
+            [
+              0.055,
+              0.009,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15/Tonneau16/Tonneau17/Tonneau18/Tonneau19/Tonneau20/Tonneau21/Tonneau22/Tonneau23/Tonneau24",
+          "channel": "translation",
+          "times": [
+            0.0,
+            24.0,
+            25.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15/Tonneau16/Tonneau17/Tonneau18/Tonneau19/Tonneau20/Tonneau21/Tonneau22/Tonneau23/Tonneau24/Tonneau25",
+          "channel": "translation",
+          "times": [
+            0.0,
+            25.0,
+            26.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.009,
+              0.0
+            ],
+            [
+              0.055,
+              0.009,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15/Tonneau16/Tonneau17/Tonneau18/Tonneau19/Tonneau20/Tonneau21/Tonneau22/Tonneau23/Tonneau24/Tonneau25/Tonneau26",
+          "channel": "translation",
+          "times": [
+            0.0,
+            26.0,
+            27.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15/Tonneau16/Tonneau17/Tonneau18/Tonneau19/Tonneau20/Tonneau21/Tonneau22/Tonneau23/Tonneau24/Tonneau25/Tonneau26/Tonneau27",
+          "channel": "translation",
+          "times": [
+            0.0,
+            27.0,
+            28.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/Tonneau/Tonneau2/Tonneau3/Tonneau4/Tonneau5/Tonneau6/Tonneau7/Tonneau8/Tonneau9/Tonneau10/Tonneau11/Tonneau12/Tonneau13/Tonneau14/Tonneau15/Tonneau16/Tonneau17/Tonneau18/Tonneau19/Tonneau20/Tonneau21/Tonneau22/Tonneau23/Tonneau24/Tonneau25/Tonneau26/Tonneau27/Tonneau28",
+          "channel": "translation",
+          "times": [
+            0.0,
+            28.0,
+            29.0,
+            30.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.055,
+              0.008,
+              0.0
+            ],
+            [
+              0.074,
+              0.008,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Tonneau/TonneauCover",
+          "channel": "translation",
+          "times": [
+            0.0,
+            29.0,
+            30.0
+          ],
+          "values": [
+            [
+              -1.89668,
+              1.4783,
+              0.0
+            ],
+            [
+              -0.291623,
+              1.71758,
+              0.0
+            ],
+            [
+              -0.288937,
+              1.71758,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            8.701978173894268
+          ]
+        }
+      ]
+    },
+    "LFDoorAnimation/LFDoor": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Door_LF_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.0
+          ],
+          "values": [
+            [
+              0.552704,
+              1.75303e-09,
+              1.25061
+            ],
+            [
+              1.36349,
+              -70.4282,
+              -0.101732
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            0.5527039759965036,
+            1.7530295778590588e-09,
+            1.2506089682105894
+          ]
+        }
+      ]
+    },
+    "LRDoorAnimation/LRDoor": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Door_LR_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.0
+          ],
+          "values": [
+            [
+              0.477103,
+              -2.50013e-09,
+              2.21178
+            ],
+            [
+              2.25316,
+              -83.0793,
+              -0.206825
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            0.47710304370807516,
+            -2.50013154787801e-09,
+            2.21177894429839
+          ]
+        }
+      ]
+    },
+    "RFDoorAnimation/RFDoor": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Door_RF_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.0
+          ],
+          "values": [
+            [
+              -0.55313,
+              -7.65168e-05,
+              1.25106
+            ],
+            [
+              -1.36398,
+              70.4722,
+              -0.103032
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.5531302369329241,
+            -7.651695321632095e-05,
+            1.251061608365778
+          ]
+        }
+      ]
+    },
+    "RRDoorAnimation/RRDoor": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Door_RR_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.0
+          ],
+          "values": [
+            [
+              -0.477339,
+              -0.000424649,
+              2.21208
+            ],
+            [
+              -2.25355,
+              83.0598,
+              -0.206276
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.47733909419247994,
+            -0.00042464935455155574,
+            2.212076756653732
+          ]
+        }
+      ]
+    },
+    "HoodAnimation/Hood": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Hood_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              70.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "TrunkAnimation/Trunk": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Trunk_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              88.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "ChargeportAnimation/Chargecap": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Charge_Cap_Spatial",
+          "channel": "rotation_degrees:x",
+          "times": [
+            0.0,
+            0.009239964437597337,
+            0.018379449606982234,
+            0.027421124682518894,
+            0.036367658838571515,
+            0.0452217212495043,
+            0.053985981089681445,
+            0.06266310753346716,
+            0.07125576975522563,
+            0.07976663692932107,
+            0.08819837823011767,
+            0.09655366283197964,
+            0.10483515990927117,
+            0.11304553863635647,
+            0.12118746818759973,
+            0.12926361773736517,
+            0.13727665646001697,
+            0.14522925352991933,
+            0.15312407812143647,
+            0.16096379940893257,
+            0.16875108656677185,
+            0.1764886087693185,
+            0.1841790351909367,
+            0.19182503500599069,
+            0.19942927738884464,
+            0.20699443151386276,
+            0.21452316655540926,
+            0.22201815168784833,
+            0.22948205608554417,
+            0.236917548922861,
+            0.24432729937416298,
+            0.25171397661381434,
+            0.2590802498161793,
+            0.266428788155622,
+            0.2737622608065067,
+            0.28108333694319754,
+            0.2883946857400588,
+            0.2956989763714546,
+            0.3029988780117492,
+            0.31029705983530675,
+            0.3175961910164915,
+            0.32489894072966763,
+            0.33220797814919933,
+            0.3395259724494508,
+            0.3468555928047863,
+            0.35419950838956993,
+            0.36156038837816595,
+            0.36894090194493856,
+            0.37634371826425195,
+            0.3837715065104703,
+            0.39122693585795787,
+            0.3987126754810788,
+            0.4062313945541973,
+            0.4137857622516776,
+            0.4213784477478839,
+            0.4290121202171804,
+            0.43668944883393124,
+            0.4444131027725007,
+            0.4521857512072529,
+            0.4600100633125521,
+            0.4678887082627625,
+            0.4758243552322483,
+            0.4838196733953737,
+            0.49187733192650285,
+            0.5,
+            0.5095195808567041,
+            0.5188206255224941,
+            0.5279110860851688,
+            0.5367989146325272,
+            0.5454920632523681,
+            0.5539984840324905,
+            0.5623261290606933,
+            0.5704829504247755,
+            0.5784769002125358,
+            0.5863159305117733,
+            0.5940079934102869,
+            0.6015610409958754,
+            0.6089830253563377,
+            0.6162818985794729,
+            0.6234656127530798,
+            0.6305421199649572,
+            0.6375193723029042,
+            0.6444053218547197,
+            0.6512079207082024,
+            0.6579351209511515,
+            0.6645948746713657,
+            0.671195133956644,
+            0.6777438508947853,
+            0.6842489775735885,
+            0.6907184660808525,
+            0.6971602685043763,
+            0.7035823369319587,
+            0.7099926234513987,
+            0.7163990801504951,
+            0.722809659117047,
+            0.7292323124388531,
+            0.7356749922037125,
+            0.7421456504994239,
+            0.7486522394137864,
+            0.7552027110345989,
+            0.7618050174496602,
+            0.7684671107467693,
+            0.7751969430137251,
+            0.7820024663383265,
+            0.7888916328083724,
+            0.7958723945116617,
+            0.8029527035359934,
+            0.8101405119691663,
+            0.8174437718989793,
+            0.8248704354132315,
+            0.8324284545997216,
+            0.8401257815462486,
+            0.8479703683406115,
+            0.855970167070609,
+            0.8641331298240402,
+            0.872467208688704,
+            0.8809803557523992,
+            0.8896805231029248,
+            0.8985756628280797,
+            0.9076737270156627,
+            0.9169826677534729,
+            0.9265104371293091,
+            0.9362649872309703,
+            0.9462542701462553,
+            0.9564862379629631,
+            0.9669688427688925,
+            0.9777100366518425,
+            0.9887177716996121,
+            1.0
+          ],
+          "values": [
+            [
+              -1.495859980583191
+            ],
+            [
+              -0.8950695672579059
+            ],
+            [
+              -0.29467644114993163
+            ],
+            [
+              0.30517874885708807
+            ],
+            [
+              0.9043553538795095
+            ],
+            [
+              1.502712725033689
+            ],
+            [
+              2.1001102134359826
+            ],
+            [
+              2.696407170202747
+            ],
+            [
+              3.2914629464503378
+            ],
+            [
+              3.885136893295112
+            ],
+            [
+              4.477288361853425
+            ],
+            [
+              5.067776703241634
+            ],
+            [
+              5.656461268576095
+            ],
+            [
+              6.243201408973164
+            ],
+            [
+              6.827856475549197
+            ],
+            [
+              7.410285819420551
+            ],
+            [
+              7.990348791703582
+            ],
+            [
+              8.567904743514646
+            ],
+            [
+              9.1428130259701
+            ],
+            [
+              9.714932990186298
+            ],
+            [
+              10.2841239872796
+            ],
+            [
+              10.850245368366359
+            ],
+            [
+              11.413156484562933
+            ],
+            [
+              11.972716686985677
+            ],
+            [
+              12.528785326750949
+            ],
+            [
+              13.081221754975104
+            ],
+            [
+              13.629885322774498
+            ],
+            [
+              14.174635381265489
+            ],
+            [
+              14.715331281564431
+            ],
+            [
+              15.251832374787682
+            ],
+            [
+              15.783998012051597
+            ],
+            [
+              16.311687544472534
+            ],
+            [
+              16.834760323166847
+            ],
+            [
+              17.353075699250894
+            ],
+            [
+              17.86649302384103
+            ],
+            [
+              18.374871648053613
+            ],
+            [
+              18.878070923004998
+            ],
+            [
+              19.37595019981154
+            ],
+            [
+              19.8683688295896
+            ],
+            [
+              20.355186163455528
+            ],
+            [
+              20.836261552525684
+            ],
+            [
+              21.311454347916424
+            ],
+            [
+              21.780623900744104
+            ],
+            [
+              22.24362956212508
+            ],
+            [
+              22.700330683175707
+            ],
+            [
+              23.150586615012344
+            ],
+            [
+              23.594256708751345
+            ],
+            [
+              24.031200315509068
+            ],
+            [
+              24.461276786401868
+            ],
+            [
+              24.8843454725461
+            ],
+            [
+              25.300265725058125
+            ],
+            [
+              25.708896895054295
+            ],
+            [
+              26.110098333650967
+            ],
+            [
+              26.503729391964498
+            ],
+            [
+              26.889649421111244
+            ],
+            [
+              27.26771777220756
+            ],
+            [
+              27.637793796369806
+            ],
+            [
+              27.999736844714334
+            ],
+            [
+              28.353406268357503
+            ],
+            [
+              28.698661418415668
+            ],
+            [
+              29.035361646005185
+            ],
+            [
+              29.36336630224241
+            ],
+            [
+              29.682534738243703
+            ],
+            [
+              29.992726305125416
+            ],
+            [
+              30.293800354003906
+            ],
+            [
+              30.610448243722203
+            ],
+            [
+              30.91148129978683
+            ],
+            [
+              31.19733372530027
+            ],
+            [
+              31.46843972336501
+            ],
+            [
+              31.725233497083536
+            ],
+            [
+              31.968149249558337
+            ],
+            [
+              32.1976211838919
+            ],
+            [
+              32.4140835031867
+            ],
+            [
+              32.61797041054524
+            ],
+            [
+              32.809716109069996
+            ],
+            [
+              32.989754801863455
+            ],
+            [
+              33.158520692028105
+            ],
+            [
+              33.31644798266643
+            ],
+            [
+              33.46397087688092
+            ],
+            [
+              33.60152357777406
+            ],
+            [
+              33.729540288448334
+            ],
+            [
+              33.84845521200623
+            ],
+            [
+              33.95870255155023
+            ],
+            [
+              34.06071651018283
+            ],
+            [
+              34.154931291006505
+            ],
+            [
+              34.24178109712375
+            ],
+            [
+              34.321700131637044
+            ],
+            [
+              34.39512259764888
+            ],
+            [
+              34.46248269826174
+            ],
+            [
+              34.52421463657811
+            ],
+            [
+              34.580752615700476
+            ],
+            [
+              34.63253083873133
+            ],
+            [
+              34.67998350877315
+            ],
+            [
+              34.723544828928425
+            ],
+            [
+              34.763649002299644
+            ],
+            [
+              34.80073023198929
+            ],
+            [
+              34.83522272109985
+            ],
+            [
+              34.867560672733816
+            ],
+            [
+              34.898178289993666
+            ],
+            [
+              34.92750977598189
+            ],
+            [
+              34.95598933380097
+            ],
+            [
+              34.9840511665534
+            ],
+            [
+              35.01212947734166
+            ],
+            [
+              35.04065846926824
+            ],
+            [
+              35.07007234543562
+            ],
+            [
+              35.10080530894629
+            ],
+            [
+              35.13329156290274
+            ],
+            [
+              35.16796531040745
+            ],
+            [
+              35.205260754562914
+            ],
+            [
+              35.24561209847161
+            ],
+            [
+              35.28945354523603
+            ],
+            [
+              35.337219297958654
+            ],
+            [
+              35.389343559741974
+            ],
+            [
+              35.44626053368847
+            ],
+            [
+              35.50840442290064
+            ],
+            [
+              35.57620943048096
+            ],
+            [
+              35.650109759531915
+            ],
+            [
+              35.730539613156
+            ],
+            [
+              35.81793319445569
+            ],
+            [
+              35.91272470653348
+            ],
+            [
+              36.015348352491856
+            ],
+            [
+              36.1262383354333
+            ],
+            [
+              36.2458288584603
+            ],
+            [
+              36.37455412467534
+            ],
+            [
+              36.51284833718091
+            ],
+            [
+              36.6611456990795
+            ],
+            [
+              36.819880413473584
+            ],
+            [
+              36.98948668346566
+            ],
+            [
+              37.1703987121582
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [],
+          "restEuler": [
+            -1.4958595582542533,
+            1.1342699736988004,
+            -37.178808116109565
+          ]
+        },
+        {
+          "target": "Body/Charge_Cap_Spatial",
+          "channel": "rotation_degrees:y",
+          "times": [
+            0.0,
+            0.008998344480914966,
+            0.01790202970369137,
+            0.02671381438130993,
+            0.03543645722675137,
+            0.044072716952996416,
+            0.05262535227302578,
+            0.061097121899820195,
+            0.06949078454636037,
+            0.07780909892562704,
+            0.08605482375060092,
+            0.09423071773426273,
+            0.10233953958959319,
+            0.11038404802957302,
+            0.11836700176718296,
+            0.1262911595154037,
+            0.134159279987216,
+            0.14197412189560055,
+            0.14973844395353808,
+            0.15745500487400932,
+            0.16512656336999498,
+            0.1727558781544758,
+            0.18034570794043248,
+            0.18789881144084575,
+            0.19541794736869633,
+            0.20290587443696495,
+            0.21036535135863232,
+            0.21779913684667918,
+            0.22520998961408623,
+            0.2326006683738342,
+            0.2399739318389038,
+            0.24733253872227579,
+            0.25467924773693085,
+            0.2620168175958497,
+            0.2693480070120131,
+            0.27667557469840176,
+            0.2840022793679964,
+            0.2913308797337777,
+            0.2986641345087264,
+            0.3060048024058233,
+            0.313355642138049,
+            0.3207194124183843,
+            0.3280988719598099,
+            0.33549677947530654,
+            0.3429158936778549,
+            0.35035897328043575,
+            0.3578287769960298,
+            0.3653280635376177,
+            0.3728595916181803,
+            0.3804261199506982,
+            0.3880304072481522,
+            0.395675212223523,
+            0.4033632935897913,
+            0.41109741005993783,
+            0.41888032034694334,
+            0.4267147831637885,
+            0.4346035572234541,
+            0.44254940123892084,
+            0.4505550739231694,
+            0.45862333398918054,
+            0.46675694014993496,
+            0.4749586511184134,
+            0.48323122560759657,
+            0.4915774223304652,
+            0.5,
+            0.5103882852447441,
+            0.5205822708321648,
+            0.530587401699222,
+            0.5404091227828758,
+            0.550052879020086,
+            0.5595241153478128,
+            0.568828276703016,
+            0.5779708080226555,
+            0.5869571542436915,
+            0.5957927603030839,
+            0.6044830711377926,
+            0.6130335316847777,
+            0.621449586880999,
+            0.6297366816634167,
+            0.6379002609689906,
+            0.6459457697346807,
+            0.653878652897447,
+            0.6617043553942494,
+            0.6694283221620481,
+            0.6770559981378028,
+            0.6845928282584737,
+            0.6920442574610206,
+            0.6994157306824036,
+            0.7067126928595826,
+            0.7139405889295176,
+            0.7211048638291686,
+            0.7282109624954956,
+            0.7352643298654584,
+            0.7422704108760172,
+            0.7492346504641318,
+            0.7561624935667624,
+            0.7630593851208687,
+            0.7699307700634108,
+            0.7767820933313487,
+            0.7836187998616424,
+            0.7904463345912518,
+            0.7972701424571369,
+            0.8040956683962577,
+            0.8109283573455741,
+            0.8177736542420462,
+            0.8246370040226338,
+            0.8315238516242971,
+            0.8384396419839959,
+            0.8453898200386902,
+            0.8523798307253401,
+            0.8594151189809054,
+            0.8665011297423462,
+            0.8736433079466224,
+            0.880847098530694,
+            0.888117946431521,
+            0.8954612965860633,
+            0.902882593931281,
+            0.910387283404134,
+            0.9179808099415823,
+            0.9256686184805858,
+            0.9334561539581046,
+            0.9413488613110985,
+            0.9493521854765277,
+            0.957471571391352,
+            0.9657124639925314,
+            0.974080308217026,
+            0.9825805490017956,
+            0.9912186312838003,
+            1.0
+          ],
+          "values": [
+            [
+              1.1342699527740479
+            ],
+            [
+              1.9578544665409936
+            ],
+            [
+              2.7799624572435278
+            ],
+            [
+              3.600572388099863
+            ],
+            [
+              4.419662722328212
+            ],
+            [
+              5.237211923146788
+            ],
+            [
+              6.053198453773803
+            ],
+            [
+              6.867600777427469
+            ],
+            [
+              7.680397357326001
+            ],
+            [
+              8.49156665668761
+            ],
+            [
+              9.301087138730509
+            ],
+            [
+              10.10893726667291
+            ],
+            [
+              10.915095503733028
+            ],
+            [
+              11.719540313129073
+            ],
+            [
+              12.52225015807926
+            ],
+            [
+              13.3232035018018
+            ],
+            [
+              14.122378807514906
+            ],
+            [
+              14.919754538436791
+            ],
+            [
+              15.715309157785669
+            ],
+            [
+              16.50902112877975
+            ],
+            [
+              17.30086891463725
+            ],
+            [
+              18.090830978576378
+            ],
+            [
+              18.87888578381535
+            ],
+            [
+              19.665011793572376
+            ],
+            [
+              20.44918747106567
+            ],
+            [
+              21.231391279513446
+            ],
+            [
+              22.011601682133914
+            ],
+            [
+              22.78979714214529
+            ],
+            [
+              23.565956122765783
+            ],
+            [
+              24.34005708721361
+            ],
+            [
+              25.11207849870698
+            ],
+            [
+              25.881998820464105
+            ],
+            [
+              26.6497965157032
+            ],
+            [
+              27.41545004764248
+            ],
+            [
+              28.178937879500154
+            ],
+            [
+              28.940238474494436
+            ],
+            [
+              29.699330295843538
+            ],
+            [
+              30.456191806765673
+            ],
+            [
+              31.210801470479055
+            ],
+            [
+              31.963137750201895
+            ],
+            [
+              32.71317910915241
+            ],
+            [
+              33.4609040105488
+            ],
+            [
+              34.206290917609294
+            ],
+            [
+              34.949318293552096
+            ],
+            [
+              35.68996460159542
+            ],
+            [
+              36.42820830495748
+            ],
+            [
+              37.164027866856486
+            ],
+            [
+              37.89740175051065
+            ],
+            [
+              38.62830841913819
+            ],
+            [
+              39.35672633595732
+            ],
+            [
+              40.08263396418624
+            ],
+            [
+              40.80600976704318
+            ],
+            [
+              41.52683220774634
+            ],
+            [
+              42.245079749513934
+            ],
+            [
+              42.96073085556418
+            ],
+            [
+              43.67376398911529
+            ],
+            [
+              44.38415761338547
+            ],
+            [
+              45.09189019159294
+            ],
+            [
+              45.79694018695591
+            ],
+            [
+              46.49928606269259
+            ],
+            [
+              47.1989062820212
+            ],
+            [
+              47.895779308159945
+            ],
+            [
+              48.58988360432704
+            ],
+            [
+              49.2811976337407
+            ],
+            [
+              49.96969985961914
+            ],
+            [
+              50.874135032630875
+            ],
+            [
+              51.761040664161555
+            ],
+            [
+              52.630979355148156
+            ],
+            [
+              53.48451370652765
+            ],
+            [
+              54.32220631923701
+            ],
+            [
+              55.14461979421321
+            ],
+            [
+              55.95231673239323
+            ],
+            [
+              56.74585973471403
+            ],
+            [
+              57.525811402112595
+            ],
+            [
+              58.29273433552589
+            ],
+            [
+              59.0471911358909
+            ],
+            [
+              59.789744404144585
+            ],
+            [
+              60.52095674122393
+            ],
+            [
+              61.241390748065896
+            ],
+            [
+              61.95160902560747
+            ],
+            [
+              62.652174174785614
+            ],
+            [
+              63.34364879653731
+            ],
+            [
+              64.02659549179953
+            ],
+            [
+              64.70157686150924
+            ],
+            [
+              65.36915550660342
+            ],
+            [
+              66.02989402801904
+            ],
+            [
+              66.68435502669308
+            ],
+            [
+              67.33310110356251
+            ],
+            [
+              67.9766948595643
+            ],
+            [
+              68.61569889563543
+            ],
+            [
+              69.25067581271287
+            ],
+            [
+              69.88218821173359
+            ],
+            [
+              70.51079869363457
+            ],
+            [
+              71.13706985935278
+            ],
+            [
+              71.76156430982519
+            ],
+            [
+              72.38484464598878
+            ],
+            [
+              73.00747346878052
+            ],
+            [
+              73.63001337913738
+            ],
+            [
+              74.25302697799634
+            ],
+            [
+              74.87707686629437
+            ],
+            [
+              75.50272564496845
+            ],
+            [
+              76.13053591495554
+            ],
+            [
+              76.76107027719263
+            ],
+            [
+              77.39489133261668
+            ],
+            [
+              78.03256168216467
+            ],
+            [
+              78.67464392677357
+            ],
+            [
+              79.32170066738036
+            ],
+            [
+              79.974294504922
+            ],
+            [
+              80.63298804033548
+            ],
+            [
+              81.29834387455776
+            ],
+            [
+              81.97092460852582
+            ],
+            [
+              82.65129284317663
+            ],
+            [
+              83.34001117944717
+            ],
+            [
+              84.03764221827441
+            ],
+            [
+              84.74474856059533
+            ],
+            [
+              85.46189280734689
+            ],
+            [
+              86.18963755946606
+            ],
+            [
+              86.92854541788984
+            ],
+            [
+              87.67917898355518
+            ],
+            [
+              88.44210085739905
+            ],
+            [
+              89.21787364035845
+            ],
+            [
+              90.00705993337033
+            ],
+            [
+              90.81022233737167
+            ],
+            [
+              91.62792345329945
+            ],
+            [
+              92.46072588209063
+            ],
+            [
+              93.30919222468219
+            ],
+            [
+              94.17388508201111
+            ],
+            [
+              95.05536705501436
+            ],
+            [
+              95.9542007446289
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [],
+          "restEuler": [
+            -1.4958595582542533,
+            1.1342699736988004,
+            -37.178808116109565
+          ]
+        },
+        {
+          "target": "Body/Charge_Cap_Spatial",
+          "channel": "rotation_degrees:z",
+          "times": [
+            0.0,
+            0.00932739818756545,
+            0.018486773770746368,
+            0.027483929843015176,
+            0.0363246694978443,
+            0.045014795828706156,
+            0.05356011192907317,
+            0.06196642089241777,
+            0.07023952581221238,
+            0.07838522978192941,
+            0.0864093358950413,
+            0.09431764724502045,
+            0.10211596692533931,
+            0.10981009802947028,
+            0.1174058436508858,
+            0.12490900688305828,
+            0.13232539081946015,
+            0.13966079855356384,
+            0.14692103317884175,
+            0.15411189778876633,
+            0.16123919547680998,
+            0.16830872933644514,
+            0.17532630246114422,
+            0.18229771794437966,
+            0.18922877887962386,
+            0.19612528836034926,
+            0.20299304948002828,
+            0.20983786533213333,
+            0.21666553901013685,
+            0.22348187360751126,
+            0.23029267221772898,
+            0.23710373793426243,
+            0.24392087385058403,
+            0.2507498830601662,
+            0.2575965686564814,
+            0.264466733733002,
+            0.27136618138320046,
+            0.2783007147005492,
+            0.2852761367785206,
+            0.2922982507105871,
+            0.2993728595902212,
+            0.30650576651089523,
+            0.31370277456608164,
+            0.32096968684925287,
+            0.3283123064538813,
+            0.3357364364734394,
+            0.3432478800013996,
+            0.3508524401312343,
+            0.3585559199564159,
+            0.36636412257041684,
+            0.37428285106670955,
+            0.38231790853876646,
+            0.39047509808006,
+            0.39876022278406253,
+            0.40717908574424655,
+            0.41573749005408445,
+            0.42444123880704865,
+            0.4332961350966116,
+            0.44230798201624566,
+            0.4514825826594233,
+            0.46082574011961697,
+            0.47034325749029904,
+            0.48004093786494195,
+            0.48992458433701813,
+            0.5,
+            0.5123861589217995,
+            0.5244202185276663,
+            0.5361121902915329,
+            0.5474720856873319,
+            0.5585099161889957,
+            0.569235693270457,
+            0.5796594284056482,
+            0.589791133068502,
+            0.5996408187329507,
+            0.6092184968729271,
+            0.6185341789623635,
+            0.6275978764751926,
+            0.6364196008853469,
+            0.6450093636667589,
+            0.6533771762933611,
+            0.6615330502390862,
+            0.6694869969778665,
+            0.6772490279836347,
+            0.6848291547303234,
+            0.6922373886918649,
+            0.6994837413421919,
+            0.706578224155237,
+            0.7135308486049325,
+            0.7203516261652112,
+            0.7270505683100055,
+            0.7336376865132479,
+            0.740122992248871,
+            0.7465164969908074,
+            0.7528282122129895,
+            0.7590681493893499,
+            0.7652463199938211,
+            0.7713727355003357,
+            0.7774574073828262,
+            0.7835103471152252,
+            0.7895415661714651,
+            0.7955610760254785,
+            0.801578888151198,
+            0.8076050140225561,
+            0.8136494651134853,
+            0.8197222528979182,
+            0.8258333888497873,
+            0.8319928844430251,
+            0.8382107511515642,
+            0.8444970004493371,
+            0.8508616438102763,
+            0.8573146927083144,
+            0.8638661586173839,
+            0.8705260530114174,
+            0.8773043873643473,
+            0.8842111731501063,
+            0.8912564218426269,
+            0.8984501449158415,
+            0.9058023538436828,
+            0.9133230601000832,
+            0.9210222751589754,
+            0.9289100104942918,
+            0.936996277579965,
+            0.9452910878899274,
+            0.9538044528981118,
+            0.9625463840784505,
+            0.9715268929048761,
+            0.9807559908513213,
+            0.9902436893917184,
+            1.0
+          ],
+          "values": [
+            [
+              -37.17879867553711
+            ],
+            [
+              -37.03066232722631
+            ],
+            [
+              -36.889404991001356
+            ],
+            [
+              -36.75462144746416
+            ],
+            [
+              -36.62590647721663
+            ],
+            [
+              -36.50285486086068
+            ],
+            [
+              -36.385061378998216
+            ],
+            [
+              -36.27212081223115
+            ],
+            [
+              -36.163627941161394
+            ],
+            [
+              -36.059177546390856
+            ],
+            [
+              -35.95836440852145
+            ],
+            [
+              -35.86078330815508
+            ],
+            [
+              -35.76602902589366
+            ],
+            [
+              -35.6736963423391
+            ],
+            [
+              -35.58338003809331
+            ],
+            [
+              -35.4946748937582
+            ],
+            [
+              -35.407175689935684
+            ],
+            [
+              -35.32047720722767
+            ],
+            [
+              -35.234174226236064
+            ],
+            [
+              -35.14786152756278
+            ],
+            [
+              -35.06113389180973
+            ],
+            [
+              -34.973586099578824
+            ],
+            [
+              -34.88481293147197
+            ],
+            [
+              -34.79440916809108
+            ],
+            [
+              -34.70196959003806
+            ],
+            [
+              -34.60708897791483
+            ],
+            [
+              -34.50936211232329
+            ],
+            [
+              -34.40838377386535
+            ],
+            [
+              -34.30374874314293
+            ],
+            [
+              -34.19505180075794
+            ],
+            [
+              -34.08188772731228
+            ],
+            [
+              -33.963851303407864
+            ],
+            [
+              -33.840537309646606
+            ],
+            [
+              -33.711540526630415
+            ],
+            [
+              -33.5764557349612
+            ],
+            [
+              -33.43487771524087
+            ],
+            [
+              -33.28640124807134
+            ],
+            [
+              -33.13062111405452
+            ],
+            [
+              -32.967132093792316
+            ],
+            [
+              -32.79552896788664
+            ],
+            [
+              -32.6154065169394
+            ],
+            [
+              -32.42635952155251
+            ],
+            [
+              -32.22798276232788
+            ],
+            [
+              -32.01987101986742
+            ],
+            [
+              -31.801619074773043
+            ],
+            [
+              -31.572821707646654
+            ],
+            [
+              -31.333073699090164
+            ],
+            [
+              -31.081969829705486
+            ],
+            [
+              -30.819104880094528
+            ],
+            [
+              -30.544073630859202
+            ],
+            [
+              -30.256470862601418
+            ],
+            [
+              -29.955891355923086
+            ],
+            [
+              -29.641929891426116
+            ],
+            [
+              -29.31418124971242
+            ],
+            [
+              -28.972240211383905
+            ],
+            [
+              -28.615701557042485
+            ],
+            [
+              -28.244160067290068
+            ],
+            [
+              -27.857210522728565
+            ],
+            [
+              -27.454447703959886
+            ],
+            [
+              -27.035466391585942
+            ],
+            [
+              -26.599861366208643
+            ],
+            [
+              -26.1472274084299
+            ],
+            [
+              -25.67715929885162
+            ],
+            [
+              -25.189251818075718
+            ],
+            [
+              -24.6830997467041
+            ],
+            [
+              -24.040460411896674
+            ],
+            [
+              -23.414329819155682
+            ],
+            [
+              -22.804262551183456
+            ],
+            [
+              -22.209813190682326
+            ],
+            [
+              -21.630536320354622
+            ],
+            [
+              -21.065986522902676
+            ],
+            [
+              -20.51571838102882
+            ],
+            [
+              -19.97928647743538
+            ],
+            [
+              -19.45624539482469
+            ],
+            [
+              -18.946149715899082
+            ],
+            [
+              -18.448554023360884
+            ],
+            [
+              -17.963012899912428
+            ],
+            [
+              -17.489080928256044
+            ],
+            [
+              -17.026312691094063
+            ],
+            [
+              -16.574262771128815
+            ],
+            [
+              -16.13248575106263
+            ],
+            [
+              -15.700536213597843
+            ],
+            [
+              -15.27796874143678
+            ],
+            [
+              -14.864337917281773
+            ],
+            [
+              -14.459198323835153
+            ],
+            [
+              -14.06210454379925
+            ],
+            [
+              -13.672611159876396
+            ],
+            [
+              -13.290272754768921
+            ],
+            [
+              -12.914643911179155
+            ],
+            [
+              -12.54527921180943
+            ],
+            [
+              -12.181733239362075
+            ],
+            [
+              -11.823560576539421
+            ],
+            [
+              -11.4703158060438
+            ],
+            [
+              -11.121553510577542
+            ],
+            [
+              -10.776828272842977
+            ],
+            [
+              -10.435694675542436
+            ],
+            [
+              -10.09770730137825
+            ],
+            [
+              -9.76242073305275
+            ],
+            [
+              -9.429389553268265
+            ],
+            [
+              -9.098168344727128
+            ],
+            [
+              -8.768311690131668
+            ],
+            [
+              -8.439374172184216
+            ],
+            [
+              -8.110910373587103
+            ],
+            [
+              -7.7824748770426595
+            ],
+            [
+              -7.453622265253216
+            ],
+            [
+              -7.123907120921103
+            ],
+            [
+              -6.792884026748652
+            ],
+            [
+              -6.460107565438193
+            ],
+            [
+              -6.125132319692057
+            ],
+            [
+              -5.787512872212574
+            ],
+            [
+              -5.446803805702075
+            ],
+            [
+              -5.102559702862891
+            ],
+            [
+              -4.754335146397352
+            ],
+            [
+              -4.40168471900779
+            ],
+            [
+              -4.044163003396534
+            ],
+            [
+              -3.6813245822659155
+            ],
+            [
+              -3.3127240383182652
+            ],
+            [
+              -2.9379159542559137
+            ],
+            [
+              -2.5564549127811915
+            ],
+            [
+              -2.1678954965964294
+            ],
+            [
+              -1.771792288403958
+            ],
+            [
+              -1.3676998709061081
+            ],
+            [
+              -0.9551728268052102
+            ],
+            [
+              -0.533765738803595
+            ],
+            [
+              -0.1030331896035932
+            ],
+            [
+              0.33747023809246457
+            ],
+            [
+              0.7881899615822476
+            ],
+            [
+              1.2495713981634253
+            ],
+            [
+              1.722059965133667
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [],
+          "restEuler": [
+            -1.4958595582542533,
+            1.1342699736988004,
+            -37.178808116109565
+          ]
+        }
+      ]
+    },
+    "LFDoorMirrorAnimation/LFMirror": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Door_LF_Spatial/Door_LF_Mirror_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.0
+          ],
+          "values": [
+            [
+              2.88542,
+              -0.251368,
+              -4.71664
+            ],
+            [
+              5.3052,
+              42.0075,
+              -1.5541
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            2.885413356071111,
+            -0.2513682930028753,
+            -4.716640347019143
+          ]
+        }
+      ]
+    },
+    "RFDoorMirrorAnimation/RFDoor": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Door_RF_Spatial/Door_RF_Mirror_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.0
+          ],
+          "values": [
+            [
+              -2.8817,
+              0.291301,
+              -4.71668
+            ],
+            [
+              -5.30348,
+              -42.0045,
+              -1.55321
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -2.881701513233258,
+            0.2913002633508696,
+            -4.716680166585801
+          ]
+        }
+      ]
+    },
+    "LFWindowAnimation/LFWindow": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Door_LF_Spatial/Window_LF_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            0.25,
+            0.5,
+            0.75,
+            1.0
+          ],
+          "values": [
+            [
+              -0.815062,
+              0.933955,
+              0.210735
+            ],
+            [
+              -0.8,
+              0.823,
+              0.161
+            ],
+            [
+              -0.783,
+              0.689,
+              0.112
+            ],
+            [
+              -0.775,
+              0.6,
+              0.085
+            ],
+            [
+              -0.766,
+              0.489,
+              0.058
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.5525717591669449,
+            0.012063478483792453,
+            -1.2506719817522074
+          ]
+        },
+        {
+          "target": "Body/Door_LF_Spatial/Window_LF_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            0.25,
+            0.5,
+            0.75,
+            1.0
+          ],
+          "values": [
+            [
+              -0.552572,
+              0.0120635,
+              -1.25067
+            ],
+            [
+              -4.229,
+              0.093,
+              -1.257
+            ],
+            [
+              -8.401,
+              0.185,
+              -1.265
+            ],
+            [
+              -10.865,
+              0.241,
+              -1.276
+            ],
+            [
+              -14.565,
+              0.325,
+              -1.293
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.5525717591669449,
+            0.012063478483792453,
+            -1.2506719817522074
+          ]
+        }
+      ]
+    },
+    "LRWindowAnimation/LRWindow": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Door_LR_Spatial/Window_LR_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            0.10000000149011612,
+            0.25,
+            0.5,
+            0.75,
+            1.0
+          ],
+          "values": [
+            [
+              -0.0686034,
+              0.886976,
+              0.197587
+            ],
+            [
+              -0.068,
+              0.849,
+              0.181
+            ],
+            [
+              -0.067,
+              0.791,
+              0.156
+            ],
+            [
+              -0.066,
+              0.695,
+              0.12
+            ],
+            [
+              -0.062,
+              0.598,
+              0.091
+            ],
+            [
+              -0.059,
+              0.502,
+              0.067
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.4767481822176622,
+            0.01841342836559629,
+            -2.211859108006258
+          ]
+        },
+        {
+          "target": "Body/Door_LR_Spatial/Window_LR_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            0.25,
+            0.4000000059604645,
+            0.5,
+            0.6499999761581421,
+            1.0
+          ],
+          "values": [
+            [
+              -0.476748,
+              0.0184134,
+              -2.21186
+            ],
+            [
+              -3.598,
+              0.139,
+              -2.2
+            ],
+            [
+              -5.453,
+              0.211,
+              -2.225
+            ],
+            [
+              -7.127,
+              0.276,
+              -2.229
+            ],
+            [
+              -8.583,
+              0.335,
+              -2.24
+            ],
+            [
+              -13.267,
+              0.521,
+              -2.273
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.4767481822176622,
+            0.01841342836559629,
+            -2.211859108006258
+          ]
+        }
+      ]
+    },
+    "RFWindowAnimation/RFWindow": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Door_RF_Spatial/Window_RF_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            0.25,
+            0.5,
+            0.75,
+            1.0
+          ],
+          "values": [
+            [
+              -0.815053,
+              0.933965,
+              -0.210726
+            ],
+            [
+              -0.800289,
+              0.822647,
+              -0.161237
+            ],
+            [
+              -0.782571,
+              0.689165,
+              -0.112079
+            ],
+            [
+              -0.774997,
+              0.60033,
+              -0.0854415
+            ],
+            [
+              -0.765529,
+              0.48934,
+              -0.0577204
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            0.5530001494509789,
+            -0.012000603914730165,
+            -1.251120144371758
+          ]
+        },
+        {
+          "target": "Body/Door_RF_Spatial/Window_RF_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            0.25,
+            0.5,
+            0.75,
+            1.0
+          ],
+          "values": [
+            [
+              0.553,
+              -0.0120006,
+              -1.25112
+            ],
+            [
+              4.22912,
+              -0.092913,
+              -1.25746
+            ],
+            [
+              8.40112,
+              -0.184718,
+              -1.26463
+            ],
+            [
+              10.865,
+              -0.240851,
+              -1.27589
+            ],
+            [
+              14.5646,
+              -0.325027,
+              -1.2926
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            0.5530001494509789,
+            -0.012000603914730165,
+            -1.251120144371758
+          ]
+        }
+      ]
+    },
+    "RRWindowAnimation/RRWindow": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Door_RR_Spatial/Window_RR_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            0.10000000149011612,
+            0.25,
+            0.5,
+            0.75,
+            1.0
+          ],
+          "values": [
+            [
+              -0.0686068,
+              0.886976,
+              -0.197584
+            ],
+            [
+              -0.0680294,
+              0.84853,
+              -0.180565
+            ],
+            [
+              -0.067163,
+              0.790871,
+              -0.15629
+            ],
+            [
+              -0.0657178,
+              0.694805,
+              -0.119576
+            ],
+            [
+              -0.0623679,
+              0.598203,
+              -0.0914927
+            ],
+            [
+              -0.0590171,
+              0.501628,
+              -0.0666031
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            0.4769999872488469,
+            -0.01800059622410705,
+            -2.212151184399951
+          ]
+        },
+        {
+          "target": "Body/Door_RR_Spatial/Window_RR_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            0.25,
+            0.4000000059604645,
+            0.5,
+            0.6499999761581421,
+            1.0
+          ],
+          "values": [
+            [
+              0.477,
+              -0.0180006,
+              -2.21215
+            ],
+            [
+              3.59816,
+              -0.139244,
+              -2.22021
+            ],
+            [
+              5.45267,
+              -0.211229,
+              -2.22467
+            ],
+            [
+              7.12702,
+              -0.276301,
+              -2.2293
+            ],
+            [
+              8.58339,
+              -0.334581,
+              -2.24001
+            ],
+            [
+              13.2673,
+              -0.521419,
+              -2.27276
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            0.4769999872488469,
+            -0.01800059622410705,
+            -2.212151184399951
+          ]
+        }
+      ]
+    },
+    "SuspensionAnimation/Suspension": {
+      "duration": 5.0,
+      "tracks": [
+        {
+          "target": "Body",
+          "channel": "translation",
+          "times": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "values": [
+            [
+              0.0,
+              -0.055,
+              -1.488
+            ],
+            [
+              0.0,
+              -0.04,
+              -1.488
+            ],
+            [
+              0.0,
+              0.0,
+              -1.488
+            ],
+            [
+              0.0,
+              0.06,
+              -1.488
+            ],
+            [
+              0.0,
+              0.1,
+              -1.488
+            ],
+            [
+              0.0,
+              0.16,
+              -1.488
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            90.0000093346857,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Wheel_LF_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "values": [
+            [
+              1.947,
+              0.487,
+              -0.831
+            ],
+            [
+              1.947,
+              0.472,
+              -0.831
+            ],
+            [
+              1.94718,
+              0.432316,
+              -0.83065
+            ],
+            [
+              1.947,
+              0.372,
+              -0.831
+            ],
+            [
+              1.947,
+              0.332,
+              -0.831
+            ],
+            [
+              1.947,
+              0.272,
+              -0.831
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -4.3257102903027505e-06,
+            -179.99997768820026,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Wheel_RF_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "values": [
+            [
+              1.947,
+              0.487,
+              0.831
+            ],
+            [
+              1.947,
+              0.472,
+              0.831
+            ],
+            [
+              1.94718,
+              0.43232,
+              0.83065
+            ],
+            [
+              1.947,
+              0.372,
+              0.831
+            ],
+            [
+              1.947,
+              0.332,
+              0.831
+            ],
+            [
+              1.947,
+              0.272,
+              0.831
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Wheel_LR_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "values": [
+            [
+              -1.668,
+              0.487,
+              -0.831
+            ],
+            [
+              -1.668,
+              0.472,
+              -0.831
+            ],
+            [
+              -1.66825,
+              0.432316,
+              -0.83065
+            ],
+            [
+              -1.668,
+              0.372,
+              -0.831
+            ],
+            [
+              -1.668,
+              0.332,
+              -0.831
+            ],
+            [
+              -1.668,
+              0.272,
+              -0.831
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -4.3257102903027505e-06,
+            -179.99997768820026,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Wheel_RR_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "values": [
+            [
+              -1.668,
+              0.487,
+              0.831
+            ],
+            [
+              -1.668,
+              0.472,
+              0.831
+            ],
+            [
+              -1.66825,
+              0.43232,
+              0.83065
+            ],
+            [
+              -1.668,
+              0.372,
+              0.831
+            ],
+            [
+              -1.668,
+              0.332,
+              0.831
+            ],
+            [
+              -1.668,
+              0.272,
+              0.831
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Taillights_Projections2",
+          "channel": "translation",
+          "times": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.055,
+              0.0
+            ],
+            [
+              0.0,
+              0.04,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.06,
+              0.0
+            ],
+            [
+              0.0,
+              -0.1,
+              0.0
+            ],
+            [
+              0.0,
+              -0.16,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Headlights_Projections2",
+          "channel": "translation",
+          "times": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.055,
+              0.0
+            ],
+            [
+              0.0,
+              0.04,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.06,
+              0.0
+            ],
+            [
+              0.0,
+              -0.1,
+              0.0
+            ],
+            [
+              0.0,
+              -0.16,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Ground_Shadow2",
+          "channel": "translation",
+          "times": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.055,
+              0.0
+            ],
+            [
+              0.0,
+              0.04,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.06,
+              0.0
+            ],
+            [
+              0.0,
+              -0.1,
+              0.0
+            ],
+            [
+              0.0,
+              -0.16,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Spatials/Brake_LF_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "values": [
+            [
+              1.947,
+              0.487,
+              -0.831
+            ],
+            [
+              1.947,
+              0.472,
+              -0.831
+            ],
+            [
+              1.94718,
+              0.432316,
+              -0.83065
+            ],
+            [
+              1.947,
+              0.372,
+              -0.831
+            ],
+            [
+              1.947,
+              0.332,
+              -0.831
+            ],
+            [
+              1.947,
+              0.272,
+              -0.831
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            -179.99999499104254,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Spatials/Brake_RF_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "values": [
+            [
+              1.947,
+              0.487,
+              0.831
+            ],
+            [
+              1.947,
+              0.472,
+              0.831
+            ],
+            [
+              1.94718,
+              0.43232,
+              0.83065
+            ],
+            [
+              1.947,
+              0.372,
+              0.831
+            ],
+            [
+              1.947,
+              0.332,
+              0.831
+            ],
+            [
+              1.947,
+              0.272,
+              0.831
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            -0.0
+          ]
+        },
+        {
+          "target": "Body/Spatials/Brake_LR_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "values": [
+            [
+              -1.668,
+              0.487,
+              -0.831
+            ],
+            [
+              -1.668,
+              0.472,
+              -0.831
+            ],
+            [
+              -1.66825,
+              0.432316,
+              -0.83065
+            ],
+            [
+              -1.668,
+              0.372,
+              -0.831
+            ],
+            [
+              -1.668,
+              0.332,
+              -0.831
+            ],
+            [
+              -1.668,
+              0.272,
+              -0.831
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            -179.99999499104254,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Spatials/Brake_RR_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "values": [
+            [
+              -1.668,
+              0.487,
+              0.831
+            ],
+            [
+              -1.668,
+              0.472,
+              0.831
+            ],
+            [
+              -1.66825,
+              0.43232,
+              0.83065
+            ],
+            [
+              -1.668,
+              0.372,
+              0.831
+            ],
+            [
+              -1.668,
+              0.332,
+              0.831
+            ],
+            [
+              -1.668,
+              0.272,
+              0.831
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            -0.0
+          ]
+        }
+      ]
+    }
+  },
+  "controls": {
+    "headlights": [
+      "Body/Headlights2",
+      "Body/Headllights_Rear_Left2",
+      "Body/Headllights_Rear_Right2",
+      "Body/Hood_Spatial/DRL2",
+      "Body/Hood_Spatial/Headlights_Beam2",
+      "Body/Trunk_Spatial/Headlights_Trunk2"
+    ],
+    "brakeLights": [
+      "Body/Brake_Lights_Left2",
+      "Body/Brake_Lights_Right2",
+      "Body/Trunk_Spatial/Brake_Lights_Trunk2"
+    ],
+    "reverseLights": [
+      "Body/Reverse_Lights2"
+    ],
+    "leftSignal": [
+      "Body/Brake_Lights_Left2",
+      "Body/Left_Turn_Signal_Front2"
+    ],
+    "rightSignal": [
+      "Body/Brake_Lights_Right2",
+      "Body/Right_Turn_Signal_Front2"
+    ],
+    "frontDefrost": [
+      "Body/Defrost_Front"
+    ],
+    "rearDefrost": [
+      "Body/Defrost_Rear"
+    ],
+    "daytimeLights": [
+      "Body/Hood_Spatial/DRL2",
+      "Body/Hood_Spatial/Headlights_Beam2"
+    ],
+    "parkingLights": [
+      "Body/Headllights_Rear_Left2",
+      "Body/Headllights_Rear_Right2",
+      "Body/Hood_Spatial/DRL2",
+      "Body/Hood_Spatial/Headlights_Beam2"
+    ]
+  },
+  "roofFadeSurfaces": [
+    "Body/Truck_Bed_RWD2/surface_00",
+    "Body/Body2/surface_00",
+    "Body/Body2/surface_01",
+    "Body/Body2/surface_11",
+    "Body/Interior_Body2/surface_03",
+    "Body/Interior_Body2/surface_04",
+    "Body/Interior_Body2/surface_05",
+    "Body/Interior_Body2/surface_06",
+    "Body/Interior_Body2/surface_08",
+    "Body/Interior_Body2/surface_18",
+    "Body/Windows_Top2/surface_00",
+    "Body/Windows_Top2/surface_01",
+    "Body/Windows_Top2/surface_02",
+    "Body/Windows_Top2/surface_03",
+    "Body/Windows_Top2/surface_04"
+  ],
+  "skippedTracks": [],
+  "geometryWarnings": [],
+  "schemaVersion": 1,
+  "model": "cybertruck",
+  "source": "res://Ego/Cybertruck/Cybertruck.tscn",
+  "file": "Vehicle.usdz",
+  "configuration": {
+    "model_id": "cybertruck",
+    "scene": "res://Ego/Cybertruck/Cybertruck.tscn",
+    "selections": {
+      "wheel": "CybertruckPremium",
+      "caps": "default",
+      "part": "vehicle",
+      "plate": "US",
+      "brakes": "standard",
+      "interior": "Black",
+      "seat_trim": "Base",
+      "drivetrain": "RWD",
+      "foundation": false,
+      "bed_lighting": "Unspecified",
+      "automatic_tonneau": "auto",
+      "rear_display": true,
+      "lightbar": "NONE",
+      "basecamp": false
+    },
+    "wheel_scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+    "paint_preset": null,
+    "attachments": [
+      {
+        "kind": "wheel",
+        "socket": "Wheel_LF_Spatial",
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+        "socket_transform": [
+          [
+            -1.0,
+            2.9399961333715155e-14,
+            -3.8941436741879443e-07,
+            1.9471800327301025
+          ],
+          [
+            0.0,
+            1.0,
+            7.54978870531886e-08,
+            0.4323159456253052
+          ],
+          [
+            3.8941436741879443e-07,
+            7.54978870531886e-08,
+            -1.0,
+            -0.8306500315666199
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "brake",
+        "socket": "Spatials/Brake_LF_Spatial",
+        "scene": "res://Ego/Cybertruck/Brakes/Brakes_Std_F.tscn",
+        "socket_transform": [
+          [
+            -1.2,
+            0.0,
+            -8.74228e-08,
+            1.94718
+          ],
+          [
+            0.0,
+            1.2,
+            0.0,
+            0.432316
+          ],
+          [
+            1.1365e-07,
+            0.0,
+            -1.0,
+            -0.83065
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "wheel",
+        "socket": "Wheel_LR_Spatial",
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+        "socket_transform": [
+          [
+            -1.0,
+            2.9399961333715155e-14,
+            -3.8941436741879443e-07,
+            -1.6682472229003906
+          ],
+          [
+            0.0,
+            1.0,
+            7.54978870531886e-08,
+            0.4323159456253052
+          ],
+          [
+            3.8941436741879443e-07,
+            7.54978870531886e-08,
+            -1.0,
+            -0.8306500315666199
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "brake",
+        "socket": "Spatials/Brake_LR_Spatial",
+        "scene": "res://Ego/Cybertruck/Brakes/Brakes_Std_R.tscn",
+        "socket_transform": [
+          [
+            -1.2,
+            0.0,
+            -8.74228e-08,
+            -1.66825
+          ],
+          [
+            0.0,
+            1.2,
+            0.0,
+            0.432316
+          ],
+          [
+            1.1365e-07,
+            0.0,
+            -1.0,
+            -0.83065
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "wheel",
+        "socket": "Wheel_RF_Spatial",
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+        "socket_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            1.9471800327301025
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.4323199689388275
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.8306500315666199
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "brake",
+        "socket": "Spatials/Brake_RF_Spatial",
+        "scene": "res://Ego/Cybertruck/Brakes/Brakes_Std_F.tscn",
+        "socket_transform": [
+          [
+            -1.2,
+            0.0,
+            0.0,
+            1.94718
+          ],
+          [
+            0.0,
+            1.2,
+            0.0,
+            0.43232
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.83065
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "wheel",
+        "socket": "Wheel_RR_Spatial",
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+        "socket_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.6682499647140503
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.4323199689388275
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.8306500315666199
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "brake",
+        "socket": "Spatials/Brake_RR_Spatial",
+        "scene": "res://Ego/Cybertruck/Brakes/Brakes_Std_R.tscn",
+        "socket_transform": [
+          [
+            -1.2,
+            0.0,
+            0.0,
+            -1.66825
+          ],
+          [
+            0.0,
+            1.2,
+            0.0,
+            0.43232
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.83065
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "visibility": {
+      "Defrost_Front": false,
+      "Defrost_Rear": false,
+      "Reverse_Lights2": false,
+      "Left_Turn_Signal_Front2": false,
+      "Right_Turn_Signal_Front2": false,
+      "Hood_Spatial/DRL2": false,
+      "Headlights2": false,
+      "Trunk_Spatial/Headlights_Trunk2": false,
+      "Brake_Lights_Left2": false,
+      "Brake_Lights_Right2": false,
+      "Trunk_Spatial/Brake_Lights_Trunk2": false,
+      "Taillights_Projections2": false,
+      "Headlights_Projections2": false,
+      "Hood_Spatial/Headlights_Beam2": false,
+      "Headllights_Rear_Left2": false,
+      "Headllights_Rear_Right2": false,
+      "Headlights_Side_Left2": false,
+      "Headlights_Side_Right2": false,
+      "Bed_Light2": false,
+      "Bed_Light_RWD2": false,
+      "Door_LED_LF2": false,
+      "Door_LED_LR2": false,
+      "Door_LED_RR2": false,
+      "Door_LED_RF2": false,
+      "Plate_US2": true,
+      "Plate_EU2": false,
+      "Interior_Body2": true,
+      "Truck_Bed2": false,
+      "Truck_Bed_RWD2": true,
+      "Tonneau": false,
+      "Tonneau_Cover_Button_AWD2": false,
+      "Tonneau_Cover_Button_RWD2": true,
+      "Tonneau/TonneauCover": false,
+      "Screen_Rear2": true,
+      "Center_Console2": true,
+      "Center_Console_RWD2": false,
+      "Trunk_Spatial/Decal_liftgate_cerberus": false,
+      "Decals_exterior": false,
+      "Trunk_Spatial/Decal_liftgate_foundation": false
+    },
+    "missing_paths": [
+      "Interior_Body_RHD2"
+    ],
+    "option_materials": [
+      {
+        "match": "PaintRough",
+        "scene_material": "res://Ego/Cybertruck/Paint_Rough.material",
+        "slots": 0
+      },
+      {
+        "match": "GlassSkybox",
+        "scene_material": "res://Ego/Cybertruck/Glass_Skybox.material",
+        "slots": 3
+      },
+      {
+        "match": "Glass",
+        "scene_material": "res://Ego/Cybertruck/Glass_Skybox.material",
+        "slots": 0
+      },
+      {
+        "match": "GlassTintedSkybox",
+        "scene_material": "res://Ego/Cybertruck/Glass_Tinted_Skybox.material",
+        "slots": 0
+      },
+      {
+        "match": "Glass_Tinted",
+        "scene_material": "res://Ego/Cybertruck/Glass_Tinted_Skybox.material",
+        "slots": 0
+      },
+      {
+        "match": "Seats",
+        "scene_material": "res://Ego/Cybertruck/Seats_Decor_PUR_Perforated.material",
+        "slots": 5
+      },
+      {
+        "match": "PUR_Seats",
+        "scene_material": "res://Ego/Cybertruck/PUR_Seats.material",
+        "slots": 4
+      },
+      {
+        "match": "PVC_Seats",
+        "scene_material": "res://Ego/Cybertruck/PVC_Black_Seats.material",
+        "slots": 5
+      },
+      {
+        "match": "Pedal",
+        "scene_material": "res://Ego/Cybertruck/metal_pedal.material",
+        "slots": 1
+      },
+      {
+        "match": "door_sill",
+        "scene_material": "res://Ego/Cybertruck/door_sill_metal.material",
+        "slots": 1
+      }
+    ],
+    "mobile_materials": {
+      "res://Ego/Cybertruck/Glass_Skybox_Fade.material": {
+        "config": "MaterialConfig/GlassSkyboxFadeMobileConfig",
+        "slots": 1
+      },
+      "res://Ego/Cybertruck/Glass_Tinted_Skybox.material": {
+        "config": "MaterialConfig/GlassTintedSkyboxMobileConfig",
+        "slots": 4
+      },
+      "res://Ego/Cybertruck/Glass_Tinted_Skybox_Fade.material": {
+        "config": "MaterialConfig/GlassTintedSkyboxFadeMobileConfig",
+        "slots": 1
+      },
+      "res://Ego/Cybertruck/Paint_Mix.material": {
+        "config": "MaterialConfig/PaintMixMobileConfig",
+        "slots": 7
+      }
+    }
+  },
+  "paint": null,
+  "rig": {
+    "source": "res://Ego/Cybertruck/Skin/Environment.png",
+    "panorama": "Environment.png",
+    "presets": {
+      "PARKED": {
+        "rotation": [
+          0.0,
+          -7.0,
+          83.0
+        ],
+        "skyEnergy": 4.0,
+        "ambientEnergy": 4.0
+      },
+      "CHARGING": {
+        "rotation": [
+          0.0,
+          -7.0,
+          83.0
+        ],
+        "skyEnergy": 4.0,
+        "ambientEnergy": 4.0
+      },
+      "DRIVE": {
+        "rotation": [
+          0.0,
+          -7.0,
+          83.0
+        ],
+        "skyEnergy": 4.0,
+        "ambientEnergy": 4.0
+      },
+      "DRIVE_REVERSE": {
+        "rotation": [
+          0.0,
+          -7.0,
+          83.0
+        ],
+        "skyEnergy": 4.0,
+        "ambientEnergy": 4.0
+      },
+      "TOP_DOWN": {
+        "rotation": [
+          -10.0,
+          -10.0,
+          0.0
+        ],
+        "skyEnergy": 6.0,
+        "ambientEnergy": 2.5
+      },
+      "CLIMATE": {
+        "rotation": [
+          0.0,
+          -7.0,
+          83.0
+        ],
+        "skyEnergy": 4.0,
+        "ambientEnergy": 4.0
+      },
+      "SNAPSHOT_TOPDOWN": {
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "skyEnergy": 6,
+        "ambientEnergy": 2.5
+      },
+      "SNAPSHOT_TOPDOWN_FADE_ROOF": {
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "skyEnergy": 6,
+        "ambientEnergy": 2.5
+      },
+      "SNAPSHOT_THREEQUARTER": {
+        "rotation": [
+          0.0,
+          -11.0,
+          83.0
+        ],
+        "skyEnergy": 6.0,
+        "ambientEnergy": 2.6
+      },
+      "SNAPSHOT_WIDGET": {
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "skyEnergy": 6,
+        "ambientEnergy": 2.5
+      },
+      "SNAPSHOT_FRONT": {
+        "rotation": [
+          0.0,
+          90.0,
+          -15.0
+        ],
+        "skyEnergy": 4.2,
+        "ambientEnergy": 5.5
+      },
+      "SNAPSHOT_REAR": {
+        "rotation": [
+          30.0,
+          125.0,
+          150.0
+        ],
+        "skyEnergy": 4.2,
+        "ambientEnergy": 5.5
+      },
+      "SNAPSHOT_LEFTPROFILE": {
+        "rotation": [
+          -40.0,
+          40.0,
+          80.0
+        ],
+        "skyEnergy": 6.0,
+        "ambientEnergy": 2.6
+      },
+      "SNAPSHOT_RIGHTPROFILE": {
+        "rotation": [
+          80.0,
+          80.0,
+          0.0
+        ],
+        "skyEnergy": 6.0,
+        "ambientEnergy": 2.6
+      },
+      "SNAPSHOT_PARKED": {
+        "rotation": [
+          0.0,
+          -11.0,
+          83.0
+        ],
+        "skyEnergy": 6.0,
+        "ambientEnergy": 2.6
+      }
+    },
+    "cameras": {
+      "PARKED": {
+        "columns": [
+          -0.743144825477394,
+          0.0,
+          0.6691306063588585,
+          0.0,
+          0.24415032544954976,
+          0.9310557564164377,
+          0.27115640694389015,
+          0.0,
+          -0.6229979028448366,
+          0.36487693602616433,
+          -0.6919092676118167,
+          0.0,
+          -4.129497526038992,
+          2.4446744550620525,
+          -4.675940225366969,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150.0
+      },
+      "CHARGING": {
+        "columns": [
+          0.7880107536067219,
+          0.0,
+          0.6156614753256583,
+          0.0,
+          0.16969939755572638,
+          0.9612616510312052,
+          -0.2172053238896586,
+          0.0,
+          -0.5918117662478499,
+          0.2756375124267159,
+          0.7574845180423418,
+          0.0,
+          -3.876367250015065,
+          1.8054246806013445,
+          4.961523824964078,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150.0
+      },
+      "DRIVE": {
+        "columns": [
+          -0.743144825477394,
+          0.0,
+          0.6691306063588585,
+          0.0,
+          0.24415032544954976,
+          0.9310557564164377,
+          0.27115640694389015,
+          0.0,
+          -0.6229979028448366,
+          0.36487693602616433,
+          -0.6919092676118167,
+          0.0,
+          -4.939394851447638,
+          2.919014274700958,
+          -5.5754223306925015,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150.0
+      },
+      "DRIVE_REVERSE": {
+        "columns": [
+          0.7880107536067219,
+          0.0,
+          0.6156614753256583,
+          0.0,
+          0.16969939755572638,
+          0.9612616510312052,
+          -0.2172053238896586,
+          0.0,
+          -0.5918117662478499,
+          0.2756375124267159,
+          0.7574845180423418,
+          0.0,
+          -4.7344943511634385,
+          2.2050988465359933,
+          6.059876427437042,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150.0
+      },
+      "TOP_DOWN": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -1.62921e-07,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          -1.62921e-07,
+          0.0,
+          0.0,
+          10.0,
+          0.0,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150.0
+      },
+      "CLIMATE": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -1.62921e-07,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          -1.62921e-07,
+          0.0,
+          0.0,
+          6.0,
+          0.6,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150.0
+      },
+      "SNAPSHOT_TOPDOWN": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          6.123233995736766e-17,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          6.123233995736766e-17,
+          0.0,
+          0.0,
+          10.0,
+          0.0,
+          1.0
+        ],
+        "verticalFOV": 40,
+        "near": 0.05,
+        "far": 150,
+        "width": 0,
+        "height": 0
+      },
+      "SNAPSHOT_TOPDOWN_FADE_ROOF": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          6.123233995736766e-17,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          6.123233995736766e-17,
+          0.0,
+          0.0,
+          10.0,
+          0.0,
+          1.0
+        ],
+        "verticalFOV": 40,
+        "near": 0.05,
+        "far": 150,
+        "width": 0,
+        "height": 0
+      },
+      "SNAPSHOT_THREEQUARTER": {
+        "columns": [
+          -0.6699084587661708,
+          0.0,
+          0.7424437061983445,
+          0.0,
+          0.12322864190877712,
+          0.9861296098152812,
+          0.11118945300198076,
+          0.0,
+          -0.7321457223031848,
+          0.16597708470015163,
+          -0.6606165670550403,
+          0.0,
+          -5.592,
+          2.0,
+          -5.375,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150,
+        "width": 900.0,
+        "height": 500.0
+      },
+      "SNAPSHOT_WIDGET": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          6.123233995736766e-17,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          6.123233995736766e-17,
+          0.0,
+          0.0,
+          10.0,
+          0.0,
+          1.0
+        ],
+        "verticalFOV": 40,
+        "near": 0.05,
+        "far": 150,
+        "width": 0,
+        "height": 0
+      },
+      "SNAPSHOT_FRONT": {
+        "columns": [
+          -1.0,
+          0.0,
+          -1.2246467991473532e-16,
+          0.0,
+          -4.273955692857142e-18,
+          0.9993908270190958,
+          0.03489949670250097,
+          0.0,
+          1.2239007774061617e-16,
+          0.03489949670250097,
+          -0.9993908270190958,
+          0.0,
+          0.0,
+          1.0,
+          -8.0,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150,
+        "width": 900.0,
+        "height": 900.0
+      },
+      "SNAPSHOT_REAR": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.9993908270190958,
+          -0.03489949670250097,
+          0.0,
+          0.0,
+          0.03489949670250097,
+          0.9993908270190958,
+          0.0,
+          0.0,
+          1.0,
+          8.0,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150,
+        "width": 900.0,
+        "height": 900.0
+      },
+      "SNAPSHOT_LEFTPROFILE": {
+        "columns": [
+          6.123233995736766e-17,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          -1.0,
+          0.0,
+          6.123233995736766e-17,
+          0.0,
+          -10.0,
+          0.8,
+          0.0,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150,
+        "width": 1400.0,
+        "height": 900.0
+      },
+      "SNAPSHOT_RIGHTPROFILE": {
+        "columns": [
+          6.123233995736766e-17,
+          0.0,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          6.123233995736766e-17,
+          0.0,
+          10.0,
+          0.8,
+          0.0,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150,
+        "width": 1400.0,
+        "height": 900.0
+      },
+      "SNAPSHOT_PARKED": {
+        "columns": [
+          -0.743144825477394,
+          0.0,
+          0.6691306063588585,
+          0.0,
+          0.28278681373688097,
+          0.9063077870366499,
+          0.3140665743648517,
+          0.0,
+          -0.6064382790875887,
+          0.42261826174069944,
+          -0.6735179422261544,
+          0.0,
+          -4.128336,
+          3.094274,
+          -4.734428,
+          1.0
+        ],
+        "verticalFOV": 30.0,
+        "near": 0.05,
+        "far": 150,
+        "width": 900.0,
+        "height": 500.0
+      },
+      "AssetGen_Park": {
+        "columns": [
+          -0.738726,
+          0.0,
+          0.674006,
+          0.0,
+          0.219635,
+          0.945416,
+          0.240725,
+          0.0,
+          -0.637216,
+          0.325865,
+          -0.698403,
+          0.0,
+          -4.281,
+          2.83,
+          -6.841,
+          1.0
+        ],
+        "verticalFOV": 58.8,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_SingleLane": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.984583,
+          -0.17492,
+          0.0,
+          0.0,
+          0.17492,
+          0.984583,
+          0.0,
+          0.0,
+          5.84042,
+          18.1212,
+          1.0
+        ],
+        "verticalFOV": 40.0,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_MultiLaneOriginal": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.982261,
+          -0.187518,
+          0.0,
+          0.0,
+          0.187518,
+          0.982261,
+          0.0,
+          0.0,
+          7.13777,
+          23.5,
+          1.0
+        ],
+        "verticalFOV": 40.0,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_MultiLane": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.952423,
+          -0.304781,
+          0.0,
+          0.0,
+          0.304781,
+          0.952423,
+          0.0,
+          0.0,
+          10.492,
+          21.383,
+          1.0
+        ],
+        "verticalFOV": 45.0,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_ParkAssist": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0400446,
+          -0.999198,
+          0.0,
+          0.0,
+          0.999198,
+          0.0400446,
+          0.0,
+          0.0,
+          24.1211,
+          -0.333772,
+          1.0
+        ],
+        "verticalFOV": 40.0,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": true
+      },
+      "AssetGen_ParkAssistFrontBSCCamTop": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0400446,
+          -0.999198,
+          0.0,
+          0.0,
+          0.999198,
+          0.0400446,
+          0.0,
+          0.0,
+          36.2633,
+          -7.71412,
+          1.0
+        ],
+        "verticalFOV": 40.0,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_MultiLaneM3CamTop": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.996195,
+          -0.0871557,
+          0.0,
+          0.0,
+          0.0871557,
+          0.996195,
+          0.0,
+          0.0,
+          5.53316,
+          22.3791,
+          1.0
+        ],
+        "verticalFOV": 40.0,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_ParkAssistM3CamBottom": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0400446,
+          -0.999196,
+          0.0,
+          0.0,
+          0.999196,
+          0.0400446,
+          0.0,
+          0.0,
+          27.5,
+          0.597,
+          1.0
+        ],
+        "verticalFOV": 40.0,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_MultiLaneM3CamBottom": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.96508,
+          -0.261953,
+          0.0,
+          0.0,
+          0.261953,
+          0.96508,
+          0.0,
+          0.0,
+          6.228,
+          20.0,
+          1.0
+        ],
+        "verticalFOV": 40.0,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_ParkAssistRearCamTop": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0400446,
+          -0.999198,
+          0.0,
+          0.0,
+          0.999198,
+          0.0400446,
+          0.0,
+          0.0,
+          36.2633,
+          -1.61193,
+          1.0
+        ],
+        "verticalFOV": 40.0,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_ParkExpanded": {
+        "columns": [
+          -1.62921e-07,
+          0.0,
+          1.0,
+          0.0,
+          0.0871558,
+          0.996195,
+          1.41995e-08,
+          0.0,
+          -0.996195,
+          0.0871558,
+          -1.62301e-07,
+          0.0,
+          -5.287,
+          1.28663,
+          -1.4,
+          1.0
+        ],
+        "verticalFOV": 58.8,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_TonneauView": {
+        "columns": [
+          0.86239,
+          0.0,
+          0.506245,
+          0.0,
+          0.192915,
+          0.924546,
+          -0.328631,
+          0.0,
+          -0.468046,
+          0.38107,
+          0.797319,
+          0.0,
+          -2.834,
+          3.393,
+          4.673,
+          1.0
+        ],
+        "verticalFOV": 58.8,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_TonneauViewExpanded": {
+        "columns": [
+          0.819152,
+          0.0,
+          0.573577,
+          0.0,
+          0.184655,
+          0.946762,
+          -0.263714,
+          0.0,
+          -0.54304,
+          0.321935,
+          0.775542,
+          0.0,
+          -2.99565,
+          2.57088,
+          3.80848,
+          1.0
+        ],
+        "verticalFOV": 58.8,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_TrunkView": {
+        "columns": [
+          0.877649,
+          0.0,
+          0.479305,
+          0.0,
+          0.188926,
+          0.919039,
+          -0.34594,
+          0.0,
+          -0.4405,
+          0.394166,
+          0.806593,
+          0.0,
+          -2.538,
+          3.159,
+          4.775,
+          1.0
+        ],
+        "verticalFOV": 58.8,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_TrunkViewExpanded": {
+        "columns": [
+          0.877649,
+          0.0,
+          0.479305,
+          0.0,
+          0.188926,
+          0.919039,
+          -0.34594,
+          0.0,
+          -0.4405,
+          0.394167,
+          0.806593,
+          0.0,
+          -1.919,
+          2.405,
+          3.471,
+          1.0
+        ],
+        "verticalFOV": 58.8,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_FrunkView": {
+        "columns": [
+          -0.8153,
+          0.0,
+          0.579039,
+          0.0,
+          0.219206,
+          0.925573,
+          0.308646,
+          0.0,
+          -0.535943,
+          0.378568,
+          -0.754619,
+          0.0,
+          -3.618,
+          3.236,
+          -7.307,
+          1.0
+        ],
+        "verticalFOV": 58.8,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_FrunkViewExpanded": {
+        "columns": [
+          -0.80597,
+          0.0,
+          0.591957,
+          0.0,
+          0.187007,
+          0.948788,
+          0.254617,
+          0.0,
+          -0.561641,
+          0.315914,
+          -0.764694,
+          0.0,
+          -3.018,
+          2.212,
+          -6.508,
+          1.0
+        ],
+        "verticalFOV": 58.8,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_SuspensionView": {
+        "columns": [
+          -0.273942,
+          0.0,
+          0.961746,
+          0.0,
+          0.142686,
+          0.988933,
+          0.0406424,
+          0.0,
+          -0.951103,
+          0.148361,
+          -0.27091,
+          0.0,
+          -8.06546,
+          2.64923,
+          -4.011,
+          1.0
+        ],
+        "verticalFOV": 58.8,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_SuspensionViewExpanded": {
+        "columns": [
+          -1.62921e-07,
+          0.0,
+          1.0,
+          0.0,
+          0.0871558,
+          0.996195,
+          1.41995e-08,
+          0.0,
+          -0.996195,
+          0.0871558,
+          -1.62301e-07,
+          0.0,
+          -4.36,
+          1.115,
+          -1.488,
+          1.0
+        ],
+        "verticalFOV": 58.8,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_ChargeportView": {
+        "columns": [
+          0.694796,
+          0.0,
+          0.719206,
+          0.0,
+          0.232868,
+          0.94613,
+          -0.224965,
+          0.0,
+          -0.680464,
+          0.323786,
+          0.657369,
+          0.0,
+          -5.157,
+          3.147,
+          4.22,
+          1.0
+        ],
+        "verticalFOV": 58.8,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_ChargeportViewExpanded": {
+        "columns": [
+          0.651767,
+          0.0,
+          0.758419,
+          0.0,
+          0.245565,
+          0.946131,
+          -0.211033,
+          0.0,
+          -0.717564,
+          0.323786,
+          0.616658,
+          0.0,
+          -3.592,
+          2.113,
+          2.374,
+          1.0
+        ],
+        "verticalFOV": 58.8,
+        "near": 0.05,
+        "far": 100.0,
+        "horizontal": false
+      },
+      "AssetGen_LaunchModePrime": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.999847,
+          -0.0174524,
+          0.0,
+          0.0,
+          0.0174524,
+          0.999847,
+          0.0,
+          0.0,
+          2.0,
+          14.0,
+          1.0
+        ],
+        "verticalFOV": 35.0,
+        "near": 0.05,
+        "far": 2600.0,
+        "horizontal": false
+      }
+    },
+    "defaultView": "SNAPSHOT_PARKED",
+    "backgroundLight": "#F7F7F7",
+    "backgroundDark": "#161718",
+    "parked": {
+      "highlight": "#878787",
+      "highlights": {
+        "RedMulticoat": "#f13d3d",
+        "SolidBlack": "#6d6d6d",
+        "SilverMetallic": "#c1c1c1",
+        "MidnightSilver": "#999ea9",
+        "DeepBlue": "#1667ee",
+        "PearlWhite": "#dadada",
+        "MidnightCherryRed": "#eb4b69",
+        "Quicksilver": "#d0d9f7",
+        "UltraRed": "#f03042",
+        "StealthGrey": "#929ba7",
+        "GlacierBlue": "#42599c",
+        "DiamondBlack": "#6d6d6d",
+        "SilkroadSilver": "#c1c1c1",
+        "MarineBlue": "#1f4b75"
+      },
+      "skyEnergy": 4,
+      "ambientEnergy": 4,
+      "sourceSkyRotation": [
+        0,
+        -11,
+        83
+      ],
+      "panorama": "ParkedStudio.png",
+      "floorNormals": "FloorNormal.rg8",
+      "normalSize": 512,
+      "ground": {
+        "path": "Body/Ground_Shadow2",
+        "mask": "FloorMask.r8",
+        "width": 512,
+        "height": 512,
+        "uvFromXZ": [
+          [
+            2.4660744341786623e-06,
+            -0.12820785673755528,
+            1.4984107429001312
+          ],
+          [
+            0.2379133638312977,
+            -5.435239024598577e-06,
+            -0.5136497896227864
+          ]
+        ],
+        "bounds": [
+          -2.0426375086554676,
+          -3.91215215305209,
+          2.1574767414922906,
+          3.888298410416326
+        ]
+      },
+      "shader": {
+        "file": "Parked/Materials.usda",
+        "bindings": {
+          "PaintMix_f5ec646c3686c3": [
+            "Body/Hood_Spatial/Hood2/surface_00",
+            "Body/Door_LF_Spatial/Door_LF2/surface_00",
+            "Body/Door_RF_Spatial/Door_RF2/surface_00",
+            "Body/Door_LR_Spatial/Door_LR2/surface_00",
+            "Body/Door_RR_Spatial/Door_RR2/surface_00",
+            "Body/Trunk_Spatial/Trunk2/surface_01",
+            "Body/Body2/surface_06"
+          ],
+          "GlassSkybox_4ba4d501e39987": [
+            "Body/Door_LF_Spatial/Window_LF_Spatial/Window_LF2/surface_01",
+            "Body/Door_RF_Spatial/Window_RF_Spatial/Window_RF2/surface_01",
+            "Body/Windows_Top2/surface_07"
+          ],
+          "GlassTintedFadeSkybox_f9012849e329af": [
+            "Body/Door_LR_Spatial/Window_LR_Spatial/Window_LR2/surface_01",
+            "Body/Door_RR_Spatial/Window_RR_Spatial/Window_RR2/surface_01",
+            "Body/Window_R2/surface_01",
+            "Body/Windows_Top2/surface_06"
+          ],
+          "Glass_Tinted_Skybox_Fade_baf3c8f54e9c21": [
+            "Body/Windows_Top2/surface_00"
+          ],
+          "Glass_Skybox_Fade_13b10d2668b370": [
+            "Body/Windows_Top2/surface_04"
+          ]
+        },
+        "wheelMaterials": [
+          "Blocker_59d813b58678af",
+          "Everest_Premium_Wheel_b6ce08bd2fa5b1",
+          "Everest_Wheel_Metal_5f043e0d7c541f",
+          "Premium_Tire_5d951ff8e610d8",
+          "Premium_Tire_e7e62226005476",
+          "Premium_Wheel_269993efe7258a",
+          "Premium_Wheel_bab460767127cf"
+        ],
+        "twoSided": [
+          "Everest_Premium_Wheel_b6ce08bd2fa5b1",
+          "Everest_Wheel_Metal_5f043e0d7c541f",
+          "Premium_Tire_e7e62226005476"
+        ],
+        "paintGraphs": []
+      }
+    }
+  },
+  "materials": {
+    "paint": null,
+    "material_count": 82,
+    "texture_count": 40,
+    "coverage": {
+      "SpatialMaterial": 70,
+      "paint_mix": 1,
+      "headlights_beam_glow": 3,
+      "glass_skybox": 4,
+      "tonneau_cover": 1,
+      "fallback": 3
+    },
+    "materials": {
+      "res://Ego/Cybertruck/Wheels/Premium_Tire.material": {
+        "path": "/Vehicle/Looks/Premium_Tire_5d951ff8e610d8",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_c1ceaa1aaf64c8.png",
+          "textures/Tire_Cybertruck_Premium_AO_No_Cap_c7df9687eb9433.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Wheels/Premium_Wheel.material": {
+        "path": "/Vehicle/Looks/Premium_Wheel_269993efe7258a",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_c1ceaa1aaf64c8.png",
+          "textures/Tire_Cybertruck_Premium_AO_d5109a146fe8d7.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Lights1.material": {
+        "path": "/Vehicle/Looks/Lights1_a3e85c5bd320c9",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Lights_BC_a51a77f91933d4.png",
+          "textures/Lights_RA_945a1faf35e726.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Paint_Mix.material": {
+        "path": "/Vehicle/Looks/PaintMix_f5ec646c3686c3",
+        "family": "paint_mix",
+        "paint": true,
+        "textures": [
+          "textures/Paint_AO_2937fce0647292.png"
+        ],
+        "notes": [
+          "Camera-dependent Cybertruck paint fixed to authored bright lobe",
+          "View-dependent paint uses stage reflections, not Godot skybox emission"
+        ]
+      },
+      "res://Ego/Cybertruck/Paint_Rough.material": {
+        "path": "/Vehicle/Looks/Paint_Rough_69ff486fd5da51",
+        "family": "SpatialMaterial",
+        "paint": true,
+        "textures": [
+          "textures/Paint_AO_2937fce0647292.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Stainless_Steel_Exterior.material": {
+        "path": "/Vehicle/Looks/Stainless_Steel_Exterior_7bf896e49c8fbc",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Exterior_AO_dbe09145f69e1b.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Metal_Dark_Exterior.material": {
+        "path": "/Vehicle/Looks/Metal_Dark_Exterior_e849a6c67b62fe",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Exterior_AO_dbe09145f69e1b.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Stainless_Steel_Rough.material": {
+        "path": "/Vehicle/Looks/Stainless_Steel_Rough_654bac0e32b108",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Exterior_AO_dbe09145f69e1b.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Rubber_Exterior.material": {
+        "path": "/Vehicle/Looks/Rubber_Exterior_9f9c73fae0ccfd",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Exterior_AO_dbe09145f69e1b.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Beam.material": {
+        "path": "/Vehicle/Looks/Beam_bf058ad743c598",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Lightbeam_72ad8970e2e7f8.png",
+          "textures/Opacity_873c77f47e1d43.png"
+        ],
+        "notes": [
+          "Godot blend mode approximated by Preview Surface opacity"
+        ]
+      },
+      "res://Ego/Cybertruck/Headlights_Beam_Glow_Side.material": {
+        "path": "/Vehicle/Looks/Headlights_Beam_Glow_Side_d677d52effba17",
+        "family": "headlights_beam_glow",
+        "paint": false,
+        "textures": [
+          "textures/Opacity_260e5d9c6a0ac8.png",
+          "textures/Side_Glow_47b82523f1c1d7.png"
+        ],
+        "notes": [
+          "Camera/position-dependent visibility and blending omitted"
+        ]
+      },
+      "res://Ego/Cybertruck/Headlights_Beam_Glow_Top.material": {
+        "path": "/Vehicle/Looks/Headlights_Beam_Glow_Top_3f67d8f61f097f",
+        "family": "headlights_beam_glow",
+        "paint": false,
+        "textures": [
+          "textures/Opacity_9a986552c48de7.png",
+          "textures/Top_Glow_b4304b6e68e911.png"
+        ],
+        "notes": [
+          "Camera/position-dependent visibility and blending omitted"
+        ]
+      },
+      "res://Ego/Cybertruck/Headlights_Beam_Glow_Front.material": {
+        "path": "/Vehicle/Looks/Headlights_Beam_Glow_Front_a8e0db943baedf",
+        "family": "headlights_beam_glow",
+        "paint": false,
+        "textures": [
+          "textures/Opacity_d505facc3831a7.png",
+          "textures/Straight_Glow_d8851a11629dd6.png"
+        ],
+        "notes": [
+          "Camera/position-dependent visibility and blending omitted"
+        ]
+      },
+      "res://Ego/Cybertruck/Illumination.material": {
+        "path": "/Vehicle/Looks/Illumination_a5da541de35230",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Illumination_9008856423ffd5.png",
+          "textures/Opacity_b5b9c064544c0e.png"
+        ],
+        "notes": [
+          "Godot blend mode approximated by Preview Surface opacity"
+        ]
+      },
+      "res://Ego/Cybertruck/Plastic_Black_Exterior.material": {
+        "path": "/Vehicle/Looks/Black_Plastic_Exterior_c5ee1c74bfa95e",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Exterior_AO_dbe09145f69e1b.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Mirror.material": {
+        "path": "/Vehicle/Looks/MIrror_23af225ea6a792",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Glass_Interior.material": {
+        "path": "/Vehicle/Looks/Glass_Interior_add2c4d8e795ee",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Glass_Skybox.material": {
+        "path": "/Vehicle/Looks/GlassSkybox_4ba4d501e39987",
+        "family": "glass_skybox",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "Static face-on glass; view-dependent reflection/fade replaced by stage shading"
+        ]
+      },
+      "res://Ego/Cybertruck/Glass_Rough.material": {
+        "path": "/Vehicle/Looks/Glass_Rough_444f228c6c6d7d",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Paint_Black.material": {
+        "path": "/Vehicle/Looks/Black_Paint_e8907199e71bbd",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Stainless_Steel.material": {
+        "path": "/Vehicle/Looks/Stainless_Steel_3f1995454c321f",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/MIC_Black.material": {
+        "path": "/Vehicle/Looks/Black_MIC_41f13bb07956b3",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/TPO_Black.material": {
+        "path": "/Vehicle/Looks/Black_TPO_7fff17779c5d62",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/PUR_Black.material": {
+        "path": "/Vehicle/Looks/Black_PUR_4591d4dd99a9b7",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/LED.material": {
+        "path": "/Vehicle/Looks/LED_21cf809228adf6",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Metal_Mesh.material": {
+        "path": "/Vehicle/Looks/Metal_Mesh_7fc3c07e4006e6",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Glass_White.material": {
+        "path": "/Vehicle/Looks/Glass_Red_35532f7d1d661d",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Decor_White.material": {
+        "path": "/Vehicle/Looks/Decor_a21fb5b64ea305",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Glass_Interior_Tinted.material": {
+        "path": "/Vehicle/Looks/Glass_Interior_Tinted_b96d6e31e77735",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Glass_Tinted_Skybox.material": {
+        "path": "/Vehicle/Looks/GlassTintedFadeSkybox_f9012849e329af",
+        "family": "glass_skybox",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "Static face-on glass; view-dependent reflection/fade replaced by stage shading"
+        ]
+      },
+      "res://Ego/Cybertruck/Glass_Black.material": {
+        "path": "/Vehicle/Looks/Black_Glass_3ab5d47f08f9c4",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Exterior_AO_dbe09145f69e1b.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Glass_Black_Rough.material": {
+        "path": "/Vehicle/Looks/Glass_Black_Rough_1d7d8a8b703581",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Exterior_AO_dbe09145f69e1b.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Glass_Lights.material": {
+        "path": "/Vehicle/Looks/Glass_Lights_8639b8e8bef76c",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/decals.material": {
+        "path": "/Vehicle/Looks/decals_6b7e3cd2e26ac5",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Decals_Foundation_3be31bb9ea4296.png",
+          "textures/Opacity_af9786d820613b.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Anodized_Black.material": {
+        "path": "/Vehicle/Looks/Black_Anodized_de5dfaa47c2b95",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Fabric_Black.material": {
+        "path": "/Vehicle/Looks/Black_Fabric_61c95bb697fe2a",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/PVC_Black.material": {
+        "path": "/Vehicle/Looks/PVC_Black_8f5f003ec3f413",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Plastic_Black_Exterior_Fade.material": {
+        "path": "/Vehicle/Looks/Plastic_Black_Exterior_Fade_7f864c5349b30a",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Exterior_AO_dbe09145f69e1b.png",
+          "textures/Opacity_7436a19f21a1e7.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Rubber_Exterior_Fade.material": {
+        "path": "/Vehicle/Looks/Rubber_Exterior_Fade_dc868115ea52a7",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Exterior_AO_dbe09145f69e1b.png",
+          "textures/Opacity_7436a19f21a1e7.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Metal_Exterior.material": {
+        "path": "/Vehicle/Looks/Metal_Exterior_98729c7898b237",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Exterior_AO_dbe09145f69e1b.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Zero_Black.material": {
+        "path": "/Vehicle/Looks/Zero_Black_6dcfb331867266",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Plastic_Black_Exterior_Rough.material": {
+        "path": "/Vehicle/Looks/Plastic_Black_Exterior_Rough_7905d205f97db4",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Exterior_AO_dbe09145f69e1b.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Glass_Black_Rough_Fade.material": {
+        "path": "/Vehicle/Looks/Glass_Black_Rough_Fade_6c6fb98ac01b4a",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Exterior_AO_dbe09145f69e1b.png",
+          "textures/Opacity_7436a19f21a1e7.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Plastic_Chargeport.material": {
+        "path": "/Vehicle/Looks/Plastic_Chargeport_b59f85fed116d6",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Exterior_AO_dbe09145f69e1b.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Plates.material": {
+        "path": "/Vehicle/Looks/Plates_66f9fe34b83d1d",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/plate_256_MRA_e3ccecbf1364b3.png",
+          "textures/plate_BC_d173803f511212.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/MIC_Black_Frunk.material": {
+        "path": "/Vehicle/Looks/MIC_Black_Frunk_dfdfc6f2d26d4d",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Frunk_AO_806096a68e0bff.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Cybertruck_Logo.material": {
+        "path": "/Vehicle/Looks/Cybertruck_Logo_146bfab9287674",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Cybertruck_Logo_1993a2bd4285a7.png",
+          "textures/Opacity_e9fbafff2f9f76.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Carpet.material": {
+        "path": "/Vehicle/Looks/Carpet_0ec59841e17205",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Fabric_Black_Fade.material": {
+        "path": "/Vehicle/Looks/Fabric_Black_Fade_cb6d6d92f7289a",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png",
+          "textures/Opacity_7436a19f21a1e7.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/TPO_Black_Fade.material": {
+        "path": "/Vehicle/Looks/TPO_Black_Fade_290034c2fedebe",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png",
+          "textures/Opacity_7436a19f21a1e7.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/MIC_Black_Fade.material": {
+        "path": "/Vehicle/Looks/MIC_Black_Fade_27b67065e4dcfd",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png",
+          "textures/Opacity_7436a19f21a1e7.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/MIC_Black_Rough_Fade.material": {
+        "path": "/Vehicle/Looks/MIC_Black_Rough_Fade_b2b7dc8a0bd4d7",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png",
+          "textures/Opacity_7436a19f21a1e7.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Paint_Black_Fade.material": {
+        "path": "/Vehicle/Looks/Paint_Black_Fade_1a143b5e794ab0",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png",
+          "textures/Opacity_7436a19f21a1e7.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Chrome.material": {
+        "path": "/Vehicle/Looks/Chrome_0b224649763643",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Seatbelts.material": {
+        "path": "/Vehicle/Looks/Seatbelts_717ff369e5d7b8",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Platic_Red.material": {
+        "path": "/Vehicle/Looks/Platic_Red_8e4176b2c5dedc",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Interior_AO_58ebfc26559389.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/door_sill_metal.material": {
+        "path": "/Vehicle/Looks/door_sill_d16561f502ee03",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/metal_pedal.material": {
+        "path": "/Vehicle/Looks/Pedal_00479213c46050",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Mirror_Fade.material": {
+        "path": "/Vehicle/Looks/Mirror_Fade_7e77303bab771b",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Rear_Screen.material": {
+        "path": "/Vehicle/Looks/Rear_Screen_c9d6cf4b5d14dd",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Screen_Rear_032a496661eecc.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Front_Screen.material": {
+        "path": "/Vehicle/Looks/Front_Screen_3388c419a7707c",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Screen_Front_c0db717a4f1e68.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Seats_Decor_PUR_Perforated.material": {
+        "path": "/Vehicle/Looks/Seats_aedb20c0f2095e",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Seats_AO_e16f8f243831eb.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/PUR_Seats.material": {
+        "path": "/Vehicle/Looks/PUR_Seats_40eeee4dd44285",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Seats_AO_e16f8f243831eb.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/PVC_Black_Seats.material": {
+        "path": "/Vehicle/Looks/PVC_Seats_2098c0c950381f",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Seats_AO_e16f8f243831eb.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Paint_Black_Seats.material": {
+        "path": "/Vehicle/Looks/Paint_Black_Seats_dfde11b3254a58",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Seats_AO_e16f8f243831eb.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Anodized_Black_Seats.material": {
+        "path": "/Vehicle/Looks/Anodized_Black_Seats_220ff3f9fc35db",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Seats_AO_e16f8f243831eb.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Glass_Tinted_Skybox_Fade.material": {
+        "path": "/Vehicle/Looks/Glass_Tinted_Skybox_Fade_baf3c8f54e9c21",
+        "family": "glass_skybox",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "Static face-on glass; view-dependent reflection/fade replaced by stage shading"
+        ]
+      },
+      "res://Ego/Cybertruck/Glass_Rough_Fade.material": {
+        "path": "/Vehicle/Looks/Glass_Rough_Fade_63bade522d2e6d",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Glass_Interior_Tinted_Fade.material": {
+        "path": "/Vehicle/Looks/Glass_Interior_Tinted_Fade_fedfc3764fd1d2",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Glass_Interior_Fade.material": {
+        "path": "/Vehicle/Looks/Glass_Interior_Fade_24fb632df9df7c",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Glass_Skybox_Fade.material": {
+        "path": "/Vehicle/Looks/Glass_Skybox_Fade_13b10d2668b370",
+        "family": "glass_skybox",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "Static face-on glass; view-dependent reflection/fade replaced by stage shading"
+        ]
+      },
+      "res://Ego/Cybertruck/Glass_Tinted_Rough.material": {
+        "path": "/Vehicle/Looks/Glass_Tinted_Rough_0a505bc0843377",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Taillights_Projection.material": {
+        "path": "/Vehicle/Looks/Taillights_Projection_fb6e301a7ec14b",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Opacity_106aa029c4d7a8.png",
+          "textures/Stoplight_projection_ce94a8bd1b8404.png"
+        ],
+        "notes": [
+          "Godot blend mode approximated by Preview Surface opacity"
+        ]
+      },
+      "res://Ego/Cybertruck/Headlights_Projection.material": {
+        "path": "/Vehicle/Looks/Headlights_Projection_37484b8f14b450",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Headlight_projection_95e868d2c02100.png",
+          "textures/Opacity_f9b28e10d65029.png"
+        ],
+        "notes": [
+          "Godot blend mode approximated by Preview Surface opacity"
+        ]
+      },
+      "res://Ego/Cybertruck/Ground_Plane.material": {
+        "path": "/Vehicle/Looks/Ground_Plane_443bd252d29131",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Ground_AO_c5072b547ad16a.png",
+          "textures/Opacity_e59dd661e1b1e0.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Chargeport_Color.material": {
+        "path": "/Vehicle/Looks/Chargeport_Color_445022e0c8236b",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Chargeport_Light_77f170e288b7a7.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Door_LED.material": {
+        "path": "/Vehicle/Looks/Door_LED_912d6c4cf88192",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/Cybertruck/Tonneau_Cover.material": {
+        "path": "/Vehicle/Looks/Tonneau_Cover_19e109728ff4d8",
+        "family": "tonneau_cover",
+        "paint": false,
+        "textures": [
+          "textures/Black_d8f10911f0513c.png",
+          "textures/Tonneau_Cover_4f0ac72a5f9480.png"
+        ],
+        "notes": [
+          "Camera/position-dependent visibility and blending omitted"
+        ]
+      },
+      "res://mobile/materials/defrost_front.material": {
+        "path": "/Vehicle/Looks/defrost_front_329d57b5e79397",
+        "family": "fallback",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "No dedicated shader conversion: res://mobile/materials/defrost_front_shader.tres"
+        ]
+      },
+      "res://mobile/materials/defrost_rear.material": {
+        "path": "/Vehicle/Looks/defrost_rear_6a9d06b02ed088",
+        "family": "fallback",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "No dedicated shader conversion: res://mobile/materials/defrost_rear_shader.tres"
+        ]
+      },
+      "res://mobile/materials/airflow.material": {
+        "path": "/Vehicle/Looks/airflow_f8d76d1bb79cff",
+        "family": "fallback",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "No dedicated shader conversion: res://mobile/materials/airflow_shader.tres"
+        ]
+      },
+      "res://Ego/Cybertruck/Brakes/Brakes_Std_CT.material": {
+        "path": "/Vehicle/Looks/Brakes_da0f16f28b5862",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Brakes_Std_BC_633c43d79f9d72.png",
+          "textures/Brakes_Std_MRA_ce913010ccee0b.png"
+        ],
+        "notes": []
+      }
+    }
+  },
+  "liveFile": "Live.usda"
+}

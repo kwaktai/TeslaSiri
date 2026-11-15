@@ -1,0 +1,1460 @@
+#usda 1.0
+
+def Material "Suede_1747c2df4857cd"
+{
+    float inputs:AmbientEnergy = 1
+    float inputs:NormalSign = 1
+    float inputs:SkyEnergy = 1
+    vector3f inputs:SkyX = (1, 0, 0)
+    vector3f inputs:SkyY = (0, 1, 0)
+    vector3f inputs:SkyZ = (0, 0, 1)
+    token outputs:mtlx:surface.connect = </Suede_1747c2df4857cd/n175.outputs:out>
+
+    def Shader "n1"
+    {
+        uniform token info:id = "ND_texcoord_vector2"
+        int inputs:index = 0
+        float2 outputs:out
+    }
+
+    def Shader "n2"
+    {
+        uniform token info:id = "ND_multiply_vector2"
+        float2 inputs:in1.connect = </Suede_1747c2df4857cd/n1.outputs:out>
+        float2 inputs:in2 = (6.0000005, 6.0000005)
+        float2 outputs:out
+    }
+
+    def Shader "n3"
+    {
+        uniform token info:id = "ND_add_vector2"
+        float2 inputs:in1.connect = </Suede_1747c2df4857cd/n2.outputs:out>
+        float2 inputs:in2 = (0, -5.0000005)
+        float2 outputs:out
+    }
+
+    def Shader "n4"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../Textures/faf19d050f0877de7401.png@
+        float2 inputs:texcoord.connect = </Suede_1747c2df4857cd/n3.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "periodic"
+        vector3f outputs:out
+    }
+
+    def Shader "n5"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1 = (0.13333334, 0.13333334, 0.13333334)
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n4.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n6"
+    {
+        uniform token info:id = "ND_normal_vector3"
+        string inputs:space = "world"
+        vector3f outputs:out
+    }
+
+    def Shader "n7"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd.inputs:NormalSign>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n8"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n6.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n7.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n9"
+    {
+        uniform token info:id = "ND_realitykit_viewdirection_vector3"
+        string inputs:space = "world"
+        vector3f outputs:out
+    }
+
+    def Shader "n10"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n9.outputs:out>
+        float inputs:in2 = -1
+        vector3f outputs:out
+    }
+
+    def Shader "n11"
+    {
+        uniform token info:id = "ND_realitykit_reflect_vector3"
+        vector3f inputs:in.connect = </Suede_1747c2df4857cd/n10.outputs:out>
+        vector3f inputs:normal.connect = </Suede_1747c2df4857cd/n8.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n12"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n8.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n9.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n13"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Suede_1747c2df4857cd/n12.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n14"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd.inputs:SkyX>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n15"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd.inputs:SkyY>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n16"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd.inputs:SkyZ>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n17"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd.inputs:SkyEnergy>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n18"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd.inputs:AmbientEnergy>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n19"
+    {
+        uniform token info:id = "ND_texcoord_vector2"
+        int inputs:index = 1
+        float2 outputs:out
+    }
+
+    def Shader "n20"
+    {
+        uniform token info:id = "ND_image_float"
+        asset inputs:file = @../Textures/5b2987f8f917ad42ae80.png@
+        float2 inputs:texcoord.connect = </Suede_1747c2df4857cd/n19.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "periodic"
+        float outputs:out
+    }
+
+    def Shader "n21"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n11.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n14.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n22"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n11.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n15.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n23"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n11.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n16.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n24"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = -1
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n23.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n25"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n21.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n22.outputs:out>
+        float inputs:in3.connect = </Suede_1747c2df4857cd/n24.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n26"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Suede_1747c2df4857cd/n25.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n27"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Suede_1747c2df4857cd/n25.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n28"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Suede_1747c2df4857cd/n25.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n29"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Suede_1747c2df4857cd/n27.outputs:out>
+        float inputs:low = -1
+        float outputs:out
+    }
+
+    def Shader "n30"
+    {
+        uniform token info:id = "ND_acos_float"
+        float inputs:in.connect = </Suede_1747c2df4857cd/n29.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n31"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n30.outputs:out>
+        float inputs:in2 = 0.31830987
+        float outputs:out
+    }
+
+    def Shader "n32"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n31.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n33"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Suede_1747c2df4857cd/n28.outputs:out>
+        float inputs:iny.connect = </Suede_1747c2df4857cd/n26.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n34"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n33.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n35"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Suede_1747c2df4857cd/n26.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n36"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n35.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n37"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Suede_1747c2df4857cd/n36.outputs:out>
+        float inputs:iny.connect = </Suede_1747c2df4857cd/n28.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n38"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n37.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n39"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n38.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n40"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n39.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n41"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n39.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n40.outputs:out>
+        float inputs:value1.connect = </Suede_1747c2df4857cd/n26.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n42"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Suede_1747c2df4857cd/n28.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n43"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n34.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n41.outputs:out>
+        float inputs:value1.connect = </Suede_1747c2df4857cd/n42.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n44"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n43.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n32.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n45"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </Suede_1747c2df4857cd/n44.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n46"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 6
+        float inputs:in2 = 0.8
+        float outputs:out
+    }
+
+    def Shader "n47"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n46.outputs:out>
+        float inputs:in2 = 4
+        float outputs:out
+    }
+
+    def Shader "n48"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Suede_1747c2df4857cd/n47.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n49"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../../Wheels/ClassicTires/New_Studio/Lobe5.png@
+        float2 inputs:texcoord.connect = </Suede_1747c2df4857cd/n44.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n50"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Suede_1747c2df4857cd/n45.outputs:out>
+        vector3f inputs:fg.connect = </Suede_1747c2df4857cd/n49.outputs:out>
+        float inputs:mix.connect = </Suede_1747c2df4857cd/n48.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n51"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n26.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n52"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n28.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n53"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Suede_1747c2df4857cd/n52.outputs:out>
+        float inputs:iny.connect = </Suede_1747c2df4857cd/n51.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n54"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n53.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n55"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Suede_1747c2df4857cd/n51.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n56"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n55.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n57"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Suede_1747c2df4857cd/n56.outputs:out>
+        float inputs:iny.connect = </Suede_1747c2df4857cd/n52.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n58"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n57.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n59"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n58.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n60"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n59.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n61"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n59.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n60.outputs:out>
+        float inputs:value1.connect = </Suede_1747c2df4857cd/n51.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n62"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Suede_1747c2df4857cd/n52.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n63"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n54.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n61.outputs:out>
+        float inputs:value1.connect = </Suede_1747c2df4857cd/n62.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n64"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1 = 0.5
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n63.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n65"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n64.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n32.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n66"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </Suede_1747c2df4857cd/n65.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n67"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 6
+        float inputs:in2 = 0.8
+        float outputs:out
+    }
+
+    def Shader "n68"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n67.outputs:out>
+        float inputs:in2 = 4
+        float outputs:out
+    }
+
+    def Shader "n69"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Suede_1747c2df4857cd/n68.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n70"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../../Wheels/ClassicTires/New_Studio/Lobe5.png@
+        float2 inputs:texcoord.connect = </Suede_1747c2df4857cd/n65.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n71"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Suede_1747c2df4857cd/n66.outputs:out>
+        vector3f inputs:fg.connect = </Suede_1747c2df4857cd/n70.outputs:out>
+        float inputs:mix.connect = </Suede_1747c2df4857cd/n69.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n72"
+    {
+        uniform token info:id = "ND_ifgreater_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n50.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n71.outputs:out>
+        float inputs:value1.connect = </Suede_1747c2df4857cd/n28.outputs:out>
+        float inputs:value2 = 0
+        vector3f outputs:out
+    }
+
+    def Shader "n73"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n8.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n14.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n74"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n8.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n15.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n75"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n8.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n16.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n76"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n73.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n74.outputs:out>
+        float inputs:in3.connect = </Suede_1747c2df4857cd/n75.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n77"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Suede_1747c2df4857cd/n76.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n78"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Suede_1747c2df4857cd/n76.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n79"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Suede_1747c2df4857cd/n76.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n80"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Suede_1747c2df4857cd/n78.outputs:out>
+        float inputs:low = -1
+        float outputs:out
+    }
+
+    def Shader "n81"
+    {
+        uniform token info:id = "ND_acos_float"
+        float inputs:in.connect = </Suede_1747c2df4857cd/n80.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n82"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n81.outputs:out>
+        float inputs:in2 = 0.31830987
+        float outputs:out
+    }
+
+    def Shader "n83"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n82.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n84"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Suede_1747c2df4857cd/n79.outputs:out>
+        float inputs:iny.connect = </Suede_1747c2df4857cd/n77.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n85"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n84.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n86"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Suede_1747c2df4857cd/n77.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n87"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n86.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n88"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Suede_1747c2df4857cd/n87.outputs:out>
+        float inputs:iny.connect = </Suede_1747c2df4857cd/n79.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n89"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n88.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n90"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n89.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n91"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n90.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n92"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n90.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n91.outputs:out>
+        float inputs:value1.connect = </Suede_1747c2df4857cd/n77.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n93"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Suede_1747c2df4857cd/n79.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n94"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n85.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n92.outputs:out>
+        float inputs:value1.connect = </Suede_1747c2df4857cd/n93.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n95"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n94.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n83.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n96"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </Suede_1747c2df4857cd/n95.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n97"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n77.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n98"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n79.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n99"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Suede_1747c2df4857cd/n98.outputs:out>
+        float inputs:iny.connect = </Suede_1747c2df4857cd/n97.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n100"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n99.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n101"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Suede_1747c2df4857cd/n97.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n102"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n101.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n103"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Suede_1747c2df4857cd/n102.outputs:out>
+        float inputs:iny.connect = </Suede_1747c2df4857cd/n98.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n104"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n103.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n105"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n104.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n106"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n105.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n107"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n105.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n106.outputs:out>
+        float inputs:value1.connect = </Suede_1747c2df4857cd/n97.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n108"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Suede_1747c2df4857cd/n98.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n109"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n100.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n107.outputs:out>
+        float inputs:value1.connect = </Suede_1747c2df4857cd/n108.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n110"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1 = 0.5
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n109.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n111"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n110.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n83.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n112"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </Suede_1747c2df4857cd/n111.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n113"
+    {
+        uniform token info:id = "ND_ifgreater_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n96.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n112.outputs:out>
+        float inputs:value1.connect = </Suede_1747c2df4857cd/n79.outputs:out>
+        float inputs:value2 = 0
+        vector3f outputs:out
+    }
+
+    def Shader "n114"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg = (0.04, 0.04, 0.04)
+        vector3f inputs:fg.connect = </Suede_1747c2df4857cd/n5.outputs:out>
+        float inputs:mix = 0
+        vector3f outputs:out
+    }
+
+    def Shader "n115"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2 = 0.8
+        float outputs:out
+    }
+
+    def Shader "n116"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n115.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n115.outputs:out>
+        float inputs:in3.connect = </Suede_1747c2df4857cd/n115.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n117"
+    {
+        uniform token info:id = "ND_max_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n116.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n114.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n118"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n13.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n119"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n118.outputs:out>
+        float inputs:in2 = 5
+        float outputs:out
+    }
+
+    def Shader "n120"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Suede_1747c2df4857cd/n114.outputs:out>
+        vector3f inputs:fg.connect = </Suede_1747c2df4857cd/n117.outputs:out>
+        float inputs:mix.connect = </Suede_1747c2df4857cd/n119.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n121"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n115.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n115.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n122"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = -9.28
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n13.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n123"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1 = 2
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n122.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n124"
+    {
+        uniform token info:id = "ND_min_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n121.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n123.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n125"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n124.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n115.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n126"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.0275
+        float inputs:in2 = 0.8
+        float outputs:out
+    }
+
+    def Shader "n127"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.0425
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n126.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n128"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n125.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n127.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n129"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.572
+        float inputs:in2 = 0.8
+        float outputs:out
+    }
+
+    def Shader "n130"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n129.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n131"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n128.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n132"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n130.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n131.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n133"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.022
+        float inputs:in2 = 0.8
+        float outputs:out
+    }
+
+    def Shader "n134"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n133.outputs:out>
+        float inputs:in2 = 0.04
+        float outputs:out
+    }
+
+    def Shader "n135"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n128.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n136"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n134.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n135.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n137"
+    {
+        uniform token info:id = "ND_mix_float"
+        float inputs:bg = 1
+        float inputs:fg.connect = </Suede_1747c2df4857cd/n20.outputs:out>
+        float inputs:mix = 1
+        float outputs:out
+    }
+
+    def Shader "n138"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n120.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n132.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n139"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n136.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n136.outputs:out>
+        float inputs:in3.connect = </Suede_1747c2df4857cd/n136.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n140"
+    {
+        uniform token info:id = "ND_add_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n138.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n139.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n141"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n137.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n17.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n142"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n140.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n141.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n143"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2 = 0
+        float outputs:out
+    }
+
+    def Shader "n144"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n143.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n145"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n18.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n17.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n146"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n144.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n145.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n147"
+    {
+        uniform token info:id = "ND_subtract_vector3"
+        vector3f inputs:in1 = (1, 1, 1)
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n120.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n148"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n5.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n147.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n149"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n148.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n146.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n150"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n72.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n142.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n151"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n113.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n149.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n152"
+    {
+        uniform token info:id = "ND_add_vector3"
+        vector3f inputs:in1.connect = </Suede_1747c2df4857cd/n150.outputs:out>
+        vector3f inputs:in2.connect = </Suede_1747c2df4857cd/n151.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n153"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Suede_1747c2df4857cd/n152.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n154"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Suede_1747c2df4857cd/n153.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n155"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n154.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n156"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n155.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n157"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n156.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n158"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n154.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n159"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n157.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n158.outputs:out>
+        float inputs:value1.connect = </Suede_1747c2df4857cd/n154.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n160"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Suede_1747c2df4857cd/n152.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n161"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Suede_1747c2df4857cd/n160.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n162"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n161.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n163"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n162.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n164"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n163.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n165"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n161.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n166"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n164.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n165.outputs:out>
+        float inputs:value1.connect = </Suede_1747c2df4857cd/n161.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n167"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Suede_1747c2df4857cd/n152.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n168"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Suede_1747c2df4857cd/n167.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n169"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n168.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n170"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n169.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n171"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n170.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n172"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n168.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n173"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n171.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n172.outputs:out>
+        float inputs:value1.connect = </Suede_1747c2df4857cd/n168.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n174"
+    {
+        uniform token info:id = "ND_combine3_color3"
+        float inputs:in1.connect = </Suede_1747c2df4857cd/n159.outputs:out>
+        float inputs:in2.connect = </Suede_1747c2df4857cd/n166.outputs:out>
+        float inputs:in3.connect = </Suede_1747c2df4857cd/n173.outputs:out>
+        color3f outputs:out
+    }
+
+    def Shader "n175"
+    {
+        uniform token info:id = "ND_realitykit_unlit_surfaceshader"
+        bool inputs:applyPostProcessToneMap = 0
+        color3f inputs:color.connect = </Suede_1747c2df4857cd/n174.outputs:out>
+        float inputs:opacity = 1
+        token outputs:out
+    }
+}
+

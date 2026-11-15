@@ -2,7 +2,7 @@ import Foundation
 
 typealias TessieJSONObject = [String: JSONValue]
 
-nonisolated struct TessieResults<Value: Decodable>: Decodable {
+nonisolated struct TessieResults<Value: Decodable & Sendable>: Decodable, Sendable {
     var results: [Value]
 }
 
@@ -22,6 +22,31 @@ nonisolated struct TessieVehicleRecord: Decodable {
         vin = try container.decode(String.self, forKey: .vin)
         isActive = try container.decodeIfPresent(Bool.self, forKey: .isActive) ?? true
         lastState = try container.decodeIfPresent(TessieJSONObject.self, forKey: .lastState)
+    }
+}
+
+/// Tessie's detailed path can include telemetry fields that the route never displays.
+nonisolated struct TessiePathSample: Decodable, Sendable {
+    let latitude: JSONValue?
+    let longitude: JSONValue?
+    let odometer: JSONValue?
+    let speed: JSONValue?
+    let timestamp: JSONValue?
+    let heading: JSONValue?
+    let autopilot: JSONValue?
+
+    var routePoint: FleetRoutePoint? {
+        guard let latitude = latitude?.tessieDoubleValue,
+              let longitude = longitude?.tessieDoubleValue else { return nil }
+        return FleetRoutePoint(
+            latitude: latitude,
+            longitude: longitude,
+            odometer: odometer?.tessieDoubleValue,
+            speed: speed?.tessieDoubleValue,
+            timestamp: timestamp?.tessieInt64Value.map(TessieModelAdapter.milliseconds),
+            heading: heading?.tessieDoubleValue,
+            autopilot: autopilot?.tessieStringValue
+        )
     }
 }
 
@@ -146,6 +171,7 @@ nonisolated enum TessieModelAdapter {
             ),
             freshnessMS: updatedAt.map { max(Int64(Date().timeIntervalSince1970 * 1_000) - $0, 0) },
             gear: drive.string("shift_state"),
+            heading: drive.double("heading"),
             insideTemp: state.displayTemperature(climate.double("inside_temp")),
             latitude: drive.double("latitude"),
             locked: vehicle.bool("locked"),
@@ -246,6 +272,10 @@ nonisolated enum TessieModelAdapter {
             sessionID: "\(vin):\(id)",
             startAddress: object.string("starting_location"),
             endAddress: object.string("ending_location"),
+            startLatitude: object.double("starting_latitude"),
+            startLongitude: object.double("starting_longitude"),
+            endLatitude: object.double("ending_latitude"),
+            endLongitude: object.double("ending_longitude"),
             startedAt: startedAtMS,
             vin: vin
         )
@@ -320,17 +350,6 @@ nonisolated enum TessieModelAdapter {
             startedAt: startedAt,
             status: "Driving",
             vin: vin
-        )
-    }
-
-    static func routePoint(from object: TessieJSONObject) -> FleetRoutePoint? {
-        guard object.double("latitude") != nil, object.double("longitude") != nil else { return nil }
-        return FleetRoutePoint(
-            latitude: object.double("latitude"),
-            longitude: object.double("longitude"),
-            odometer: object.double("odometer"),
-            speed: object.double("speed"),
-            timestamp: object.int64("timestamp").map(milliseconds)
         )
     }
 

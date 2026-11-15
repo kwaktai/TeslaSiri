@@ -134,9 +134,33 @@ struct FleetAPIClient {
         }
     }
 
-    private struct Response<Value> {
+    private struct Response<Value: Sendable>: Sendable {
         var data: Value
         var requestID: String?
+    }
+
+    @MainActor
+    private final class VehicleStateScope {
+        var vin: String?
+        var cached: (token: String, baseURL: URL, response: Response<TessieJSONObject>)?
+
+        init(vin: String) {
+            self.vin = vin
+        }
+    }
+
+    @TaskLocal private static var vehicleStateScope: VehicleStateScope?
+
+    @MainActor
+    static func withSharedVehicleState(for vin: String, operation: @MainActor () async -> Void) async {
+        let scope = VehicleStateScope(vin: vin)
+        defer {
+            scope.vin = nil
+            scope.cached = nil
+        }
+        await $vehicleStateScope.withValue(scope) {
+            await operation()
+        }
     }
 
     private static let pathComponentAllowedCharacters: CharacterSet = {
@@ -148,7 +172,6 @@ struct FleetAPIClient {
     private var configuration: Configuration
     private var session: URLSession
     private var accessTokenProvider: any FleetAccessTokenProviding
-    private var decoder = JSONDecoder()
 
     init(
         configuration: Configuration = .production,
@@ -289,7 +312,7 @@ struct FleetAPIClient {
         includeRoute: Bool = false,
         routeMaxPoints: Int? = nil
     ) async throws -> FleetAPIPage<FleetActiveDriveSession> {
-        let stateResponse: Response<TessieJSONObject> = try await send(Endpoint(path: "/\(encoded(vin))/state"))
+        let stateResponse = try await vehicleState(vin: vin)
         let gear = stateResponse.data.object("drive_state").string("shift_state")?.uppercased()
         let isActive = gear.map { $0 != "P" } ?? false
         var route: [FleetRoutePoint] = []
@@ -366,9 +389,7 @@ struct FleetAPIClient {
         if let limit {
             query.append(URLQueryItem(name: "limit", value: String(limit)))
         }
-        async let stateResponse: Response<TessieJSONObject> = send(
-            Endpoint(path: "/\(encoded(vin))/state")
-        )
+        async let stateResponse = vehicleState(vin: vin)
         let charges: Response<TessieResults<TessieJSONObject>> = try await send(
             Endpoint(path: "/\(encoded(vin))/charges", queryItems: query)
         )
@@ -413,10 +434,7 @@ struct FleetAPIClient {
         refresh: Bool = false
     ) async throws -> FleetAPIPage<FleetSoftwareUpdate> {
         let cachePolicy: URLRequest.CachePolicy = refresh ? .reloadIgnoringLocalCacheData : .useProtocolCachePolicy
-        let response: Response<TessieJSONObject> = try await send(Endpoint(
-            path: "/\(encoded(vin))/state",
-            cachePolicy: cachePolicy
-        ))
+        let response = try await vehicleState(vin: vin, cachePolicy: cachePolicy)
         var update = TessieModelAdapter.software(from: response.data)
         if includeReleaseNotes,
            let version = Self.sanitizedReleaseVersion(update.availableVersion)
@@ -485,6 +503,8 @@ struct FleetAPIClient {
         case "set_bioweapon_mode":
             commandName = "set_bioweapon_mode"
             queryItems = [try queryItem("on", params: params)]
+        case "charge_port_door_open": commandName = "open_charge_port"
+        case "charge_port_door_close": commandName = "close_charge_port"
         case "flash_lights": commandName = "flash"
         case "honk_horn": commandName = "honk"
         case "navigation_request":
@@ -641,7 +661,7 @@ struct FleetAPIClient {
         range: (from: Int64, to: Int64),
         simplify: Bool
     ) async throws -> Response<[FleetRoutePoint]> {
-        let response: Response<TessieResults<TessieJSONObject>> = try await send(Endpoint(
+        let response: Response<TessieResults<TessiePathSample>> = try await send(Endpoint(
             path: "/\(encoded(vin))/path",
             queryItems: historyQuery(from: range.from, to: range.to) + [
                 URLQueryItem(name: "details", value: "true"),
@@ -649,7 +669,7 @@ struct FleetAPIClient {
             ]
         ))
         let points = response.data.results
-            .compactMap(TessieModelAdapter.routePoint)
+            .compactMap(\.routePoint)
             .sorted { ($0.timestamp ?? 0) < ($1.timestamp ?? 0) }
         return Response(data: points, requestID: response.requestID)
     }
@@ -683,6 +703,30 @@ struct FleetAPIClient {
         return trimmed
     }
 
+    @MainActor
+    private func vehicleState(
+        vin: String,
+        cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy
+    ) async throws -> Response<TessieJSONObject> {
+        let endpoint = Endpoint(path: "/\(encoded(vin))/state", cachePolicy: cachePolicy)
+        guard cachePolicy == .useProtocolCachePolicy, let scope = Self.vehicleStateScope, scope.vin == vin else {
+            return try await send(endpoint)
+        }
+
+        let token = try await accessTokenProvider.accessToken()
+        try Task.checkCancellation()
+        if let cached = scope.cached, cached.token == token, cached.baseURL == configuration.baseURL {
+            return cached.response
+        }
+
+        let response: Response<TessieJSONObject> = try await send(endpoint, accessToken: token)
+        try Task.checkCancellation()
+        if scope.vin == vin {
+            scope.cached = (token, configuration.baseURL, response)
+        }
+        return response
+    }
+
     private func snapshotState(
         vin: String
     ) async throws -> (state: TessieJSONObject, tireState: TessieJSONObject?, requestID: String?) {
@@ -691,7 +735,7 @@ struct FleetAPIClient {
             path: "\(vehiclePath)/tire_pressure",
             queryItems: [URLQueryItem(name: "pressure_format", value: "psi")]
         ))
-        let stateResponse: Response<TessieJSONObject> = try await send(Endpoint(path: "\(vehiclePath)/state"))
+        let stateResponse = try await vehicleState(vin: vin)
         let tireState: TessieJSONObject?
         do {
             tireState = try await tireRequest.data
@@ -744,12 +788,20 @@ struct FleetAPIClient {
         return URLQueryItem(name: name, value: value)
     }
 
-    private func send<Value: Decodable>(_ endpoint: Endpoint) async throws -> Response<Value> {
-        let request = try await makeRequest(for: endpoint)
+    @concurrent
+    private static func decode<Value: Decodable & Sendable>(_ type: Value.Type, from data: Data) async throws -> Value {
+        try JSONDecoder().decode(type, from: data)
+    }
+
+    private func send<Value: Decodable & Sendable>(
+        _ endpoint: Endpoint,
+        accessToken: String? = nil
+    ) async throws -> Response<Value> {
+        let request = try await makeRequest(for: endpoint, accessToken: accessToken)
         let (data, response) = try await perform(request, endpoint: endpoint)
         do {
             return Response(
-                data: try decoder.decode(Value.self, from: data),
+                data: try await Self.decode(Value.self, from: data),
                 requestID: requestID(from: response)
             )
         } catch {
@@ -775,7 +827,7 @@ struct FleetAPIClient {
         }
         let requestID = requestID(from: httpResponse)
         guard (200..<300).contains(httpResponse.statusCode) else {
-            let errorObject = try? decoder.decode(TessieJSONObject.self, from: data)
+            let errorObject = try? await Self.decode(TessieJSONObject.self, from: data)
             let responseMessage = errorObject?.string("error") ?? errorObject?.string("message")
             let message = httpResponse.statusCode == 401
                 ? "The Tessie access token is invalid or revoked."
@@ -836,7 +888,7 @@ struct FleetAPIClient {
                     "base64": .string(data.base64EncodedString())
                 ])
             } else {
-                decodedBody = try? decoder.decode(JSONValue.self, from: data)
+                decodedBody = try? await Self.decode(JSONValue.self, from: data)
             }
             return rawResponse(
                 endpoint: endpoint,
@@ -948,7 +1000,10 @@ enum FleetBackend {
     }
 
     static func makeDataStore() -> FleetDataStore {
-        FleetDataStore(apiClient: makeAPIClient(), cache: FleetDiskCache())
+        FleetDataStore(
+            apiClient: FleetSandboxDataClient(liveClient: makeAPIClient()),
+            cache: FleetDiskCache()
+        )
     }
 
     static func makeDeviceIdentity() -> FleetDeviceIdentity {

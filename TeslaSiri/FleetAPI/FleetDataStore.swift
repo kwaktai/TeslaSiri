@@ -1,3 +1,4 @@
+import FleetKit
 import Foundation
 import Observation
 
@@ -32,6 +33,9 @@ final class FleetDataStore {
 
     @ObservationIgnored private let apiClient: any FleetDataLoading
     @ObservationIgnored private let cache: any FleetDataCaching
+    @TaskLocal private static var batchesCacheWrites = false
+    @ObservationIgnored private var sessionGeneration = 0
+    @ObservationIgnored private var isHydratingCache = false
     @ObservationIgnored private var loadingCounts: [LoadingKind: Int] = [:]
     @ObservationIgnored private var pollingTask: Task<Void, Never>?
     @ObservationIgnored private var selectionRefreshTask: Task<Void, Never>?
@@ -171,11 +175,14 @@ final class FleetDataStore {
     // MARK: - Bootstrap, Sync & Selection
 
     func loadInitialDataIfNeeded() async {
-        guard vehicles.isEmpty, !loadState.isLoading else {
-            return
+        guard vehicles.isEmpty, !loadState.isLoading, !isHydratingCache else { return }
+        let generation = sessionGeneration
+        isHydratingCache = true
+        defer {
+            if generation == sessionGeneration { isHydratingCache = false }
         }
-
-        await hydrateFromCacheIfAvailable()
+        await hydrateFromCacheIfAvailable(generation: generation)
+        guard generation == sessionGeneration, !Task.isCancelled else { return }
 
         if vehicles.isEmpty {
             await loadInitialData()
@@ -184,22 +191,33 @@ final class FleetDataStore {
         }
     }
 
-    func loadInitialData() async {
-        guard !loadState.isLoading else {
-            return
-        }
-
+    func loadInitialData(validatedBootstrap: FleetAPIPage<FleetBootstrap>? = nil) async {
+        guard !loadState.isLoading else { return }
+        let generation = sessionGeneration
         loadState = .loading
         lastErrorMessage = nil
 
         do {
-            let page = try await apiClient.bootstrap()
+            let page: FleetAPIPage<FleetBootstrap>
+            if let validatedBootstrap, FleetSandboxStore.shared.mode() != .demoVehicle {
+                page = validatedBootstrap
+            } else {
+                page = try await apiClient.bootstrap()
+            }
+            try Task.checkCancellation()
+            guard generation == sessionGeneration else { return }
             applyBootstrap(page.data, cursor: page.cursor, requestID: page.requestID, isCached: false)
-            await refreshCapabilitiesIfNeeded()
-            await loadInitialSelectedVehicleDetailsIfNeeded()
-            await saveCurrentState()
-            loadState = .loaded
+            await refreshCapabilitiesIfNeeded(generation: generation)
+            if generation == sessionGeneration, !Task.isCancelled {
+                await refreshSelectedVehicleDetails(onlyMissing: true)
+            }
+            if generation == sessionGeneration { loadState = .loaded }
         } catch {
+            guard generation == sessionGeneration else { return }
+            if Task.isCancelled || error is CancellationError {
+                loadState = vehicles.isEmpty ? .idle : .loaded
+                return
+            }
             let message = error.localizedDescription
             lastErrorMessage = message
             loadState = vehicles.isEmpty ? .failed(message) : .loaded
@@ -212,19 +230,17 @@ final class FleetDataStore {
             return
         }
 
-        guard !isRefreshing else {
-            return
-        }
-
+        guard !isRefreshing else { return }
+        let generation = sessionGeneration
         isRefreshing = true
         lastErrorMessage = nil
-        defer { isRefreshing = false }
+        defer {
+            if generation == sessionGeneration { isRefreshing = false }
+        }
 
         do {
             let page = try await apiClient.changes(since: cursor)
-            guard !Task.isCancelled, self.cursor == cursor else {
-                return
-            }
+            guard !Task.isCancelled, generation == sessionGeneration, self.cursor == cursor else { return }
 
             if let roster = page.data.vehicles {
                 applyVehicleRoster(roster)
@@ -236,12 +252,9 @@ final class FleetDataStore {
             lastRequestID = page.requestID
             lastRefreshDate = Date()
             loadState = .loaded
-            await refreshAllSelectedVehicleDetails()
-            await saveCurrentState()
+            await refreshSelectedVehicleDetails()
         } catch {
-            guard !Task.isCancelled, self.cursor == cursor else {
-                return
-            }
+            guard !Task.isCancelled, generation == sessionGeneration, self.cursor == cursor else { return }
             let message = error.localizedDescription
             lastErrorMessage = message
             if vehicles.isEmpty {
@@ -251,19 +264,18 @@ final class FleetDataStore {
     }
 
     func selectVehicle(vin: String) {
-        guard vehicles.contains(where: { $0.vin == vin }) else {
-            return
-        }
-
+        guard selectedVIN != vin, vehicles.contains(where: { $0.vin == vin }) else { return }
         selectedVIN = vin
         selectionRefreshTask?.cancel()
         selectionRefreshTask = Task {
-            await saveCurrentState()
-            await refreshAllSelectedVehicleDetails()
+            guard !Task.isCancelled else { return }
+            await refreshSelectedVehicleDetails()
         }
     }
 
     func reset(clearCache: Bool) async {
+        sessionGeneration += 1
+        isHydratingCache = false
         stopPolling()
         selectionRefreshTask?.cancel()
         selectionRefreshTask = nil
@@ -320,9 +332,9 @@ final class FleetDataStore {
     // MARK: - Vehicle Refresh & Control Actions
 
     func refreshSelectedVehicleLive() async {
-        await performSelectedVehicleRefresh { vin in
+        await performSelectedVehicleRefresh { vin, generation in
             let page = try await apiClient.latestSnapshot(vin: vin)
-            try validateReadResult(for: vin)
+            try validateReadResult(for: vin, generation: generation)
             var snapshot = page.data
             if FleetDataNormalizer.normalizedString(snapshot.vin) == nil {
                 snapshot.vin = vin
@@ -341,22 +353,34 @@ final class FleetDataStore {
             return false
         }
 
+        let generation = sessionGeneration
         activeControlAction = action
         isRunningControl = true
         vehicleControlMessage = "Sending command…"
         defer {
-            activeControlAction = nil
-            isRunningControl = false
+            if generation == sessionGeneration {
+                activeControlAction = nil
+                isRunningControl = false
+            }
         }
 
         do {
             let page = try await apiClient.runControl(action: action, vin: vin, params: params)
+            guard generation == sessionGeneration, selectedVehicle?.vin == vin else { return true }
             lastErrorMessage = nil
             lastRequestID = page.requestID ?? lastRequestID
-            vehicleControlMessage = "Command sent"
+            switch FleetSandboxStore.shared.mode() {
+            case .live:
+                vehicleControlMessage = "Command sent"
+            case .dryRun:
+                vehicleControlMessage = "Simulated (Dry-Run) — car untouched"
+            case .demoVehicle:
+                vehicleControlMessage = "Simulated on demo car"
+            }
             await refreshSelectedVehicleLive()
             return true
         } catch {
+            guard generation == sessionGeneration, selectedVehicle?.vin == vin else { return false }
             let message = error.localizedDescription
             lastErrorMessage = message
             vehicleControlMessage = message
@@ -365,22 +389,22 @@ final class FleetDataStore {
     }
 
     func refreshSelectedVehicleActiveDrive(includeRoute: Bool = false, routeMaxPoints: Int = 200) async {
-        await performSelectedVehicleRefresh(loading: .activeDrive) { vin in
+        await performSelectedVehicleRefresh(loading: .activeDrive) { vin, generation in
             let page = try await apiClient.activeDrive(
                 vin: vin,
                 includeRoute: includeRoute,
                 routeMaxPoints: includeRoute ? routeMaxPoints : nil
             )
-            try validateReadResult(for: vin)
+            try validateReadResult(for: vin, generation: generation)
             mergeActiveDrive(page.data, for: vin)
             return page.requestID
         }
     }
 
     func refreshSelectedVehicleChargingSessions(limit: Int = 10) async {
-        await performSelectedVehicleRefresh(loading: .charging) { vin in
+        await performSelectedVehicleRefresh(loading: .charging) { vin, generation in
             let page = try await apiClient.chargingSessions(vin: vin, limit: limit)
-            try validateReadResult(for: vin)
+            try validateReadResult(for: vin, generation: generation)
             mergeChargingSessions(page.data, for: vin)
             return page.requestID
         }
@@ -388,13 +412,13 @@ final class FleetDataStore {
 
     @discardableResult
     func refreshSelectedVehicleSoftware(includeReleaseNotes: Bool = true, forceRefresh: Bool = false) async -> Bool {
-        await performSelectedVehicleRefresh(loading: .software) { vin in
+        await performSelectedVehicleRefresh(loading: .software) { vin, generation in
             let page = try await apiClient.softwareUpdate(
                 vin: vin,
                 includeReleaseNotes: includeReleaseNotes,
                 refresh: forceRefresh
             )
-            try validateReadResult(for: vin)
+            try validateReadResult(for: vin, generation: generation)
             if let softwareUpdate = FleetDataNormalizer.softwareUpdate(page.data) {
                 mergeSoftwareUpdates([vin: softwareUpdate])
             } else {
@@ -424,10 +448,24 @@ final class FleetDataStore {
         }
     }
 
-    func refreshSelectedVehicleDrives(limit: Int = 10) async {
-        await performSelectedVehicleRefresh(loading: .drives) { vin in
+    /// A longer drive history for the selected vehicle, without touching the cached recent
+    /// drives. A failed read leaves the previous place index usable.
+    func selectedVehicleDriveHistory(limit: Int = 200) async -> [FleetDriveSession]? {
+        guard let vin = selectedVehicle?.vin else { return nil }
+        let generation = sessionGeneration
+        do {
             let page = try await apiClient.drives(vin: vin, limit: limit, includeRoute: false)
-            try validateReadResult(for: vin)
+            try validateReadResult(for: vin, generation: generation)
+            return page.data
+        } catch {
+            return nil
+        }
+    }
+
+    func refreshSelectedVehicleDrives(limit: Int = 10) async {
+        await performSelectedVehicleRefresh(loading: .drives) { vin, generation in
+            let page = try await apiClient.drives(vin: vin, limit: limit, includeRoute: false)
+            try validateReadResult(for: vin, generation: generation)
             mergeRecentDrives(page.data, for: vin)
             return page.requestID
         }
@@ -442,6 +480,7 @@ final class FleetDataStore {
             return
         }
 
+        let generation = sessionGeneration
         do {
             let page = try await apiClient.driveRoute(
                 sessionID: drive.sessionID,
@@ -450,22 +489,22 @@ final class FleetDataStore {
                 limit: nil,
                 maxPoints: maxPoints
             )
-            try validateReadResult(for: drive.vin)
+            try validateReadResult(for: drive.vin, generation: generation, requiresSelection: false)
             let normalizedRoute = FleetDataNormalizer.routePoints(page.data, limit: maxPoints)
-            if !normalizedRoute.isEmpty {
-                driveRoutesBySessionID[drive.sessionID] = normalizedRoute
-                recentDrives = FleetDataNormalizer.driveSessions(recentDrives.map { existingDrive in
-                    guard existingDrive.sessionID == drive.sessionID else {
-                        return existingDrive
-                    }
-                    var updatedDrive = existingDrive
+            if !normalizedRoute.isEmpty, let sessionID = FleetDataNormalizer.normalizedString(drive.sessionID) {
+                driveRoutesBySessionID[sessionID] = normalizedRoute
+                if let index = recentDrives.firstIndex(where: { $0.sessionID == sessionID }) {
+                    var updatedDrive = recentDrives[index]
                     updatedDrive.route = normalizedRoute
-                    return updatedDrive
-                })
+                    if let normalized = FleetDataNormalizer.driveSessions([updatedDrive]).first {
+                        recentDrives[index] = normalized
+                    }
+                }
             }
             await recordRefreshSuccess(requestID: page.requestID)
         } catch {
-            if !Task.isCancelled, !(error is CancellationError) {
+            if generation == sessionGeneration, selectedVehicle?.vin == drive.vin,
+               !Task.isCancelled, !(error is CancellationError) {
                 lastErrorMessage = error.localizedDescription
             }
         }
@@ -476,8 +515,13 @@ final class FleetDataStore {
             return
         }
 
+        let generation = sessionGeneration
         beginLoading(.telemetry)
-        defer { finishLoading(.telemetry) }
+        defer {
+            if generation == sessionGeneration { finishLoading(.telemetry) }
+        }
+
+        async let series = telemetrySeries(for: vin, limit: limit)
 
         var didRefresh = false
         var latestRequestID: String?
@@ -485,40 +529,42 @@ final class FleetDataStore {
 
         do {
             let page = try await apiClient.locations(vin: vin, startTime: nil, endTime: nil, limit: limit)
-            try validateReadResult(for: vin)
+            try validateReadResult(for: vin, generation: generation)
             locationHistoryByVIN[vin] = FleetDataNormalizer.routePoints(page.data, limit: limit)
             latestRequestID = page.requestID ?? latestRequestID
             didRefresh = true
         } catch {
-            guard !Task.isCancelled, !(error is CancellationError) else { return }
+            guard generation == sessionGeneration, selectedVehicle?.vin == vin,
+                  !Task.isCancelled, !(error is CancellationError) else { return }
             latestErrorMessage = error.localizedDescription
         }
 
         do {
-            let page = try await apiClient.telemetrySeries(
-                vin: vin,
-                topic: nil,
-                startTime: nil,
-                endTime: nil,
-                limit: limit,
-                maxPoints: limit,
-                fields: []
-            )
-            try validateReadResult(for: vin)
+            let page = try await series
+            try validateReadResult(for: vin, generation: generation)
             telemetrySeriesByVIN[vin] = FleetDataNormalizer.telemetrySeries(page.data, limit: limit)
             latestRequestID = page.requestID ?? latestRequestID
             didRefresh = true
         } catch {
-            guard !Task.isCancelled, !(error is CancellationError) else { return }
+            guard generation == sessionGeneration, selectedVehicle?.vin == vin,
+                  !Task.isCancelled, !(error is CancellationError) else { return }
             latestErrorMessage = error.localizedDescription
         }
 
         if didRefresh {
             await recordRefreshSuccess(requestID: latestRequestID)
         }
-        if let latestErrorMessage {
+        if let latestErrorMessage, generation == sessionGeneration, selectedVehicle?.vin == vin {
             lastErrorMessage = latestErrorMessage
         }
+    }
+
+    private func telemetrySeries(for vin: String, limit: Int) async throws -> (data: [FleetTelemetrySeriesPoint], requestID: String?) {
+        let page = try await apiClient.telemetrySeries(
+            vin: vin, topic: nil, startTime: nil, endTime: nil,
+            limit: limit, maxPoints: limit, fields: []
+        )
+        return (page.data, page.requestID)
     }
 
     func exportSelectedVehicleRawData() async {
@@ -576,9 +622,10 @@ final class FleetDataStore {
 
     // MARK: - Private Coordination & Execution Helpers
 
-    private func validateReadResult(for vin: String) throws {
+    private func validateReadResult(for vin: String, generation: Int, requiresSelection: Bool = true) throws {
         try Task.checkCancellation()
-        guard vehicles.contains(where: { $0.vin == vin }) else {
+        let isAvailable = requiresSelection ? selectedVehicle?.vin == vin : vehicles.contains { $0.vin == vin }
+        guard generation == sessionGeneration, isAvailable else {
             throw CancellationError()
         }
     }
@@ -586,27 +633,28 @@ final class FleetDataStore {
     @discardableResult
     private func performSelectedVehicleRefresh(
         loading kind: LoadingKind? = nil,
-        operation: (String) async throws -> String?
+        operation: (String, Int) async throws -> String?
     ) async -> Bool {
-        guard let vin = selectedVehicle?.vin else {
-            return false
-        }
+        guard let vin = selectedVehicle?.vin else { return false }
+        let generation = sessionGeneration
 
         if let kind {
             beginLoading(kind)
         }
         defer {
-            if let kind {
+            if let kind, generation == sessionGeneration {
                 finishLoading(kind)
             }
         }
 
         do {
-            let requestID = try await operation(vin)
+            let requestID = try await operation(vin, generation)
+            try validateReadResult(for: vin, generation: generation)
             await recordRefreshSuccess(requestID: requestID)
             return true
         } catch {
-            if !Task.isCancelled, !(error is CancellationError) {
+            if generation == sessionGeneration, selectedVehicle?.vin == vin,
+               !Task.isCancelled, !(error is CancellationError) {
                 lastErrorMessage = error.localizedDescription
             }
             return false
@@ -622,18 +670,23 @@ final class FleetDataStore {
             return false
         }
 
+        let generation = sessionGeneration
         isMutatingSoftware = true
         softwareActionMessage = progressMessage
-        defer { isMutatingSoftware = false }
+        defer {
+            if generation == sessionGeneration { isMutatingSoftware = false }
+        }
 
         do {
             let page = try await operation(vin)
+            guard generation == sessionGeneration, selectedVehicle?.vin == vin else { return true }
             lastErrorMessage = nil
             lastRequestID = page.requestID ?? lastRequestID
             softwareActionMessage = successMessage
             await refreshSelectedVehicleSoftware(forceRefresh: true)
             return true
         } catch {
+            guard generation == sessionGeneration, selectedVehicle?.vin == vin else { return false }
             let message = error.localizedDescription
             lastErrorMessage = message
             softwareActionMessage = message
@@ -645,7 +698,9 @@ final class FleetDataStore {
         lastErrorMessage = nil
         lastRequestID = requestID ?? lastRequestID
         lastRefreshDate = Date()
-        await saveCurrentState()
+        if !Self.batchesCacheWrites {
+            await saveCurrentState()
+        }
     }
 
     private func beginLoading(_ kind: LoadingKind) {
@@ -703,44 +758,51 @@ final class FleetDataStore {
         await refresh()
     }
 
-    private func loadInitialSelectedVehicleDetailsIfNeeded() async {
-        guard let vin = selectedVehicle?.vin else {
-            return
-        }
-
-        if selectedVehicle?.latest?.tires == nil {
-            await refreshSelectedVehicleLive()
-        }
-        if activeDrivesByVIN[vin] == nil {
-            await refreshSelectedVehicleActiveDrive()
-        }
-        await refreshSelectedVehicleChargingSessions()
-        await refreshSelectedVehicleSoftware()
-        if selectedVehicleRecentDrives.isEmpty || selectedVehicleRecentDrives.contains(where: needsDriveDetails) {
-            await refreshSelectedVehicleDrives()
-        }
-        if locationHistoryByVIN[vin, default: []].isEmpty || telemetrySeriesByVIN[vin, default: []].isEmpty {
-            await refreshSelectedVehicleTelemetry()
-        }
-    }
-
-    private func refreshAllSelectedVehicleDetails() async {
-        let steps: [() async -> Void] = [
-            { await self.refreshSelectedVehicleLive() },
-            { await self.refreshSelectedVehicleActiveDrive() },
-            { await self.refreshSelectedVehicleChargingSessions() },
-            {
-                if self.selectedVehicleSoftwareUpdate?.releaseNotesCount == nil {
-                    await self.refreshSelectedVehicleSoftware()
+    private func refreshSelectedVehicleDetails(onlyMissing: Bool = false) async {
+        let generation = sessionGeneration
+        if let vin = selectedVehicle?.vin {
+            let steps: [() async -> Void] = [
+                {
+                    if !onlyMissing || self.selectedVehicle?.latest?.tires == nil {
+                        await self.refreshSelectedVehicleLive()
+                    }
+                },
+                {
+                    if !onlyMissing || self.activeDrivesByVIN[vin] == nil {
+                        await self.refreshSelectedVehicleActiveDrive()
+                    }
+                },
+                { await self.refreshSelectedVehicleChargingSessions() },
+                {
+                    if onlyMissing || self.selectedVehicleSoftwareUpdate?.releaseNotesCount == nil {
+                        await self.refreshSelectedVehicleSoftware()
+                    }
+                },
+                {
+                    if !onlyMissing || self.selectedVehicleRecentDrives.isEmpty
+                        || self.selectedVehicleRecentDrives.contains(where: self.needsDriveDetails) {
+                        await self.refreshSelectedVehicleDrives()
+                    }
+                },
+                {
+                    if !onlyMissing || self.locationHistoryByVIN[vin, default: []].isEmpty
+                        || self.telemetrySeriesByVIN[vin, default: []].isEmpty {
+                        await self.refreshSelectedVehicleTelemetry()
+                    }
                 }
-            },
-            { await self.refreshSelectedVehicleDrives() },
-            { await self.refreshSelectedVehicleTelemetry() }
-        ]
-
-        for step in steps {
-            guard !Task.isCancelled else { return }
-            await step()
+            ]
+            await Self.$batchesCacheWrites.withValue(true) {
+                await FleetAPIClient.withSharedVehicleState(for: vin) {
+                    for step in steps {
+                        guard !Task.isCancelled, generation == self.sessionGeneration,
+                              self.selectedVehicle?.vin == vin else { return }
+                        await step()
+                    }
+                }
+            }
+        }
+        if generation == sessionGeneration, !Task.isCancelled {
+            await saveCurrentState()
         }
     }
 
@@ -750,18 +812,18 @@ final class FleetDataStore {
 
     // MARK: - Private State Merging & Persistence
 
-    private func hydrateFromCacheIfAvailable() async {
-        guard vehicles.isEmpty else {
+    private func hydrateFromCacheIfAvailable(generation: Int) async {
+        guard vehicles.isEmpty, FleetSandboxStore.shared.mode() != .demoVehicle else {
             return
         }
 
         do {
-            guard let cachedState = try await cache.load() else {
-                return
-            }
+            guard let cachedState = try await cache.load(),
+                  generation == sessionGeneration, !Task.isCancelled, vehicles.isEmpty,
+                  !loadState.isLoading, FleetSandboxStore.shared.mode() != .demoVehicle else { return }
             applySnapshotState(cachedState, isCached: true)
         } catch {
-            try? await cache.clear()
+            if generation == sessionGeneration, !Task.isCancelled { try? await cache.clear() }
         }
     }
 
@@ -835,24 +897,25 @@ final class FleetDataStore {
         selectedVIN = vehicles.first?.vin
     }
 
-    private func refreshCapabilitiesIfNeeded() async {
+    private func refreshCapabilitiesIfNeeded(generation: Int) async {
         guard capabilities == nil else {
             return
         }
 
         do {
             let page = try await apiClient.capabilities()
+            guard generation == sessionGeneration, !Task.isCancelled else { return }
             capabilities = FleetDataNormalizer.capabilities(page.data)
             lastRequestID = page.requestID ?? lastRequestID
         } catch {
-            lastErrorMessage = error.localizedDescription
+            if generation == sessionGeneration, !Task.isCancelled { lastErrorMessage = error.localizedDescription }
         }
     }
 
     private func mergeChargingSessions(_ sessions: [FleetChargeSession], for vin: String) {
         let normalizedSessions = FleetDataNormalizer.chargeSessions(sessions, fallbackVIN: vin)
         let otherSessions = activeCharging.filter { $0.vin != vin }
-        activeCharging = FleetDataNormalizer.chargeSessions(otherSessions + normalizedSessions)
+        activeCharging = otherSessions.isEmpty ? normalizedSessions : FleetDataNormalizer.chargeSessions(otherSessions + normalizedSessions)
     }
 
     private func mergeRecentDrives(_ drives: [FleetDriveSession], for vin: String) {
@@ -862,7 +925,7 @@ final class FleetDataStore {
         }
 
         let otherDrives = recentDrives.filter { $0.vin != vin }
-        recentDrives = FleetDataNormalizer.driveSessions(otherDrives + normalizedDrives)
+        recentDrives = otherDrives.isEmpty ? normalizedDrives : FleetDataNormalizer.driveSessions(otherDrives + normalizedDrives)
     }
 
     private func mergeSoftwareUpdates(_ updates: [String: FleetSoftwareUpdate], fromCachedState: Bool = false) {
@@ -911,61 +974,45 @@ final class FleetDataStore {
     }
 
     private func mergeLatestSnapshots(_ snapshots: [FleetLatestSnapshot]) {
-        let previousSnapshots = latestSnapshotsByVIN
-        let knownVINs = Set(vehicles.map(\.vin))
-        let normalizedSnapshots = FleetDataNormalizer.latestSnapshots(snapshots).filter { snapshot in
-            knownVINs.contains(snapshot.vin)
-                && (snapshot.updatedAt ?? 0) >= (previousSnapshots[snapshot.vin]?.updatedAt ?? 0)
+        var updates = Dictionary(uniqueKeysWithValues: FleetDataNormalizer.latestSnapshots(snapshots).map { ($0.vin, $0) })
+        var softwareUpdates: [String: FleetSoftwareUpdate] = [:]
+        for index in vehicles.indices {
+            guard !updates.isEmpty else { break }
+            let previous = vehicles[index].latest
+            guard var snapshot = updates.removeValue(forKey: vehicles[index].vin),
+                  (snapshot.updatedAt ?? 0) >= (previous?.updatedAt ?? 0) else { continue }
+            if snapshot.tires == nil { snapshot.tires = previous?.tires }
+            if let software = snapshot.software { softwareUpdates[snapshot.vin] = software }
+            vehicles[index].latest = snapshot
         }
-        guard !normalizedSnapshots.isEmpty else {
-            return
-        }
-
-        var snapshotsByVIN: [String: FleetLatestSnapshot] = [:]
-        var nestedSoftwareUpdates: [String: FleetSoftwareUpdate] = [:]
-        for var snapshot in normalizedSnapshots {
-            if snapshot.tires == nil {
-                snapshot.tires = previousSnapshots[snapshot.vin]?.tires
-            }
-            snapshotsByVIN[snapshot.vin] = snapshot
-            if let software = snapshot.software {
-                nestedSoftwareUpdates[snapshot.vin] = software
-            }
-        }
-        mergeSoftwareUpdates(nestedSoftwareUpdates)
-
-        vehicles = FleetDataNormalizer.vehicles(vehicles.map { vehicle in
-            guard let snapshot = snapshotsByVIN[vehicle.vin] else {
-                return vehicle
-            }
-
-            var updatedVehicle = vehicle
-            updatedVehicle.latest = snapshot
-            return updatedVehicle
-        })
+        mergeSoftwareUpdates(softwareUpdates)
     }
 
     private func saveCurrentState() async {
+        guard FleetSandboxStore.shared.mode() != .demoVehicle else {
+            return
+        }
         let savedAt = Date()
+        let generation = sessionGeneration
         let state = FleetCachedState(
-            activeCharging: FleetDataNormalizer.chargeSessions(activeCharging),
-            activeDrivesByVIN: FleetDataNormalizer.activeDrivesByVIN(activeDrivesByVIN),
-            capabilities: FleetDataNormalizer.capabilities(capabilities),
+            activeCharging: activeCharging,
+            activeDrivesByVIN: activeDrivesByVIN,
+            capabilities: capabilities,
             cursor: cursor,
-            driveRoutesBySessionID: FleetDataNormalizer.routePointsBySessionID(driveRoutesBySessionID),
-            locationHistoryByVIN: FleetDataNormalizer.routePointsByVIN(locationHistoryByVIN),
-            recentDrives: FleetDataNormalizer.driveSessions(recentDrives),
+            driveRoutesBySessionID: driveRoutesBySessionID,
+            locationHistoryByVIN: locationHistoryByVIN.filter { !$0.value.isEmpty },
+            recentDrives: recentDrives,
             savedAt: savedAt,
             selectedVIN: selectedVIN,
-            softwareUpdatesByVIN: FleetDataNormalizer.softwareUpdatesByVIN(softwareUpdatesByVIN),
-            telemetrySeriesByVIN: FleetDataNormalizer.telemetrySeriesByVIN(telemetrySeriesByVIN),
-            user: FleetDataNormalizer.user(user),
-            vehicles: FleetDataNormalizer.vehicles(vehicles)
+            softwareUpdatesByVIN: softwareUpdatesByVIN,
+            telemetrySeriesByVIN: telemetrySeriesByVIN.filter { !$0.value.isEmpty },
+            user: user,
+            vehicles: vehicles
         )
 
         do {
             try await cache.save(state)
-            cacheDate = savedAt
+            if generation == sessionGeneration { cacheDate = savedAt }
         } catch {
             // Cache writes should never block live fleet data from rendering.
         }

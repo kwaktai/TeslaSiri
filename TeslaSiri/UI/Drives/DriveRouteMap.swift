@@ -9,6 +9,7 @@ struct DriveRouteMap: View {
     let driveSessionID: String?
 
     @State private var cameraPosition: MapCameraPosition = .automatic
+    @State private var geometry: RouteGeometry?
 
     init(route: [FleetRoutePoint], selectedPointIndex: Int, driveSessionID: String? = nil) {
         self.route = route
@@ -17,27 +18,17 @@ struct DriveRouteMap: View {
     }
 
     var body: some View {
-        let coordinates = route.compactMap(\.coordinate)
-
         ZStack {
-            if coordinates.isEmpty {
-                ContentUnavailableView("No route", systemImage: "map", description: Text("Select a drive with normalized route geometry."))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(AppTheme.surface)
-            } else {
+            if let geometry {
                 Map(position: $cameraPosition) {
-                    MapPolyline(coordinates: coordinates)
+                    MapPolyline(geometry.polyline)
                         .stroke(.blue, lineWidth: 5)
 
-                    if let firstCoordinate = coordinates.first {
-                        Marker("Start", systemImage: "flag.fill", coordinate: firstCoordinate)
-                            .tint(.green)
-                    }
+                    Marker("Start", systemImage: "flag.fill", coordinate: geometry.start)
+                        .tint(.green)
 
-                    if let lastCoordinate = coordinates.last {
-                        Marker("End", systemImage: "flag.checkered", coordinate: lastCoordinate)
-                            .tint(.black)
-                    }
+                    Marker("End", systemImage: "flag.checkered", coordinate: geometry.end)
+                        .tint(.black)
 
                     if let selectedCoordinate = route[safe: selectedPointIndex]?.coordinate {
                         Marker("Selected position", systemImage: "mappin.circle.fill", coordinate: selectedCoordinate)
@@ -49,38 +40,57 @@ struct DriveRouteMap: View {
                     MapCompass()
                     MapScaleView()
                 }
-                .task(id: cameraKey) {
-                    if let rect = mapRect(for: coordinates) {
-                        cameraPosition = .rect(rect)
-                    }
-                }
+            } else {
+                ContentUnavailableView("No route", systemImage: "map", description: Text("Select a drive with normalized route geometry."))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(AppTheme.surface)
             }
         }
+        .onAppear {
+            updateGeometry(refit: true)
+        }
+        .onChange(of: route) {
+            updateGeometry(refit: false)
+        }
         .appEntityIdentifier(driveEntityIdentifier)
+    }
+
+    private func updateGeometry(refit: Bool) {
+        let updated = RouteGeometry(route: route)
+        if let updated, refit || updated.cameraKey != geometry?.cameraKey {
+            cameraPosition = .rect(updated.cameraRect)
+        }
+        geometry = updated
     }
 
     private var driveEntityIdentifier: EntityIdentifier? {
         guard let driveSessionID, !driveSessionID.isEmpty else { return nil }
         return EntityIdentifier(for: DriveEntity.self, identifier: driveSessionID)
     }
+}
 
-    private var cameraKey: String {
-        [route.first?.id, route.last?.id, String(route.count)].compactMap { $0 }.joined(separator: ":")
-    }
+private struct RouteGeometry {
+    let polyline: MKPolyline
+    let start: CLLocationCoordinate2D
+    let end: CLLocationCoordinate2D
+    let cameraRect: MKMapRect
+    let cameraKey: String
 
-    private func mapRect(for coordinates: [CLLocationCoordinate2D]) -> MKMapRect? {
-        guard let firstCoordinate = coordinates.first else {
-            return nil
-        }
+    init?(route: [FleetRoutePoint]) {
+        let coordinates = route.compactMap(\.coordinate)
+        guard let first = coordinates.first, let last = coordinates.last else { return nil }
+        start = first
+        end = last
+        polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+        cameraKey = [route.first?.id, route.last?.id, String(route.count)].compactMap { $0 }.joined(separator: ":")
 
-        var rect = MKMapRect(origin: MKMapPoint(firstCoordinate), size: MKMapSize(width: 1, height: 1))
+        var rect = MKMapRect(origin: MKMapPoint(first), size: MKMapSize(width: 1, height: 1))
         for coordinate in coordinates.dropFirst() {
             rect = rect.union(MKMapRect(origin: MKMapPoint(coordinate), size: MKMapSize(width: 1, height: 1)))
         }
-
         let widthPadding = max(rect.size.width * 0.18, 1_200)
         let heightPadding = max(rect.size.height * 0.18, 1_200)
-        return rect.insetBy(dx: -widthPadding, dy: -heightPadding)
+        cameraRect = rect.insetBy(dx: -widthPadding, dy: -heightPadding)
     }
 }
 

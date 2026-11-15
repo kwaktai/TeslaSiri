@@ -1,0 +1,2670 @@
+{
+  "counts": {
+    "sourceBoundsChecked": 250,
+    "surfaces": 252,
+    "triangles": 224610,
+    "vertices": 190117
+  },
+  "hidden": [
+    "Body/Interior_Body_RHD",
+    "Body/Stoplights_Projections",
+    "Body/Headlights_Projections",
+    "Body/Dashboard_RHD",
+    "Body/Screen_Front_RHD",
+    "Body/Headlights",
+    "Body/Brake_Lights_Center",
+    "Body/Reverse_Light",
+    "Body/DRL",
+    "Body/Right_Turn_Signal_Front",
+    "Body/Left_Turn_Signal_Front",
+    "Body/Bumper_R_Perf_Reflector",
+    "Body/Seat_Bottom_Perf_LF_Color",
+    "Body/Seat_Top_Perf_LF_Color",
+    "Body/Seat_Top_Perf_LF",
+    "Body/Seat_Top_Perf_RF_Color",
+    "Body/Seat_Top_Perf_RF",
+    "Body/Seat_Bottom_Perf_RF_Color",
+    "Body/Reverse_Light_Perf",
+    "Body/Door_LF_Spatial/Doorcard_LF_RHD",
+    "Body/Door_RF_Spatial/Doorcard_RF_RHD",
+    "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Brake_Lights_Left",
+    "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Brake_Lights_Right",
+    "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Headlights_Trunk",
+    "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Left_Turn_Signal_Rear",
+    "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Plate_EU",
+    "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Right_Turn_Signal_Rear",
+    "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Spoiler",
+    "Body/Steering_Wheel_RHD_Spatial",
+    "Body/Stalk",
+    "Body/Stalk_RHD",
+    "Body/Fascia_Cam_D50",
+    "Body/Center_Console_D50",
+    "Body/Seat_Bottom_D50_RF",
+    "Body/Seat_Bottom_D50_LF",
+    "Body/Bumper_F_Perf",
+    "Body/Bumper_R_Perf",
+    "Body/FrontMarker",
+    "Body/RearMarker",
+    "Body/Spatials/Airflow_left",
+    "Body/Spatials/Airflow_right",
+    "Body/Spatials/Defrost_Front",
+    "Body/Spatials/Defrost_Rear",
+    "Body/LeftMarker",
+    "Body/RightMarker",
+    "Body/FrontLeftMarker",
+    "Body/FrontRightMarker",
+    "Body/RearLeftMarker",
+    "Body/RearRightMarker"
+  ],
+  "paintSurfaces": [
+    "Body/Door_LF_Spatial/Door_LF/surface_01",
+    "Body/Door_LF_Spatial/Door_LF/surface_02",
+    "Body/Door_LF_Spatial/Door_LF_Mirror_Spatial/Mirror_L/surface_01",
+    "Body/Door_LR_Spatial/Door_LR/surface_00",
+    "Body/Door_LR_Spatial/Door_LR/surface_02",
+    "Body/Door_RF_Spatial/Door_RF/surface_01",
+    "Body/Door_RF_Spatial/Door_RF/surface_02",
+    "Body/Door_RF_Spatial/Door_RF_Mirror_Spatial/Mirror_R/surface_01",
+    "Body/Door_RR_Spatial/Door_RR/surface_01",
+    "Body/Door_RR_Spatial/Door_RR/surface_02",
+    "Body/Hood_Spatial/Hood/surface_01",
+    "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Trunk/surface_01",
+    "Body/Body/surface_00",
+    "Body/Body/surface_03",
+    "Body/Bumper_F_Base/surface_00",
+    "Body/Bumper_F_Base/surface_02",
+    "Body/Bumper_F_Perf/surface_00",
+    "Body/Bumper_F_Perf/surface_02",
+    "Body/Bumper_R_Base/surface_01",
+    "Body/Bumper_R_Perf/surface_00"
+  ],
+  "wheelMounts": [
+    {
+      "socket": "Body/Spatials/Wheel_LF_Spatial",
+      "child": "Spatial",
+      "source": "res://Ego/Wheels/Wheel_Pinwheel.tscn"
+    },
+    {
+      "socket": "Body/Spatials/Wheel_LR_Spatial",
+      "child": "Spatial",
+      "source": "res://Ego/Wheels/Wheel_Pinwheel.tscn"
+    },
+    {
+      "socket": "Body/Spatials/Wheel_RF_Spatial",
+      "child": "Spatial",
+      "source": "res://Ego/Wheels/Wheel_Pinwheel.tscn"
+    },
+    {
+      "socket": "Body/Spatials/Wheel_RR_Spatial",
+      "child": "Spatial",
+      "source": "res://Ego/Wheels/Wheel_Pinwheel.tscn"
+    }
+  ],
+  "clips": {
+    "HoodAnimation/Main": {
+      "duration": 1.5,
+      "tracks": [
+        {
+          "target": "Body/Hood_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.5
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              75.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "TrunkAnimation/Main": {
+      "duration": 1.5,
+      "tracks": [
+        {
+          "target": "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            0.5,
+            1.0,
+            1.5
+          ],
+          "values": [
+            [
+              4.07111e-13,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -30.0
+            ],
+            [
+              0.0,
+              0.0,
+              -85.0
+            ],
+            [
+              0.0,
+              0.0,
+              -147.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            4.0711115062564054e-13,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Trunk_Bracket_Main_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.5
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              58.5
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Trunk_Bracket2_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            0.5,
+            1.0,
+            1.5
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              11.7
+            ],
+            [
+              0.0,
+              0.0,
+              23.0
+            ],
+            [
+              0.0,
+              0.0,
+              28.57
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "LFDoorAnimation/Main": {
+      "duration": 1.5,
+      "tracks": [
+        {
+          "target": "Body/Door_LF_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.5
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -65.0,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "LFDoorMirrorAnimation/LFDoorMirror": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Door_LF_Spatial/Door_LF_Mirror_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.0
+          ],
+          "values": [
+            [
+              3.813,
+              2.07089e-08,
+              6.22136e-07
+            ],
+            [
+              2.75644,
+              43.7474,
+              2.6356
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            3.8130019645719373,
+            2.070888480299281e-08,
+            6.221368240256981e-07
+          ]
+        }
+      ]
+    },
+    "LRDoorAnimation/Main": {
+      "duration": 1.5,
+      "tracks": [
+        {
+          "target": "Body/Door_LR_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.5
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -65.0,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "RFDoorAnimation/Main": {
+      "duration": 1.5,
+      "tracks": [
+        {
+          "target": "Body/Door_RF_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.5
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              65.0,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "RFDoorMirrorAnimation/RFDoorMirror": {
+      "duration": 1.0,
+      "tracks": [
+        {
+          "target": "Body/Door_RF_Spatial/Door_RF_Mirror_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.0
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -2.756,
+              -43.747,
+              2.636
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "RRDoorAnimation/Main": {
+      "duration": 1.5,
+      "tracks": [
+        {
+          "target": "Body/Door_RR_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.5
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              65.0,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "LFWindowAnimation/Main": {
+      "duration": 1.5,
+      "tracks": [
+        {
+          "target": "Body/Door_LF_Spatial/Window_LF_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            0.75,
+            1.5
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -7.69681,
+              -0.144066,
+              0.267866
+            ],
+            [
+              -8.79564,
+              -0.286379,
+              0.519103
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Door_LF_Spatial/Window_LF_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            0.75,
+            1.5
+          ],
+          "values": [
+            [
+              -0.193,
+              0.325,
+              0.056
+            ],
+            [
+              -0.12467,
+              0.136309,
+              0.0295399
+            ],
+            [
+              -0.0555551,
+              -0.056449,
+              -0.0216944
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "LRWindowAnimation/Main": {
+      "duration": 1.5,
+      "tracks": [
+        {
+          "target": "Body/Door_LR_Spatial/Window_LR_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            0.75,
+            1.5
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -4.40596,
+              -0.215738,
+              0.009003
+            ],
+            [
+              -8.812,
+              -0.342,
+              0.018
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Door_LR_Spatial/Window_LR_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            0.75,
+            1.5
+          ],
+          "values": [
+            [
+              -0.101,
+              0.355,
+              0.078
+            ],
+            [
+              -0.0745236,
+              0.232657,
+              0.0512469
+            ],
+            [
+              -0.0480473,
+              0.110314,
+              0.0334591
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "RFWindowAnimation/Main": {
+      "duration": 1.5,
+      "tracks": [
+        {
+          "target": "Body/Door_RF_Spatial/Window_RF_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            0.699999988079071,
+            1.5
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              7.697,
+              -0.144,
+              0.268
+            ],
+            [
+              8.796,
+              0.286,
+              0.519
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Door_RF_Spatial/Window_RF_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            0.699999988079071,
+            1.5
+          ],
+          "values": [
+            [
+              -0.193,
+              0.325,
+              -0.056
+            ],
+            [
+              -0.125,
+              0.136,
+              -0.03
+            ],
+            [
+              -0.056,
+              -0.056,
+              0.022
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "RRWindowAnimation/Main": {
+      "duration": 1.5,
+      "tracks": [
+        {
+          "target": "Body/Door_RR_Spatial/Window_RR_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            0.75,
+            1.5
+          ],
+          "values": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.406,
+              0.216,
+              0.009
+            ],
+            [
+              8.812,
+              0.342,
+              0.018
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "target": "Body/Door_RR_Spatial/Window_RR_Spatial",
+          "channel": "translation",
+          "times": [
+            0.0,
+            0.75,
+            1.5
+          ],
+          "values": [
+            [
+              -0.101,
+              0.355,
+              -0.078
+            ],
+            [
+              -0.075,
+              0.233,
+              -0.051
+            ],
+            [
+              -0.048,
+              0.11,
+              -0.033
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "ChargeportAnimation/Main": {
+      "duration": 1.5,
+      "tracks": [
+        {
+          "target": "Body/Charge_Cap_Spatial",
+          "channel": "rotation_degrees",
+          "times": [
+            0.0,
+            1.5
+          ],
+          "values": [
+            [
+              0.0,
+              16.544,
+              0.0
+            ],
+            [
+              88.6351,
+              16.544,
+              0.0
+            ]
+          ],
+          "interpolation": 1,
+          "transitions": [
+            1.0,
+            1.0
+          ],
+          "restEuler": [
+            -0.0,
+            16.54402859410532,
+            0.0
+          ]
+        }
+      ]
+    }
+  },
+  "controls": {
+    "headlights": [
+      "Body/DRL",
+      "Body/Headlights",
+      "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Headlights_Trunk"
+    ],
+    "brakeLights": [
+      "Body/Brake_Lights_Center",
+      "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Brake_Lights_Left",
+      "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Brake_Lights_Right"
+    ],
+    "reverseLights": [
+      "Body/Reverse_Light"
+    ],
+    "leftSignal": [
+      "Body/Left_Turn_Signal_Front",
+      "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Left_Turn_Signal_Rear"
+    ],
+    "rightSignal": [
+      "Body/Right_Turn_Signal_Front",
+      "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Right_Turn_Signal_Rear"
+    ],
+    "frontDefrost": [
+      "Body/Spatials/Defrost_Front"
+    ],
+    "rearDefrost": [
+      "Body/Spatials/Defrost_Rear"
+    ],
+    "daytimeLights": [
+      "Body/DRL"
+    ]
+  },
+  "roofFadeSurfaces": [
+    "Body/Interior_Body/surface_05",
+    "Body/Interior_Body/surface_06",
+    "Body/Interior_Body/surface_13",
+    "Body/Interior_Body/surface_14",
+    "Body/Interior_Body_RHD/surface_05",
+    "Body/Interior_Body_RHD/surface_06",
+    "Body/Interior_Body_RHD/surface_13",
+    "Body/Interior_Body_RHD/surface_14",
+    "Body/Windows_Top/surface_00",
+    "Body/Windows_Top/surface_01",
+    "Body/Windows_Top/surface_04",
+    "Body/Windows_Top/surface_05",
+    "Body/Body/surface_02"
+  ],
+  "skippedTracks": [],
+  "geometryWarnings": [],
+  "schemaVersion": 1,
+  "model": "poppyseed",
+  "source": "res://Ego/v2023/Poppyseed/Poppyseed.tscn",
+  "file": "Vehicle.usdz",
+  "configuration": {
+    "model_id": "poppyseed",
+    "scene": "res://Ego/v2023/Poppyseed/Poppyseed.tscn",
+    "selections": {
+      "wheel": "Pinwheel",
+      "caps": "default",
+      "part": "vehicle",
+      "paint": "PearlWhite",
+      "plate": "US",
+      "brakes": "standard",
+      "rhd": false,
+      "interior": "Black",
+      "upper_trim": "GREY",
+      "badging_material": "CHROME_SILVER",
+      "fascia": "basePoppyseed",
+      "stalk": false,
+      "front_fascia_camera": false
+    },
+    "wheel_scene": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+    "paint_preset": {
+      "color": "#181818",
+      "metallic": 0.25,
+      "roughness": 0.2
+    },
+    "attachments": [
+      {
+        "kind": "wheel",
+        "socket": "Spatials/Wheel_LF_Spatial",
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+        "socket_transform": [
+          [
+            -1.0,
+            0.0,
+            -3.25841e-07,
+            1.5
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.332
+          ],
+          [
+            3.25841e-07,
+            0.0,
+            -1.0,
+            -0.725
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "brake",
+        "socket": "Spatials/Brakes_LF_Spatial",
+        "scene": "res://Ego/Brakes/Brakes_Std_F.tscn",
+        "socket_transform": [
+          [
+            -1.0,
+            0.0,
+            -3.25841e-07,
+            1.5
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.332
+          ],
+          [
+            3.25841e-07,
+            0.0,
+            -1.0,
+            -0.74
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "wheel",
+        "socket": "Spatials/Wheel_LR_Spatial",
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+        "socket_transform": [
+          [
+            -1.0,
+            0.0,
+            -3.25841e-07,
+            -1.375
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.332
+          ],
+          [
+            3.25841e-07,
+            0.0,
+            -1.0,
+            -0.73
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "brake",
+        "socket": "Spatials/Brakes_LR_Spatial",
+        "scene": "res://Ego/Brakes/Brakes_Std_R.tscn",
+        "socket_transform": [
+          [
+            -1.0,
+            0.0,
+            -3.25841e-07,
+            -1.375
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.332
+          ],
+          [
+            3.25841e-07,
+            0.0,
+            -1.0,
+            -0.745
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "wheel",
+        "socket": "Spatials/Wheel_RF_Spatial",
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+        "socket_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            1.5
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.332
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.725
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "brake",
+        "socket": "Spatials/Brakes_RF_Spatial",
+        "scene": "res://Ego/Brakes/Brakes_Std_F.tscn",
+        "socket_transform": [
+          [
+            -1.0,
+            0.0,
+            0.0,
+            1.5
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.332
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.74
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "wheel",
+        "socket": "Spatials/Wheel_RR_Spatial",
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+        "socket_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.375
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.332
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.73
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "kind": "brake",
+        "socket": "Spatials/Brakes_RR_Spatial",
+        "scene": "res://Ego/Brakes/Brakes_Std_R.tscn",
+        "socket_transform": [
+          [
+            -1.0,
+            0.0,
+            0.0,
+            -1.375
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.332
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.745
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "visibility": {
+      "Spatials/Defrost_Front": false,
+      "Spatials/Defrost_Rear": false,
+      "Reverse_Light": false,
+      "Left_Turn_Signal_Front": false,
+      "Right_Turn_Signal_Front": false,
+      "DRL": false,
+      "Headlights": false,
+      "Trunk_Bracket_Main_Spatial/Trunk_Spatial/Headlights_Trunk": false,
+      "Trunk_Bracket_Main_Spatial/Trunk_Spatial/Brake_Lights_Left": false,
+      "Trunk_Bracket_Main_Spatial/Trunk_Spatial/Brake_Lights_Right": false,
+      "Brake_Lights_Center": false,
+      "Stoplights_Projections": false,
+      "Headlights_Projections": false,
+      "Trunk_Bracket_Main_Spatial/Trunk_Spatial/Plate_US": true,
+      "Trunk_Bracket_Main_Spatial/Trunk_Spatial/Plate_EU": false,
+      "Trunk_Bracket_Main_Spatial/Trunk_Spatial/Spoiler": false,
+      "Interior_Body": true,
+      "Steering_Wheel_Spatial": true,
+      "Dashboard": true,
+      "Screen_Front": true,
+      "Door_LF_Spatial/Doorcard_LF": true,
+      "Door_RF_Spatial/Doorcard_RF": true,
+      "Interior_Body_RHD": false,
+      "Steering_Wheel_RHD_Spatial": false,
+      "Dashboard_RHD": false,
+      "Screen_Front_RHD": false,
+      "Door_LF_Spatial/Doorcard_LF_RHD": false,
+      "Door_RF_Spatial/Doorcard_RF_RHD": false,
+      "Bumper_R_Base": true,
+      "Bumper_F_Base": true,
+      "Bumper_R_Base_Reflector": true,
+      "Seat_Bottom_LF_Color": true,
+      "Seat_Top_LF_Color": true,
+      "Seat_Top_LF": true,
+      "Seat_Top_RF_Color": true,
+      "Seat_Top_RF": true,
+      "Seat_Bottom_RF_Color": true,
+      "Bumper_R_Perf": false,
+      "Bumper_F_Perf": false,
+      "Bumper_R_Perf_Reflector": false,
+      "Seat_Bottom_Perf_LF_Color": false,
+      "Seat_Top_Perf_LF_Color": false,
+      "Seat_Top_Perf_LF": false,
+      "Seat_Top_Perf_RF_Color": false,
+      "Seat_Top_Perf_RF": false,
+      "Seat_Bottom_Perf_RF_Color": false,
+      "Center_Console": true,
+      "Seat_Bottom_LF": true,
+      "Seat_Bottom_RF": true,
+      "Door_LF_Spatial/Doorcard_LF_Tweeter_NV35": true,
+      "Door_RF_Spatial/Doorcard_RF_Tweeter_NV35": true,
+      "Model3_Text_NV35": true,
+      "Center_Console_D50": false,
+      "Seat_Bottom_D50_LF": false,
+      "Seat_Bottom_D50_RF": false,
+      "Stalk": false,
+      "Stalk_RHD": false,
+      "Fascia_Cam_D50": false
+    },
+    "missing_paths": [],
+    "option_materials": [
+      {
+        "match": "PaintSkybox",
+        "scene_material": "res://Ego/v2023/Poppyseed/PaintSkybox.material",
+        "slots": 11
+      },
+      {
+        "match": "Paint",
+        "scene_material": "res://Ego/v2023/Poppyseed/PaintSkybox.material",
+        "slots": 0
+      },
+      {
+        "match": "PaintSkybox2",
+        "scene_material": "res://Ego/v2023/Poppyseed/PaintSkybox2.material",
+        "slots": 2
+      },
+      {
+        "match": "Paint2",
+        "scene_material": "res://Ego/v2023/Poppyseed/PaintSkybox2.material",
+        "slots": 0
+      },
+      {
+        "match": "PaintRough",
+        "scene_material": "res://Ego/v2023/Poppyseed/Paint_Rough.material",
+        "slots": 7
+      },
+      {
+        "match": "GlassSkybox",
+        "scene_material": "res://Ego/v2023/Poppyseed/Glass_Skybox.material",
+        "slots": 4
+      },
+      {
+        "match": "Glass",
+        "scene_material": "res://Ego/v2023/Poppyseed/Glass_Skybox.material",
+        "slots": 0
+      },
+      {
+        "match": "GlassTintedSkybox",
+        "scene_material": "res://Ego/v2023/Poppyseed/Glass_Tinted_Skybox.material",
+        "slots": 1
+      },
+      {
+        "match": "Glass_Tinted",
+        "scene_material": "res://Ego/v2023/Poppyseed/Glass_Tinted_Skybox.material",
+        "slots": 0
+      },
+      {
+        "match": "GlassFadeSkybox",
+        "scene_material": "res://Ego/v2023/Poppyseed/Glass_Fade_Skybox.material",
+        "slots": 1
+      },
+      {
+        "match": "Glass_Fade",
+        "scene_material": "res://Ego/v2023/Poppyseed/Glass_Fade_Skybox.material",
+        "slots": 0
+      },
+      {
+        "match": "GlassTintedFadeSkybox",
+        "scene_material": "res://Ego/v2023/Poppyseed/Glass_Tinted_Fade_Skybox.material",
+        "slots": 1
+      },
+      {
+        "match": "Glass_Tinted_Fade",
+        "scene_material": "res://Ego/v2023/Poppyseed/Glass_Tinted_Fade_Skybox.material",
+        "slots": 0
+      },
+      {
+        "match": "Decor",
+        "scene_material": "res://Ego/v2023/Poppyseed/Decor_Black.material",
+        "slots": 6
+      },
+      {
+        "match": "InteriorSeats",
+        "scene_material": "res://Ego/v2023/Poppyseed/Interior_Seats_Black.material",
+        "slots": 9
+      },
+      {
+        "match": "Badging",
+        "scene_material": "res://Ego/Shared/Badging_Chrome.tres",
+        "slots": 2
+      },
+      {
+        "match": "Upper_Trim_Fade",
+        "scene_material": "res://Ego/v2023/Poppyseed/Upper_Trim_Grey_Fade.tres",
+        "slots": 2
+      },
+      {
+        "match": "Upper_Trim",
+        "scene_material": "res://Ego/v2023/Poppyseed/Upper_Trim_Grey.tres",
+        "slots": 2
+      },
+      {
+        "match": "Upper_Trim_Plastic",
+        "scene_material": "res://Ego/v2023/Poppyseed/Upper_Trim_Plastic_Grey.tres",
+        "slots": 2
+      }
+    ]
+  },
+  "paint": null,
+  "rig": {
+    "source": "res://shared_misc_textures/New_Studio.png",
+    "panorama": "New_Studio.png",
+    "presets": {
+      "PARKED": {
+        "rotation": [
+          0.0,
+          -7.0,
+          83.0
+        ],
+        "skyEnergy": 4.0,
+        "ambientEnergy": 4.0
+      },
+      "CHARGING": {
+        "rotation": [
+          0.0,
+          -7.0,
+          83.0
+        ],
+        "skyEnergy": 4.0,
+        "ambientEnergy": 4.0
+      },
+      "DRIVE": {
+        "rotation": [
+          0.0,
+          -7.0,
+          83.0
+        ],
+        "skyEnergy": 4.0,
+        "ambientEnergy": 4.0
+      },
+      "DRIVE_REVERSE": {
+        "rotation": [
+          0.0,
+          -7.0,
+          83.0
+        ],
+        "skyEnergy": 4.0,
+        "ambientEnergy": 4.0
+      },
+      "TOP_DOWN": {
+        "rotation": [
+          -10.0,
+          -10.0,
+          0.0
+        ],
+        "skyEnergy": 6.0,
+        "ambientEnergy": 2.5
+      },
+      "CLIMATE": {
+        "rotation": [
+          0.0,
+          -7.0,
+          83.0
+        ],
+        "skyEnergy": 4.0,
+        "ambientEnergy": 4.0
+      },
+      "SNAPSHOT_TOPDOWN": {
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "skyEnergy": 6,
+        "ambientEnergy": 2.5
+      },
+      "SNAPSHOT_TOPDOWN_FADE_ROOF": {
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "skyEnergy": 6,
+        "ambientEnergy": 2.5
+      },
+      "SNAPSHOT_THREEQUARTER": {
+        "rotation": [
+          0.0,
+          -11.0,
+          83.0
+        ],
+        "skyEnergy": 6.0,
+        "ambientEnergy": 2.6
+      },
+      "SNAPSHOT_WIDGET": {
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "skyEnergy": 6,
+        "ambientEnergy": 2.5
+      },
+      "SNAPSHOT_FRONT": {
+        "rotation": [
+          0.0,
+          90.0,
+          -15.0
+        ],
+        "skyEnergy": 4.2,
+        "ambientEnergy": 5.5
+      },
+      "SNAPSHOT_REAR": {
+        "rotation": [
+          30.0,
+          125.0,
+          150.0
+        ],
+        "skyEnergy": 4.2,
+        "ambientEnergy": 5.5
+      },
+      "SNAPSHOT_LEFTPROFILE": {
+        "rotation": [
+          -40.0,
+          40.0,
+          80.0
+        ],
+        "skyEnergy": 6.0,
+        "ambientEnergy": 2.6
+      },
+      "SNAPSHOT_RIGHTPROFILE": {
+        "rotation": [
+          80.0,
+          80.0,
+          0.0
+        ],
+        "skyEnergy": 6.0,
+        "ambientEnergy": 2.6
+      },
+      "SNAPSHOT_PARKED": {
+        "rotation": [
+          0.0,
+          -11.0,
+          83.0
+        ],
+        "skyEnergy": 6.0,
+        "ambientEnergy": 2.6
+      }
+    },
+    "cameras": {
+      "PARKED": {
+        "columns": [
+          -0.743144825477394,
+          0.0,
+          0.6691306063588585,
+          0.0,
+          0.24415032544954976,
+          0.9310557564164377,
+          0.27115640694389015,
+          0.0,
+          -0.6229979028448366,
+          0.36487693602616433,
+          -0.6919092676118167,
+          0.0,
+          -4.129497526038992,
+          2.4446744550620525,
+          -4.675940225366969,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150.0
+      },
+      "CHARGING": {
+        "columns": [
+          0.7880107536067219,
+          0.0,
+          0.6156614753256583,
+          0.0,
+          0.16969939755572638,
+          0.9612616510312052,
+          -0.2172053238896586,
+          0.0,
+          -0.5918117662478499,
+          0.2756375124267159,
+          0.7574845180423418,
+          0.0,
+          -3.876367250015065,
+          1.8054246806013445,
+          4.961523824964078,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150.0
+      },
+      "DRIVE": {
+        "columns": [
+          -0.743144825477394,
+          0.0,
+          0.6691306063588585,
+          0.0,
+          0.24415032544954976,
+          0.9310557564164377,
+          0.27115640694389015,
+          0.0,
+          -0.6229979028448366,
+          0.36487693602616433,
+          -0.6919092676118167,
+          0.0,
+          -4.939394851447638,
+          2.919014274700958,
+          -5.5754223306925015,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150.0
+      },
+      "DRIVE_REVERSE": {
+        "columns": [
+          0.7880107536067219,
+          0.0,
+          0.6156614753256583,
+          0.0,
+          0.16969939755572638,
+          0.9612616510312052,
+          -0.2172053238896586,
+          0.0,
+          -0.5918117662478499,
+          0.2756375124267159,
+          0.7574845180423418,
+          0.0,
+          -4.7344943511634385,
+          2.2050988465359933,
+          6.059876427437042,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150.0
+      },
+      "TOP_DOWN": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -1.62921e-07,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          -1.62921e-07,
+          0.0,
+          0.0,
+          10.0,
+          0.0,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150.0
+      },
+      "CLIMATE": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -1.62921e-07,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          -1.62921e-07,
+          0.0,
+          0.0,
+          6.0,
+          0.6,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150.0
+      },
+      "SNAPSHOT_TOPDOWN": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          6.123233995736766e-17,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          6.123233995736766e-17,
+          0.0,
+          0.0,
+          10.0,
+          0.0,
+          1.0
+        ],
+        "verticalFOV": 40,
+        "near": 0.05,
+        "far": 150,
+        "width": 0,
+        "height": 0
+      },
+      "SNAPSHOT_TOPDOWN_FADE_ROOF": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          6.123233995736766e-17,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          6.123233995736766e-17,
+          0.0,
+          0.0,
+          10.0,
+          0.0,
+          1.0
+        ],
+        "verticalFOV": 40,
+        "near": 0.05,
+        "far": 150,
+        "width": 0,
+        "height": 0
+      },
+      "SNAPSHOT_THREEQUARTER": {
+        "columns": [
+          -0.6699084587661708,
+          0.0,
+          0.7424437061983445,
+          0.0,
+          0.12322864190877712,
+          0.9861296098152812,
+          0.11118945300198076,
+          0.0,
+          -0.7321457223031848,
+          0.16597708470015163,
+          -0.6606165670550403,
+          0.0,
+          -5.592,
+          2.0,
+          -5.375,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150,
+        "width": 900.0,
+        "height": 500.0
+      },
+      "SNAPSHOT_WIDGET": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          6.123233995736766e-17,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          6.123233995736766e-17,
+          0.0,
+          0.0,
+          10.0,
+          0.0,
+          1.0
+        ],
+        "verticalFOV": 40,
+        "near": 0.05,
+        "far": 150,
+        "width": 0,
+        "height": 0
+      },
+      "SNAPSHOT_FRONT": {
+        "columns": [
+          -1.0,
+          0.0,
+          -1.2246467991473532e-16,
+          0.0,
+          -4.273955692857142e-18,
+          0.9993908270190958,
+          0.03489949670250097,
+          0.0,
+          1.2239007774061617e-16,
+          0.03489949670250097,
+          -0.9993908270190958,
+          0.0,
+          0.0,
+          1.0,
+          -8.0,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150,
+        "width": 900.0,
+        "height": 900.0
+      },
+      "SNAPSHOT_REAR": {
+        "columns": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.9993908270190958,
+          -0.03489949670250097,
+          0.0,
+          0.0,
+          0.03489949670250097,
+          0.9993908270190958,
+          0.0,
+          0.0,
+          1.0,
+          8.0,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150,
+        "width": 900.0,
+        "height": 900.0
+      },
+      "SNAPSHOT_LEFTPROFILE": {
+        "columns": [
+          6.123233995736766e-17,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          -1.0,
+          0.0,
+          6.123233995736766e-17,
+          0.0,
+          -10.0,
+          0.8,
+          0.0,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150,
+        "width": 1400.0,
+        "height": 900.0
+      },
+      "SNAPSHOT_RIGHTPROFILE": {
+        "columns": [
+          6.123233995736766e-17,
+          0.0,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          6.123233995736766e-17,
+          0.0,
+          10.0,
+          0.8,
+          0.0,
+          1.0
+        ],
+        "verticalFOV": 20.0,
+        "near": 0.05,
+        "far": 150,
+        "width": 1400.0,
+        "height": 900.0
+      },
+      "SNAPSHOT_PARKED": {
+        "columns": [
+          -0.743144825477394,
+          0.0,
+          0.6691306063588585,
+          0.0,
+          0.28278681373688097,
+          0.9063077870366499,
+          0.3140665743648517,
+          0.0,
+          -0.6064382790875887,
+          0.42261826174069944,
+          -0.6735179422261544,
+          0.0,
+          -4.128336,
+          3.094274,
+          -4.734428,
+          1.0
+        ],
+        "verticalFOV": 30.0,
+        "near": 0.05,
+        "far": 150,
+        "width": 900.0,
+        "height": 500.0
+      }
+    },
+    "defaultView": "SNAPSHOT_PARKED",
+    "backgroundLight": "#F7F7F7",
+    "backgroundDark": "#161718",
+    "parked": {
+      "highlight": "#dadada",
+      "highlights": {
+        "RedMulticoat": "#f13d3d",
+        "SolidBlack": "#6d6d6d",
+        "SilverMetallic": "#c1c1c1",
+        "MidnightSilver": "#999ea9",
+        "DeepBlue": "#1667ee",
+        "PearlWhite": "#dadada",
+        "MidnightCherryRed": "#eb4b69",
+        "Quicksilver": "#d0d9f7",
+        "UltraRed": "#f03042",
+        "StealthGrey": "#929ba7",
+        "GlacierBlue": "#42599c",
+        "DiamondBlack": "#6d6d6d",
+        "SilkroadSilver": "#c1c1c1",
+        "MarineBlue": "#1f4b75"
+      },
+      "skyEnergy": 4,
+      "ambientEnergy": 4,
+      "sourceSkyRotation": [
+        0,
+        -11,
+        83
+      ],
+      "panorama": "ParkedStudio.png",
+      "floorNormals": "FloorNormal.rg8",
+      "normalSize": 512,
+      "ground": {
+        "path": "Body/Floor",
+        "mask": "FloorMask.r8",
+        "width": 512,
+        "height": 512,
+        "uvFromXZ": [
+          [
+            -2.4757479396054824e-08,
+            -0.15196002632333266,
+            -1.5255265283266435
+          ],
+          [
+            0.2375570768982301,
+            -3.870303649798499e-08,
+            -0.4999267578125
+          ]
+        ],
+        "bounds": [
+          -2.1044813068412953,
+          -3.4583211989584677,
+          2.10448101368717,
+          3.1223574729147274
+        ]
+      },
+      "shader": {
+        "file": "Parked/Materials.usda",
+        "bindings": {
+          "GlassTintedFadeSkybox_ec6ca29e6a3fb1": [
+            "Body/Windows_Top/surface_01"
+          ],
+          "GlassTintedSkybox_024472a903baeb": [
+            "Body/Windows_Top/surface_03"
+          ],
+          "GlassFadeSkybox_dc1a1c9f51c395": [
+            "Body/Windows_Top/surface_05"
+          ],
+          "Paint": [
+            "Body/Door_LF_Spatial/Door_LF/surface_01",
+            "Body/Door_LF_Spatial/Door_LF_Mirror_Spatial/Mirror_L/surface_01",
+            "Body/Door_LR_Spatial/Door_LR/surface_00",
+            "Body/Door_RF_Spatial/Door_RF/surface_01",
+            "Body/Door_RF_Spatial/Door_RF_Mirror_Spatial/Mirror_R/surface_01",
+            "Body/Door_RR_Spatial/Door_RR/surface_01",
+            "Body/Hood_Spatial/Hood/surface_01",
+            "Body/Trunk_Bracket_Main_Spatial/Trunk_Spatial/Trunk/surface_01",
+            "Body/Body/surface_00",
+            "Body/Bumper_F_Base/surface_00",
+            "Body/Bumper_R_Base/surface_01"
+          ],
+          "GlassSkybox_ac11dc9b6982e2": [
+            "Body/Door_LF_Spatial/Window_LF_Spatial/Window_LF/surface_00",
+            "Body/Door_LR_Spatial/Window_LR_Spatial/Window_LR/surface_00",
+            "Body/Door_RF_Spatial/Window_RF_Spatial/Window_RF/surface_00",
+            "Body/Door_RR_Spatial/Window_RR_Spatial/Window_RR/surface_00"
+          ],
+          "Interior_d42c51e2b7d75d": [
+            "Body/Stalk_RHD/surface_00"
+          ],
+          "Paint_PaintSkybox2_550354a9bd97d4": [
+            "Body/Bumper_F_Perf/surface_00",
+            "Body/Bumper_R_Perf/surface_00"
+          ],
+          "Brakes_9fe803d12b5b8e": [
+            "Body/Spatials/Brakes_LF_Spatial/Spatial/Caliper_Std_F/surface_00",
+            "Body/Spatials/Brakes_LF_Spatial/Spatial/Rotor_Std_F/surface_00",
+            "Body/Spatials/Brakes_LR_Spatial/Spatial/Caliper_Std_R/surface_00",
+            "Body/Spatials/Brakes_LR_Spatial/Spatial/Rotor_Std_R/surface_00",
+            "Body/Spatials/Brakes_RF_Spatial/Spatial/Caliper_Std_F/surface_00",
+            "Body/Spatials/Brakes_RF_Spatial/Spatial/Rotor_Std_F/surface_00",
+            "Body/Spatials/Brakes_RR_Spatial/Spatial/Caliper_Std_R/surface_00",
+            "Body/Spatials/Brakes_RR_Spatial/Spatial/Rotor_Std_R/surface_00"
+          ]
+        },
+        "wheelMaterials": [
+          "Tires_ca20e9fd30c0a7",
+          "Wheels_0f9fe19f2f83ef"
+        ],
+        "twoSided": [],
+        "paintGraphs": [
+          "Paint",
+          "Paint_PaintSkybox2_550354a9bd97d4"
+        ]
+      }
+    }
+  },
+  "materials": {
+    "paint": null,
+    "material_count": 77,
+    "texture_count": 38,
+    "coverage": {
+      "SpatialMaterial": 67,
+      "glass_skybox": 4,
+      "opaque_skybox": 2,
+      "badging": 1,
+      "fallback": 3
+    },
+    "materials": {
+      "res://Ego/v2023/Poppyseed/Rubber.material": {
+        "path": "/Vehicle/Looks/Rubber_bdd343550d9fc4",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Plastic_Black.material": {
+        "path": "/Vehicle/Looks/Plastic_Black_07375597a7b124",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Plastic_Red.material": {
+        "path": "/Vehicle/Looks/Plastic_Red_c7273d89657ce5",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Seatbelts.material": {
+        "path": "/Vehicle/Looks/Seatbelts_5820a6765066a4",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Chrome.material": {
+        "path": "/Vehicle/Looks/Chrome_5c0e7596695ee0",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Mirror_Fade.material": {
+        "path": "/Vehicle/Looks/Mirror_Fade_4bf3d873cc2477",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Plastic_Black_Fade.material": {
+        "path": "/Vehicle/Looks/Plastic_Black_Fade_a9ca26593c8a3d",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png",
+          "textures/Opacity_2683f8cbf04049.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Upper_Trim_Grey.tres": {
+        "path": "/Vehicle/Looks/Upper_Trim_30ce8e9fc345cc",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Upper_Trim_Plastic_Grey.tres": {
+        "path": "/Vehicle/Looks/Upper_Trim_Plastic_b40c2fac24c41b",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Zero_Black.material": {
+        "path": "/Vehicle/Looks/Zero_Black_b6036ef4bc256f",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Carpet_Black.material": {
+        "path": "/Vehicle/Looks/Carpet_Black_680d09fff8c3f8",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Fabric_Charcoal.material": {
+        "path": "/Vehicle/Looks/Fabric_Charcoal_d755a66489a15d",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Fabric_Black.material": {
+        "path": "/Vehicle/Looks/Fabric_Black_91a8d81c52396a",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Upper_Trim_Grey_Fade.tres": {
+        "path": "/Vehicle/Looks/Upper_Trim_Fade_2b64a6181ee05a",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png",
+          "textures/Opacity_2683f8cbf04049.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Plastic_Graphite_Fade.material": {
+        "path": "/Vehicle/Looks/Plastic_Graphite_Fade_e82d672d12528b",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png",
+          "textures/Opacity_2683f8cbf04049.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Decor_Black.material": {
+        "path": "/Vehicle/Looks/Decor_583b5f0155828b",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Interior_AO_1a333352f84a77.png",
+          "textures/Suede_2087c0cd6f81ff.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Chargeport.material": {
+        "path": "/Vehicle/Looks/Chargeport_dec4f6bb2cb64e",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Chargeport_BC_8da87b6e392f04.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Light.material": {
+        "path": "/Vehicle/Looks/Light_7543cffcd9f5e3",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Lights_BC_38524de604af7c.png",
+          "textures/Lights_MRA_15a9ed2f640747.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Exterior.material": {
+        "path": "/Vehicle/Looks/Exterior_32277ae1a218e1",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Body_BC_b1ec888c4679e8.png",
+          "textures/Body_MRA_1b908dd5b1b0a3.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/LED_Strip.material": {
+        "path": "/Vehicle/Looks/LED_Strip_c761448237c4c7",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/wing_textile.tres": {
+        "path": "/Vehicle/Looks/wing_textile_0e26afe9178c40",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/wing_textile_color_d1f77f5654140d.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Aluminum.material": {
+        "path": "/Vehicle/Looks/Aluminum_20a5455c10a1d4",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Rear_Screen.material": {
+        "path": "/Vehicle/Looks/Rear_Screen_77e5642974cd8c",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Screens_298a5c79ae7570.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Aluminum_Dark.material": {
+        "path": "/Vehicle/Looks/Aluminum_Dark_49544a7e195554",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Plastic_Graphite.material": {
+        "path": "/Vehicle/Looks/Plastic_Graphite_358b18f775df69",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Fabric_Grey_Dark.material": {
+        "path": "/Vehicle/Looks/Fabric_Grey_Dark_4d4c40151bf5fc",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Front_Screen.material": {
+        "path": "/Vehicle/Looks/Front_Screen_9ad49bd0065238",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Screens_298a5c79ae7570.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Interior_Seats_Black.material": {
+        "path": "/Vehicle/Looks/InteriorSeats_9084200ab2a9df",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Seats_AO_8c044c53230259.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Plastic_Black_Seats.material": {
+        "path": "/Vehicle/Looks/Plastic_Black_Seats_a06087dfbb2cd5",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Seats_AO_8c044c53230259.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Glass_Lights.material": {
+        "path": "/Vehicle/Looks/Glass_Lights_9e026b00b97ec8",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Frunk_Plastic_Light.material": {
+        "path": "/Vehicle/Looks/Frunk_Plastic_Light_9e97641252f5c8",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Frunk_AO_9740e264c3bc58.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Rubber_Frunk.material": {
+        "path": "/Vehicle/Looks/Rubber_Frunk_bf190a3b268b27",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Frunk_AO_9740e264c3bc58.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Stoplights_Projection.material": {
+        "path": "/Vehicle/Looks/Stoplights_Projection_6f06a744245623",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Opacity_16bf36d4b9afe1.png",
+          "textures/stoplight_projection_e613b79eb34ee9.png"
+        ],
+        "notes": [
+          "Godot blend mode approximated by Preview Surface opacity"
+        ]
+      },
+      "res://Ego/v2023/Poppyseed/Headlights_Projection.material": {
+        "path": "/Vehicle/Looks/Headlights_Projection_f55adc38d6c768",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Opacity_fdf8651bde7390.png",
+          "textures/headlight_projection_fc97391fde5577.png"
+        ],
+        "notes": [
+          "Godot blend mode approximated by Preview Surface opacity"
+        ]
+      },
+      "res://Ego/v2023/Poppyseed/Fabric_Grey.material": {
+        "path": "/Vehicle/Looks/Fabric_Grey_1aac6dd27d238e",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Front_Screen_RHD.material": {
+        "path": "/Vehicle/Looks/Front_Screen_RHD_4a11b9989d3705",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Screens_RHD_38ee0a176817b1.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Glass_Interior_Tinted_Fade.material": {
+        "path": "/Vehicle/Looks/Glass_Interior_Tinted_Fade_383992bf70184c",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Glass_Tinted_Fade_Skybox.material": {
+        "path": "/Vehicle/Looks/GlassTintedFadeSkybox_ec6ca29e6a3fb1",
+        "family": "glass_skybox",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "Static face-on glass; view-dependent reflection/fade replaced by stage shading"
+        ]
+      },
+      "res://Ego/v2023/Poppyseed/Glass_Interior_Tinted.material": {
+        "path": "/Vehicle/Looks/Glass_Interior_Tinted_1b988114881742",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Glass_Tinted_Skybox.material": {
+        "path": "/Vehicle/Looks/GlassTintedSkybox_024472a903baeb",
+        "family": "glass_skybox",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "Static face-on glass; view-dependent reflection/fade replaced by stage shading"
+        ]
+      },
+      "res://Ego/v2023/Poppyseed/Glass_Interior_Fade.material": {
+        "path": "/Vehicle/Looks/Glass_Interior_Fade_619b9fe3f90330",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Glass_Fade_Skybox.material": {
+        "path": "/Vehicle/Looks/GlassFadeSkybox_dc1a1c9f51c395",
+        "family": "glass_skybox",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "Static face-on glass; view-dependent reflection/fade replaced by stage shading"
+        ]
+      },
+      "res://Ego/v2023/Poppyseed/Ground_Plane.material": {
+        "path": "/Vehicle/Looks/Ground_Plane_0198656183f352",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Ground_AO_fb8a57a9c6694a.png",
+          "textures/Opacity_483f0848452e7f.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Illumination1.material": {
+        "path": "/Vehicle/Looks/Illumination1_fafeeb91aa0158",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Lights_E_84f095f7f7d716.png"
+        ],
+        "notes": [
+          "Godot blend mode approximated by Preview Surface opacity"
+        ]
+      },
+      "res://Ego/v2023/Poppyseed/Plastic_Black_Perf_Seats.material": {
+        "path": "/Vehicle/Looks/Plastic_Black_Perf_Seats_9bc6b23a0c85ec",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Seats_Perf_AO_a54c3266c83333.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/PaintSkybox.material": {
+        "path": "/Vehicle/Looks/PaintSkybox_64a6466174fc8c",
+        "family": "opaque_skybox",
+        "paint": true,
+        "textures": [
+          "textures/Body_MRA_1b908dd5b1b0a3.png"
+        ],
+        "notes": [
+          "View-dependent paint uses stage reflections, not Godot skybox emission"
+        ]
+      },
+      "res://Ego/v2023/Poppyseed/Paint_Rough.material": {
+        "path": "/Vehicle/Looks/PaintRough_37be8d44d83090",
+        "family": "SpatialMaterial",
+        "paint": true,
+        "textures": [
+          "textures/Body_MRA_1b908dd5b1b0a3.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Mirror.material": {
+        "path": "/Vehicle/Looks/Mirror_f7bc51942238a3",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Grille.material": {
+        "path": "/Vehicle/Looks/Grille_56ea6176afe3d5",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Grille_447e784cd4790c.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Glass_Skybox.material": {
+        "path": "/Vehicle/Looks/GlassSkybox_ac11dc9b6982e2",
+        "family": "glass_skybox",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "Static face-on glass; view-dependent reflection/fade replaced by stage shading"
+        ]
+      },
+      "res://Ego/v2023/Poppyseed/Glass_Interior.material": {
+        "path": "/Vehicle/Looks/Glass_Interior_2a3bc570360d22",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/Shared/Badging_Chrome.tres": {
+        "path": "/Vehicle/Looks/Badging_e7f9b9ba7f7915",
+        "family": "badging",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "Badge procedural environment replaced by stage reflections"
+        ]
+      },
+      "res://Ego/v2023/Poppyseed/Plates.material": {
+        "path": "/Vehicle/Looks/Plates_849f879987991e",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/plate_256_MRA_b4d866c5b30680.png",
+          "textures/plate_BC_656ddaf9cfca7b.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Spoiler1.material": {
+        "path": "/Vehicle/Looks/Spoiler1_eac054ea7ee64d",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Spoiler_AO_066a07d00bc837.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Metal_Anodized.material": {
+        "path": "/Vehicle/Looks/Metal_Anodized_8399a68ac4cc79",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Silver.material": {
+        "path": "/Vehicle/Looks/Silver_34f6690100ba75",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Black_Anodized.material": {
+        "path": "/Vehicle/Looks/Black_Anodized_6f85b20832cfe9",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Leather.material": {
+        "path": "/Vehicle/Looks/Leather_b306b34db7de85",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Interior_AO_1a333352f84a77.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Bayberry/Interior_Black.material": {
+        "path": "/Vehicle/Looks/Interior_d42c51e2b7d75d",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Interior_Black_BaseColor_c07576f6db0596.png",
+          "textures/Interior_Black_MRA_d4422e6d83d6bb.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Plastic_Black_D50.material": {
+        "path": "/Vehicle/Looks/Plastic_Black_D50_02d54b5d90c892",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Laser.material": {
+        "path": "/Vehicle/Looks/Laser_c3bba3c1a365be",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Aluminium_D50.material": {
+        "path": "/Vehicle/Looks/Aluminum_abe5887b55c813",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Center_Console_D50_AO_fbb9ac2112416c.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Fabric_Black_D50.material": {
+        "path": "/Vehicle/Looks/Fabric_Black_63a5a8f7509e49",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Center_Console_D50_AO_fbb9ac2112416c.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Fabric_Charcoal_D50.material": {
+        "path": "/Vehicle/Looks/Fabric_Charcoal_2ae032aeee4f3d",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Center_Console_D50_AO_fbb9ac2112416c.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Fabric_Grey_D50.material": {
+        "path": "/Vehicle/Looks/Fabric_Grey_0d3cd4be3e22b4",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Center_Console_D50_AO_fbb9ac2112416c.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Aluminium_Dark_D50.material": {
+        "path": "/Vehicle/Looks/Aluminium_Dark_D50_d73298b7c5e2b1",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Center_Console_D50_AO_fbb9ac2112416c.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Plastic_Black_Seats_D50.material": {
+        "path": "/Vehicle/Looks/Plastic_Black_Seats_6cdacfe96d08ae",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Black_623aaa792150e1.png",
+          "textures/Seats_AO_D50_e24de3fffffcdd.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/model3_Text.material": {
+        "path": "/Vehicle/Looks/model3_Text_6b60827d11134e",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Exterior_Fade.material": {
+        "path": "/Vehicle/Looks/Exterior_Fade_dd3d4e14d1cd3f",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Body_BC_b1ec888c4679e8.png",
+          "textures/Body_MRA_1b908dd5b1b0a3.png",
+          "textures/Opacity_6eeb96438399ee.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/PaintSkybox2.material": {
+        "path": "/Vehicle/Looks/PaintSkybox2_550354a9bd97d4",
+        "family": "opaque_skybox",
+        "paint": true,
+        "textures": [
+          "textures/Bumpers_Perf_AO_91b1f18bb0d4be.png"
+        ],
+        "notes": [
+          "View-dependent paint uses stage reflections, not Godot skybox emission"
+        ]
+      },
+      "res://Ego/v2023/Poppyseed/Exterior_Perf.material": {
+        "path": "/Vehicle/Looks/Exterior_Perf_89c68edd2e0c02",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Bumpers_Perf_AO_91b1f18bb0d4be.png"
+        ],
+        "notes": []
+      },
+      "res://mobile/materials/airflow.material": {
+        "path": "/Vehicle/Looks/airflow_f8d76d1bb79cff",
+        "family": "fallback",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "No dedicated shader conversion: res://mobile/materials/airflow_shader.tres"
+        ]
+      },
+      "res://Ego/Wheels/Pinwheel_Wheel.material": {
+        "path": "/Vehicle/Looks/Wheels_0f9fe19f2f83ef",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Pinwheel_BC_0ef7246525c292.png",
+          "textures/Pinwheel_MRA_25bdc109ca12f2.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Wheels/Tires.material": {
+        "path": "/Vehicle/Looks/Tires_ca20e9fd30c0a7",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Tire_BC_67b378e66e76a5.png",
+          "textures/Tire_RA_4429866eff5018.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/Brakes/Brakes_Std.material": {
+        "path": "/Vehicle/Looks/Brakes_9fe803d12b5b8e",
+        "family": "SpatialMaterial",
+        "paint": false,
+        "textures": [
+          "textures/Brakes_Std_BC_633c43d79f9d72.png",
+          "textures/Brakes_Std_MRA_ce913010ccee0b.png"
+        ],
+        "notes": []
+      },
+      "res://Ego/v2023/Poppyseed/Poppyseed.tscn::SubResource(15)": {
+        "path": "/Vehicle/Looks/Poppyseed_b0ffc57daf63ce",
+        "family": "fallback",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "No dedicated shader conversion: res://mobile/materials/defrost_front_shader.tres"
+        ]
+      },
+      "res://mobile/materials/defrost_rear.material": {
+        "path": "/Vehicle/Looks/defrost_rear_6a9d06b02ed088",
+        "family": "fallback",
+        "paint": false,
+        "textures": [],
+        "notes": [
+          "No dedicated shader conversion: res://mobile/materials/defrost_rear_shader.tres"
+        ]
+      }
+    }
+  },
+  "liveFile": "Live.usda"
+}

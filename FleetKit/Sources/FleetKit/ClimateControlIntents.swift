@@ -7,16 +7,20 @@ import Foundation
 // Confirmation policy: climate changes run immediately, except turning dog
 // mode OFF, which prompts because a pet may be relying on it.
 
+@AppIntent(.tool)
 public struct StopClimateIntent: AppIntent, PredictableIntent {
-    public static let title: LocalizedStringResource = "Stop Tesla Climate"
-    public static let description = IntentDescription("Turn off climate control. Uses your selected car when no vehicle is specified.")
+    public static let title: LocalizedStringResource = "Turn Off Tesla Climate"
+    public static let description = IntentDescription(
+        "Turns off cabin heating and air conditioning in the user's car (or Tesla), such as after preconditioning. Doesn't affect charging. Use the Stop Tesla Charging tool to end a charging session.",
+        searchKeywords: ["turn off AC", "turn off heat", "stop preconditioning", "stop car climate", "turn off car climate"]
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The car from the user's fleet account whose climate control should be turned off. Optional; omit to use the user's currently selected car.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
@@ -37,23 +41,39 @@ public struct StopClimateIntent: AppIntent, PredictableIntent {
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ShowsSnippetIntent & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             try await service.runControl(action: "auto_conditioning_stop", vin: resolved.vin, humanName: "stopping climate")
+            let summary = "Climate is turning off in \(resolved.name)."
+            let result = VehicleCommandResultEntity(vehicle: resolved, action: "auto_conditioning_stop", summary: summary)
             log.success("stopped climate in \(resolved.name)")
-            return .result(dialog: IntentDialog("Climate is turning off in \(resolved.name)."))
+            return .result(
+                value: result,
+                dialog: IntentDialog("\(summary)"),
+                snippetIntent: ClimateControlSnippetIntent(
+                    vehicle: VehicleEntity(id: resolved.vin, name: resolved.name),
+                    appliedSummary: summary
+                )
+            )
         } catch {
             throw log.failure(error)
         }
     }
 }
 
+@AppIntent(.tool)
 public struct SetCabinTemperatureIntent: AppIntent, PredictableIntent {
-    public static let title: LocalizedStringResource = "Set Tesla Temperature"
-    public static let description = IntentDescription("Set the cabin temperature. Uses your selected car when no vehicle is specified.")
+    public static let title: LocalizedStringResource = "Set Car Temperature"
+    public static let description = IntentDescription(
+        "Starts cabin climate and sets the driver and passenger HVAC temperature in the user's car or Tesla (15°C–28°C / 59°F–82.4°F). Use when warming up or cooling down the car to a specific temperature; use Configure Tesla Cabin Climate when combining temperature with seat heat, defrost, or Dog Mode.",
+        searchKeywords: [
+            "warm up", "warm up my car", "cool down", "cool down my car",
+            "set temperature", "set car temperature", "heat car", "cool car", "AC", "air conditioning"
+        ]
+    )
     public static let isDiscoverable = true
 
     /// Tesla accepts roughly 15–28 °C; values outside are clamped.
@@ -68,16 +88,16 @@ public struct SetCabinTemperatureIntent: AppIntent, PredictableIntent {
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The car from the user's fleet account whose cabin temperature should be updated. Optional; omit to use the user's currently selected car.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
     @Parameter(
         title: "Temperature",
-        description: "Target cabin temperature for both front seats.",
+        description: "Target cabin temperature for both front seats, expressed in the user's preferred temperature unit (°F or °C, valid range 15°C to 28°C / 59°F to 82°F).",
         unit: .celsius,
         unitAdjustForLocale: true,
         supportsNegativeNumbers: false,
@@ -101,7 +121,7 @@ public struct SetCabinTemperatureIntent: AppIntent, PredictableIntent {
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ShowsSnippetIntent & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
             let service = FleetIntentService.make()
@@ -109,6 +129,11 @@ public struct SetCabinTemperatureIntent: AppIntent, PredictableIntent {
 
             let targetCelsius = Self.targetCelsius(for: temperature)
 
+            try await service.runControl(
+                action: "auto_conditioning_start",
+                vin: resolved.vin,
+                humanName: "starting climate"
+            )
             try await service.runControl(
                 action: "set_temps",
                 vin: resolved.vin,
@@ -122,29 +147,51 @@ public struct SetCabinTemperatureIntent: AppIntent, PredictableIntent {
             let applied = Measurement(value: targetCelsius, unit: UnitTemperature.celsius)
                 .converted(to: temperature.unit)
                 .formatted(.measurement(width: .abbreviated, usage: .asProvided, numberFormatStyle: .number.precision(.fractionLength(0...1))))
-            log.success("set \(resolved.name) cabin to \(targetCelsius)°C")
-            return .result(dialog: IntentDialog("Set \(resolved.name)'s cabin to \(applied)."))
+            let summary = "Started climate and set \(resolved.name)'s cabin to \(applied)."
+            let result = VehicleCommandResultEntity(
+                vehicle: resolved,
+                action: "set_temps",
+                appliedValue: applied,
+                summary: summary
+            )
+            log.success("started climate and set \(resolved.name) cabin to \(targetCelsius)°C")
+            return .result(
+                value: result,
+                dialog: IntentDialog("\(summary)"),
+                snippetIntent: ClimateControlSnippetIntent(
+                    vehicle: VehicleEntity(id: resolved.vin, name: resolved.name),
+                    appliedSummary: summary
+                )
+            )
         } catch {
             throw log.failure(error)
         }
     }
 }
 
+@AppIntent(.tool)
 public struct SetMaxDefrostIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Set Tesla Max Defrost"
-    public static let description = IntentDescription("Turn max defrost on or off. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Turns maximum windshield and cabin defrost on or off in the user's car (or Tesla). Omit the vehicle parameter to target the user's selected car.",
+        searchKeywords: ["defrost my car", "defrost windshield", "max defrost", "melt ice"]
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The car from the user's fleet account whose max defrost state should change. Optional; omit to use the user's currently selected car.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
-    @Parameter(title: "On", default: true)
+    @Parameter(
+        title: "On",
+        description: "Set true to turn max defrost on, or false to turn max defrost off.",
+        default: true
+    )
     public var on: Bool
 
     public init() {}
@@ -164,7 +211,7 @@ public struct SetMaxDefrostIntent: AppIntent, PredictableIntent {
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
             let service = FleetIntentService.make()
@@ -175,29 +222,43 @@ public struct SetMaxDefrostIntent: AppIntent, PredictableIntent {
                 params: ["on": .bool(on)],
                 humanName: "setting max defrost"
             )
+            let summary = on ? "Max defrost is on in \(resolved.name)." : "Max defrost is off in \(resolved.name)."
+            let result = VehicleCommandResultEntity(
+                vehicle: resolved,
+                action: "remote_defrost",
+                appliedValue: on ? "on" : "off",
+                summary: summary
+            )
             log.success("max defrost \(on ? "on" : "off") in \(resolved.name)")
-            return .result(dialog: IntentDialog(on ? "Max defrost is on in \(resolved.name)." : "Max defrost is off in \(resolved.name)."))
+            return .result(value: result, dialog: IntentDialog("\(summary)"))
         } catch {
             throw log.failure(error)
         }
     }
 }
 
+@AppIntent(.tool)
 public struct SetPetModeIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Set Tesla Dog Mode"
-    public static let description = IntentDescription("Turn dog mode (pet climate keeper) on or off. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Turns Dog Mode (pet climate keeper) on or off in a Tesla vehicle. Turning Dog Mode off requires user confirmation so a pet inside is not inadvertently left without climate control."
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The Tesla vehicle from the user's fleet account whose Dog Mode state should change. Optional; omit to use the user's currently selected vehicle.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
-    @Parameter(title: "On", default: true)
+    @Parameter(
+        title: "On",
+        description: "Set true to enable Dog Mode, or false to disable Dog Mode (prompts for confirmation).",
+        default: true
+    )
     public var on: Bool
 
     public init() {}
@@ -217,14 +278,14 @@ public struct SetPetModeIntent: AppIntent, PredictableIntent {
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             if !on {
                 // Turning dog mode off remotely could leave a pet without climate.
-                try await requestConfirmation(dialog: IntentDialog("Turn off dog mode in \(resolved.name)?"))
+                try await confirmWithSafetyGate(dialog: IntentDialog("Turn off dog mode in \(resolved.name)?"))
             }
             try await service.runControl(
                 action: "set_pet_mode",
@@ -232,29 +293,43 @@ public struct SetPetModeIntent: AppIntent, PredictableIntent {
                 params: ["on": .bool(on)],
                 humanName: "setting dog mode"
             )
+            let summary = on ? "Dog mode is on in \(resolved.name)." : "Dog mode is off in \(resolved.name)."
+            let result = VehicleCommandResultEntity(
+                vehicle: resolved,
+                action: "set_pet_mode",
+                appliedValue: on ? "on" : "off",
+                summary: summary
+            )
             log.success("dog mode \(on ? "on" : "off") in \(resolved.name)")
-            return .result(dialog: IntentDialog(on ? "Dog mode is on in \(resolved.name)." : "Dog mode is off in \(resolved.name)."))
+            return .result(value: result, dialog: IntentDialog("\(summary)"))
         } catch {
             throw log.failure(error)
         }
     }
 }
 
+@AppIntent(.tool)
 public struct SetBioweaponModeIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Set Tesla Bioweapon Defense"
-    public static let description = IntentDescription("Turn Bioweapon Defense Mode on or off. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Turns Bioweapon Defense Mode positive-pressure HEPA cabin filtration on or off on supported Tesla vehicles. Omit the vehicle parameter to target the user's selected car."
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The Tesla vehicle from the user's fleet account whose Bioweapon Defense Mode state should change. Optional; omit to use the user's currently selected vehicle.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
-    @Parameter(title: "On", default: true)
+    @Parameter(
+        title: "On",
+        description: "Set true to turn Bioweapon Defense Mode on, or false to turn it off.",
+        default: true
+    )
     public var on: Bool
 
     public init() {}
@@ -274,7 +349,7 @@ public struct SetBioweaponModeIntent: AppIntent, PredictableIntent {
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
             let service = FleetIntentService.make()
@@ -285,8 +360,15 @@ public struct SetBioweaponModeIntent: AppIntent, PredictableIntent {
                 params: ["on": .bool(on), "manual_override": .bool(false)],
                 humanName: "setting Bioweapon Defense Mode"
             )
+            let summary = on ? "Bioweapon Defense Mode is on in \(resolved.name)." : "Bioweapon Defense Mode is off in \(resolved.name)."
+            let result = VehicleCommandResultEntity(
+                vehicle: resolved,
+                action: "set_bioweapon_mode",
+                appliedValue: on ? "on" : "off",
+                summary: summary
+            )
             log.success("Bioweapon Defense \(on ? "on" : "off") in \(resolved.name)")
-            return .result(dialog: IntentDialog(on ? "Bioweapon Defense Mode is on in \(resolved.name)." : "Bioweapon Defense Mode is off in \(resolved.name)."))
+            return .result(value: result, dialog: IntentDialog("\(summary)"))
         } catch {
             throw log.failure(error)
         }

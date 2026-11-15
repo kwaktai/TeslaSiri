@@ -49,6 +49,42 @@ struct FleetIntentClientTests {
         #expect(abs((snapshot.tires?.frontLeftPSI ?? 0) - 39.4) < 0.001)
     }
 
+    @Test func spotlightStatusAndSoftwareUseOneStateResponse() async throws {
+        let client = makeMockClient { request in
+            if request.url?.path == "/VIN-1/state" {
+                return (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
+            }
+            return (200, Data(FleetKitFixtures.tessieTiresJSON.utf8))
+        }
+        let result = try await FleetIntentService(client: client).snapshotAndSoftware(vin: "VIN-1")
+        #expect(result.snapshot.batteryLevel == 82.4)
+        #expect(result.software.availableVersion == "2026.8.4")
+        #expect(MockURLProtocol.requests.compactMap { $0.url?.path } == ["/VIN-1/state", "/VIN-1/tire_pressure"])
+    }
+
+    @Test(arguments: [200, 401, 503])
+    func batteryHealthPreservesPartialDataAndAuthenticationErrors(batteryStatus: Int) async throws {
+        try await withIsolatedFleetService { request in
+            if request.url?.path == "/battery_health" {
+                return (200, Data(#"{"results":[{"vin":"VIN-1","health_percent":94}]}"#.utf8))
+            }
+            return (batteryStatus, Data(#"{"energy_remaining":42}"#.utf8))
+        } body: { requests in
+            let service = FleetIntentService.make()
+            if batteryStatus == 401 {
+                let error = await #expect(throws: FleetKitError.self) {
+                    try await service.batteryHealth(vin: "VIN-1")
+                }
+                #expect(error?.localizedDescription == FleetKitError.sessionExpired.localizedDescription)
+            } else {
+                let health = try await service.batteryHealth(vin: "VIN-1")
+                #expect(health.healthPercent == 94)
+                #expect(health.energyRemainingKWH == (batteryStatus == 200 ? 42 : nil))
+            }
+            #expect(requests().compactMap { $0.url?.path }.sorted() == ["/VIN-1/battery", "/battery_health"])
+        }
+    }
+
     @Test func `control request maps action and parameters to Tessie command`() async throws {
         let client = makeMockClient { request in
             #expect(request.httpMethod == "POST")

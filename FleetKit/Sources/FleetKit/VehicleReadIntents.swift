@@ -1,17 +1,21 @@
 import AppIntents
 import SwiftUI
 
-/// Reads the current battery level and reports it as a spoken/written result.
+/// Reads the current battery level, estimated range, and charging state and reports it as structured status plus spoken dialog.
+/// Shortcuts and App Shortcuts only. Siri uses the Get Tesla Vehicle Info tool, which
+/// covers this reading alongside any others in one call.
 public struct GetBatteryLevelIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Check Battery Level"
-    public static let description = IntentDescription("Check your Tesla's battery level. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Checks a Tesla vehicle's current battery percentage, estimated driving range in miles, charge limit, and active charging status. Omit the vehicle parameter to inspect the user's selected car."
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The Tesla vehicle from the user's fleet account to inspect. Optional; omit to use the user's currently selected vehicle.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
@@ -41,11 +45,12 @@ public struct GetBatteryLevelIntent: AppIntent, PredictableIntent {
             let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: resolved.name)
 
             let battery = entity.batteryPercent.map { "\($0)%" } ?? "an unknown level"
+            let range = entity.batteryRangeMiles.map { " (\(Int($0.rounded())) mi range)" } ?? ""
             let charging = (snapshot.chargingState?.lowercased() == "charging") ? " and charging" : ""
-            log.success("\(resolved.name) at \(battery)\(charging)")
+            log.success("\(resolved.name) at \(battery)\(range)\(charging)")
             return .result(
                 value: entity,
-                dialog: IntentDialog("\(resolved.name) is at \(battery)\(charging).")
+                dialog: IntentDialog("\(resolved.name) is at \(battery)\(range)\(charging).")
             )
         } catch {
             throw log.failure(error)
@@ -54,16 +59,20 @@ public struct GetBatteryLevelIntent: AppIntent, PredictableIntent {
 }
 
 /// Reads the vehicle odometer/mileage from the latest live snapshot.
+/// Shortcuts and App Shortcuts only. Siri uses the Get Tesla Vehicle Info tool, which
+/// covers this reading alongside any others in one call.
 public struct GetVehicleMileageIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Check Vehicle Mileage"
-    public static let description = IntentDescription("Check your Tesla's odometer mileage. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Reads a Tesla vehicle's total odometer mileage in miles from the latest live telemetry snapshot. Omit the vehicle parameter to inspect the user's selected car."
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The Tesla vehicle from the user's fleet account to inspect. Optional; omit to use the user's currently selected vehicle.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
@@ -104,16 +113,20 @@ public struct GetVehicleMileageIntent: AppIntent, PredictableIntent {
 }
 
 /// Reads current TPMS PSI values from the latest live snapshot.
+/// Shortcuts and App Shortcuts only. Siri uses the Get Tesla Vehicle Info tool, which
+/// covers this reading alongside any others in one call.
 public struct GetTirePressureIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Check Tire Pressure"
-    public static let description = IntentDescription("Check your Tesla's tire PSI readings. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Checks a Tesla vehicle's tire pressure monitoring system (TPMS) readings in PSI for front-left, front-right, rear-left, and rear-right tires. Omit the vehicle parameter to inspect the user's selected car."
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The Tesla vehicle from the user's fleet account to inspect. Optional; omit to use the user's currently selected vehicle.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
@@ -153,17 +166,21 @@ public struct GetTirePressureIntent: AppIntent, PredictableIntent {
     }
 }
 
-/// Shows a full vehicle status snippet plus a short supporting dialog.
+/// Shows a full vehicle status snippet plus structured telemetry and a short supporting dialog.
+@AppIntent(.tool)
 public struct GetVehicleStatusIntent: AppIntent, PredictableIntent, SnippetIntent {
     public static let title: LocalizedStringResource = "Check Vehicle Status"
-    public static let description = IntentDescription("See battery, charging, lock status, mileage, tire PSI, temperature, and location. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Shows a card with the user's car (or Tesla) at a glance: battery, range, charging, locks, climate, mileage, and tire pressure. Use for broad requests like \"check my car\", \"how's my car?\", or \"show my Tesla\". For specific readings, use the Get Tesla Vehicle Info tool, which answers only what was asked.",
+        searchKeywords: ["check my car", "how is my car", "car status", "my car", "vehicle status"]
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The car from the user's fleet account to inspect. Optional; omit to use the user's currently selected car.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
@@ -191,13 +208,31 @@ public struct GetVehicleStatusIntent: AppIntent, PredictableIntent, SnippetInten
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             let snapshot = try await service.snapshot(vin: resolved.vin)
-            let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: resolved.name)
+            let allowNetwork = FleetIntentService.testingOverride == nil
+
+            let address: String? = allowNetwork
+                ? await FleetLocationNamer.address(latitude: snapshot.latitude, longitude: snapshot.longitude)
+                : nil
+            let entity = VehicleStatusEntity(
+                snapshot: snapshot,
+                vehicleName: resolved.name,
+                locationAddress: address
+            )
+
+            let mapData = await SiriMapSnapshotRenderer.renderLocationPin(
+                latitude: snapshot.latitude,
+                longitude: snapshot.longitude,
+                fallbackPlaceQuery: address,
+                style: SiriSnippetStateStore.shared.mapStyle(for: "vehicle"),
+                accentHex: 0x0A84FF,
+                allowNetworkSnapshot: allowNetwork
+            )
 
             log.success("status snippet for \(resolved.name)")
             return .result(
                 value: entity,
                 dialog: IntentDialog("Here's the latest on \(resolved.name)."),
-                view: VehicleStatusSnippetView(status: entity)
+                view: VehicleStatusSnippetView(status: entity, mapData: mapData)
             )
         } catch {
             throw log.failure(error)

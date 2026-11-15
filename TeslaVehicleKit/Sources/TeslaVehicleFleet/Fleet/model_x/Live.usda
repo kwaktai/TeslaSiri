@@ -1,0 +1,149 @@
+#usda 1.0
+(
+    defaultPrim = "Vehicle"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Vehicle" (
+    prepend references = @./Vehicle.usdz@</Vehicle>
+)
+{
+    over "Body"
+    {
+        over "Interior_6_Seater"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Interior_7_Seater"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Interior_5_seater_RHD"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Interior_6_Seater_RHD"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Interior_7_Seater_RHD"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headlights_Projections"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Stoplights_Projections"
+        {
+            token visibility = "inherited"
+        }
+
+        over "DRL"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headlights"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Fog_Lights"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Brake_Lights"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Left_Turn_Signal"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Right_Turn_Signal"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Trunk_Spatial"
+        {
+            over "Plate_EU"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Brake_Light_Spoiler_Static"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Spoiler_Spatial"
+            {
+                over "Brake_Light_Spoiler_Active"
+                {
+                    token visibility = "inherited"
+                }
+
+                over "Spoiler_Active"
+                {
+                    token visibility = "inherited"
+                }
+            }
+
+            over "Headlights_Trunk"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Reverse_Light"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Defrost_Rear"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Spatials"
+        {
+            over "Airflow_left"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Airflow_right"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "RearMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "FrontMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Defrost_Front"
+        {
+            token visibility = "inherited"
+        }
+    }
+}
+

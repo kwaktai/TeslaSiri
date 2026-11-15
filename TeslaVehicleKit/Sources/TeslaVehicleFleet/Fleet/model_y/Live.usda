@@ -1,0 +1,263 @@
+#usda 1.0
+(
+    defaultPrim = "Vehicle"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Vehicle" (
+    prepend references = @./Vehicle.usdz@</Vehicle>
+)
+{
+    over "Body"
+    {
+        over "Fog_Lights_Front"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Right_Turn_Signal"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Left_Turn_Signal"
+        {
+            token visibility = "inherited"
+        }
+
+        over "DRL"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Taillights_Projection"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headlights_Projections"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headlights"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Brake_Lights_Right"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Brake_Lights_Left"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Screen_Front_RHD"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Center_Console_2_0"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Interior_7_seater"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Dashboard_RHD"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Interior_7_seater_Color"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Interior_Body_RHD"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Fog_Lights_Front_GLOBAL"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headlights_GLOBAL"
+        {
+            token visibility = "inherited"
+        }
+
+        over "DRL_GLOBAL"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Right_Turn_Signal_GLOBAL"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Brake_Lights_GLOBAL"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Left_Turn_Signal_GLOBAL"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Lights_GLOBAL"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Charge_Cap_Right_GLOBAL"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Foglights_Cover"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Steering_Wheel_RHD_Spatial"
+        {
+            over "Steering_Wheel_Standard_RHD"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Door_RF_Spatial"
+        {
+            over "Doorcard_2_0_RF"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Doorcard_2_0_RF_Decor"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Door_LF_Spatial"
+        {
+            over "Doorcard_2_0_LF"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Doorcard_2_0_LF_Decor"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Charge_Cap_Spatial"
+        {
+            over "Charge_Cap_GLOBAL"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Trunk_Spatial"
+        {
+            over "Brake_Lights_Center"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Brake_Lights_Center_GLOBAL"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Fog_Lights_Rear_GLOBAL"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Headlights_Trunk"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Headlights_Trunk_GLOBAL"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Lights_Trunk_GLOBAL"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Plate_EU"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Reverse_Lights"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Reverse_Lights_GLOBAL"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Spoiler1"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Defrost_Rear"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "FrontMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "RearMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Spatials"
+        {
+            over "Airflow_left"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Airflow_right"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Defrost_Front"
+            {
+                token visibility = "inherited"
+            }
+        }
+    }
+}
+

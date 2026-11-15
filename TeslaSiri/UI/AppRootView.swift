@@ -12,7 +12,7 @@ enum AppTab: Hashable, Identifiable, CaseIterable {
 
     var title: String {
         switch self {
-        case .dashboard: "Dashboard"
+        case .dashboard: "Vehicle"
         case .drives: "Drives"
         case .diagnostics: "Diagnostics"
         }
@@ -20,7 +20,7 @@ enum AppTab: Hashable, Identifiable, CaseIterable {
 
     var systemImage: String {
         switch self {
-        case .dashboard: "rectangle.grid.2x2"
+        case .dashboard: "car.fill"
         case .drives: "map"
         case .diagnostics: "stethoscope"
         }
@@ -55,9 +55,14 @@ struct AppRootView: View {
     @State private var authErrorMessage: String?
     @State private var diagnostics = BackendDiagnosticsState()
     @State private var requestedDriveSessionID: String?
-    @State private var selectedTab: AppTab = .dashboard
+    @State private var selectedTab: AppTab = CommandLine.arguments.contains("--verify-demo-siri") ? .diagnostics : .dashboard
     @State private var spotlightSearchTerm = ""
     @State private var isAuthenticating = false
+    @State private var sandboxMode = FleetSandboxStore.shared.mode()
+    @State private var sandboxPreset: FleetDemoPreset = .mildCommute
+    @State private var sandboxDemoState: FleetDemoVehicleState?
+    @State private var sandboxCommandLog: [FleetSimulatedCommandEntry] = []
+    @State private var siriVerificationRunner = DemoSiriVerificationRunner.shared
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -89,23 +94,65 @@ struct AppRootView: View {
             spotlightSearchTerm = intent.criteria.term
             selectedTab = .diagnostics
         }
+        .onContinueUserActivity(CarSiriVoicePhrase.warmUp.rawValue) { activity in
+            handleCarVoiceShortcut(.warmUp, activity: activity)
+        }
+        .onContinueUserActivity(CarSiriVoicePhrase.coolDown.rawValue) { activity in
+            handleCarVoiceShortcut(.coolDown, activity: activity)
+        }
+        .onContinueUserActivity(CarSiriVoicePhrase.lock.rawValue) { activity in
+            handleCarVoiceShortcut(.lock, activity: activity)
+        }
+        .onContinueUserActivity(CarSiriVoicePhrase.checkStatus.rawValue) { activity in
+            handleCarVoiceShortcut(.checkStatus, activity: activity)
+        }
         .alert("Connection Failed", isPresented: authErrorBinding) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(authErrorMessage ?? "Unknown error")
         }
         .task {
+            refreshSandboxSnapshot()
             refreshDiagnostics()
-            await store.loadInitialDataIfNeeded()
+            if diagnostics.isSignedIn || sandboxMode == .demoVehicle {
+                await store.loadInitialDataIfNeeded()
+            }
             configureFleetPolling(for: scenePhase)
+        }
+        .onChange(of: siriVerificationRunner.isRunning) { _, running in
+            if !running {
+                refreshSandboxSnapshot()
+                if sandboxMode == .demoVehicle {
+                    Task { await store.loadInitialData() }
+                }
+            }
         }
         .onChange(of: scenePhase) { _, newPhase in
             configureFleetPolling(for: newPhase)
+            if newPhase == .active {
+                refreshSandboxSnapshot()
+                if sandboxMode == .demoVehicle {
+                    Task { await store.refresh() }
+                }
+            }
+        }
+        .onChange(of: selectedTab) { _, _ in
+            refreshSandboxSnapshot()
+        }
+        .onChange(of: store.isRunningControl) { _, isRunning in
+            if !isRunning {
+                refreshSandboxSnapshot()
+            }
+        }
+        .onChange(of: store.isMutatingSoftware) { _, isMutating in
+            if !isMutating {
+                refreshSandboxSnapshot()
+            }
         }
         .onChange(of: store.selectedVIN) { previousVIN, _ in
             guard !isAuthenticating,
                   !store.vehicles.contains(where: { $0.vin == previousVIN }),
-                  (try? tokenStore.loadAccessToken()) != nil else {
+                  sandboxMode == .demoVehicle || (try? tokenStore.loadAccessToken()) != nil else {
                 return
             }
             FleetTokenBridge.syncSelectedVehicle(store: store)
@@ -120,11 +167,18 @@ struct AppRootView: View {
                 store: store,
                 isSignedIn: diagnostics.isSignedIn,
                 isAuthenticating: isAuthenticating,
+                sandboxMode: sandboxMode,
                 onSignIn: { token in
                     Task { await signIn(accessToken: token) }
                 },
                 onReload: {
                     await reloadFleet()
+                },
+                onOpenSandboxSettings: {
+                    selectedTab = .diagnostics
+                },
+                onEnableDemoCar: {
+                    Task { await updateSandboxMode(.demoVehicle) }
                 }
             )
         case .drives:
@@ -136,23 +190,54 @@ struct AppRootView: View {
                 }
             )
         case .diagnostics:
-            DiagnosticsView(
-                store: store,
-                diagnostics: diagnostics,
-                spotlightSearchTerm: spotlightSearchTerm,
-                onProbeAccount: {
-                    Task { await runBackendProbe() }
-                },
-                onReloadFleet: {
-                    await reloadFleet()
-                },
-                onExportRawData: {
-                    Task { await exportRawData() }
-                },
-                onSignOut: {
-                    Task { await signOut() }
-                }
-            )
+            if let sandboxDemoState {
+                DiagnosticsView(
+                    store: store,
+                    diagnostics: diagnostics,
+                    spotlightSearchTerm: spotlightSearchTerm,
+                    sandboxMode: sandboxMode,
+                    sandboxPreset: sandboxPreset,
+                    sandboxDemoState: sandboxDemoState,
+                    sandboxCommandLog: sandboxCommandLog,
+                    siriVerificationRunner: siriVerificationRunner,
+                    onProbeAccount: {
+                        Task { await runBackendProbe() }
+                    },
+                    onReloadFleet: {
+                        await reloadFleet()
+                    },
+                    onExportRawData: {
+                        Task { await exportRawData() }
+                    },
+                    onSignOut: {
+                        Task { await signOut() }
+                    },
+                    onSelectSandboxMode: { newMode in
+                        Task { await updateSandboxMode(newMode) }
+                    },
+                    onSelectSandboxPreset: { newPreset in
+                        Task { await applySandboxPreset(newPreset) }
+                    },
+                    onResetSandboxPreset: {
+                        Task { await applySandboxPreset(sandboxPreset) }
+                    },
+                    onRefreshSandboxLog: {
+                        refreshSandboxSnapshot()
+                        if sandboxMode == .demoVehicle {
+                            Task { await store.refresh() }
+                        }
+                    },
+                    onClearSandboxLog: {
+                        FleetSandboxStore.shared.clearCommandLog()
+                        refreshSandboxSnapshot()
+                    },
+                    onRunSiriVerification: {
+                        Task { await runDemoSiriVerification() }
+                    }
+                )
+            } else {
+                ProgressView()
+            }
         }
     }
 
@@ -174,12 +259,12 @@ struct AppRootView: View {
 
         do {
             let validationClient = FleetAPIClient(accessTokenProvider: StaticFleetAccessTokenProvider(token: accessToken))
-            let vehicles = try await validationClient.vehicles(includeLive: true)
+            let bootstrap = try await validationClient.bootstrap()
             try tokenStore.saveAccessToken(accessToken)
             await store.reset(clearCache: true)
-            diagnostics.probeMessage = "Connected to Tessie. Loading \(vehicles.data.count) vehicle(s)."
+            diagnostics.probeMessage = "Connected to Tessie. Loading \(bootstrap.data.vehicles.count) vehicle(s)."
             refreshDiagnostics()
-            await store.loadInitialData()
+            await store.loadInitialData(validatedBootstrap: bootstrap)
             await FleetTokenBridge.sync(store: store)
             _ = await FleetSpotlightIndexer.reindexAll()
             refreshDiagnostics()
@@ -196,19 +281,92 @@ struct AppRootView: View {
         await FleetTokenBridge.sync(store: store)
         _ = await FleetSpotlightIndexer.reindexAll()
         await FleetIntentDonations.donateManualStatusRefresh(for: store.selectedVehicle)
+        refreshSandboxSnapshot()
         refreshDiagnostics()
     }
 
+    private func updateSandboxMode(_ newMode: FleetSandboxMode) async {
+        let previousMode = FleetSandboxStore.shared.mode()
+        guard previousMode != newMode else { return }
+
+        FleetSandboxStore.shared.setMode(newMode)
+        refreshSandboxSnapshot()
+
+        let crossedDemoBoundary = (previousMode == .demoVehicle) != (newMode == .demoVehicle)
+        if crossedDemoBoundary {
+            await store.reset(clearCache: false)
+            if newMode == .demoVehicle || diagnostics.isSignedIn {
+                await store.loadInitialDataIfNeeded()
+                await FleetTokenBridge.sync(store: store)
+                _ = await FleetSpotlightIndexer.reindexAll()
+            } else {
+                FleetTokenBridge.clear()
+                try? await FleetSpotlightIndexer.deleteAllIndexedEntities()
+            }
+            configureFleetPolling(for: scenePhase)
+        }
+        refreshSandboxSnapshot()
+        refreshDiagnostics()
+    }
+
+    private func applySandboxPreset(_ preset: FleetDemoPreset) async {
+        FleetSandboxStore.shared.applyPreset(preset)
+        refreshSandboxSnapshot()
+        if sandboxMode == .demoVehicle {
+            await store.loadInitialData()
+            await FleetTokenBridge.sync(store: store)
+            _ = await FleetSpotlightIndexer.reindexAll()
+            refreshSandboxSnapshot()
+        }
+    }
+
+    private func runDemoSiriVerification() async {
+        if FleetSandboxStore.shared.mode() != .demoVehicle {
+            await updateSandboxMode(.demoVehicle)
+        }
+        await siriVerificationRunner.runAllOnDemoCar()
+        refreshSandboxSnapshot()
+        await store.loadInitialData()
+        await FleetTokenBridge.sync(store: store)
+        refreshSandboxSnapshot()
+        refreshDiagnostics()
+    }
+
+    private func refreshSandboxSnapshot() {
+        sandboxMode = FleetSandboxStore.shared.mode()
+        guard selectedTab == .diagnostics else { return }
+        sandboxPreset = FleetSandboxStore.shared.selectedPreset()
+        sandboxDemoState = FleetSandboxStore.shared.demoState()
+        sandboxCommandLog = FleetSandboxStore.shared.commandLog()
+    }
+
     private func openVehicle(_ vin: String, tab: AppTab) {
-        if !vin.isEmpty {
+        if !vin.isEmpty, vin != store.selectedVIN {
             store.selectVehicle(vin: vin)
             Task { await FleetTokenBridge.sync(store: store) }
         }
         selectedTab = tab
     }
 
+    private func handleCarVoiceShortcut(_ phrase: CarSiriVoicePhrase, activity: NSUserActivity) {
+        let vin = activity.userInfo?["vin"] as? String
+        if let vin, !vin.isEmpty, vin != store.selectedVIN {
+            store.selectVehicle(vin: vin)
+        }
+        selectedTab = .dashboard
+        Task {
+            do {
+                _ = try await phrase.perform(vinOverride: vin)
+                await store.refresh()
+                refreshSandboxSnapshot()
+            } catch {
+                authErrorMessage = error.localizedDescription
+            }
+        }
+    }
+
     private func configureFleetPolling(for phase: ScenePhase) {
-        if phase == .active, diagnostics.isSignedIn {
+        if phase == .active, diagnostics.isSignedIn || sandboxMode == .demoVehicle {
             store.startPolling()
         } else {
             store.stopPolling()
@@ -239,10 +397,17 @@ struct AppRootView: View {
         do {
             try tokenStore.deleteAccessToken()
             FleetTokenBridge.clear()
-            try? await FleetSpotlightIndexer.deleteAllIndexedEntities()
             await store.reset(clearCache: true)
-            store.stopPolling()
+            if sandboxMode == .demoVehicle {
+                await store.loadInitialData()
+                FleetTokenBridge.syncSelectedVehicle(store: store, forceShortcutRefresh: true)
+                _ = await FleetSpotlightIndexer.reindexAll()
+            } else {
+                try? await FleetSpotlightIndexer.deleteAllIndexedEntities()
+                store.stopPolling()
+            }
             diagnostics.probeMessage = "Disconnected Tessie and cleared cached fleet data."
+            refreshSandboxSnapshot()
             refreshDiagnostics()
         } catch {
             authErrorMessage = error.localizedDescription

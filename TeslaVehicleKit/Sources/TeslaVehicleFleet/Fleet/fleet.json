@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "builds": [
+    {
+      "model": "model_s",
+      "style": "default",
+      "path": "model_s"
+    },
+    {
+      "model": "model_s",
+      "style": "S1",
+      "path": "BodyStyles/model_s_S1"
+    },
+    {
+      "model": "model_s_palladium",
+      "style": "default",
+      "path": "model_s_palladium"
+    },
+    {
+      "model": "model_s_palladium",
+      "style": "p3s",
+      "path": "BodyStyles/model_s_palladium_p3s"
+    },
+    {
+      "model": "model_s_palladium",
+      "style": "p3splaid",
+      "path": "BodyStyles/model_s_palladium_p3splaid"
+    },
+    {
+      "model": "model_3",
+      "style": "default",
+      "path": "model_3"
+    },
+    {
+      "model": "poppyseed",
+      "style": "default",
+      "path": "poppyseed"
+    },
+    {
+      "model": "poppyseed",
+      "style": "performancePoppyseed",
+      "path": "BodyStyles/poppyseed_performancePoppyseed"
+    },
+    {
+      "model": "poppyseed",
+      "style": "d50Poppyseed",
+      "path": "BodyStyles/poppyseed_d50Poppyseed"
+    },
+    {
+      "model": "model_x",
+      "style": "default",
+      "path": "model_x"
+    },
+    {
+      "model": "model_x_palladium",
+      "style": "default",
+      "path": "model_x_palladium"
+    },
+    {
+      "model": "model_y",
+      "style": "default",
+      "path": "model_y"
+    },
+    {
+      "model": "bayberry",
+      "style": "default",
+      "path": "bayberry"
+    },
+    {
+      "model": "bayberry",
+      "style": "performanceBayberry",
+      "path": "BodyStyles/bayberry_performanceBayberry"
+    },
+    {
+      "model": "bayberry_e41",
+      "style": "default",
+      "path": "bayberry_e41"
+    },
+    {
+      "model": "bayberry_e80",
+      "style": "default",
+      "path": "bayberry_e80"
+    },
+    {
+      "model": "semi",
+      "style": "default",
+      "path": "semi"
+    },
+    {
+      "model": "cybertruck",
+      "style": "default",
+      "path": "cybertruck"
+    },
+    {
+      "model": "cybertruck",
+      "style": "AWD",
+      "path": "BodyStyles/cybertruck_AWD"
+    },
+    {
+      "model": "cybertruck",
+      "style": "AWDTriMotor",
+      "path": "BodyStyles/cybertruck_AWDTriMotor"
+    },
+    {
+      "model": "bayberry",
+      "style": "UltraRedStandard",
+      "path": "model_y_us_ultra_red"
+    },
+    {
+      "model": "bayberry",
+      "style": "UltraRedPerformance",
+      "path": "model_y_us_ultra_red_performance"
+    }
+  ],
+  "wheelAssets": 73,
+  "wheelMaterials": 95
+}

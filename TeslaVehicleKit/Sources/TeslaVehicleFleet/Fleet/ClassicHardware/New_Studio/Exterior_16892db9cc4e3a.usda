@@ -1,0 +1,1833 @@
+#usda 1.0
+
+def Material "Exterior_16892db9cc4e3a"
+{
+    float inputs:AmbientEnergy = 1
+    float inputs:NormalSign = 1
+    float inputs:SkyEnergy = 1
+    vector3f inputs:SkyX = (1, 0, 0)
+    vector3f inputs:SkyY = (0, 1, 0)
+    vector3f inputs:SkyZ = (0, 0, 1)
+    token outputs:mtlx:surface.connect = </Exterior_16892db9cc4e3a/n216.outputs:out>
+
+    def Shader "n1"
+    {
+        uniform token info:id = "ND_texcoord_vector2"
+        int inputs:index = 0
+        float2 outputs:out
+    }
+
+    def Shader "n2"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../Textures/2402d96ac17ede3e6a6d.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n1.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "periodic"
+        vector3f outputs:out
+    }
+
+    def Shader "n3"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1 = (1, 1, 1)
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n2.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n4"
+    {
+        uniform token info:id = "ND_normal_vector3"
+        string inputs:space = "world"
+        vector3f outputs:out
+    }
+
+    def Shader "n5"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a.inputs:NormalSign>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n6"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n4.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n5.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n7"
+    {
+        uniform token info:id = "ND_realitykit_viewdirection_vector3"
+        string inputs:space = "world"
+        vector3f outputs:out
+    }
+
+    def Shader "n8"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n7.outputs:out>
+        float inputs:in2 = -1
+        vector3f outputs:out
+    }
+
+    def Shader "n9"
+    {
+        uniform token info:id = "ND_realitykit_reflect_vector3"
+        vector3f inputs:in.connect = </Exterior_16892db9cc4e3a/n8.outputs:out>
+        vector3f inputs:normal.connect = </Exterior_16892db9cc4e3a/n6.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n10"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n6.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n7.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n11"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n10.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n12"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a.inputs:SkyX>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n13"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a.inputs:SkyY>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n14"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a.inputs:SkyZ>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n15"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a.inputs:SkyEnergy>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n16"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a.inputs:AmbientEnergy>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n17"
+    {
+        uniform token info:id = "ND_image_float"
+        asset inputs:file = @../Textures/30a678693e0e720445ee.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n1.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "periodic"
+        float outputs:out
+    }
+
+    def Shader "n18"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n17.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n19"
+    {
+        uniform token info:id = "ND_image_float"
+        asset inputs:file = @../Textures/e1df8504a92c0ef385f4.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n1.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "periodic"
+        float outputs:out
+    }
+
+    def Shader "n20"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n19.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n21"
+    {
+        uniform token info:id = "ND_image_float"
+        asset inputs:file = @../Textures/db2db6ed3b119ce6b68a.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n1.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "periodic"
+        float outputs:out
+    }
+
+    def Shader "n22"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n9.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n12.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n23"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n9.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n13.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n24"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n9.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n14.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n25"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = -1
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n24.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n26"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n22.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n23.outputs:out>
+        float inputs:in3.connect = </Exterior_16892db9cc4e3a/n25.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n27"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Exterior_16892db9cc4e3a/n26.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n28"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Exterior_16892db9cc4e3a/n26.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n29"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Exterior_16892db9cc4e3a/n26.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n30"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n28.outputs:out>
+        float inputs:low = -1
+        float outputs:out
+    }
+
+    def Shader "n31"
+    {
+        uniform token info:id = "ND_acos_float"
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n30.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n32"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n31.outputs:out>
+        float inputs:in2 = 0.31830987
+        float outputs:out
+    }
+
+    def Shader "n33"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n32.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n34"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Exterior_16892db9cc4e3a/n29.outputs:out>
+        float inputs:iny.connect = </Exterior_16892db9cc4e3a/n27.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n35"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n34.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n36"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n27.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n37"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n36.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n38"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Exterior_16892db9cc4e3a/n37.outputs:out>
+        float inputs:iny.connect = </Exterior_16892db9cc4e3a/n29.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n39"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n38.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n40"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n39.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n41"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n40.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n42"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n40.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n41.outputs:out>
+        float inputs:value1.connect = </Exterior_16892db9cc4e3a/n27.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n43"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n29.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n44"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n35.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n42.outputs:out>
+        float inputs:value1.connect = </Exterior_16892db9cc4e3a/n43.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n45"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n44.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n33.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n46"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe0.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n45.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n47"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 6
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n48"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n47.outputs:out>
+        float inputs:in2 = 0
+        float outputs:out
+    }
+
+    def Shader "n49"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n48.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n50"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe1.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n45.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n51"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Exterior_16892db9cc4e3a/n46.outputs:out>
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n50.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n49.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n52"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n47.outputs:out>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n53"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n52.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n54"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe2.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n45.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n55"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Exterior_16892db9cc4e3a/n51.outputs:out>
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n54.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n53.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n56"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n47.outputs:out>
+        float inputs:in2 = 2
+        float outputs:out
+    }
+
+    def Shader "n57"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n56.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n58"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe3.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n45.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n59"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Exterior_16892db9cc4e3a/n55.outputs:out>
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n58.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n57.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n60"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n47.outputs:out>
+        float inputs:in2 = 3
+        float outputs:out
+    }
+
+    def Shader "n61"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n60.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n62"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n45.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n63"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Exterior_16892db9cc4e3a/n59.outputs:out>
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n62.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n61.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n64"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n47.outputs:out>
+        float inputs:in2 = 4
+        float outputs:out
+    }
+
+    def Shader "n65"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n64.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n66"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe5.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n45.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n67"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Exterior_16892db9cc4e3a/n63.outputs:out>
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n66.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n65.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n68"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n47.outputs:out>
+        float inputs:in2 = 5
+        float outputs:out
+    }
+
+    def Shader "n69"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n68.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n70"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe6.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n45.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n71"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Exterior_16892db9cc4e3a/n67.outputs:out>
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n70.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n69.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n72"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n27.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n73"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n29.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n74"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Exterior_16892db9cc4e3a/n73.outputs:out>
+        float inputs:iny.connect = </Exterior_16892db9cc4e3a/n72.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n75"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n74.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n76"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n72.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n77"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n76.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n78"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Exterior_16892db9cc4e3a/n77.outputs:out>
+        float inputs:iny.connect = </Exterior_16892db9cc4e3a/n73.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n79"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n78.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n80"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n79.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n81"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n80.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n82"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n80.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n81.outputs:out>
+        float inputs:value1.connect = </Exterior_16892db9cc4e3a/n72.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n83"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n73.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n84"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n75.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n82.outputs:out>
+        float inputs:value1.connect = </Exterior_16892db9cc4e3a/n83.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n85"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1 = 0.5
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n84.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n86"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n85.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n33.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n87"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe0.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n86.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n88"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 6
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n89"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n88.outputs:out>
+        float inputs:in2 = 0
+        float outputs:out
+    }
+
+    def Shader "n90"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n89.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n91"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe1.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n86.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n92"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Exterior_16892db9cc4e3a/n87.outputs:out>
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n91.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n90.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n93"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n88.outputs:out>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n94"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n93.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n95"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe2.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n86.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n96"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Exterior_16892db9cc4e3a/n92.outputs:out>
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n95.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n94.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n97"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n88.outputs:out>
+        float inputs:in2 = 2
+        float outputs:out
+    }
+
+    def Shader "n98"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n97.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n99"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe3.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n86.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n100"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Exterior_16892db9cc4e3a/n96.outputs:out>
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n99.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n98.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n101"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n88.outputs:out>
+        float inputs:in2 = 3
+        float outputs:out
+    }
+
+    def Shader "n102"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n101.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n103"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n86.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n104"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Exterior_16892db9cc4e3a/n100.outputs:out>
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n103.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n102.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n105"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n88.outputs:out>
+        float inputs:in2 = 4
+        float outputs:out
+    }
+
+    def Shader "n106"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n105.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n107"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe5.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n86.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n108"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Exterior_16892db9cc4e3a/n104.outputs:out>
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n107.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n106.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n109"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n88.outputs:out>
+        float inputs:in2 = 5
+        float outputs:out
+    }
+
+    def Shader "n110"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n109.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n111"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe6.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n86.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n112"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Exterior_16892db9cc4e3a/n108.outputs:out>
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n111.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n110.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n113"
+    {
+        uniform token info:id = "ND_ifgreater_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n71.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n112.outputs:out>
+        float inputs:value1.connect = </Exterior_16892db9cc4e3a/n29.outputs:out>
+        float inputs:value2 = 0
+        vector3f outputs:out
+    }
+
+    def Shader "n114"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n6.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n12.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n115"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n6.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n13.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n116"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n6.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n14.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n117"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n114.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n115.outputs:out>
+        float inputs:in3.connect = </Exterior_16892db9cc4e3a/n116.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n118"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Exterior_16892db9cc4e3a/n117.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n119"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Exterior_16892db9cc4e3a/n117.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n120"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Exterior_16892db9cc4e3a/n117.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n121"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n119.outputs:out>
+        float inputs:low = -1
+        float outputs:out
+    }
+
+    def Shader "n122"
+    {
+        uniform token info:id = "ND_acos_float"
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n121.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n123"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n122.outputs:out>
+        float inputs:in2 = 0.31830987
+        float outputs:out
+    }
+
+    def Shader "n124"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n123.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n125"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Exterior_16892db9cc4e3a/n120.outputs:out>
+        float inputs:iny.connect = </Exterior_16892db9cc4e3a/n118.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n126"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n125.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n127"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n118.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n128"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n127.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n129"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Exterior_16892db9cc4e3a/n128.outputs:out>
+        float inputs:iny.connect = </Exterior_16892db9cc4e3a/n120.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n130"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n129.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n131"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n130.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n132"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n131.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n133"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n131.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n132.outputs:out>
+        float inputs:value1.connect = </Exterior_16892db9cc4e3a/n118.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n134"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n120.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n135"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n126.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n133.outputs:out>
+        float inputs:value1.connect = </Exterior_16892db9cc4e3a/n134.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n136"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n135.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n124.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n137"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n136.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n138"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n118.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n139"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n120.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n140"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Exterior_16892db9cc4e3a/n139.outputs:out>
+        float inputs:iny.connect = </Exterior_16892db9cc4e3a/n138.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n141"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n140.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n142"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n138.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n143"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n142.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n144"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Exterior_16892db9cc4e3a/n143.outputs:out>
+        float inputs:iny.connect = </Exterior_16892db9cc4e3a/n139.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n145"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n144.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n146"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n145.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n147"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n146.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n148"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n146.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n147.outputs:out>
+        float inputs:value1.connect = </Exterior_16892db9cc4e3a/n138.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n149"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n139.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n150"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n141.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n148.outputs:out>
+        float inputs:value1.connect = </Exterior_16892db9cc4e3a/n149.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n151"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1 = 0.5
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n150.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n152"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n151.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n124.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n153"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </Exterior_16892db9cc4e3a/n152.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n154"
+    {
+        uniform token info:id = "ND_ifgreater_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n137.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n153.outputs:out>
+        float inputs:value1.connect = </Exterior_16892db9cc4e3a/n120.outputs:out>
+        float inputs:value2 = 0
+        vector3f outputs:out
+    }
+
+    def Shader "n155"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg = (0.04, 0.04, 0.04)
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n3.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n18.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n156"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n157"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n156.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n156.outputs:out>
+        float inputs:in3.connect = </Exterior_16892db9cc4e3a/n156.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n158"
+    {
+        uniform token info:id = "ND_max_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n157.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n155.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n159"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n11.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n160"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n159.outputs:out>
+        float inputs:in2 = 5
+        float outputs:out
+    }
+
+    def Shader "n161"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Exterior_16892db9cc4e3a/n155.outputs:out>
+        vector3f inputs:fg.connect = </Exterior_16892db9cc4e3a/n158.outputs:out>
+        float inputs:mix.connect = </Exterior_16892db9cc4e3a/n160.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n162"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n156.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n156.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n163"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = -9.28
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n11.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n164"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1 = 2
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n163.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n165"
+    {
+        uniform token info:id = "ND_min_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n162.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n164.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n166"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n165.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n156.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n167"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.0275
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n168"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.0425
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n167.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n169"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n166.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n168.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n170"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.572
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n171"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n170.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n172"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n169.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n173"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n171.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n172.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n174"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.022
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n175"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n174.outputs:out>
+        float inputs:in2 = 0.04
+        float outputs:out
+    }
+
+    def Shader "n176"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n169.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n177"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n175.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n176.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n178"
+    {
+        uniform token info:id = "ND_mix_float"
+        float inputs:bg = 1
+        float inputs:fg.connect = </Exterior_16892db9cc4e3a/n21.outputs:out>
+        float inputs:mix = 1
+        float outputs:out
+    }
+
+    def Shader "n179"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n161.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n173.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n180"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n177.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n177.outputs:out>
+        float inputs:in3.connect = </Exterior_16892db9cc4e3a/n177.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n181"
+    {
+        uniform token info:id = "ND_add_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n179.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n180.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n182"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n178.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n15.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n183"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n181.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n182.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n184"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n18.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n185"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n184.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n21.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n186"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n16.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n15.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n187"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n185.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n186.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n188"
+    {
+        uniform token info:id = "ND_subtract_vector3"
+        vector3f inputs:in1 = (1, 1, 1)
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n161.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n189"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n3.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n188.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n190"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n189.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n187.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n191"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n113.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n183.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n192"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n154.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n190.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n193"
+    {
+        uniform token info:id = "ND_add_vector3"
+        vector3f inputs:in1.connect = </Exterior_16892db9cc4e3a/n191.outputs:out>
+        vector3f inputs:in2.connect = </Exterior_16892db9cc4e3a/n192.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n194"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Exterior_16892db9cc4e3a/n193.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n195"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n194.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n196"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n195.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n197"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n196.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n198"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n197.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n199"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n195.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n200"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n198.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n199.outputs:out>
+        float inputs:value1.connect = </Exterior_16892db9cc4e3a/n195.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n201"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Exterior_16892db9cc4e3a/n193.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n202"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n201.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n203"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n202.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n204"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n203.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n205"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n204.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n206"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n202.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n207"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n205.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n206.outputs:out>
+        float inputs:value1.connect = </Exterior_16892db9cc4e3a/n202.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n208"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Exterior_16892db9cc4e3a/n193.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n209"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Exterior_16892db9cc4e3a/n208.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n210"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n209.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n211"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n210.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n212"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n211.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n213"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n209.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n214"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n212.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n213.outputs:out>
+        float inputs:value1.connect = </Exterior_16892db9cc4e3a/n209.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n215"
+    {
+        uniform token info:id = "ND_combine3_color3"
+        float inputs:in1.connect = </Exterior_16892db9cc4e3a/n200.outputs:out>
+        float inputs:in2.connect = </Exterior_16892db9cc4e3a/n207.outputs:out>
+        float inputs:in3.connect = </Exterior_16892db9cc4e3a/n214.outputs:out>
+        color3f outputs:out
+    }
+
+    def Shader "n216"
+    {
+        uniform token info:id = "ND_realitykit_unlit_surfaceshader"
+        bool inputs:applyPostProcessToneMap = 0
+        color3f inputs:color.connect = </Exterior_16892db9cc4e3a/n215.outputs:out>
+        float inputs:opacity = 1
+        token outputs:out
+    }
+}
+

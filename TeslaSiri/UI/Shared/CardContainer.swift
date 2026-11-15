@@ -19,29 +19,22 @@ struct CardContainer<Content: View>: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             if let title {
-                HStack(spacing: 10) {
-                    if let systemImage {
-                        Image(systemName: systemImage)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.tint)
-                            .frame(width: 30, height: 30)
-                            .background(Color.accentColor.opacity(0.12), in: Circle())
-                            .accessibilityHidden(true)
-                    }
-
+                if let systemImage {
+                    DashboardCardHeader(title: title, systemImage: systemImage, tint: .accentColor)
+                } else {
                     Text(title)
-                        .font(.headline)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .accessibilityAddTraits(.isHeader)
                 }
-                .accessibilityElement(children: .combine)
-                .accessibilityAddTraits(.isHeader)
             }
 
             content
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(18)
+        .padding(16)
         .appSurface()
     }
 }

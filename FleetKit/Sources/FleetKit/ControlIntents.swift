@@ -7,16 +7,20 @@ import AppIntents
 // Confirmation policy: unlock, trunk, frunk, and charge-limit changes prompt
 // for confirmation; lock, climate, and vent run immediately.
 
+@AppIntent(.tool)
 public struct LockVehicleIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Lock Tesla"
-    public static let description = IntentDescription("Lock your Tesla. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Locks all doors on the user's car (or Tesla) immediately. Use when the user says \"lock my car\" or \"lock my Tesla\". Omit the vehicle parameter to lock the user's selected car.",
+        searchKeywords: ["lock my car", "lock car", "lock doors", "lock vehicle", "lock Tesla"]
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The car from the user's fleet account to lock. Optional; omit to lock the user's currently selected car.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
@@ -37,30 +41,36 @@ public struct LockVehicleIntent: AppIntent, PredictableIntent {
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             try await service.runControl(action: "door_lock", vin: resolved.vin, humanName: "locking")
+            let summary = "Locked \(resolved.name)."
+            let result = VehicleCommandResultEntity(vehicle: resolved, action: "door_lock", summary: summary)
             log.success("locked \(resolved.name)")
-            return .result(dialog: IntentDialog("Locked \(resolved.name)."))
+            return .result(value: result, dialog: IntentDialog("\(summary)"))
         } catch {
             throw log.failure(error)
         }
     }
 }
 
+@AppIntent(.tool)
 public struct UnlockVehicleIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Unlock Tesla"
-    public static let description = IntentDescription("Unlock your Tesla. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Unlocks the doors on the user's car (or Tesla) after asking the user for confirmation. Use when the user says \"unlock my car\" or \"unlock my Tesla\". Omit the vehicle parameter to unlock the user's selected car.",
+        searchKeywords: ["unlock my car", "unlock car", "unlock doors", "unlock vehicle", "unlock Tesla"]
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The car from the user's fleet account to unlock. Optional; omit to unlock the user's currently selected car.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
@@ -81,31 +91,41 @@ public struct UnlockVehicleIntent: AppIntent, PredictableIntent {
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
-            try await requestConfirmation(dialog: IntentDialog("Unlock \(resolved.name)?"))
+            try await confirmWithSafetyGate(dialog: IntentDialog("Unlock \(resolved.name)?"))
             try await service.runControl(action: "door_unlock", vin: resolved.vin, humanName: "unlocking")
+            let summary = "Unlocked \(resolved.name)."
+            let result = VehicleCommandResultEntity(vehicle: resolved, action: "door_unlock", summary: summary)
             log.success("unlocked \(resolved.name)")
-            return .result(dialog: IntentDialog("Unlocked \(resolved.name)."))
+            return .result(value: result, dialog: IntentDialog("\(summary)"))
         } catch {
             throw log.failure(error)
         }
     }
 }
 
+@AppIntent(.tool)
 public struct StartClimateIntent: AppIntent, PredictableIntent {
-    public static let title: LocalizedStringResource = "Start Tesla Climate"
-    public static let description = IntentDescription("Turn on climate control. Uses your selected car when no vehicle is specified.")
+    public static let title: LocalizedStringResource = "Start Car Climate"
+    public static let description = IntentDescription(
+        "Warms up, cools down, or preconditions the user's car or Tesla by starting cabin HVAC at its current setpoint. Use for requests like \"warm up my car\", \"cool down my car\", or \"warm up my Tesla\". Use Set Car Temperature for a target temperature, or Configure Tesla Cabin Climate for multi-setting prep.",
+        searchKeywords: [
+            "warm up", "warm up my car", "cool down", "cool down my car",
+            "heat my car", "cool my car", "precondition", "precondition my car",
+            "turn on AC", "turn on heat", "climate on", "start climate", "warm up my Tesla"
+        ]
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The car from the user's fleet account to warm up, cool down, or precondition. Optional; omit to use the user's currently selected car.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
@@ -114,42 +134,55 @@ public struct StartClimateIntent: AppIntent, PredictableIntent {
 
     public static var parameterSummary: some ParameterSummary {
         When(\.$vehicle, .hasAnyValue) {
-            Summary("Start climate in \(\.$vehicle)")
+            Summary("Warm up or start climate in \(\.$vehicle)")
         } otherwise: {
-            Summary("Start climate in my car")
+            Summary("Warm up my car")
         }
     }
 
     public static var predictionConfiguration: some IntentPredictionConfiguration {
         IntentPrediction(parameters: (\.$vehicle)) { vehicle in
-            DisplayRepresentation(title: VehicleEntity.predictionTitle(verb: "Start climate in", vehicle: vehicle))
+            DisplayRepresentation(title: VehicleEntity.predictionTitle(verb: "Warm up", vehicle: vehicle))
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ShowsSnippetIntent & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             try await service.runControl(action: "auto_conditioning_start", vin: resolved.vin, humanName: "starting climate")
+            let summary = "Climate is starting in \(resolved.name)."
+            let result = VehicleCommandResultEntity(vehicle: resolved, action: "auto_conditioning_start", summary: summary)
             log.success("started climate in \(resolved.name)")
-            return .result(dialog: IntentDialog("Climate is starting in \(resolved.name)."))
+            return .result(
+                value: result,
+                dialog: IntentDialog("\(summary)"),
+                snippetIntent: ClimateControlSnippetIntent(
+                    vehicle: VehicleEntity(id: resolved.vin, name: resolved.name),
+                    appliedSummary: summary
+                )
+            )
         } catch {
             throw log.failure(error)
         }
     }
 }
 
+@AppIntent(.tool)
 public struct VentWindowsIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Vent Tesla Windows"
-    public static let description = IntentDescription("Vent your Tesla's windows. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Lowers all four of the car's windows a few centimeters to let hot air out of a parked Tesla. To roll the car's windows back up, use the Close Tesla Windows tool.",
+        searchKeywords: ["crack the windows", "vent", "let air out"]
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The Tesla vehicle from the user's fleet account whose windows should be vented. Optional; omit to use the user's currently selected vehicle.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
@@ -170,7 +203,7 @@ public struct VentWindowsIntent: AppIntent, PredictableIntent {
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
             let service = FleetIntentService.make()
@@ -181,74 +214,145 @@ public struct VentWindowsIntent: AppIntent, PredictableIntent {
                 params: ["command": .string("vent")],
                 humanName: "venting the windows"
             )
+            let summary = "Venting \(resolved.name)'s windows."
+            let result = VehicleCommandResultEntity(
+                vehicle: resolved,
+                action: "window_control",
+                appliedValue: "vent",
+                summary: summary
+            )
             log.success("venting windows on \(resolved.name)")
-            return .result(dialog: IntentDialog("Venting \(resolved.name)'s windows."))
+            return .result(value: result, dialog: IntentDialog("\(summary)"))
         } catch {
             throw log.failure(error)
         }
     }
 }
 
+/// Which storage compartment to open.
+public enum TrunkPosition: String, AppEnum, Sendable {
+    case rear
+    case front
+
+    public static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Trunk")
+    public static let caseDisplayRepresentations: [TrunkPosition: DisplayRepresentation] = [
+        .rear: DisplayRepresentation(
+            title: "Trunk",
+            subtitle: "The rear cargo area at the back of the car",
+            synonyms: ["rear trunk", "back trunk", "liftgate", "hatch", "boot"]
+        ),
+        .front: DisplayRepresentation(
+            title: "Frunk",
+            subtitle: "The front storage compartment under the hood",
+            synonyms: ["front trunk", "hood", "bonnet"]
+        )
+    ]
+
+    var spokenName: String {
+        switch self {
+        case .rear: "trunk"
+        case .front: "frunk"
+        }
+    }
+}
+
+@AppIntent(.tool)
 public struct OpenTrunkIntent: AppIntent, PredictableIntent {
-    public static let title: LocalizedStringResource = "Open Tesla Trunk"
-    public static let description = IntentDescription("Open your Tesla's rear trunk. Uses your selected car when no vehicle is specified.")
+    public static let title: LocalizedStringResource = "Open Tesla Trunk or Frunk"
+    public static let description = IntentDescription(
+        "Opens the car's rear trunk or its frunk (the front trunk under the hood), after asking the user to confirm. On cars with a powered liftgate, using it on an open rear trunk closes it. The frunk can't be closed remotely.",
+        searchKeywords: ["trunk", "frunk", "front trunk", "rear trunk", "liftgate", "hatch", "boot", "hood"]
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The Tesla to open. Leave empty to use the car the user has selected in the app.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
+    @Parameter(
+        title: "Trunk",
+        description: "Frunk for the front trunk under the hood, or Trunk for the rear cargo area. \"Open the trunk\" means the rear trunk.",
+        default: .rear
+    )
+    public var trunk: TrunkPosition
+
     public init() {}
+
+    public init(vehicle: VehicleEntity? = nil, trunk: TrunkPosition) {
+        self.vehicle = vehicle
+        self.trunk = trunk
+    }
 
     public static var parameterSummary: some ParameterSummary {
         When(\.$vehicle, .hasAnyValue) {
-            Summary("Open \(\.$vehicle) trunk")
+            Summary("Open \(\.$vehicle) \(\.$trunk)")
         } otherwise: {
-            Summary("Open my car trunk")
+            Summary("Open my car \(\.$trunk)")
         }
     }
 
     public static var predictionConfiguration: some IntentPredictionConfiguration {
-        IntentPrediction(parameters: (\.$vehicle)) { vehicle in
-            DisplayRepresentation(title: VehicleEntity.predictionTitle(verb: "Open", vehicle: vehicle, suffix: "trunk"))
+        IntentPrediction(parameters: (\.$vehicle, \.$trunk)) { vehicle, trunk in
+            DisplayRepresentation(title: VehicleEntity.predictionTitle(verb: "Open", vehicle: vehicle, suffix: trunk.spokenName))
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
-            let service = FleetIntentService.make()
-            let resolved = try await service.resolvedVehicle(vehicle?.id)
-            try await requestConfirmation(dialog: IntentDialog("Open the trunk on \(resolved.name)?"))
-            try await service.runControl(
-                action: "actuate_trunk",
-                vin: resolved.vin,
-                params: ["which_trunk": .string("rear")],
-                humanName: "opening the trunk"
-            )
-            log.success("opened trunk on \(resolved.name)")
-            return .result(dialog: IntentDialog("Opening the trunk on \(resolved.name)."))
+            let result = try await Self.open(trunk, vehicle: vehicle) { dialog in
+                try await confirmWithSafetyGate(dialog: dialog)
+            }
+            log.success("opened \(trunk.spokenName) on \(result.vehicleName)")
+            return .result(value: result, dialog: IntentDialog("\(result.summary)"))
         } catch {
             throw log.failure(error)
         }
     }
+
+    /// Shared by this tool and the Shortcuts-only Open Frunk intent.
+    static func open(
+        _ trunk: TrunkPosition,
+        vehicle: VehicleEntity?,
+        confirm: (IntentDialog) async throws -> Void
+    ) async throws -> VehicleCommandResultEntity {
+        let service = FleetIntentService.make()
+        let resolved = try await service.resolvedVehicle(vehicle?.id)
+        try await confirm(IntentDialog("Open the \(trunk.spokenName) on \(resolved.name)?"))
+        try await service.runControl(
+            action: "actuate_trunk",
+            vin: resolved.vin,
+            params: ["which_trunk": .string(trunk.rawValue)],
+            humanName: "opening the \(trunk.spokenName)"
+        )
+        return VehicleCommandResultEntity(
+            vehicle: resolved,
+            action: "actuate_trunk",
+            appliedValue: trunk.rawValue,
+            summary: "Opening the \(trunk.spokenName) on \(resolved.name)."
+        )
+    }
 }
 
+/// Kept so saved shortcuts that open the frunk keep working. Not a Siri tool:
+/// Siri uses Open Tesla Trunk or Frunk with the Frunk option.
 public struct OpenFrunkIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Open Tesla Frunk"
-    public static let description = IntentDescription("Open your Tesla's front trunk. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Opens the frunk, the front storage compartment under the hood, after asking the user to confirm. The frunk can't be closed remotely."
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The Tesla whose frunk to open. Leave empty to use the car the user has selected in the app.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
@@ -269,41 +373,43 @@ public struct OpenFrunkIntent: AppIntent, PredictableIntent {
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
-            let service = FleetIntentService.make()
-            let resolved = try await service.resolvedVehicle(vehicle?.id)
-            try await requestConfirmation(dialog: IntentDialog("Open the frunk on \(resolved.name)?"))
-            try await service.runControl(
-                action: "actuate_trunk",
-                vin: resolved.vin,
-                params: ["which_trunk": .string("front")],
-                humanName: "opening the frunk"
-            )
-            log.success("opened frunk on \(resolved.name)")
-            return .result(dialog: IntentDialog("Opening the frunk on \(resolved.name)."))
+            let result = try await OpenTrunkIntent.open(.front, vehicle: vehicle) { dialog in
+                try await confirmWithSafetyGate(dialog: dialog)
+            }
+            log.success("opened frunk on \(result.vehicleName)")
+            return .result(value: result, dialog: IntentDialog("\(result.summary)"))
         } catch {
             throw log.failure(error)
         }
     }
 }
 
+@AppIntent(.tool)
 public struct SetChargeLimitIntent: AppIntent, PredictableIntent {
     public static let title: LocalizedStringResource = "Set Tesla Charge Limit"
-    public static let description = IntentDescription("Set your Tesla's charge limit. Uses your selected car when no vehicle is specified.")
+    public static let description = IntentDescription(
+        "Sets the maximum battery state-of-charge percentage (50% to 100%) at which charging stops on a Tesla vehicle, after user confirmation. Use 80% for typical daily driving or up to 100% before long road trips."
+    )
     public static let isDiscoverable = true
 
     @Parameter(
         title: "Vehicle",
-        description: "Your Tesla from your fleet account. Leave blank to use your selected car.",
-        requestValueDialog: IntentDialog("Which car?"),
-        requestDisambiguationDialog: IntentDialog("Which one?"),
+        description: "The Tesla vehicle from the user's fleet account whose charge limit should be updated. Optional; omit to use the user's currently selected vehicle.",
+        requestValueDialog: IntentDialog("Which vehicle?"),
+        requestDisambiguationDialog: IntentDialog("Which vehicle?"),
         optionsProvider: SelectedVehicleOptionsProvider()
     )
     public var vehicle: VehicleEntity?
 
-    @Parameter(title: "Charge Limit %", default: 80, inclusiveRange: (50, 100))
+    @Parameter(
+        title: "Charge Limit %",
+        description: "Target battery charge limit as an integer percentage from 50 to 100 (for example 80 for daily use or 100 for a road trip).",
+        default: 80,
+        inclusiveRange: (50, 100)
+    )
     public var percent: Int
 
     public init() {}
@@ -323,20 +429,28 @@ public struct SetChargeLimitIntent: AppIntent, PredictableIntent {
         }
     }
 
-    public func perform() async throws -> some IntentResult & ProvidesDialog {
+    public func perform() async throws -> some IntentResult & ReturnsValue<VehicleCommandResultEntity> & ProvidesDialog {
         let log = FleetIntentLog(Self.self, vehicle: vehicle)
         do {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
-            try await requestConfirmation(dialog: IntentDialog("Set \(resolved.name)'s charge limit to \(percent)%?"))
+            let clampedPercent = min(max(percent, 50), 100)
+            try await confirmWithSafetyGate(dialog: IntentDialog("Set \(resolved.name)'s charge limit to \(clampedPercent)%?"))
             try await service.runControl(
                 action: "set_charge_limit",
                 vin: resolved.vin,
-                params: ["percent": .int(percent)],
+                params: ["percent": .int(clampedPercent)],
                 humanName: "setting the charge limit"
             )
-            log.success("charge limit \(percent)% on \(resolved.name)")
-            return .result(dialog: IntentDialog("Set \(resolved.name)'s charge limit to \(percent)%."))
+            let summary = "Set \(resolved.name)'s charge limit to \(clampedPercent)%."
+            let result = VehicleCommandResultEntity(
+                vehicle: resolved,
+                action: "set_charge_limit",
+                appliedValue: "\(clampedPercent)%",
+                summary: summary
+            )
+            log.success("charge limit \(clampedPercent)% on \(resolved.name)")
+            return .result(value: result, dialog: IntentDialog("\(summary)"))
         } catch {
             throw log.failure(error)
         }

@@ -1,0 +1,53 @@
+{
+  "model_s": {
+    "default": "model_s",
+    "S1": "BodyStyles/model_s_S1",
+    "S2": "model_s"
+  },
+  "model_s_palladium": {
+    "default": "model_s_palladium",
+    "original": "model_s_palladium",
+    "p3s": "BodyStyles/model_s_palladium_p3s",
+    "p3splaid": "BodyStyles/model_s_palladium_p3splaid"
+  },
+  "model_3": {
+    "default": "model_3"
+  },
+  "poppyseed": {
+    "default": "poppyseed",
+    "basePoppyseed": "poppyseed",
+    "performancePoppyseed": "BodyStyles/poppyseed_performancePoppyseed",
+    "d50Poppyseed": "BodyStyles/poppyseed_d50Poppyseed"
+  },
+  "model_x": {
+    "default": "model_x"
+  },
+  "model_x_palladium": {
+    "default": "model_x_palladium"
+  },
+  "model_y": {
+    "default": "model_y"
+  },
+  "bayberry": {
+    "default": "bayberry",
+    "baseBayberry": "bayberry",
+    "performanceBayberry": "BodyStyles/bayberry_performanceBayberry",
+    "UltraRedStandard": "model_y_us_ultra_red",
+    "UltraRedPerformance": "model_y_us_ultra_red_performance"
+  },
+  "bayberry_e41": {
+    "default": "bayberry_e41"
+  },
+  "bayberry_e80": {
+    "default": "bayberry_e80"
+  },
+  "semi": {
+    "default": "semi"
+  },
+  "cybertruck": {
+    "default": "cybertruck",
+    "RWD": "cybertruck",
+    "AWD": "BodyStyles/cybertruck_AWD",
+    "AWDTriMotor": "BodyStyles/cybertruck_AWDTriMotor"
+  }
+}

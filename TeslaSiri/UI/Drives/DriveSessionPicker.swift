@@ -6,35 +6,85 @@ struct DriveSessionPicker: View {
     let drives: [FleetDriveSession]
     let endpointAddresses: [String: DriveEndpointAddresses]
     @Binding var selectedSessionID: String
+    var title: String = "Recent drives"
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Recent drives")
+            Text(title)
                 .font(.headline)
                 .accessibilityAddTraits(.isHeader)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 10) {
+            if dynamicTypeSize.isAccessibilitySize {
+                Menu {
                     ForEach(drives) { drive in
                         Button {
                             selectedSessionID = drive.sessionID
                         } label: {
-                            DriveSessionChip(
-                                drive: drive,
-                                endpointAddresses: endpointAddresses[drive.sessionID],
-                                isSelected: selectedSessionID == drive.sessionID
-                            )
+                            Text(menuLabel(for: drive))
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Drive from \(drive.startedAtDate.formatted(date: .abbreviated, time: .shortened))")
-                        .accessibilityAddTraits(selectedSessionID == drive.sessionID ? .isSelected : [])
+                    }
+                } label: {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Session")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                            Text(selectedDrive.map(menuLabel(for:)) ?? "Select a drive")
+                                .font(.headline)
+                                .multilineTextAlignment(.leading)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.up.chevron.down")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(16)
+                    .appSurface(cornerRadius: 18)
+                }
+                .buttonStyle(.plain)
+            } else {
+                ScrollViewReader { scrollProxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 10) {
+                            ForEach(drives) { drive in
+                                Button {
+                                    selectedSessionID = drive.sessionID
+                                } label: {
+                                    DriveSessionChip(
+                                        drive: drive,
+                                        endpointAddresses: endpointAddresses[drive.sessionID],
+                                        isSelected: selectedSessionID == drive.sessionID
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Drive from \(drive.startedAtDate.formatted(date: .abbreviated, time: .shortened))")
+                                .accessibilityAddTraits(selectedSessionID == drive.sessionID ? .isSelected : [])
+                                .id(drive.sessionID)
+                            }
+                        }
+                        .padding(3)
+                    }
+                    .onChange(of: selectedSessionID, initial: true) { _, newID in
+                        guard !newID.isEmpty else { return }
+                        withAnimation(.snappy(duration: 0.22)) {
+                            scrollProxy.scrollTo(newID, anchor: .center)
+                        }
                     }
                 }
-                .padding(.vertical, 2)
             }
-            // Keep chip borders and shadows from being cut off at the scroll view's edges.
-            .scrollClipDisabled()
         }
+    }
+
+    private var selectedDrive: FleetDriveSession? {
+        drives.first { $0.sessionID == selectedSessionID } ?? drives.first
+    }
+
+    private func menuLabel(for drive: FleetDriveSession) -> String {
+        let date = drive.startedAtDate.formatted(date: .abbreviated, time: .shortened)
+        let summary = driveEndpointSummary(drive, endpointAddresses: endpointAddresses[drive.sessionID])
+        return "\(date) · \(summary)"
     }
 }
 
@@ -44,9 +94,10 @@ struct DriveSessionChip: View {
     let isSelected: Bool
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.duoPosture) private var duoPosture
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 7) {
+        VStack(alignment: .leading, spacing: 6) {
             HStack {
                 Label {
                     Text(drive.startedAtDate.formatted(date: .abbreviated, time: .shortened))
@@ -74,12 +125,15 @@ struct DriveSessionChip: View {
             Spacer(minLength: 0)
 
             Text(formattedNumber(drive.distanceMiles, fractionLength: 1, suffix: " mi"))
-                .font(.title3.weight(.semibold))
+                .font(.headline.weight(.semibold))
                 .monospacedDigit()
         }
-        .padding(14)
-        .frame(width: dynamicTypeSize.isAccessibilitySize ? 340 : 250, alignment: .leading)
-        .frame(minHeight: dynamicTypeSize.isAccessibilitySize ? 160 : 118, alignment: .leading)
+        .padding(12)
+        .frame(
+            width: dynamicTypeSize.isAccessibilitySize ? 320 : (duoPosture.prefersCompactHero ? 212 : 234),
+            alignment: .leading
+        )
+        .frame(minHeight: dynamicTypeSize.isAccessibilitySize ? 148 : 104, alignment: .leading)
         .appSurface(cornerRadius: AppTheme.tileCornerRadius)
         .overlay {
             if isSelected {

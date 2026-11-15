@@ -1,0 +1,275 @@
+#usda 1.0
+(
+    defaultPrim = "Vehicle"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Vehicle" (
+    prepend references = @./Vehicle.usdz@</Vehicle>
+)
+{
+    over "Body"
+    {
+        over "Interior_Body_RHD"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Stoplights_Projections"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headlights_Projections"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Dashboard_RHD"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Screen_Front_RHD"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Headlights"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Brake_Lights_Center"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Reverse_Light"
+        {
+            token visibility = "inherited"
+        }
+
+        over "DRL"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Right_Turn_Signal_Front"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Left_Turn_Signal_Front"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Bumper_R_Perf_Reflector"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Seat_Bottom_Perf_LF_Color"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Seat_Top_Perf_LF_Color"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Seat_Top_Perf_LF"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Seat_Top_Perf_RF_Color"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Seat_Top_Perf_RF"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Seat_Bottom_Perf_RF_Color"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Reverse_Light_Perf"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Door_LF_Spatial"
+        {
+            over "Doorcard_LF_RHD"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Door_RF_Spatial"
+        {
+            over "Doorcard_RF_RHD"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "Trunk_Bracket_Main_Spatial"
+        {
+            over "Trunk_Spatial"
+            {
+                over "Brake_Lights_Left"
+                {
+                    token visibility = "inherited"
+                }
+
+                over "Brake_Lights_Right"
+                {
+                    token visibility = "inherited"
+                }
+
+                over "Headlights_Trunk"
+                {
+                    token visibility = "inherited"
+                }
+
+                over "Left_Turn_Signal_Rear"
+                {
+                    token visibility = "inherited"
+                }
+
+                over "Plate_EU"
+                {
+                    token visibility = "inherited"
+                }
+
+                over "Right_Turn_Signal_Rear"
+                {
+                    token visibility = "inherited"
+                }
+
+                over "Spoiler"
+                {
+                    token visibility = "inherited"
+                }
+            }
+        }
+
+        over "Steering_Wheel_RHD_Spatial"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Stalk"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Stalk_RHD"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Fascia_Cam_D50"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Center_Console_D50"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Seat_Bottom_D50_RF"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Seat_Bottom_D50_LF"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Bumper_F_Perf"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Bumper_R_Perf"
+        {
+            token visibility = "inherited"
+        }
+
+        over "FrontMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "RearMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "Spatials"
+        {
+            over "Airflow_left"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Airflow_right"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Defrost_Front"
+            {
+                token visibility = "inherited"
+            }
+
+            over "Defrost_Rear"
+            {
+                token visibility = "inherited"
+            }
+        }
+
+        over "LeftMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "RightMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "FrontLeftMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "FrontRightMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "RearLeftMarker"
+        {
+            token visibility = "inherited"
+        }
+
+        over "RearRightMarker"
+        {
+            token visibility = "inherited"
+        }
+    }
+}
+

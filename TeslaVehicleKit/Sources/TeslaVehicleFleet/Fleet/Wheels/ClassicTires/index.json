@@ -1,0 +1,764 @@
+{
+  "version": 1,
+  "parked": true,
+  "materials": {
+    "Conti_7c3fd8437a8b17": {
+      "source": "res://Ego/Wheels_Bayberry/GeminiDark/Conti.tres",
+      "twoSided": true,
+      "albedo": 0.00392157,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 0.94,
+      "normalScale": 1.0,
+      "aoLightAffect": 0.0,
+      "maps": {
+        "normal": {
+          "source": "res://Ego/Wheels_Bayberry/GeminiDark/ContiTireTextures/Conti_Normal.png",
+          "channel": "RGB",
+          "file": "../Textures/7cf77888db73b716.png",
+          "range": null
+        }
+      }
+    },
+    "Pirelli_83ee9987fc49dd": {
+      "source": "res://Ego/Wheels_Bayberry/BayberryE41/Pirelli.tres",
+      "twoSided": true,
+      "albedo": 0.0,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 0.9,
+      "normalScale": 1.0,
+      "aoLightAffect": 0.0,
+      "maps": {
+        "normal": {
+          "source": "res://Ego/Wheels_Bayberry/BayberryE41/PirelliTextures/Pirelli_Normal.png",
+          "channel": "RGB",
+          "file": "../Textures/976fb57198e73b06.png",
+          "range": null
+        }
+      }
+    },
+    "Pirelli_8af5067ef1692c": {
+      "source": "res://Ego/Wheels_Bayberry/Helix2/Pirelli.tres",
+      "twoSided": true,
+      "albedo": 0.0,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 0.96,
+      "normalScale": 1.0,
+      "aoLightAffect": 1.0,
+      "maps": {
+        "normal": {
+          "source": "res://Ego/Wheels_Bayberry/Helix2/PirelliTextures/Pirelli_Normal.png",
+          "channel": "RGB",
+          "file": "../Textures/976fb57198e73b06.png",
+          "range": null
+        }
+      }
+    },
+    "Premium_Tire_5d951ff8e610d8": {
+      "source": "res://Ego/Cybertruck/Wheels/Premium_Tire.material",
+      "twoSided": false,
+      "albedo": 0.08627451,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 1.0,
+      "normalScale": 1.0,
+      "aoLightAffect": 1.0,
+      "maps": {
+        "albedo": {
+          "source": "res://Ego/Cybertruck/Wheels/Textures/Black.png",
+          "channel": "R",
+          "file": "../Textures/29d5c990425904dd.png",
+          "range": [
+            29,
+            29
+          ]
+        },
+        "ao": {
+          "source": "res://Ego/Cybertruck/Wheels/Textures/Tire_Cybertruck_Premium_AO_No_Cap.png",
+          "channel": "R",
+          "file": "../Textures/ddc05901f29c2fb3.png",
+          "range": [
+            0,
+            255
+          ]
+        }
+      }
+    },
+    "Premium_Tire_e7e62226005476": {
+      "source": "res://Ego/Cybertruck/Wheels/Premium_Tire.tres",
+      "twoSided": true,
+      "albedo": 0.0862745,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 1.0,
+      "normalScale": 1.0,
+      "aoLightAffect": 1.0,
+      "maps": {
+        "albedo": {
+          "source": "res://Ego/Cybertruck/Wheels/Textures/Black.png",
+          "channel": "R",
+          "file": "../Textures/29d5c990425904dd.png",
+          "range": [
+            29,
+            29
+          ]
+        },
+        "ao": {
+          "source": "res://Ego/Cybertruck/Wheels/Textures/Tire_Cybertruck_Premium_AO_No_Cap.png",
+          "channel": "R",
+          "file": "../Textures/ddc05901f29c2fb3.png",
+          "range": [
+            0,
+            255
+          ]
+        }
+      }
+    },
+    "Semi_Tires_F_e04980795c2d35": {
+      "source": "res://Ego/Wheels_Semi/Semi_Tires_F.material",
+      "twoSided": false,
+      "albedo": 0.17254902,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 1.0,
+      "normalScale": 1.0,
+      "aoLightAffect": 1.0,
+      "maps": {
+        "albedo": {
+          "source": "res://Ego/Wheels_Semi/Textures/Tire_Tread_BC.png",
+          "channel": "R",
+          "file": "../Textures/e22a90b5fad08137.png",
+          "range": [
+            12,
+            12
+          ]
+        },
+        "roughness": {
+          "source": "res://Ego/Wheels_Semi/Textures/Tire_Tread_F_MRA.png",
+          "channel": "G",
+          "file": "../Textures/b1c8e47ff0e371a0.png",
+          "range": [
+            16,
+            255
+          ]
+        },
+        "ao": {
+          "source": "res://Ego/Wheels_Semi/Textures/Tire_Tread_F_MRA.png",
+          "channel": "B",
+          "file": "../Textures/4a5a3a37276065f6.png",
+          "range": [
+            0,
+            255
+          ]
+        }
+      }
+    },
+    "Semi_Tires_R_c153c1e9ccf9d6": {
+      "source": "res://Ego/Wheels_Semi/Semi_Tires_R.material",
+      "twoSided": false,
+      "albedo": 0.17254902,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 1.0,
+      "normalScale": 1.0,
+      "aoLightAffect": 1.0,
+      "maps": {
+        "albedo": {
+          "source": "res://Ego/Wheels_Semi/Textures/Tire_Tread_BC.png",
+          "channel": "R",
+          "file": "../Textures/e22a90b5fad08137.png",
+          "range": [
+            12,
+            12
+          ]
+        },
+        "roughness": {
+          "source": "res://Ego/Wheels_Semi/Textures/Tire_Tread_R_MRA.png",
+          "channel": "G",
+          "file": "../Textures/5ae526696cf95b44.png",
+          "range": [
+            22,
+            255
+          ]
+        },
+        "metallic": {
+          "source": "res://Ego/Wheels_Semi/Textures/Tire_Tread_R_MRA.png",
+          "channel": "R",
+          "file": "../Textures/9738f014d82e5eda.png",
+          "range": [
+            0,
+            80
+          ]
+        },
+        "ao": {
+          "source": "res://Ego/Wheels_Semi/Textures/Tire_Tread_R_MRA.png",
+          "channel": "B",
+          "file": "../Textures/42196bd368af6c6f.png",
+          "range": [
+            0,
+            223
+          ]
+        }
+      }
+    },
+    "Standard_Tire_984366d4354b2d": {
+      "source": "res://Ego/Cybertruck/Wheels/Standard_Tire.material",
+      "twoSided": false,
+      "albedo": 0.09803922,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 1.0,
+      "normalScale": 1.0,
+      "aoLightAffect": 1.0,
+      "maps": {
+        "albedo": {
+          "source": "res://Ego/Cybertruck/Wheels/Textures/Standard_Tire_BC.png",
+          "channel": "R",
+          "file": "../Textures/c54e967499552942.png",
+          "range": [
+            7,
+            95
+          ]
+        },
+        "ao": {
+          "source": "res://Ego/Cybertruck/Wheels/Textures/Standard_Tire_MRA.png",
+          "channel": "B",
+          "file": "../Textures/f3016864fa5d6938.png",
+          "range": [
+            0,
+            255
+          ]
+        }
+      }
+    },
+    "Tire1_45b51314ae106e": {
+      "source": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn::SubResource(3)",
+      "twoSided": false,
+      "albedo": 0.0313726,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 0.7,
+      "normalScale": 1.0,
+      "aoLightAffect": 1.0,
+      "maps": {
+        "albedo": {
+          "source": "res://Ego/Cybertruck/Wheels/Textures/Black.png",
+          "channel": "R",
+          "file": "../Textures/29d5c990425904dd.png",
+          "range": [
+            29,
+            29
+          ]
+        },
+        "ao": {
+          "source": "res://Ego/Cybertruck/Wheels/Textures/Tire_Cybertruck_RWD_AO_No_Cap.png",
+          "channel": "R",
+          "file": "../Textures/fe9e80227ea845a9.png",
+          "range": [
+            0,
+            255
+          ]
+        }
+      }
+    },
+    "Tire1_67517b8f79589c": {
+      "source": "res://Ego/Cybertruck/Wheels/Tire_Cybertruck_RWD.tres",
+      "twoSided": false,
+      "albedo": 0.0392157,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 0.7,
+      "normalScale": 1.0,
+      "aoLightAffect": 1.0,
+      "maps": {
+        "albedo": {
+          "source": "res://Ego/Cybertruck/Wheels/Textures/Black.png",
+          "channel": "R",
+          "file": "../Textures/29d5c990425904dd.png",
+          "range": [
+            29,
+            29
+          ]
+        },
+        "ao": {
+          "source": "res://Ego/Cybertruck/Wheels/Textures/Wheel_Cybertruck_RWD_AO.png",
+          "channel": "R",
+          "file": "../Textures/5f0520bc7c2ecbee.png",
+          "range": [
+            0,
+            255
+          ]
+        }
+      }
+    },
+    "Tire_18d2c1ef46cdf9": {
+      "source": "res://Ego/Wheels_Palladium/Tire_Palladium.material",
+      "twoSided": true,
+      "albedo": 0.43529412,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 0.4,
+      "normalScale": 1.0,
+      "aoLightAffect": 0.8,
+      "maps": {
+        "albedo": {
+          "source": "res://Ego/Wheels_Palladium/Textures/Tire_BC.png",
+          "channel": "R",
+          "file": "../Textures/84083c62261dd3b7.png",
+          "range": [
+            0,
+            53
+          ]
+        },
+        "roughness": {
+          "source": "res://Ego/Wheels_Palladium/Textures/Tire_RA.png",
+          "channel": "G",
+          "file": "../Textures/a23afe88c2ea5932.png",
+          "range": [
+            0,
+            255
+          ]
+        },
+        "ao": {
+          "source": "res://Ego/Wheels/Textures/Tire_RA.png",
+          "channel": "B",
+          "file": "../Textures/c5dbcf82a2b0066f.png",
+          "range": [
+            0,
+            111
+          ]
+        }
+      }
+    },
+    "Tire_42f6abec4cfc58": {
+      "source": "res://Ego/Wheels_P3/Tire.tres",
+      "twoSided": true,
+      "albedo": 0.0431373,
+      "metallic": 1.0,
+      "specular": 0.5,
+      "roughness": 0.92,
+      "normalScale": 1.0,
+      "aoLightAffect": 0.0,
+      "maps": {}
+    },
+    "Tire_46eaff2a2be18f": {
+      "source": "res://Ego/Wheels_Bayberry/Machina2/Tire.tres",
+      "twoSided": true,
+      "albedo": 0.0,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 0.9,
+      "normalScale": 1.0,
+      "aoLightAffect": 0.0,
+      "maps": {}
+    },
+    "Tire_ba36598f226600": {
+      "source": "res://Ego/Wheels_Bayberry/Arachnid_V2/Tire.tres",
+      "twoSided": true,
+      "albedo": 0.00392157,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 0.959214,
+      "normalScale": 1.0,
+      "aoLightAffect": 0.0,
+      "maps": {
+        "normal": {
+          "source": "res://Ego/Wheels_Bayberry/Arachnid_V2/Textures/Conti_Normal.png",
+          "channel": "RGB",
+          "file": "../Textures/7cf77888db73b716.png",
+          "range": null
+        }
+      }
+    },
+    "Tire_cfb997af70ded9": {
+      "source": "res://Ego/Wheels_P3/Tire_Cypress_NoInsert.tres",
+      "twoSided": true,
+      "albedo": 0.0431373,
+      "metallic": 1.0,
+      "specular": 0.5,
+      "roughness": 0.92,
+      "normalScale": 2.0,
+      "aoLightAffect": 0.0,
+      "maps": {
+        "normal": {
+          "source": "res://Ego/Wheels_P3/Textures/Wheel_Tire_Normal.png",
+          "channel": "RGB",
+          "file": "../Textures/3456e19ff28dc2c5.png",
+          "range": null
+        }
+      }
+    },
+    "Tires_001_80c80d66d80b65": {
+      "source": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn::SubResource(2)",
+      "twoSided": false,
+      "albedo": 1.0,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 0.75,
+      "normalScale": 1.0,
+      "aoLightAffect": 0.7,
+      "maps": {
+        "albedo": {
+          "source": "res://Ego/Wheels/Textures/Tire_BC.png",
+          "channel": "R",
+          "file": "../Textures/ed4448dce83f414e.png",
+          "range": [
+            0,
+            25
+          ]
+        },
+        "roughness": {
+          "source": "res://Ego/Wheels/Textures/Tire_RA.png",
+          "channel": "G",
+          "file": "../Textures/2ec3e30d4a6dc3c3.png",
+          "range": [
+            43,
+            255
+          ]
+        },
+        "ao": {
+          "source": "res://Ego/Wheels/Textures/Tire_RA.png",
+          "channel": "B",
+          "file": "../Textures/c5dbcf82a2b0066f.png",
+          "range": [
+            0,
+            111
+          ]
+        }
+      }
+    },
+    "Tires_076b48c225b435": {
+      "source": "res://Ego/v2023/Wheels/Tires.material",
+      "twoSided": false,
+      "albedo": 0.43529412,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 0.4,
+      "normalScale": 1.0,
+      "aoLightAffect": 0.8,
+      "maps": {
+        "albedo": {
+          "source": "res://Ego/v2023/Wheels/Textures/Tire_BC.png",
+          "channel": "R",
+          "file": "../Textures/84083c62261dd3b7.png",
+          "range": [
+            0,
+            53
+          ]
+        },
+        "roughness": {
+          "source": "res://Ego/v2023/Wheels/Textures/Tire_RA.png",
+          "channel": "G",
+          "file": "../Textures/8c76374d0b10c725.png",
+          "range": [
+            43,
+            255
+          ]
+        },
+        "ao": {
+          "source": "res://Ego/v2023/Wheels/Textures/Tire_RA.png",
+          "channel": "B",
+          "file": "../Textures/2a5e731a6b51590b.png",
+          "range": [
+            0,
+            111
+          ]
+        }
+      }
+    },
+    "Tires_ca20e9fd30c0a7": {
+      "source": "res://Ego/Wheels/Tires.material",
+      "twoSided": false,
+      "albedo": 1.0,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 0.75,
+      "normalScale": 1.0,
+      "aoLightAffect": 0.7,
+      "maps": {
+        "albedo": {
+          "source": "res://Ego/Wheels/Textures/Tire_BC.png",
+          "channel": "R",
+          "file": "../Textures/ed4448dce83f414e.png",
+          "range": [
+            0,
+            25
+          ]
+        },
+        "roughness": {
+          "source": "res://Ego/Wheels/Textures/Tire_RA.png",
+          "channel": "G",
+          "file": "../Textures/2ec3e30d4a6dc3c3.png",
+          "range": [
+            43,
+            255
+          ]
+        },
+        "ao": {
+          "source": "res://Ego/Wheels/Textures/Tire_RA.png",
+          "channel": "B",
+          "file": "../Textures/c5dbcf82a2b0066f.png",
+          "range": [
+            0,
+            111
+          ]
+        }
+      }
+    },
+    "Uberhelix_Tire_44710922648f9e": {
+      "source": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_Tire.tres",
+      "twoSided": true,
+      "albedo": 0.0,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 0.9,
+      "normalScale": 1.0,
+      "aoLightAffect": 0.0,
+      "maps": {
+        "normal": {
+          "source": "res://Ego/Wheels_Bayberry/BayberryE41/PirelliTextures/Pirelli_Normal.png",
+          "channel": "RGB",
+          "file": "../Textures/976fb57198e73b06.png",
+          "range": null
+        }
+      }
+    },
+    "Uberhelix_Tire_Inside_27cca73dce8910": {
+      "source": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_Tire_Inside.tres",
+      "twoSided": true,
+      "albedo": 0.0,
+      "metallic": 0.0,
+      "specular": 0.5,
+      "roughness": 0.858579,
+      "normalScale": 1.0,
+      "aoLightAffect": 0.0,
+      "maps": {}
+    }
+  },
+  "scenes": {
+    "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn": [
+      "Premium_Tire_5d951ff8e610d8"
+    ],
+    "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn": [
+      "Premium_Tire_e7e62226005476"
+    ],
+    "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn": [
+      "Tire1_45b51314ae106e",
+      "Tire1_67517b8f79589c"
+    ],
+    "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn": [
+      "Tire1_67517b8f79589c"
+    ],
+    "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn": [
+      "Standard_Tire_984366d4354b2d"
+    ],
+    "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn": [
+      "Standard_Tire_984366d4354b2d"
+    ],
+    "res://Ego/Wheels/Wheel_Apollo.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn": [
+      "Tires_001_80c80d66d80b65"
+    ],
+    "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_D50.tscn": [
+      "Pirelli_83ee9987fc49dd"
+    ],
+    "res://Ego/Wheels/Wheel_D50_No_Caps.tscn": [
+      "Pirelli_83ee9987fc49dd"
+    ],
+    "res://Ego/Wheels/Wheel_Gemini.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_Induction.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_Pinwheel.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_Uberturbine.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels/Wheel_ZeroG.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn": [
+      "Tire_ba36598f226600"
+    ],
+    "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn": [
+      "Tire_ba36598f226600"
+    ],
+    "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn": [
+      "Pirelli_83ee9987fc49dd"
+    ],
+    "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn": [
+      "Pirelli_83ee9987fc49dd"
+    ],
+    "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn": [
+      "Conti_7c3fd8437a8b17"
+    ],
+    "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn": [
+      "Conti_7c3fd8437a8b17"
+    ],
+    "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn": [
+      "Pirelli_8af5067ef1692c"
+    ],
+    "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn": [
+      "Pirelli_8af5067ef1692c"
+    ],
+    "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn": [
+      "Tire_46eaff2a2be18f"
+    ],
+    "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn": [
+      "Tire_46eaff2a2be18f"
+    ],
+    "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn": [
+      "Uberhelix_Tire_44710922648f9e",
+      "Uberhelix_Tire_Inside_27cca73dce8910"
+    ],
+    "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn": [
+      "Uberhelix_Tire_44710922648f9e",
+      "Uberhelix_Tire_Inside_27cca73dce8910"
+    ],
+    "res://Ego/Wheels_P3/Wheel_Cypress.tscn": [
+      "Tire_42f6abec4cfc58"
+    ],
+    "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn": [
+      "Tire_cfb997af70ded9"
+    ],
+    "res://Ego/Wheels_P3/Wheel_Halo.tscn": [
+      "Tire_42f6abec4cfc58"
+    ],
+    "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn": [
+      "Tire_42f6abec4cfc58"
+    ],
+    "res://Ego/Wheels_P3/Wheel_Riptide.tscn": [
+      "Tire_42f6abec4cfc58"
+    ],
+    "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn": [
+      "Tire_42f6abec4cfc58"
+    ],
+    "res://Ego/Wheels_P3/Wheel_Standard.tscn": [
+      "Tire_42f6abec4cfc58"
+    ],
+    "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn": [
+      "Tire_42f6abec4cfc58"
+    ],
+    "res://Ego/Wheels_Palladium/Arachnid21.tscn": [
+      "Tire_18d2c1ef46cdf9"
+    ],
+    "res://Ego/Wheels_Palladium/Cardenio.tscn": [
+      "Tire_18d2c1ef46cdf9"
+    ],
+    "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn": [
+      "Tire_18d2c1ef46cdf9"
+    ],
+    "res://Ego/Wheels_Palladium/Cyberstream.tscn": [
+      "Tire_18d2c1ef46cdf9"
+    ],
+    "res://Ego/Wheels_Palladium/New_Turbine_22.tscn": [
+      "Tire_18d2c1ef46cdf9"
+    ],
+    "res://Ego/Wheels_Semi/Wheel_F_Semi.glb": [
+      "Semi_Tires_F_e04980795c2d35"
+    ],
+    "res://Ego/Wheels_Semi/Wheel_R_Semi.tscn": [
+      "Semi_Tires_R_c153c1e9ccf9d6"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Aero.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn": [
+      "Tires_ca20e9fd30c0a7"
+    ],
+    "res://Ego/v2023/Wheels/Glider.tscn": [
+      "Tires_076b48c225b435"
+    ],
+    "res://Ego/v2023/Wheels/Glider_No_Caps.tscn": [
+      "Tires_076b48c225b435"
+    ],
+    "res://Ego/v2023/Wheels/Helix_19.tscn": [
+      "Tires_076b48c225b435"
+    ],
+    "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn": [
+      "Tires_076b48c225b435"
+    ],
+    "res://Ego/v2023/Wheels/Wishbone_19.tscn": [
+      "Tires_076b48c225b435"
+    ],
+    "res://Ego/v2023/Wheels/Wishbone_20.tscn": [
+      "Tires_076b48c225b435"
+    ]
+  }
+}

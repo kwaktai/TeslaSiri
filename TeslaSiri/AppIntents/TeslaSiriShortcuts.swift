@@ -13,8 +13,8 @@ nonisolated struct TeslaSiriShortcuts: AppShortcutsProvider {
         AppShortcut(
             intent: GetVehicleStatusIntent(),
             phrases: [
-                "Check \(\.$vehicle) in \(.applicationName)",
                 "Check my car in \(.applicationName)",
+                "Check \(\.$vehicle) in \(.applicationName)",
                 "Show \(.applicationName) status for \(\.$vehicle)"
             ],
             shortTitle: "Vehicle Status",
@@ -42,7 +42,11 @@ nonisolated struct TeslaSiriShortcuts: AppShortcutsProvider {
             intent: StartClimateIntent(),
             phrases: [
                 "Start climate in \(\.$vehicle) with \(.applicationName)",
-                "Precondition my car with \(.applicationName)"
+                "Precondition my car with \(.applicationName)",
+                "Warm up \(\.$vehicle) with \(.applicationName)",
+                "Warm up my car with \(.applicationName)",
+                "Cool down \(\.$vehicle) with \(.applicationName)",
+                "Cool down my car with \(.applicationName)"
             ],
             shortTitle: "Start Climate",
             systemImageName: "fan.fill"
@@ -69,7 +73,9 @@ nonisolated struct TeslaSiriShortcuts: AppShortcutsProvider {
             intent: OpenTrunkIntent(),
             phrases: [
                 "Open \(\.$vehicle) trunk with \(.applicationName)",
-                "Open my car trunk with \(.applicationName)"
+                "Open my car trunk with \(.applicationName)",
+                "Open \(\.$vehicle) \(\.$trunk) with \(.applicationName)",
+                "Open my car \(\.$trunk) with \(.applicationName)"
             ],
             shortTitle: "Open Trunk",
             systemImageName: "car.rear"

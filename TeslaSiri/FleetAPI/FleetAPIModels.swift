@@ -562,6 +562,8 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
     var closures: FleetVehicleClosureState?
     var freshnessMS: Int64?
     var gear: String?
+    /// Compass heading in degrees (0 = north), from Tessie `drive_state.heading`.
+    var heading: Double?
     var insideTemp: Double?
     var latitude: Double?
     var locked: Bool?
@@ -594,6 +596,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         case closures
         case freshnessMS = "freshness_ms"
         case gear
+        case heading
         case insideTemp = "inside_temp"
         case latitude
         case locked
@@ -624,6 +627,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         closures: FleetVehicleClosureState? = nil,
         freshnessMS: Int64? = nil,
         gear: String? = nil,
+        heading: Double? = nil,
         insideTemp: Double? = nil,
         latitude: Double? = nil,
         locked: Bool? = nil,
@@ -652,6 +656,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         self.closures = closures
         self.freshnessMS = freshnessMS
         self.gear = gear
+        self.heading = heading
         self.insideTemp = insideTemp
         self.latitude = latitude
         self.locked = locked
@@ -683,6 +688,7 @@ nonisolated struct FleetLatestSnapshot: Codable, Equatable, Sendable {
         closures = try container.decodeIfPresent(FleetVehicleClosureState.self, forKey: .closures)
         freshnessMS = container.decodeFlexibleInt64IfPresent(forKey: .freshnessMS)
         gear = try container.decodeIfPresent(String.self, forKey: .gear)
+        heading = container.decodeFlexibleDoubleIfPresent(forKey: .heading)
         insideTemp = container.decodeFlexibleDoubleIfPresent(forKey: .insideTemp)
         latitude = container.decodeFlexibleDoubleIfPresent(forKey: .latitude)
         locked = try container.decodeIfPresent(Bool.self, forKey: .locked)
@@ -796,6 +802,10 @@ nonisolated struct FleetDriveSession: Codable, Equatable, Identifiable, Sendable
     var sessionID: String
     var startAddress: String?
     var endAddress: String?
+    var startLatitude: Double?
+    var startLongitude: Double?
+    var endLatitude: Double?
+    var endLongitude: Double?
     var startedAt: Int64
     var vin: String
 
@@ -814,6 +824,10 @@ nonisolated struct FleetDriveSession: Codable, Equatable, Identifiable, Sendable
         case sessionID = "session_id"
         case startAddress = "start_address"
         case endAddress = "end_address"
+        case startLatitude = "start_latitude"
+        case startLongitude = "start_longitude"
+        case endLatitude = "end_latitude"
+        case endLongitude = "end_longitude"
         case startedAt = "started_at"
         case vin
     }
@@ -834,6 +848,10 @@ nonisolated struct FleetDriveSession: Codable, Equatable, Identifiable, Sendable
         case endAddress = "end_address"
         case endLocationAddress = "end_location_address"
         case destinationAddress = "destination_address"
+        case startLatitude = "start_latitude"
+        case startLongitude = "start_longitude"
+        case endLatitude = "end_latitude"
+        case endLongitude = "end_longitude"
         case startedAt = "started_at"
         case vin
     }
@@ -849,6 +867,10 @@ nonisolated struct FleetDriveSession: Codable, Equatable, Identifiable, Sendable
         sessionID: String = "",
         startAddress: String? = nil,
         endAddress: String? = nil,
+        startLatitude: Double? = nil,
+        startLongitude: Double? = nil,
+        endLatitude: Double? = nil,
+        endLongitude: Double? = nil,
         startedAt: Int64 = 0,
         vin: String = ""
     ) {
@@ -862,6 +884,10 @@ nonisolated struct FleetDriveSession: Codable, Equatable, Identifiable, Sendable
         self.sessionID = sessionID
         self.startAddress = startAddress
         self.endAddress = endAddress
+        self.startLatitude = startLatitude
+        self.startLongitude = startLongitude
+        self.endLatitude = endLatitude
+        self.endLongitude = endLongitude
         self.startedAt = startedAt
         self.vin = vin
     }
@@ -884,6 +910,10 @@ nonisolated struct FleetDriveSession: Codable, Equatable, Identifiable, Sendable
         endAddress = try container.decodeIfPresent(String.self, forKey: .endAddress)
             ?? container.decodeIfPresent(String.self, forKey: .endLocationAddress)
             ?? container.decodeIfPresent(String.self, forKey: .destinationAddress)
+        startLatitude = container.decodeFlexibleDoubleIfPresent(forKey: .startLatitude)
+        startLongitude = container.decodeFlexibleDoubleIfPresent(forKey: .startLongitude)
+        endLatitude = container.decodeFlexibleDoubleIfPresent(forKey: .endLatitude)
+        endLongitude = container.decodeFlexibleDoubleIfPresent(forKey: .endLongitude)
         startedAt = container.decodeFlexibleInt64IfPresent(forKey: .startedAt) ?? 0
         vin = try container.decodeIfPresent(String.self, forKey: .vin) ?? ""
     }
@@ -895,6 +925,10 @@ nonisolated struct FleetRoutePoint: Codable, Equatable, Identifiable, Sendable {
     var odometer: Double?
     var speed: Double?
     var timestamp: Int64?
+    /// Compass heading in degrees (0 = north), from Tessie `/path?details=true`.
+    var heading: Double?
+    /// Tessie's Autopilot state at this point, such as `Off`, `Standby` or an active mode.
+    var autopilot: String?
 
     var id: String {
         [
@@ -908,20 +942,38 @@ nonisolated struct FleetRoutePoint: Codable, Equatable, Identifiable, Sendable {
 
     var timestampDate: Date? { timestamp.map { Date(timeIntervalSince1970: TimeInterval($0) / 1000) } }
 
+    /// Whether Autopilot or FSD was steering at this point. Unknown or inactive states are false.
+    var isSelfDriving: Bool {
+        guard let state = autopilot?.lowercased().trimmingCharacters(in: .whitespaces), !state.isEmpty else { return false }
+        return !["off", "standby", "unavailable", "none", "disabled", "aborting", "aborted"].contains(state)
+    }
+
     enum CodingKeys: String, CodingKey {
         case latitude
         case longitude
         case odometer
         case speed
         case timestamp
+        case heading
+        case autopilot
     }
 
-    init(latitude: Double? = nil, longitude: Double? = nil, odometer: Double? = nil, speed: Double? = nil, timestamp: Int64? = nil) {
+    init(
+        latitude: Double? = nil,
+        longitude: Double? = nil,
+        odometer: Double? = nil,
+        speed: Double? = nil,
+        timestamp: Int64? = nil,
+        heading: Double? = nil,
+        autopilot: String? = nil
+    ) {
         self.latitude = latitude
         self.longitude = longitude
         self.odometer = odometer
         self.speed = speed
         self.timestamp = timestamp
+        self.heading = heading
+        self.autopilot = autopilot
     }
 
     init(from decoder: Decoder) throws {
@@ -931,6 +983,8 @@ nonisolated struct FleetRoutePoint: Codable, Equatable, Identifiable, Sendable {
         odometer = container.decodeFlexibleDoubleIfPresent(forKey: .odometer)
         speed = container.decodeFlexibleDoubleIfPresent(forKey: .speed)
         timestamp = container.decodeFlexibleInt64IfPresent(forKey: .timestamp)
+        heading = container.decodeFlexibleDoubleIfPresent(forKey: .heading)
+        autopilot = try? container.decodeIfPresent(String.self, forKey: .autopilot)
     }
 }
 

@@ -23,7 +23,7 @@ nonisolated struct DuoGeometryReading: Equatable, Sendable {
 nonisolated enum DuoHingeState: Equatable, Sendable {
     case unavailable
     case closed
-    case partiallyOpen(angleDegrees: Double)
+    case partiallyOpen
     case fullyOpen
 }
 
@@ -46,17 +46,26 @@ struct DuoPosture: Equatable {
 
     /// True when the hinge is partially folded or a division crease is active.
     var isPartiallyOpen: Bool {
-        if case .partiallyOpen = hingeState {
-            return true
-        }
-        return hasActiveDivision
+        hingeState == .partiallyOpen || hasActiveDivision
     }
 
-    /// Uses SwiftUI's `ArrangementView(.split)` on the inner display (flat or folded)
-    /// and regular-width workspaces, while avoiding split mode on the closed outer display
-    /// (where landscape split hides `secondary`) and narrow Split View multitasking panes.
+    /// True when the viewport is wider than it is tall (landscape inner display, iPad landscape).
+    var isLandscapeViewport: Bool {
+        let size = geometry.viewportSize
+        return size.width > 0 && size.width > size.height
+    }
+
+    /// Uses SwiftUI's `ArrangementView(.split)` when the panes can sit side by side
+    /// (landscape regular-width workspaces) or follow an active fold crease. A flat, portrait
+    /// inner display stays single-column, because a top/bottom split there leaves two short,
+    /// clipped scroll regions. Split mode is also avoided on the closed outer display (where
+    /// landscape split hides `secondary`) and in narrow Split View multitasking panes.
     var prefersSplitArrangement: Bool {
-        !isClosedOuterDisplay && (horizontalSizeClass == .regular || hasActiveDivision)
+        guard !isClosedOuterDisplay else { return false }
+        if hasActiveDivision {
+            return true
+        }
+        return horizontalSizeClass == .regular && isLandscapeViewport
     }
 
     /// Compacts vertical hero chrome on iPhone Duo's shorter outer display and short viewports
@@ -107,7 +116,8 @@ private struct DuoPostureObserverModifier: ViewModifier {
             content
                 .environment(\.duoPosture, posture)
                 .onHingeChange { _, newContext in
-                    hingeState = Self.mapHinge(newContext.hinge)
+                    let posture = Self.mapHinge(newContext.hinge)
+                    if hingeState != posture { hingeState = posture }
                 }
                 .onGeometryChange(for: DuoGeometryReading.self) { proxy in
                     let divisions = proxy.reservedRegions(
@@ -139,7 +149,7 @@ private struct DuoPostureObserverModifier: ViewModifier {
         case .closed:
             return .closed
         case .partiallyOpen:
-            return .partiallyOpen(angleDegrees: hinge.angle.degrees)
+            return .partiallyOpen
         case .fullyOpen:
             return .fullyOpen
         default:

@@ -1,0 +1,19 @@
+{
+  "Body/Door_LF_Spatial/Window_LF_Spatial/Window_LF2/surface_00": "P88c12230d68b9051",
+  "Body/Door_LF_Spatial/Window_LF_Spatial/Window_LF2/surface_01": "P3b6a18c04ebacf29",
+  "Body/Door_RF_Spatial/Window_RF_Spatial/Window_RF2/surface_00": "P211f98771d60d535",
+  "Body/Door_RF_Spatial/Window_RF_Spatial/Window_RF2/surface_01": "Pbd3d77445c8d898f",
+  "Body/Door_LR_Spatial/Window_LR_Spatial/Window_LR2/surface_00": "Pf1ec0e0b1d1b5aab",
+  "Body/Door_LR_Spatial/Window_LR_Spatial/Window_LR2/surface_01": "P9464c2c3a81d3299",
+  "Body/Door_RR_Spatial/Window_RR_Spatial/Window_RR2/surface_00": "P2a73c46507aa6d3a",
+  "Body/Door_RR_Spatial/Window_RR_Spatial/Window_RR2/surface_01": "P208c5b234d61d636",
+  "Body/Window_R2/surface_00": "P09adaf55f8ab7e5d",
+  "Body/Window_R2/surface_01": "P0aa9d066990fd63b",
+  "Body/Windows_Top2/surface_00": "Pd798fd3f196c3cb5",
+  "Body/Windows_Top2/surface_02": "P36401217ce369bb3",
+  "Body/Windows_Top2/surface_03": "P1b2306382b9284de",
+  "Body/Windows_Top2/surface_04": "Pafcd7b3adae4cbf8",
+  "Body/Windows_Top2/surface_06": "P682ac4bc780382f5",
+  "Body/Windows_Top2/surface_07": "P5a1799e358361a94",
+  "Body/Windows_Top2/surface_09": "P9d786decb2cc55b5"
+}

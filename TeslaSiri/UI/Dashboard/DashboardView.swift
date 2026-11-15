@@ -6,37 +6,142 @@ struct DashboardView: View {
     let store: FleetDataStore
     let isSignedIn: Bool
     let isAuthenticating: Bool
+    var sandboxMode: FleetSandboxMode = .live
     let onSignIn: (String) -> Void
     let onReload: () async -> Void
+    var onOpenSandboxSettings: () -> Void = {}
+    var onEnableDemoCar: () -> Void = {}
+
+    @State private var pendingCommand: VehicleControlCommand?
+    @State private var isShowingConfirmation = false
+
+    private var canRefreshFleet: Bool {
+        isSignedIn || sandboxMode == .demoVehicle
+    }
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 20) {
-                if !isSignedIn {
-                    SignInBanner(
-                        onSignIn: onSignIn,
-                        isAuthenticating: isAuthenticating
-                    )
-                    .padding(.horizontal, 18)
-                    .padding(.top, 12)
-                }
-
-                DashboardContent(
-                    store: store,
-                    isSignedIn: isSignedIn,
-                    onReload: onReload
-                )
-            }
-            .padding(.bottom, 32)
-        }
-        .scrollIndicators(.hidden)
+        DashboardPostureContainer(
+            store: store,
+            isSignedIn: isSignedIn,
+            isAuthenticating: isAuthenticating,
+            sandboxMode: sandboxMode,
+            onSignIn: onSignIn,
+            onReload: onReload,
+            onCommand: requestCommand,
+            onOpenSandboxSettings: onOpenSandboxSettings,
+            onEnableDemoCar: onEnableDemoCar
+        )
+        .observeDuoPosture()
         .background(AppScreenBackground())
-        .toolbar(.hidden, for: .navigationBar)
-        .refreshable {
-            guard isSignedIn else { return }
-            await onReload()
+        .navigationTitle(navigationTitle)
+        .navigationSubtitle(store.selectedVehicle?.latest?.heroStatusLine ?? "")
+        .toolbarTitleDisplayMode(.inlineLarge)
+        .toolbarTitleMenu {
+            if store.vehicles.count > 1 {
+                vehicleSelectionMenuItems
+            }
+        }
+        .toolbar {
+            dashboardToolbarContent
         }
         .appEntityIdentifier(selectedVehicleEntityIdentifier)
+        .vehicleCommandConfirmation(
+            vehicleName: store.selectedVehicle?.name ?? "Vehicle",
+            pendingCommand: $pendingCommand,
+            isPresented: $isShowingConfirmation,
+            onConfirm: performCommand
+        )
+    }
+
+    private var navigationTitle: String {
+        store.selectedVehicle?.name ?? "Vehicle"
+    }
+
+    private var controlsEnabled: Bool {
+        store.selectedVehicle?.permissions.contains("control") == true
+    }
+
+    @ToolbarContentBuilder
+    private var dashboardToolbarContent: some ToolbarContent {
+        if store.vehicles.count > 1 {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    vehicleSelectionMenuItems
+                } label: {
+                    Label("Switch Vehicle", systemImage: "car.2.fill")
+                }
+            }
+        }
+
+        if #available(iOS 27.3, macOS 27.3, visionOS 27.3, *) {
+            ToolbarItem(placement: .topBarTrailing) {
+                refreshToolbarButton
+            }
+            .visibilityPriority(.high)
+        } else {
+            ToolbarItem(placement: .topBarTrailing) {
+                refreshToolbarButton
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var vehicleSelectionMenuItems: some View {
+        ForEach(store.vehicles) { candidate in
+            Button {
+                selectVehicle(vin: candidate.vin)
+            } label: {
+                if candidate.vin == store.selectedVIN {
+                    Label(candidate.name, systemImage: "checkmark")
+                } else {
+                    Text(candidate.name)
+                }
+            }
+        }
+    }
+
+    private var refreshToolbarButton: some View {
+        Button {
+            Task { await onReload() }
+        } label: {
+            if store.isRefreshing {
+                ProgressView()
+                    .controlSize(.small)
+            } else {
+                Label("Refresh Vehicle", systemImage: "arrow.clockwise")
+            }
+        }
+        .disabled(!canRefreshFleet || store.isRefreshing)
+    }
+
+    private func selectVehicle(vin: String) {
+        guard vin != store.selectedVIN else { return }
+        store.selectVehicle(vin: vin)
+        Task { await FleetTokenBridge.sync(store: store) }
+    }
+
+    private func requestCommand(_ command: VehicleControlCommand) {
+        guard controlsEnabled, !store.isRunningControl else { return }
+        if command.requiresConfirmation {
+            pendingCommand = command
+            isShowingConfirmation = true
+        } else {
+            performCommand(command)
+        }
+    }
+
+    private func performCommand(_ command: VehicleControlCommand) {
+        pendingCommand = nil
+        let targetVehicle = store.selectedVehicle
+        Task {
+            let succeeded = await store.runSelectedVehicleControl(
+                action: command.action,
+                params: command.parameters
+            )
+            if succeeded {
+                await FleetIntentDonations.donateControlCommand(command, for: targetVehicle)
+            }
+        }
     }
 
     private var selectedVehicleEntityIdentifier: EntityIdentifier? {
@@ -45,113 +150,360 @@ struct DashboardView: View {
     }
 }
 
-private struct DashboardContent: View {
+private struct DashboardPostureContainer: View {
     let store: FleetDataStore
     let isSignedIn: Bool
+    let isAuthenticating: Bool
+    let sandboxMode: FleetSandboxMode
+    let onSignIn: (String) -> Void
     let onReload: () async -> Void
+    let onCommand: (VehicleControlCommand) -> Void
+    let onOpenSandboxSettings: () -> Void
+    let onEnableDemoCar: () -> Void
+
+    @Environment(\.duoPosture) private var duoPosture
+
+    private var canRefreshFleet: Bool {
+        isSignedIn || sandboxMode == .demoVehicle
+    }
 
     var body: some View {
-        if store.loadState.isLoading && store.vehicles.isEmpty {
-            LoadingStateView(message: "Loading fleet data…")
-                .padding(.horizontal, 18)
-                .padding(.top, 12)
-        } else if case .failed(let message) = store.loadState, store.vehicles.isEmpty {
-            ErrorStateView(
-                message: message,
-                retry: { Task { await store.loadInitialData() } }
-            )
-            .padding(.horizontal, 18)
-            .padding(.top, 12)
-        } else if store.vehicles.isEmpty {
-            if isSignedIn {
-                EmptyStateView(
-                    title: "No vehicles",
-                    systemImage: "car.side",
-                    description: "No linked vehicles were returned."
+        if duoPosture.prefersSplitArrangement, let vehicle = store.selectedVehicle {
+            DuoSplitWorkspace(primaryRatio: 0.52) {
+                DashboardScroll(canRefresh: canRefreshFleet, onReload: onReload) {
+                    DashboardShowroom(
+                        store: store,
+                        vehicle: vehicle,
+                        compactHero: duoPosture.isPartiallyOpen && duoPosture.geometry.divisionAxis == .horizontal,
+                        onCommand: onCommand
+                    )
+
+                    DashboardCardStack {
+                        if let snapshot = vehicle.latest,
+                           snapshot.latitude != nil,
+                           snapshot.longitude != nil {
+                            VehicleLocationCard(vehicleName: vehicle.name, snapshot: snapshot, mapHeight: 220)
+                        }
+                    }
+                }
+            } secondary: {
+                DashboardScroll(canRefresh: canRefreshFleet, onReload: onReload) {
+                    DashboardCardStack {
+                        DashboardNotices(
+                            store: store,
+                            isSignedIn: isSignedIn,
+                            isAuthenticating: isAuthenticating,
+                            sandboxMode: sandboxMode,
+                            onSignIn: onSignIn,
+                            onOpenSandboxSettings: onOpenSandboxSettings
+                        )
+
+                        VehicleTelemetryCards(
+                            vehicle: vehicle,
+                            units: store.user?.units,
+                            activeDrive: store.selectedVehicleActiveDrive,
+                            chargingSessions: store.selectedVehicleChargingSessions,
+                            includeLocation: false
+                        )
+
+                        DashboardSoftwareAndSiri(store: store, vehicle: vehicle)
+                    }
+                    .padding(.top, 12)
+                }
+            }
+        } else if let vehicle = store.selectedVehicle {
+            DashboardScroll(canRefresh: canRefreshFleet, onReload: onReload) {
+                DashboardShowroom(
+                    store: store,
+                    vehicle: vehicle,
+                    compactHero: duoPosture.prefersCompactHero,
+                    onCommand: onCommand
                 )
-                .padding(.horizontal, 18)
-                .padding(.top, 12)
+
+                DashboardCardStack {
+                    DashboardNotices(
+                        store: store,
+                        isSignedIn: isSignedIn,
+                        isAuthenticating: isAuthenticating,
+                        sandboxMode: sandboxMode,
+                        onSignIn: onSignIn,
+                        onOpenSandboxSettings: onOpenSandboxSettings
+                    )
+
+                    VehicleTelemetryCards(
+                        vehicle: vehicle,
+                        units: store.user?.units,
+                        activeDrive: store.selectedVehicleActiveDrive,
+                        chargingSessions: store.selectedVehicleChargingSessions,
+                        includeLocation: true
+                    )
+
+                    DashboardSoftwareAndSiri(store: store, vehicle: vehicle)
+                }
             }
         } else {
-            DashboardLoadedContent(store: store, onReload: onReload)
+            DashboardStandaloneStateScroll(
+                store: store,
+                isSignedIn: isSignedIn,
+                isAuthenticating: isAuthenticating,
+                sandboxMode: sandboxMode,
+                onSignIn: onSignIn,
+                onReload: onReload,
+                onEnableDemoCar: onEnableDemoCar
+            )
         }
     }
 }
 
-private struct DashboardLoadedContent: View {
-    let store: FleetDataStore
+/// Vertical scroll container for a dashboard pane, capped to a readable width.
+private struct DashboardScroll<Content: View>: View {
+    let canRefresh: Bool
     let onReload: () async -> Void
+    @ViewBuilder let content: Content
 
     var body: some View {
-        VStack(spacing: 20) {
-            if store.isShowingCachedData {
-                CachedDataCard(cacheDate: store.cacheDate)
-                    .padding(.horizontal, 18)
-                    .padding(.top, 12)
+        ScrollView {
+            VStack(spacing: 20) {
+                content
             }
+            .padding(.bottom, 28)
+            .readableContentWidth()
+        }
+        .scrollIndicators(.hidden)
+        .refreshable {
+            guard canRefresh else { return }
+            await onReload()
+        }
+    }
+}
 
-            if let vehicle = store.selectedVehicle {
-                VehicleControlDashboard(
-                    vehicle: vehicle,
-                    vehicles: store.vehicles,
-                    selectedVIN: store.selectedVIN,
+private struct DashboardCardStack<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        LazyVStack(spacing: 12) {
+            content
+        }
+        .padding(.horizontal, 16)
+    }
+}
+
+/// The car hero, its headline numbers, and the quick controls.
+private struct DashboardShowroom: View {
+    let store: FleetDataStore
+    let vehicle: FleetVehicle
+    let compactHero: Bool
+    let onCommand: (VehicleControlCommand) -> Void
+
+    var body: some View {
+        VStack(spacing: compactHero ? 14 : 20) {
+            VehicleHeroStage(
+                vehicle: vehicle,
+                units: store.user?.units,
+                compact: compactHero,
+                activeDrive: store.selectedVehicleActiveDrive,
+                onCommand: onCommand,
+                onLiveRefresh: { await store.refreshSelectedVehicleLive() }
+            )
+
+            if let snapshot = vehicle.latest {
+                VehicleQuickActionBar(
+                    snapshot: snapshot,
                     units: store.user?.units,
-                    isRefreshing: store.isRefreshing,
                     isRunningControl: store.isRunningControl,
                     activeControlAction: store.activeControlAction,
                     controlMessage: store.vehicleControlMessage,
                     controlsEnabled: vehicle.permissions.contains("control"),
-                    onSelectVehicle: { vin in
-                        store.selectVehicle(vin: vin)
-                        Task { await FleetTokenBridge.sync(store: store) }
-                    },
-                    onRefresh: onReload,
-                    onControl: { action, params in
-                        await store.runSelectedVehicleControl(action: action, params: params)
-                    }
+                    onCommand: onCommand
                 )
-                .id(vehicle.vin)
+                .padding(.horizontal, 16)
             }
-
-            DashboardSecondaryContent(store: store)
-                .padding(.horizontal, 18)
-                .readableContentWidth()
         }
+        .id(vehicle.vin)
     }
 }
 
-private struct DashboardSecondaryContent: View {
+private struct DashboardNotices: View {
     let store: FleetDataStore
+    let isSignedIn: Bool
+    let isAuthenticating: Bool
+    let sandboxMode: FleetSandboxMode
+    let onSignIn: (String) -> Void
+    let onOpenSandboxSettings: () -> Void
 
     var body: some View {
-        VStack(spacing: 20) {
-            if let activeDrive = store.selectedVehicleActiveDrive {
-                ActiveDriveCard(drive: activeDrive)
-            } else if store.isLoadingActiveDrive {
-                LoadingCard(title: "Active drive", message: "Loading active drive…")
-            }
+        if sandboxMode != .live {
+            SandboxModeBanner(mode: sandboxMode, onOpenSettings: onOpenSandboxSettings)
+        }
 
-            if let softwareUpdate = store.selectedVehicleSoftwareUpdate {
-                SoftwareUpdateCard(
-                    store: store,
-                    update: softwareUpdate,
-                    vin: store.selectedVIN
-                )
-            } else if store.isLoadingSoftware {
-                LoadingCard(title: "Software", message: "Loading software…")
-            }
+        if !isSignedIn, sandboxMode != .demoVehicle {
+            SignInBanner(onSignIn: onSignIn, isAuthenticating: isAuthenticating)
+        }
 
-            let chargingSessions = store.selectedVehicleChargingSessions
-            if !chargingSessions.isEmpty {
-                ChargingCard(sessions: chargingSessions)
-            } else if store.isLoadingCharging {
-                LoadingCard(title: "Charging", message: "Loading charging…")
-            }
-
-            AppIntentDiscoveryCard()
+        if store.isShowingCachedData, sandboxMode != .demoVehicle {
+            CachedDataNotice(cacheDate: store.cacheDate)
         }
     }
 }
+
+private struct SandboxModeBanner: View {
+    let mode: FleetSandboxMode
+    let onOpenSettings: () -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: mode == .dryRun ? "shield.lefthalf.filled" : "sparkles")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(mode == .dryRun ? .orange : .blue)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(mode == .dryRun ? "Dry-Run Mode Active" : "Demo Car Mode Active")
+                    .font(.subheadline.weight(.semibold))
+                Text(mode == .dryRun ? "Commands are simulated and logged—your car is untouched." : "Testing with a simulated Model Y for Siri and app controls.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 8)
+
+            Button("Sandbox") {
+                onOpenSettings()
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+        }
+        .padding(14)
+        .appSurface(cornerRadius: 18)
+    }
+}
+
+private struct DashboardSoftwareAndSiri: View {
+    let store: FleetDataStore
+    let vehicle: FleetVehicle
+
+    var body: some View {
+        if let softwareUpdate = store.selectedVehicleSoftwareUpdate {
+            SoftwareUpdateCard(
+                store: store,
+                update: softwareUpdate,
+                vin: store.selectedVIN
+            )
+        } else if store.isLoadingSoftware {
+            DashboardCard("Software", systemImage: "checkmark.seal") {
+                LoadingRow(label: "Loading software…")
+            }
+        }
+
+        AppIntentDiscoveryCard(vehicle: vehicle)
+    }
+}
+
+private struct CachedDataNotice: View {
+    let cacheDate: Date?
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "clock.arrow.circlepath")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(.orange)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Showing cached data")
+                    .font(.subheadline.weight(.semibold))
+                Group {
+                    if let cacheDate {
+                        RelativeTimeText(date: cacheDate, style: .updated)
+                    } else {
+                        Text("Refreshing live vehicle data…")
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(14)
+        .appSurface(cornerRadius: 18)
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct DashboardStandaloneStateScroll: View {
+    let store: FleetDataStore
+    let isSignedIn: Bool
+    let isAuthenticating: Bool
+    let sandboxMode: FleetSandboxMode
+    let onSignIn: (String) -> Void
+    let onReload: () async -> Void
+    let onEnableDemoCar: () -> Void
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 20) {
+                if !isSignedIn, sandboxMode != .demoVehicle {
+                    SignInBanner(
+                        onSignIn: onSignIn,
+                        isAuthenticating: isAuthenticating
+                    )
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .duoSingleCardStage()
+
+                    CardContainer(title: "Test without a car", systemImage: "sparkles") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Launch an interactive simulated Model Y to test Siri climate, security, and trip-prep workflows safely without connecting Tessie.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+
+                            Button("Try Demo Car Mode", systemImage: "car.fill") {
+                                onEnableDemoCar()
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.large)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .duoSingleCardStage()
+                }
+
+                if store.loadState.isLoading {
+                    LoadingStateView(message: "Loading fleet data…")
+                        .padding(.horizontal, 16)
+                        .padding(.top, 12)
+                        .duoSingleCardStage()
+                } else if case .failed(let message) = store.loadState {
+                    ErrorStateView(
+                        message: message,
+                        retry: { Task { await store.loadInitialData() } }
+                    )
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .duoSingleCardStage()
+                } else if isSignedIn || sandboxMode == .demoVehicle {
+                    EmptyStateView(
+                        title: "No vehicles",
+                        systemImage: "car.side",
+                        description: "No linked vehicles were returned."
+                    )
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .duoSingleCardStage()
+                }
+            }
+            .padding(.bottom, 32)
+        }
+        .scrollIndicators(.hidden)
+        .refreshable {
+            guard isSignedIn || sandboxMode == .demoVehicle else { return }
+            await onReload()
+        }
+    }
+}
+
 
 struct LoadingStateView: View {
     let message: String
@@ -215,83 +567,3 @@ struct LoadingCard: View {
     }
 }
 
-@MainActor
-private struct DashboardPreviewer: View {
-    let store: FleetDataStore
-    let isSignedIn: Bool
-    let isAuthenticating: Bool
-
-    init(
-        store: FleetDataStore? = nil,
-        isSignedIn: Bool = true,
-        isAuthenticating: Bool = false
-    ) {
-        self.store = store ?? FleetDataStore.previewLoaded()
-        self.isSignedIn = isSignedIn
-        self.isAuthenticating = isAuthenticating
-    }
-
-    var body: some View {
-        NavigationStack {
-            DashboardView(
-                store: store,
-                isSignedIn: isSignedIn,
-                isAuthenticating: isAuthenticating,
-                onSignIn: { _ in },
-                onReload: {}
-            )
-        }
-    }
-}
-
-#Preview("Control Center — Light") {
-    DashboardPreviewer()
-}
-
-#Preview("Control Center — Dark") {
-    DashboardPreviewer()
-        .preferredColorScheme(.dark)
-}
-
-#Preview("Control Center — Accessibility") {
-    DashboardPreviewer()
-        .environment(\.dynamicTypeSize, .accessibility2)
-}
-
-#Preview("Signed out with cached data") {
-    DashboardPreviewer(isSignedIn: false)
-}
-
-#Preview("Loading") {
-    ZStack {
-        AppScreenBackground()
-
-        LoadingStateView(message: "Loading fleet data…")
-            .padding()
-    }
-}
-
-#Preview("Error") {
-    ZStack {
-        AppScreenBackground()
-
-        ErrorStateView(
-            message: "Network request failed. Check your connection and try again.",
-            retry: {}
-        )
-        .padding()
-    }
-}
-
-#Preview("Empty") {
-    ZStack {
-        AppScreenBackground()
-
-        EmptyStateView(
-            title: "No vehicles",
-            systemImage: "car.side",
-            description: "No linked vehicles were returned."
-        )
-        .padding()
-    }
-}

@@ -1,0 +1,1689 @@
+#usda 1.0
+
+def Material "Wheels_add726c360440c"
+{
+    float inputs:AmbientEnergy = 1
+    float inputs:NormalSign = 1
+    float inputs:SkyEnergy = 1
+    vector3f inputs:SkyX = (1, 0, 0)
+    vector3f inputs:SkyY = (0, 1, 0)
+    vector3f inputs:SkyZ = (0, 0, 1)
+    token outputs:mtlx:surface.connect = </Wheels_add726c360440c/n200.outputs:out>
+
+    def Shader "n1"
+    {
+        uniform token info:id = "ND_texcoord_vector2"
+        int inputs:index = 0
+        float2 outputs:out
+    }
+
+    def Shader "n2"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../Textures/755f3235d1446db04e5d.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n1.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "periodic"
+        vector3f outputs:out
+    }
+
+    def Shader "n3"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1 = (0.67058825, 0.67058825, 0.67058825)
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n2.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n4"
+    {
+        uniform token info:id = "ND_normal_vector3"
+        string inputs:space = "world"
+        vector3f outputs:out
+    }
+
+    def Shader "n5"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c.inputs:NormalSign>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n6"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n4.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n5.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n7"
+    {
+        uniform token info:id = "ND_realitykit_viewdirection_vector3"
+        string inputs:space = "world"
+        vector3f outputs:out
+    }
+
+    def Shader "n8"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n7.outputs:out>
+        float inputs:in2 = -1
+        vector3f outputs:out
+    }
+
+    def Shader "n9"
+    {
+        uniform token info:id = "ND_realitykit_reflect_vector3"
+        vector3f inputs:in.connect = </Wheels_add726c360440c/n8.outputs:out>
+        vector3f inputs:normal.connect = </Wheels_add726c360440c/n6.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n10"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n6.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n7.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n11"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n10.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n12"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c.inputs:SkyX>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n13"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c.inputs:SkyY>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n14"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c.inputs:SkyZ>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n15"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c.inputs:SkyEnergy>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n16"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c.inputs:AmbientEnergy>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n17"
+    {
+        uniform token info:id = "ND_image_float"
+        asset inputs:file = @../Textures/060c67d18e787c0c4fb8.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n1.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "periodic"
+        float outputs:out
+    }
+
+    def Shader "n18"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Wheels_add726c360440c/n17.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n19"
+    {
+        uniform token info:id = "ND_image_float"
+        asset inputs:file = @../Textures/21cca5cda958affb23b7.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n1.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "periodic"
+        float outputs:out
+    }
+
+    def Shader "n20"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Wheels_add726c360440c/n19.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n21"
+    {
+        uniform token info:id = "ND_image_float"
+        asset inputs:file = @../Textures/6184836ee21347f4ce38.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n1.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "periodic"
+        float outputs:out
+    }
+
+    def Shader "n22"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n9.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n12.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n23"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n9.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n13.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n24"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n9.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n14.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n25"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = -1
+        float inputs:in2.connect = </Wheels_add726c360440c/n24.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n26"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Wheels_add726c360440c/n22.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n23.outputs:out>
+        float inputs:in3.connect = </Wheels_add726c360440c/n25.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n27"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Wheels_add726c360440c/n26.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n28"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Wheels_add726c360440c/n26.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n29"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Wheels_add726c360440c/n26.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n30"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n28.outputs:out>
+        float inputs:low = -1
+        float outputs:out
+    }
+
+    def Shader "n31"
+    {
+        uniform token info:id = "ND_acos_float"
+        float inputs:in.connect = </Wheels_add726c360440c/n30.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n32"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n31.outputs:out>
+        float inputs:in2 = 0.31830987
+        float outputs:out
+    }
+
+    def Shader "n33"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Wheels_add726c360440c/n32.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n34"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Wheels_add726c360440c/n29.outputs:out>
+        float inputs:iny.connect = </Wheels_add726c360440c/n27.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n35"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n34.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n36"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Wheels_add726c360440c/n27.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n37"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n36.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n38"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Wheels_add726c360440c/n37.outputs:out>
+        float inputs:iny.connect = </Wheels_add726c360440c/n29.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n39"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n38.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n40"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Wheels_add726c360440c/n39.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n41"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n40.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n42"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n40.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n41.outputs:out>
+        float inputs:value1.connect = </Wheels_add726c360440c/n27.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n43"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Wheels_add726c360440c/n29.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n44"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n35.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n42.outputs:out>
+        float inputs:value1.connect = </Wheels_add726c360440c/n43.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n45"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Wheels_add726c360440c/n44.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n33.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n46"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/Environment/Lobe0.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n45.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n47"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 6
+        float inputs:in2.connect = </Wheels_add726c360440c/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n48"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n47.outputs:out>
+        float inputs:in2 = 0
+        float outputs:out
+    }
+
+    def Shader "n49"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n48.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n50"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/Environment/Lobe1.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n45.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n51"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Wheels_add726c360440c/n46.outputs:out>
+        vector3f inputs:fg.connect = </Wheels_add726c360440c/n50.outputs:out>
+        float inputs:mix.connect = </Wheels_add726c360440c/n49.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n52"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n47.outputs:out>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n53"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n52.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n54"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/Environment/Lobe2.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n45.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n55"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Wheels_add726c360440c/n51.outputs:out>
+        vector3f inputs:fg.connect = </Wheels_add726c360440c/n54.outputs:out>
+        float inputs:mix.connect = </Wheels_add726c360440c/n53.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n56"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n47.outputs:out>
+        float inputs:in2 = 2
+        float outputs:out
+    }
+
+    def Shader "n57"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n56.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n58"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/Environment/Lobe3.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n45.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n59"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Wheels_add726c360440c/n55.outputs:out>
+        vector3f inputs:fg.connect = </Wheels_add726c360440c/n58.outputs:out>
+        float inputs:mix.connect = </Wheels_add726c360440c/n57.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n60"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n47.outputs:out>
+        float inputs:in2 = 3
+        float outputs:out
+    }
+
+    def Shader "n61"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n60.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n62"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/Environment/Lobe4.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n45.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n63"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Wheels_add726c360440c/n59.outputs:out>
+        vector3f inputs:fg.connect = </Wheels_add726c360440c/n62.outputs:out>
+        float inputs:mix.connect = </Wheels_add726c360440c/n61.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n64"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n27.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n65"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n29.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n66"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Wheels_add726c360440c/n65.outputs:out>
+        float inputs:iny.connect = </Wheels_add726c360440c/n64.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n67"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n66.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n68"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Wheels_add726c360440c/n64.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n69"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n68.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n70"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Wheels_add726c360440c/n69.outputs:out>
+        float inputs:iny.connect = </Wheels_add726c360440c/n65.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n71"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n70.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n72"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Wheels_add726c360440c/n71.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n73"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n72.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n74"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n72.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n73.outputs:out>
+        float inputs:value1.connect = </Wheels_add726c360440c/n64.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n75"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Wheels_add726c360440c/n65.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n76"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n67.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n74.outputs:out>
+        float inputs:value1.connect = </Wheels_add726c360440c/n75.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n77"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1 = 0.5
+        float inputs:in2.connect = </Wheels_add726c360440c/n76.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n78"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Wheels_add726c360440c/n77.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n33.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n79"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/Environment/Lobe0.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n78.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n80"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 6
+        float inputs:in2.connect = </Wheels_add726c360440c/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n81"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n80.outputs:out>
+        float inputs:in2 = 0
+        float outputs:out
+    }
+
+    def Shader "n82"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n81.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n83"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/Environment/Lobe1.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n78.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n84"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Wheels_add726c360440c/n79.outputs:out>
+        vector3f inputs:fg.connect = </Wheels_add726c360440c/n83.outputs:out>
+        float inputs:mix.connect = </Wheels_add726c360440c/n82.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n85"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n80.outputs:out>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n86"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n85.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n87"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/Environment/Lobe2.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n78.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n88"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Wheels_add726c360440c/n84.outputs:out>
+        vector3f inputs:fg.connect = </Wheels_add726c360440c/n87.outputs:out>
+        float inputs:mix.connect = </Wheels_add726c360440c/n86.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n89"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n80.outputs:out>
+        float inputs:in2 = 2
+        float outputs:out
+    }
+
+    def Shader "n90"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n89.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n91"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/Environment/Lobe3.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n78.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n92"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Wheels_add726c360440c/n88.outputs:out>
+        vector3f inputs:fg.connect = </Wheels_add726c360440c/n91.outputs:out>
+        float inputs:mix.connect = </Wheels_add726c360440c/n90.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n93"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n80.outputs:out>
+        float inputs:in2 = 3
+        float outputs:out
+    }
+
+    def Shader "n94"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n93.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n95"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/Environment/Lobe4.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n78.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n96"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Wheels_add726c360440c/n92.outputs:out>
+        vector3f inputs:fg.connect = </Wheels_add726c360440c/n95.outputs:out>
+        float inputs:mix.connect = </Wheels_add726c360440c/n94.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n97"
+    {
+        uniform token info:id = "ND_ifgreater_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n63.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n96.outputs:out>
+        float inputs:value1.connect = </Wheels_add726c360440c/n29.outputs:out>
+        float inputs:value2 = 0
+        vector3f outputs:out
+    }
+
+    def Shader "n98"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n6.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n12.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n99"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n6.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n13.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n100"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n6.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n14.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n101"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Wheels_add726c360440c/n98.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n99.outputs:out>
+        float inputs:in3.connect = </Wheels_add726c360440c/n100.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n102"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Wheels_add726c360440c/n101.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n103"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Wheels_add726c360440c/n101.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n104"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Wheels_add726c360440c/n101.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n105"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n103.outputs:out>
+        float inputs:low = -1
+        float outputs:out
+    }
+
+    def Shader "n106"
+    {
+        uniform token info:id = "ND_acos_float"
+        float inputs:in.connect = </Wheels_add726c360440c/n105.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n107"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n106.outputs:out>
+        float inputs:in2 = 0.31830987
+        float outputs:out
+    }
+
+    def Shader "n108"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Wheels_add726c360440c/n107.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n109"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Wheels_add726c360440c/n104.outputs:out>
+        float inputs:iny.connect = </Wheels_add726c360440c/n102.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n110"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n109.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n111"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Wheels_add726c360440c/n102.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n112"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n111.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n113"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Wheels_add726c360440c/n112.outputs:out>
+        float inputs:iny.connect = </Wheels_add726c360440c/n104.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n114"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n113.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n115"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Wheels_add726c360440c/n114.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n116"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n115.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n117"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n115.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n116.outputs:out>
+        float inputs:value1.connect = </Wheels_add726c360440c/n102.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n118"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Wheels_add726c360440c/n104.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n119"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n110.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n117.outputs:out>
+        float inputs:value1.connect = </Wheels_add726c360440c/n118.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n120"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Wheels_add726c360440c/n119.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n108.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n121"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/Environment/Lobe4.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n120.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n122"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n102.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n123"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n104.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n124"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Wheels_add726c360440c/n123.outputs:out>
+        float inputs:iny.connect = </Wheels_add726c360440c/n122.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n125"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n124.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n126"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Wheels_add726c360440c/n122.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n127"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n126.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n128"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Wheels_add726c360440c/n127.outputs:out>
+        float inputs:iny.connect = </Wheels_add726c360440c/n123.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n129"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n128.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n130"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Wheels_add726c360440c/n129.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n131"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n130.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n132"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n130.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n131.outputs:out>
+        float inputs:value1.connect = </Wheels_add726c360440c/n122.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n133"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Wheels_add726c360440c/n123.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n134"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n125.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n132.outputs:out>
+        float inputs:value1.connect = </Wheels_add726c360440c/n133.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n135"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1 = 0.5
+        float inputs:in2.connect = </Wheels_add726c360440c/n134.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n136"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Wheels_add726c360440c/n135.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n108.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n137"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/Environment/Lobe4.png@
+        float2 inputs:texcoord.connect = </Wheels_add726c360440c/n136.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n138"
+    {
+        uniform token info:id = "ND_ifgreater_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n121.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n137.outputs:out>
+        float inputs:value1.connect = </Wheels_add726c360440c/n104.outputs:out>
+        float inputs:value2 = 0
+        vector3f outputs:out
+    }
+
+    def Shader "n139"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg = (0.04, 0.04, 0.04)
+        vector3f inputs:fg.connect = </Wheels_add726c360440c/n3.outputs:out>
+        float inputs:mix.connect = </Wheels_add726c360440c/n18.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n140"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Wheels_add726c360440c/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n141"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Wheels_add726c360440c/n140.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n140.outputs:out>
+        float inputs:in3.connect = </Wheels_add726c360440c/n140.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n142"
+    {
+        uniform token info:id = "ND_max_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n141.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n139.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n143"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Wheels_add726c360440c/n11.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n144"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n143.outputs:out>
+        float inputs:in2 = 5
+        float outputs:out
+    }
+
+    def Shader "n145"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Wheels_add726c360440c/n139.outputs:out>
+        vector3f inputs:fg.connect = </Wheels_add726c360440c/n142.outputs:out>
+        float inputs:mix.connect = </Wheels_add726c360440c/n144.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n146"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n140.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n140.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n147"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = -9.28
+        float inputs:in2.connect = </Wheels_add726c360440c/n11.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n148"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1 = 2
+        float inputs:in2.connect = </Wheels_add726c360440c/n147.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n149"
+    {
+        uniform token info:id = "ND_min_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n146.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n148.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n150"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n149.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n140.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n151"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.0275
+        float inputs:in2.connect = </Wheels_add726c360440c/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n152"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.0425
+        float inputs:in2.connect = </Wheels_add726c360440c/n151.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n153"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n150.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n152.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n154"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.572
+        float inputs:in2.connect = </Wheels_add726c360440c/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n155"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </Wheels_add726c360440c/n154.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n156"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </Wheels_add726c360440c/n153.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n157"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n155.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n156.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n158"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.022
+        float inputs:in2.connect = </Wheels_add726c360440c/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n159"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n158.outputs:out>
+        float inputs:in2 = 0.04
+        float outputs:out
+    }
+
+    def Shader "n160"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </Wheels_add726c360440c/n153.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n161"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n159.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n160.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n162"
+    {
+        uniform token info:id = "ND_mix_float"
+        float inputs:bg = 1
+        float inputs:fg.connect = </Wheels_add726c360440c/n21.outputs:out>
+        float inputs:mix = 1
+        float outputs:out
+    }
+
+    def Shader "n163"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n145.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n157.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n164"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Wheels_add726c360440c/n161.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n161.outputs:out>
+        float inputs:in3.connect = </Wheels_add726c360440c/n161.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n165"
+    {
+        uniform token info:id = "ND_add_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n163.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n164.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n166"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n162.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n15.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n167"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n165.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n166.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n168"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Wheels_add726c360440c/n18.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n169"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n168.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n21.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n170"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n16.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n15.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n171"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n169.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n170.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n172"
+    {
+        uniform token info:id = "ND_subtract_vector3"
+        vector3f inputs:in1 = (1, 1, 1)
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n145.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n173"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n3.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n172.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n174"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n173.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n171.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n175"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n97.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n167.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n176"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n138.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n174.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n177"
+    {
+        uniform token info:id = "ND_add_vector3"
+        vector3f inputs:in1.connect = </Wheels_add726c360440c/n175.outputs:out>
+        vector3f inputs:in2.connect = </Wheels_add726c360440c/n176.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n178"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Wheels_add726c360440c/n177.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n179"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n178.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n180"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n179.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n181"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n180.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n182"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n181.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n183"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n179.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n184"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n182.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n183.outputs:out>
+        float inputs:value1.connect = </Wheels_add726c360440c/n179.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n185"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Wheels_add726c360440c/n177.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n186"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n185.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n187"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n186.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n188"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n187.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n189"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n188.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n190"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n186.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n191"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n189.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n190.outputs:out>
+        float inputs:value1.connect = </Wheels_add726c360440c/n186.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n192"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Wheels_add726c360440c/n177.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n193"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Wheels_add726c360440c/n192.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n194"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n193.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n195"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n194.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n196"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n195.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n197"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n193.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n198"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Wheels_add726c360440c/n196.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n197.outputs:out>
+        float inputs:value1.connect = </Wheels_add726c360440c/n193.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n199"
+    {
+        uniform token info:id = "ND_combine3_color3"
+        float inputs:in1.connect = </Wheels_add726c360440c/n184.outputs:out>
+        float inputs:in2.connect = </Wheels_add726c360440c/n191.outputs:out>
+        float inputs:in3.connect = </Wheels_add726c360440c/n198.outputs:out>
+        color3f outputs:out
+    }
+
+    def Shader "n200"
+    {
+        uniform token info:id = "ND_realitykit_unlit_surfaceshader"
+        bool inputs:applyPostProcessToneMap = 0
+        color3f inputs:color.connect = </Wheels_add726c360440c/n199.outputs:out>
+        float inputs:opacity = 1
+        token outputs:out
+    }
+}
+

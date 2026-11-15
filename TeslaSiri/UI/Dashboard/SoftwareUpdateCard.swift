@@ -2,54 +2,86 @@ import AppIntents
 import FleetKit
 import SwiftUI
 
+/// Software card on the Vehicle tab: installed version, update status and actions,
+/// and drill-downs into the release notes.
 struct SoftwareUpdateCard: View {
     let store: FleetDataStore
     let update: FleetSoftwareUpdate
     let vin: String?
 
-    @State private var pendingAction: SoftwareAction?
-
-    private enum SoftwareAction: String, Identifiable {
-        case cancel
-        case installNow
-
-        var id: String { rawValue }
-    }
+    @State private var pendingAction: SoftwareUpdateMutationAction?
 
     var body: some View {
-        CardContainer(title: "Software", systemImage: "arrow.down.app") {
-            VStack(alignment: .leading, spacing: 12) {
-                VersionRow(label: "Current", value: update.currentVersion ?? "--")
-                VersionRow(label: "Available", value: update.availableVersion ?? "--")
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 8) {
-                        softwareBadges
+        DashboardCard("Software", systemImage: hasPendingOrAvailableUpdate ? "arrow.down.app.fill" : "checkmark.seal", tint: hasPendingOrAvailableUpdate ? .orange : .secondary) {
+            StatusBadge(
+                statusText,
+                systemImage: hasPendingOrAvailableUpdate ? "arrow.down.circle.fill" : "checkmark.seal.fill",
+                tint: hasPendingOrAvailableUpdate ? .orange : .green
+            )
+        } content: {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(alignment: .lastTextBaseline) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(update.currentVersion ?? "--")
+                            .font(.system(.title2, design: .rounded, weight: .semibold))
+                            .monospacedDigit()
+                            .textSelection(.enabled)
+                        Text("Installed")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
-                    VStack(alignment: .leading, spacing: 8) {
-                        softwareBadges
+                    .accessibilityElement(children: .combine)
+
+                    Spacer(minLength: 12)
+
+                    if let availableVersion = normalizedAvailableVersion {
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text(availableVersion)
+                                .font(.headline)
+                                .foregroundStyle(.orange)
+                                .monospacedDigit()
+                            Text("Available")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .accessibilityElement(children: .combine)
                     }
                 }
 
-                if let downloadPercent = update.downloadPercent {
-                    ProgressLine(label: "Downloaded", percent: downloadPercent)
+                if let downloadPercent = update.downloadPercent, hasPendingOrAvailableUpdate {
+                    SoftwareProgressRow(label: "Downloaded", percent: downloadPercent)
                 }
-                if let installPercent = update.installPercent {
-                    ProgressLine(label: "Installed", percent: installPercent)
+
+                if let installPercent = update.installPercent, installPercent > 0 {
+                    SoftwareProgressRow(label: "Installing", percent: installPercent)
                 }
 
                 if let scheduledStartDate = update.scheduledStartDate {
-                    VersionRow(label: "Scheduled", value: scheduledStartDate.formatted(date: .abbreviated, time: .shortened))
+                    LabeledContent("Scheduled") {
+                        Text(scheduledStartDate.formatted(date: .abbreviated, time: .shortened))
+                            .monospacedDigit()
+                    }
+                    .font(.subheadline)
                 }
-                if let warningMS = update.warningTimeRemainingMS {
-                    VersionRow(label: "Warning remaining", value: formattedDuration(milliseconds: warningMS))
-                }
-                if let expectedDurationSec = update.expectedDurationSec {
-                    VersionRow(label: "Expected duration", value: formattedDuration(milliseconds: Int64(expectedDurationSec) * 1_000))
-                } else if let expectedDurationMinutes = update.expectedDurationMinutes {
-                    VersionRow(label: "Expected duration", value: formattedNumber(expectedDurationMinutes, fractionLength: 0, suffix: " min"))
-                }
-                if let updatedAt = update.updatedAtDate {
-                    VersionRow(label: "Checked", value: updatedAt.formatted(date: .abbreviated, time: .shortened))
+
+                if update.installable || canCancelUpdate {
+                    HStack(spacing: 10) {
+                        if update.installable {
+                            Button("Install Now", systemImage: "arrow.down.circle.fill") {
+                                pendingAction = .installNow
+                            }
+                            .buttonStyle(.glassProminent)
+                            .tint(.orange)
+                        }
+
+                        if canCancelUpdate {
+                            Button("Cancel Update", systemImage: "xmark") {
+                                pendingAction = .cancel
+                            }
+                            .buttonStyle(.glass)
+                        }
+                    }
+                    .disabled(store.isLoadingSoftware || store.isMutatingSoftware)
                 }
 
                 if !store.softwareActionMessage.isEmpty,
@@ -59,96 +91,92 @@ struct SoftwareUpdateCard: View {
                         .foregroundStyle(.secondary)
                 }
 
-                HStack(spacing: 12) {
-                    Button {
-                        Task { await refreshSoftwareStatus() }
-                    } label: {
-                        Label("Refresh", systemImage: "arrow.clockwise")
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.regular)
-                    .disabled(store.isLoadingSoftware || store.isMutatingSoftware)
-
-                    if update.installable {
-                        Button {
-                            pendingAction = .installNow
-                        } label: {
-                            Label("Install Now", systemImage: "arrow.down.circle")
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.regular)
-                        .disabled(store.isLoadingSoftware || store.isMutatingSoftware)
-                    }
-
-                    if canCancelUpdate {
-                        Button {
-                            pendingAction = .cancel
-                        } label: {
-                            Label("Cancel", systemImage: "xmark.circle")
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.regular)
-                        .disabled(store.isLoadingSoftware || store.isMutatingSoftware)
-                    }
-                }
-
                 if !update.releaseNotes.isEmpty {
-                    Divider()
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Release notes")
-                            .font(.subheadline.weight(.semibold))
-                        ForEach(Array(update.releaseNotes.prefix(3))) { note in
-                            SoftwareReleaseNoteRow(
-                                note: note,
-                                vin: vin,
-                                version: update.availableVersion ?? update.currentVersion
-                            )
-                        }
-                        if update.releaseNotesCount ?? update.releaseNotes.count > 3 {
-                            Text("+ \( (update.releaseNotesCount ?? update.releaseNotes.count) - 3) more")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                } else if let releaseNotesCount = update.releaseNotesCount, releaseNotesCount > 0 {
-                    Text("\(releaseNotesCount) release notes available")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    releaseNotes
                 }
             }
         }
         .appEntityIdentifier(softwareEntityIdentifier)
-        .confirmationDialog("Software Update", item: $pendingAction) { action in
-            switch action {
-            case .installNow:
-                Button("Install Now", role: .destructive) {
-                    Task { await installSoftwareUpdate() }
+        .softwareMutationDialog(
+            pendingAction: $pendingAction,
+            onInstall: installSoftwareUpdate,
+            onCancel: cancelSoftwareUpdate
+        )
+    }
+
+    private var releaseNotes: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Divider()
+
+            Text("Release Notes")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .padding(.top, 12)
+                .padding(.bottom, 4)
+
+            ForEach(Array(update.releaseNotes.prefix(3))) { note in
+                NavigationLink {
+                    SoftwareReleaseNoteDetailView(note: note, version: notesVersion)
+                } label: {
+                    HStack(spacing: 10) {
+                        SoftwareReleaseNoteSummaryLabel(note: note, vin: vin, version: notesVersion)
+                        Spacer(minLength: 8)
+                        Image(systemName: "chevron.forward")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                            .accessibilityHidden(true)
+                    }
+                    .padding(.vertical, 8)
+                    .contentShape(.rect)
                 }
-            case .cancel:
-                Button("Cancel Update") {
-                    Task { await cancelSoftwareUpdate() }
-                }
+                .buttonStyle(.plain)
             }
-        } message: { action in
-            switch action {
-            case .installNow:
-                Text("Schedule the available software update to install as soon as the vehicle accepts the command.")
-            case .cancel:
-                Text("Cancel the pending software update countdown for this vehicle.")
+
+            if update.releaseNotes.count > 3 {
+                NavigationLink {
+                    SoftwareReleaseNotesListView(notes: update.releaseNotes, vin: vin, version: notesVersion)
+                } label: {
+                    DashboardCardLinkLabel(
+                        title: "All Release Notes",
+                        systemImage: "doc.text",
+                        detail: "\(update.releaseNotes.count)"
+                    )
+                    .padding(.vertical, 8)
+                }
+                .buttonStyle(.plain)
             }
         }
     }
 
-    @ViewBuilder
-    private var softwareBadges: some View {
-        StatusBadge(
-            update.updateAvailable ? "Update available" : humanizedStatus(update.status ?? "Unknown"),
-            systemImage: statusIcon,
-            tint: statusTint
-        )
-        if update.installable {
-            StatusBadge("Ready to install", systemImage: "checkmark.circle", tint: .green)
+    private var notesVersion: String? {
+        update.availableVersion ?? update.currentVersion
+    }
+
+    private var normalizedAvailableVersion: String? {
+        guard let raw = update.availableVersion?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !raw.isEmpty,
+              raw != update.currentVersion else {
+            return nil
         }
+        return raw
+    }
+
+    private var hasPendingOrAvailableUpdate: Bool {
+        update.updateAvailable || normalizedAvailableVersion != nil || canCancelUpdate
+    }
+
+    private var statusText: String {
+        if update.updateAvailable || normalizedAvailableVersion != nil {
+            return "Update Available"
+        }
+        guard let raw = update.status, !raw.isEmpty else {
+            return "Up to Date"
+        }
+        let lowered = raw.lowercased()
+        if lowered == "current" || lowered == "up_to_date" || lowered == "up to date" {
+            return "Up to Date"
+        }
+        return humanizedStatus(raw)
     }
 
     private var softwareEntityIdentifier: EntityIdentifier? {
@@ -156,36 +184,11 @@ struct SoftwareUpdateCard: View {
         return EntityIdentifier(for: SoftwareUpdateEntity.self, identifier: SoftwareUpdateEntity.entityID(forVIN: vin))
     }
 
-    private var statusIcon: String {
-        guard let status = update.status?.lowercased() else { return "questionmark.circle" }
-        if status.contains("installing") { return "arrow.down.circle" }
-        if status.contains("available") { return "arrow.down.app" }
-        if status.contains("scheduled") { return "calendar" }
-        if status.contains("up to date") || status.contains("current") { return "checkmark.seal" }
-        return "info.circle"
-    }
-
-    private var statusTint: Color {
-        guard let status = update.status?.lowercased() else { return .secondary }
-        if status.contains("installing") { return .blue }
-        if status.contains("available") { return .orange }
-        if status.contains("scheduled") { return .purple }
-        if status.contains("up to date") || status.contains("current") { return .green }
-        return .secondary
-    }
-
     private var canCancelUpdate: Bool {
         update.scheduledStartTimeMS != nil
             || update.warningTimeRemainingMS != nil
             || update.status?.localizedCaseInsensitiveContains("scheduled") == true
             || update.status?.localizedCaseInsensitiveContains("pending") == true
-    }
-
-    private func refreshSoftwareStatus() async {
-        let vehicle = store.selectedVehicle
-        guard await store.refreshSelectedVehicleSoftware(forceRefresh: true) else { return }
-        await FleetIntentDonations.donateSoftwareStatusRefresh(for: vehicle)
-        _ = await FleetSpotlightIndexer.reindexAll()
     }
 
     private func installSoftwareUpdate() async {
@@ -203,66 +206,81 @@ struct SoftwareUpdateCard: View {
     }
 }
 
-private struct VersionRow: View {
-    let label: String
-    let value: String
+enum SoftwareUpdateMutationAction: String, Identifiable {
+    case cancel
+    case installNow
 
-    var body: some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text(label)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            Spacer()
-            Text(value)
-                .font(.subheadline.weight(.semibold))
-                .monospacedDigit()
+    var id: String { rawValue }
+}
+
+private extension View {
+    func softwareMutationDialog(
+        pendingAction: Binding<SoftwareUpdateMutationAction?>,
+        onInstall: @escaping () async -> Void,
+        onCancel: @escaping () async -> Void
+    ) -> some View {
+        confirmationDialog("Software Update", item: pendingAction) { action in
+            switch action {
+            case .installNow:
+                Button("Install Now", role: .destructive) {
+                    Task { await onInstall() }
+                }
+            case .cancel:
+                Button("Cancel Update") {
+                    Task { await onCancel() }
+                }
+            }
+        } message: { action in
+            switch action {
+            case .installNow:
+                Text("Schedule the available software update to install as soon as the vehicle accepts the command.")
+            case .cancel:
+                Text("Cancel the pending software update countdown for this vehicle.")
+            }
         }
     }
 }
 
-private struct ProgressLine: View {
+private struct SoftwareProgressRow: View {
     let label: String
     let percent: Double
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 6) {
             HStack {
                 Text(label)
-                    .font(.caption)
                     .foregroundStyle(.secondary)
                 Spacer()
                 Text(formattedNumber(percent, fractionLength: 0, suffix: "%"))
-                    .font(.caption.weight(.medium))
+                    .fontWeight(.semibold)
                     .monospacedDigit()
             }
+            .font(.caption)
+
             ProgressView(value: max(0, min(percent / 100, 1)))
-                .tint(.blue)
+                .tint(.orange)
         }
+        .accessibilityElement(children: .combine)
     }
 }
 
-struct SoftwareReleaseNoteRow: View {
+private struct SoftwareReleaseNoteSummaryLabel: View {
     let note: FleetSoftwareReleaseNote
     let vin: String?
     let version: String?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 2) {
             Text(note.title)
-                .font(.subheadline.weight(.semibold))
-            if let subtitle = note.subtitle {
+                .font(.subheadline.weight(.medium))
+                .lineLimit(1)
+            if let subtitle = note.subtitle, !subtitle.isEmpty {
                 Text(subtitle)
                     .font(.caption)
                     .foregroundStyle(.secondary)
-            }
-            if let description = note.description {
-                Text(description)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(3)
+                    .lineLimit(1)
             }
         }
-        .padding(.vertical, 2)
         .appEntityIdentifier(releaseNoteEntityIdentifier)
     }
 
@@ -276,39 +294,59 @@ struct SoftwareReleaseNoteRow: View {
     }
 }
 
-private struct SoftwareUpdatePreviewer: View {
-    let update: FleetSoftwareUpdate
+private struct SoftwareReleaseNotesListView: View {
+    let notes: [FleetSoftwareReleaseNote]
+    let vin: String?
+    let version: String?
 
     var body: some View {
-        let store = FleetDataStore.previewLoaded()
-        SoftwareUpdateCard(store: store, update: update, vin: PreviewData.vin1)
+        List(notes) { note in
+            NavigationLink {
+                SoftwareReleaseNoteDetailView(note: note, version: version)
+            } label: {
+                SoftwareReleaseNoteSummaryLabel(note: note, vin: vin, version: version)
+            }
+        }
+        .listStyle(.insetGrouped)
+        .navigationTitle("Release Notes")
+        .navigationSubtitle(version ?? "")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
-#Preview("Available - installable") {
-    SoftwareUpdatePreviewer(update: PreviewData.softwareUpdateAvailable)
-        .padding()
-        .background(AppScreenBackground())
-}
+private struct SoftwareReleaseNoteDetailView: View {
+    let note: FleetSoftwareReleaseNote
+    let version: String?
 
-#Preview("Scheduled") {
-    SoftwareUpdatePreviewer(update: PreviewData.softwareUpdateScheduled)
-        .padding()
-        .background(AppScreenBackground())
-}
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                if let version, !version.isEmpty {
+                    Text("Version \(version)")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
 
-#Preview("Up to date") {
-    SoftwareUpdatePreviewer(update: PreviewData.softwareUpdateUpToDate)
-        .padding()
-        .background(AppScreenBackground())
-}
+                Text(note.title)
+                    .font(.title2.weight(.bold))
 
-#Preview("Release note") {
-    SoftwareReleaseNoteRow(
-        note: PreviewData.softwareUpdateAvailable.releaseNotes[0],
-        vin: PreviewData.vin1,
-        version: PreviewData.softwareUpdateAvailable.availableVersion
-    )
-        .padding()
-        .background(AppScreenBackground())
+                if let subtitle = note.subtitle, !subtitle.isEmpty {
+                    Text(subtitle)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
+
+                if let description = note.description, !description.isEmpty {
+                    Text(description)
+                        .font(.body)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(20)
+            .frame(maxWidth: AppTheme.contentMaxWidth, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .navigationTitle(note.title)
+        .navigationBarTitleDisplayMode(.inline)
+    }
 }

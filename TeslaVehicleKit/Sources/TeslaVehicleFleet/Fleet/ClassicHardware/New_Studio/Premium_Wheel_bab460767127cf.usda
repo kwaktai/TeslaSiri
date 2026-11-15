@@ -1,0 +1,1338 @@
+#usda 1.0
+
+def Material "Premium_Wheel_bab460767127cf"
+{
+    float inputs:AmbientEnergy = 1
+    float inputs:NormalSign = 1
+    float inputs:SkyEnergy = 1
+    vector3f inputs:SkyX = (1, 0, 0)
+    vector3f inputs:SkyY = (0, 1, 0)
+    vector3f inputs:SkyZ = (0, 0, 1)
+    token outputs:mtlx:surface.connect = </Premium_Wheel_bab460767127cf/n161.outputs:out>
+
+    def Shader "n1"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1 = (0.0392157, 0.0392157, 0.0392157)
+        vector3f inputs:in2 = (0.11372549, 0.11372549, 0.11372549)
+        vector3f outputs:out
+    }
+
+    def Shader "n2"
+    {
+        uniform token info:id = "ND_normal_vector3"
+        string inputs:space = "world"
+        vector3f outputs:out
+    }
+
+    def Shader "n3"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf.inputs:NormalSign>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n4"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n2.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n3.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n5"
+    {
+        uniform token info:id = "ND_realitykit_viewdirection_vector3"
+        string inputs:space = "world"
+        vector3f outputs:out
+    }
+
+    def Shader "n6"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n5.outputs:out>
+        float inputs:in2 = -1
+        vector3f outputs:out
+    }
+
+    def Shader "n7"
+    {
+        uniform token info:id = "ND_realitykit_reflect_vector3"
+        vector3f inputs:in.connect = </Premium_Wheel_bab460767127cf/n6.outputs:out>
+        vector3f inputs:normal.connect = </Premium_Wheel_bab460767127cf/n4.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n8"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n4.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n5.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n9"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n8.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n10"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf.inputs:SkyX>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n11"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf.inputs:SkyY>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n12"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf.inputs:SkyZ>
+        float inputs:in2 = 1
+        vector3f outputs:out
+    }
+
+    def Shader "n13"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf.inputs:SkyEnergy>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n14"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf.inputs:AmbientEnergy>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n15"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n7.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n10.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n16"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n7.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n11.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n17"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n7.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n12.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n18"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = -1
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n17.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n19"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n15.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n16.outputs:out>
+        float inputs:in3.connect = </Premium_Wheel_bab460767127cf/n18.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n20"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Premium_Wheel_bab460767127cf/n19.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n21"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Premium_Wheel_bab460767127cf/n19.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n22"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Premium_Wheel_bab460767127cf/n19.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n23"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n21.outputs:out>
+        float inputs:low = -1
+        float outputs:out
+    }
+
+    def Shader "n24"
+    {
+        uniform token info:id = "ND_acos_float"
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n23.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n25"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n24.outputs:out>
+        float inputs:in2 = 0.31830987
+        float outputs:out
+    }
+
+    def Shader "n26"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n25.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n27"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Premium_Wheel_bab460767127cf/n22.outputs:out>
+        float inputs:iny.connect = </Premium_Wheel_bab460767127cf/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n28"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n27.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n29"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n20.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n30"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n29.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n31"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Premium_Wheel_bab460767127cf/n30.outputs:out>
+        float inputs:iny.connect = </Premium_Wheel_bab460767127cf/n22.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n32"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n31.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n33"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n32.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n34"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n33.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n35"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n33.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n34.outputs:out>
+        float inputs:value1.connect = </Premium_Wheel_bab460767127cf/n20.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n36"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n22.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n37"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n28.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n35.outputs:out>
+        float inputs:value1.connect = </Premium_Wheel_bab460767127cf/n36.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n38"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n37.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n26.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n39"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe6.png@
+        float2 inputs:texcoord.connect = </Premium_Wheel_bab460767127cf/n38.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n40"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 6
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n41"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n20.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n42"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n22.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n43"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Premium_Wheel_bab460767127cf/n42.outputs:out>
+        float inputs:iny.connect = </Premium_Wheel_bab460767127cf/n41.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n44"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n43.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n45"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n41.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n46"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n45.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n47"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Premium_Wheel_bab460767127cf/n46.outputs:out>
+        float inputs:iny.connect = </Premium_Wheel_bab460767127cf/n42.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n48"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n47.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n49"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n48.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n50"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n49.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n51"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n49.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n50.outputs:out>
+        float inputs:value1.connect = </Premium_Wheel_bab460767127cf/n41.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n52"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n42.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n53"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n44.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n51.outputs:out>
+        float inputs:value1.connect = </Premium_Wheel_bab460767127cf/n52.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n54"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1 = 0.5
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n53.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n55"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n54.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n26.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n56"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe6.png@
+        float2 inputs:texcoord.connect = </Premium_Wheel_bab460767127cf/n55.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n57"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 6
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n58"
+    {
+        uniform token info:id = "ND_ifgreater_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n39.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n56.outputs:out>
+        float inputs:value1.connect = </Premium_Wheel_bab460767127cf/n22.outputs:out>
+        float inputs:value2 = 0
+        vector3f outputs:out
+    }
+
+    def Shader "n59"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n4.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n10.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n60"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n4.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n11.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n61"
+    {
+        uniform token info:id = "ND_dotproduct_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n4.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n12.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n62"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n59.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n60.outputs:out>
+        float inputs:in3.connect = </Premium_Wheel_bab460767127cf/n61.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n63"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Premium_Wheel_bab460767127cf/n62.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n64"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Premium_Wheel_bab460767127cf/n62.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n65"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Premium_Wheel_bab460767127cf/n62.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n66"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n64.outputs:out>
+        float inputs:low = -1
+        float outputs:out
+    }
+
+    def Shader "n67"
+    {
+        uniform token info:id = "ND_acos_float"
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n66.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n68"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n67.outputs:out>
+        float inputs:in2 = 0.31830987
+        float outputs:out
+    }
+
+    def Shader "n69"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n68.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n70"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Premium_Wheel_bab460767127cf/n65.outputs:out>
+        float inputs:iny.connect = </Premium_Wheel_bab460767127cf/n63.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n71"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n70.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n72"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n63.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n73"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n72.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n74"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Premium_Wheel_bab460767127cf/n73.outputs:out>
+        float inputs:iny.connect = </Premium_Wheel_bab460767127cf/n65.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n75"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n74.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n76"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n75.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n77"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n76.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n78"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n76.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n77.outputs:out>
+        float inputs:value1.connect = </Premium_Wheel_bab460767127cf/n63.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n79"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n65.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n80"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n71.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n78.outputs:out>
+        float inputs:value1.connect = </Premium_Wheel_bab460767127cf/n79.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n81"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n80.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n69.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n82"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </Premium_Wheel_bab460767127cf/n81.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n83"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n63.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n84"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n65.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n85"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Premium_Wheel_bab460767127cf/n84.outputs:out>
+        float inputs:iny.connect = </Premium_Wheel_bab460767127cf/n83.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n86"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n85.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n87"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n83.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n88"
+    {
+        uniform token info:id = "ND_max_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n87.outputs:out>
+        float inputs:in2 = 0.0001
+        float outputs:out
+    }
+
+    def Shader "n89"
+    {
+        uniform token info:id = "ND_atan2_float"
+        float inputs:inx.connect = </Premium_Wheel_bab460767127cf/n88.outputs:out>
+        float inputs:iny.connect = </Premium_Wheel_bab460767127cf/n84.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n90"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n89.outputs:out>
+        float inputs:in2 = 0.15915494
+        float outputs:out
+    }
+
+    def Shader "n91"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.25
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n90.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n92"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n91.outputs:out>
+        float inputs:in2 = -1
+        float outputs:out
+    }
+
+    def Shader "n93"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n91.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n92.outputs:out>
+        float inputs:value1.connect = </Premium_Wheel_bab460767127cf/n83.outputs:out>
+        float inputs:value2 = 0
+        float outputs:out
+    }
+
+    def Shader "n94"
+    {
+        uniform token info:id = "ND_absval_float"
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n84.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n95"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n86.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n93.outputs:out>
+        float inputs:value1.connect = </Premium_Wheel_bab460767127cf/n94.outputs:out>
+        float inputs:value2 = 0.0005
+        float outputs:out
+    }
+
+    def Shader "n96"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1 = 0.5
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n95.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n97"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n96.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n69.outputs:out>
+        float2 outputs:out
+    }
+
+    def Shader "n98"
+    {
+        uniform token info:id = "ND_image_vector3"
+        asset inputs:file = @../../Wheels/ClassicTires/New_Studio/Lobe4.png@
+        float2 inputs:texcoord.connect = </Premium_Wheel_bab460767127cf/n97.outputs:out>
+        string inputs:uaddressmode = "periodic"
+        string inputs:vaddressmode = "clamp"
+        vector3f outputs:out
+    }
+
+    def Shader "n99"
+    {
+        uniform token info:id = "ND_ifgreater_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n82.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n98.outputs:out>
+        float inputs:value1.connect = </Premium_Wheel_bab460767127cf/n65.outputs:out>
+        float inputs:value2 = 0
+        vector3f outputs:out
+    }
+
+    def Shader "n100"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg = (0.04, 0.04, 0.04)
+        vector3f inputs:fg.connect = </Premium_Wheel_bab460767127cf/n1.outputs:out>
+        float inputs:mix = 0
+        vector3f outputs:out
+    }
+
+    def Shader "n101"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n102"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n101.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n101.outputs:out>
+        float inputs:in3.connect = </Premium_Wheel_bab460767127cf/n101.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n103"
+    {
+        uniform token info:id = "ND_max_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n102.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n100.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n104"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n9.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n105"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n104.outputs:out>
+        float inputs:in2 = 5
+        float outputs:out
+    }
+
+    def Shader "n106"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        vector3f inputs:bg.connect = </Premium_Wheel_bab460767127cf/n100.outputs:out>
+        vector3f inputs:fg.connect = </Premium_Wheel_bab460767127cf/n103.outputs:out>
+        float inputs:mix.connect = </Premium_Wheel_bab460767127cf/n105.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n107"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n101.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n101.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n108"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = -9.28
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n9.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n109"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1 = 2
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n108.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n110"
+    {
+        uniform token info:id = "ND_min_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n107.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n109.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n111"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n110.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n101.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n112"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.0275
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n113"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 0.0425
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n112.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n114"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n111.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n113.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n115"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.572
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n116"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n115.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n117"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n114.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n118"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n116.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n117.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n119"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 0.022
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n120"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n119.outputs:out>
+        float inputs:in2 = 0.04
+        float outputs:out
+    }
+
+    def Shader "n121"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1 = 1.04
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n114.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n122"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n120.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n121.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n123"
+    {
+        uniform token info:id = "ND_mix_float"
+        float inputs:bg = 1
+        float inputs:fg = 1
+        float inputs:mix = 0
+        float outputs:out
+    }
+
+    def Shader "n124"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n106.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n118.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n125"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n122.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n122.outputs:out>
+        float inputs:in3.connect = </Premium_Wheel_bab460767127cf/n122.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n126"
+    {
+        uniform token info:id = "ND_add_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n124.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n125.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n127"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n123.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n13.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n128"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n126.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n127.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n129"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1 = 1
+        float inputs:in2 = 0
+        float outputs:out
+    }
+
+    def Shader "n130"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n129.outputs:out>
+        float inputs:in2 = 1
+        float outputs:out
+    }
+
+    def Shader "n131"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n14.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n13.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n132"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n130.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n131.outputs:out>
+        float outputs:out
+    }
+
+    def Shader "n133"
+    {
+        uniform token info:id = "ND_subtract_vector3"
+        vector3f inputs:in1 = (1, 1, 1)
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n106.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n134"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n1.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n133.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n135"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n134.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n132.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n136"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n58.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n128.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n137"
+    {
+        uniform token info:id = "ND_multiply_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n99.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n135.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n138"
+    {
+        uniform token info:id = "ND_add_vector3"
+        vector3f inputs:in1.connect = </Premium_Wheel_bab460767127cf/n136.outputs:out>
+        vector3f inputs:in2.connect = </Premium_Wheel_bab460767127cf/n137.outputs:out>
+        vector3f outputs:out
+    }
+
+    def Shader "n139"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Premium_Wheel_bab460767127cf/n138.outputs:out>
+        int inputs:index = 0
+        float outputs:out
+    }
+
+    def Shader "n140"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n139.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n141"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n140.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n142"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n141.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n143"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n142.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n144"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n140.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n145"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n143.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n144.outputs:out>
+        float inputs:value1.connect = </Premium_Wheel_bab460767127cf/n140.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n146"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Premium_Wheel_bab460767127cf/n138.outputs:out>
+        int inputs:index = 1
+        float outputs:out
+    }
+
+    def Shader "n147"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n146.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n148"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n147.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n149"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n148.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n150"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n149.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n151"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n147.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n152"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n150.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n151.outputs:out>
+        float inputs:value1.connect = </Premium_Wheel_bab460767127cf/n147.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n153"
+    {
+        uniform token info:id = "ND_extract_vector3"
+        vector3f inputs:in.connect = </Premium_Wheel_bab460767127cf/n138.outputs:out>
+        int inputs:index = 2
+        float outputs:out
+    }
+
+    def Shader "n154"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high = 1
+        float inputs:in.connect = </Premium_Wheel_bab460767127cf/n153.outputs:out>
+        float inputs:low = 0
+        float outputs:out
+    }
+
+    def Shader "n155"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n154.outputs:out>
+        float inputs:in2 = 0.055
+        float outputs:out
+    }
+
+    def Shader "n156"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n155.outputs:out>
+        float inputs:in2 = 0.9478673
+        float outputs:out
+    }
+
+    def Shader "n157"
+    {
+        uniform token info:id = "ND_power_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n156.outputs:out>
+        float inputs:in2 = 2.4
+        float outputs:out
+    }
+
+    def Shader "n158"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n154.outputs:out>
+        float inputs:in2 = 0.07739938
+        float outputs:out
+    }
+
+    def Shader "n159"
+    {
+        uniform token info:id = "ND_ifgreater_float"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n157.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n158.outputs:out>
+        float inputs:value1.connect = </Premium_Wheel_bab460767127cf/n154.outputs:out>
+        float inputs:value2 = 0.04045
+        float outputs:out
+    }
+
+    def Shader "n160"
+    {
+        uniform token info:id = "ND_combine3_color3"
+        float inputs:in1.connect = </Premium_Wheel_bab460767127cf/n145.outputs:out>
+        float inputs:in2.connect = </Premium_Wheel_bab460767127cf/n152.outputs:out>
+        float inputs:in3.connect = </Premium_Wheel_bab460767127cf/n159.outputs:out>
+        color3f outputs:out
+    }
+
+    def Shader "n161"
+    {
+        uniform token info:id = "ND_realitykit_unlit_surfaceshader"
+        bool inputs:applyPostProcessToneMap = 0
+        color3f inputs:color.connect = </Premium_Wheel_bab460767127cf/n160.outputs:out>
+        float inputs:opacity = 1
+        token outputs:out
+    }
+}
+

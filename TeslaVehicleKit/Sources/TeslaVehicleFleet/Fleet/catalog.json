@@ -1,0 +1,5479 @@
+{
+  "model_s": {
+    "scene": "res://Ego/S/Model_S.tscn",
+    "car_type": "models2",
+    "options": {
+      "wheel": [
+        "Apollo",
+        "Gemini",
+        "Induction",
+        "Pinwheel",
+        "PinwheelNoCap",
+        "PinwheelRefresh",
+        "StilettoBlack",
+        "StilettoDark",
+        "StilettoSilver",
+        "StilettoRefresh",
+        "UberTurbine",
+        "ZeroG",
+        "Apollo_19_Metallic_Shadow",
+        "Aero",
+        "Arachnid",
+        "ArachnidBlack",
+        "ArachnidCarbon",
+        "ArachnidSilver",
+        "BaseSilver",
+        "Cardenio",
+        "Cyberstream",
+        "CycloneSilver",
+        "CycloneCarbon",
+        "Helix",
+        "SlipstreamCarbon",
+        "SlipstreamDark",
+        "SlipstreamSilver",
+        "TempestSilver",
+        "NewTurbine22Black",
+        "TurbineBlack",
+        "TurbineSilver",
+        "TwinTurbineCarbon",
+        "TwinTurbineSilver",
+        "Apollo19MetallicShadow",
+        "SemiDefault",
+        "CybertruckBase18",
+        "CybertruckBase20",
+        "CybertruckPremium",
+        "Glider",
+        "Helix19",
+        "Wishbone_19",
+        "Wishbone_20",
+        "D50_18",
+        "Nova19Dark",
+        "E41_18",
+        "Crossflow_19",
+        "HelixV2_20",
+        "Standard_19",
+        "Halo22",
+        "Riptide20",
+        "Cypress21",
+        "HelixV2_20_Dark",
+        "ArachnidV2_21",
+        "MachinaV2_19",
+        "Uberhelix_20"
+      ],
+      "caps": [
+        "default",
+        "on",
+        "off"
+      ],
+      "part": [
+        "vehicle",
+        "wheel"
+      ],
+      "paint": [
+        "RedMulticoat",
+        "SolidBlack",
+        "SilverMetallic",
+        "MidnightSilver",
+        "DeepBlue",
+        "PearlWhite",
+        "TitaniumCopper",
+        "Red",
+        "Black",
+        "Silver",
+        "Grey",
+        "SignatureBlue",
+        "White",
+        "Titanium",
+        "Pearl",
+        "MetallicBlack",
+        "SteelGrey",
+        "Green",
+        "Brown",
+        "SigRed",
+        "Blue",
+        "MidnightCherryRed",
+        "Quicksilver",
+        "UltraRed",
+        "StealthGrey",
+        "LunarSilver",
+        "GlacierBlue",
+        "DiamondBlack",
+        "FrostBlue",
+        "SilkroadSilver",
+        "MarineBlue",
+        "GarnetRed",
+        "CoastalBlue"
+      ],
+      "plate": [
+        "US",
+        "EU"
+      ],
+      "brakes": [
+        "standard",
+        "performance"
+      ],
+      "rhd": [
+        false,
+        true
+      ],
+      "spoiler": [
+        false,
+        true
+      ],
+      "version": [
+        "S1",
+        "S2"
+      ],
+      "rear_seat": [
+        "BASE",
+        "EXECUTIVE"
+      ],
+      "interior": [
+        "Black",
+        "Cream",
+        "White"
+      ],
+      "exterior_trim": [
+        "Chrome",
+        "Black"
+      ]
+    },
+    "defaults": {
+      "wheel": "TempestSilver",
+      "caps": "default",
+      "part": "vehicle",
+      "paint": "PearlWhite",
+      "plate": "US",
+      "brakes": "standard",
+      "rhd": false,
+      "spoiler": false,
+      "version": "S2",
+      "rear_seat": "BASE",
+      "interior": "Black",
+      "exterior_trim": "Chrome"
+    },
+    "wheel_scenes": {
+      "Apollo": "res://Ego/Wheels/Wheel_Apollo.tscn",
+      "Gemini": "res://Ego/Wheels/Wheel_Gemini.tscn",
+      "Induction": "res://Ego/Wheels/Wheel_Induction.tscn",
+      "Pinwheel": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+      "PinwheelNoCap": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn",
+      "PinwheelRefresh": "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn",
+      "StilettoBlack": "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn",
+      "StilettoDark": "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn",
+      "StilettoSilver": "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn",
+      "StilettoRefresh": "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn",
+      "UberTurbine": "res://Ego/Wheels/Wheel_Uberturbine.tscn",
+      "ZeroG": "res://Ego/Wheels/Wheel_ZeroG.tscn",
+      "Apollo_19_Metallic_Shadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "Aero": "res://Ego/Wheels_X_S/Wheel_Aero.tscn",
+      "Arachnid": "res://Ego/Wheels_Palladium/Arachnid21.tscn",
+      "ArachnidBlack": "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn",
+      "ArachnidCarbon": "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn",
+      "ArachnidSilver": "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn",
+      "BaseSilver": "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn",
+      "Cardenio": "res://Ego/Wheels_Palladium/Cardenio.tscn",
+      "Cyberstream": "res://Ego/Wheels_Palladium/Cyberstream.tscn",
+      "CycloneSilver": "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn",
+      "CycloneCarbon": "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn",
+      "Helix": "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn",
+      "SlipstreamCarbon": "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn",
+      "SlipstreamDark": "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn",
+      "SlipstreamSilver": "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn",
+      "TempestSilver": "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn",
+      "NewTurbine22Black": "res://Ego/Wheels_Palladium/New_Turbine_22.tscn",
+      "TurbineBlack": "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn",
+      "TurbineSilver": "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn",
+      "TwinTurbineCarbon": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn",
+      "TwinTurbineSilver": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn",
+      "Apollo19MetallicShadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "SemiDefault": "res://Ego/Wheels_Semi/Wheel_F_Semi.glb",
+      "CybertruckBase18": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn",
+      "CybertruckBase20": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn",
+      "CybertruckPremium": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+      "Glider": "res://Ego/v2023/Wheels/Glider.tscn",
+      "Helix19": "res://Ego/v2023/Wheels/Helix_19.tscn",
+      "Wishbone_19": "res://Ego/v2023/Wheels/Wishbone_19.tscn",
+      "Wishbone_20": "res://Ego/v2023/Wheels/Wishbone_20.tscn",
+      "D50_18": "res://Ego/Wheels/Wheel_D50.tscn",
+      "Nova19Dark": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn",
+      "E41_18": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn",
+      "Crossflow_19": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn",
+      "HelixV2_20": "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn",
+      "Standard_19": "res://Ego/Wheels_P3/Wheel_Standard.tscn",
+      "Halo22": "res://Ego/Wheels_P3/Wheel_Halo.tscn",
+      "Riptide20": "res://Ego/Wheels_P3/Wheel_Riptide.tscn",
+      "Cypress21": "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn",
+      "HelixV2_20_Dark": "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn",
+      "ArachnidV2_21": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn",
+      "MachinaV2_19": "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn",
+      "Uberhelix_20": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn"
+    },
+    "cap_overrides": {
+      "Gemini": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn"
+      },
+      "PinwheelRefresh": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn"
+      },
+      "Glider": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Glider_No_Caps.tscn"
+      },
+      "D50_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D50_No_Caps.tscn"
+      },
+      "Nova19Dark": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn"
+      },
+      "E41_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn"
+      },
+      "Crossflow_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn"
+      },
+      "Helix19": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn"
+      },
+      "Standard_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn"
+      },
+      "Halo22": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn"
+      },
+      "Riptide20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn"
+      },
+      "ArachnidV2_21": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn"
+      },
+      "MachinaV2_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn"
+      },
+      "Cardenio": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn"
+      },
+      "Uberhelix_20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn"
+      },
+      "Cypress21": {
+        "caps": true,
+        "scene": "res://Ego/Wheels_P3/Wheel_Cypress.tscn"
+      },
+      "Apollo_19_Metallic_Shadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Apollo19MetallicShadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Wishbone_19": {
+        "caps": true,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_20.tscn"
+      },
+      "Wishbone_20": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_19.tscn"
+      },
+      "CybertruckBase18": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn"
+      },
+      "CybertruckBase20": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn"
+      },
+      "CybertruckPremium": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn"
+      }
+    },
+    "paint_presets": {
+      "RedMulticoat": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "SolidBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SilverMetallic": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightSilver": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "DeepBlue": {
+        "color": "#000919",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "PearlWhite": {
+        "color": "#181818",
+        "metallic": 0.25,
+        "roughness": 0.2
+      },
+      "TitaniumCopper": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Red": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "Black": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "Silver": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "Grey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SignatureBlue": {
+        "color": "#000206",
+        "metallic": 0.2,
+        "roughness": 0.04
+      },
+      "White": {
+        "color": "#141414",
+        "metallic": 0.2,
+        "roughness": 0.3
+      },
+      "Titanium": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Pearl": {
+        "color": "#131313",
+        "metallic": 0.01,
+        "roughness": 0.04
+      },
+      "MetallicBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SteelGrey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Green": {
+        "color": "#060a0a",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Brown": {
+        "color": "#181514",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SigRed": {
+        "color": "#110305",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "Blue": {
+        "color": "#000104",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightCherryRed": {
+        "color": "#200006",
+        "metallic": 0.8,
+        "roughness": 0.01
+      },
+      "Quicksilver": {
+        "color": "#2b2d35",
+        "metallic": 0.85,
+        "roughness": 0.2
+      },
+      "UltraRed": {
+        "color": "#250006",
+        "metallic": 0.7,
+        "roughness": 0.05
+      },
+      "StealthGrey": {
+        "color": "#121417",
+        "metallic": 0.88,
+        "roughness": 0.1
+      },
+      "LunarSilver": {
+        "color": "#343438",
+        "metallic": 0.898,
+        "roughness": 0.28
+      },
+      "GlacierBlue": {
+        "color": "#12161f",
+        "metallic": 0.7,
+        "roughness": 0.1
+      },
+      "DiamondBlack": {
+        "color": "#040404",
+        "metallic": 0.75,
+        "roughness": 0.02
+      },
+      "FrostBlue": {
+        "color": "#111317",
+        "metallic": 0.716,
+        "roughness": 0.05
+      },
+      "SilkroadSilver": {
+        "color": "#2d2c2d",
+        "metallic": 0.826,
+        "roughness": 0.204
+      },
+      "MarineBlue": {
+        "color": "#01050a",
+        "metallic": 0.85,
+        "roughness": 0.02
+      },
+      "GarnetRed": {
+        "color": "#1d0305",
+        "metallic": 0.8,
+        "roughness": 0.05
+      },
+      "CoastalBlue": {
+        "color": "#040710",
+        "metallic": 0.5,
+        "roughness": 0.04
+      }
+    }
+  },
+  "model_s_palladium": {
+    "scene": "res://Ego/S_Palladium/S_Palladium.tscn",
+    "car_type": "lychee",
+    "options": {
+      "wheel": [
+        "Apollo",
+        "Gemini",
+        "Induction",
+        "Pinwheel",
+        "PinwheelNoCap",
+        "PinwheelRefresh",
+        "StilettoBlack",
+        "StilettoDark",
+        "StilettoSilver",
+        "StilettoRefresh",
+        "UberTurbine",
+        "ZeroG",
+        "Apollo_19_Metallic_Shadow",
+        "Aero",
+        "Arachnid",
+        "ArachnidBlack",
+        "ArachnidCarbon",
+        "ArachnidSilver",
+        "BaseSilver",
+        "Cardenio",
+        "Cyberstream",
+        "CycloneSilver",
+        "CycloneCarbon",
+        "Helix",
+        "SlipstreamCarbon",
+        "SlipstreamDark",
+        "SlipstreamSilver",
+        "TempestSilver",
+        "NewTurbine22Black",
+        "TurbineBlack",
+        "TurbineSilver",
+        "TwinTurbineCarbon",
+        "TwinTurbineSilver",
+        "Apollo19MetallicShadow",
+        "SemiDefault",
+        "CybertruckBase18",
+        "CybertruckBase20",
+        "CybertruckPremium",
+        "Glider",
+        "Helix19",
+        "Wishbone_19",
+        "Wishbone_20",
+        "D50_18",
+        "Nova19Dark",
+        "E41_18",
+        "Crossflow_19",
+        "HelixV2_20",
+        "Standard_19",
+        "Halo22",
+        "Riptide20",
+        "Cypress21",
+        "HelixV2_20_Dark",
+        "ArachnidV2_21",
+        "MachinaV2_19",
+        "Uberhelix_20"
+      ],
+      "caps": [
+        "default",
+        "on",
+        "off"
+      ],
+      "part": [
+        "vehicle",
+        "wheel"
+      ],
+      "paint": [
+        "RedMulticoat",
+        "SolidBlack",
+        "SilverMetallic",
+        "MidnightSilver",
+        "DeepBlue",
+        "PearlWhite",
+        "TitaniumCopper",
+        "Red",
+        "Black",
+        "Silver",
+        "Grey",
+        "SignatureBlue",
+        "White",
+        "Titanium",
+        "Pearl",
+        "MetallicBlack",
+        "SteelGrey",
+        "Green",
+        "Brown",
+        "SigRed",
+        "Blue",
+        "MidnightCherryRed",
+        "Quicksilver",
+        "UltraRed",
+        "StealthGrey",
+        "LunarSilver",
+        "GlacierBlue",
+        "DiamondBlack",
+        "FrostBlue",
+        "SilkroadSilver",
+        "MarineBlue",
+        "GarnetRed",
+        "CoastalBlue"
+      ],
+      "plate": [
+        "US",
+        "EU"
+      ],
+      "brakes": [
+        "standard",
+        "performance"
+      ],
+      "rhd": [
+        false,
+        true
+      ],
+      "spoiler": [
+        false,
+        true
+      ],
+      "interior": [
+        "Black",
+        "Cream",
+        "White",
+        "BlackCarbonFiber",
+        "CreamCarbonFiber",
+        "WhiteCarbonFiber"
+      ],
+      "headlamp": [
+        "Original",
+        "Global"
+      ],
+      "steering_wheel": [
+        "Standard",
+        "Yoke"
+      ],
+      "rearlight": [
+        "Original",
+        "Global"
+      ],
+      "signature": [
+        false,
+        true
+      ],
+      "drivetrain": [
+        "RWD",
+        "AWD",
+        "AWDTriMotor"
+      ],
+      "wordmark": [
+        false,
+        true
+      ],
+      "tesla_badge": [
+        false,
+        true
+      ],
+      "fascia": [
+        "original",
+        "p3s",
+        "p3splaid"
+      ],
+      "seat_trim": [
+        "Base",
+        "Sport"
+      ]
+    },
+    "defaults": {
+      "wheel": "TempestSilver",
+      "caps": "default",
+      "part": "vehicle",
+      "paint": "PearlWhite",
+      "plate": "US",
+      "brakes": "standard",
+      "rhd": false,
+      "spoiler": false,
+      "interior": "Black",
+      "headlamp": "Original",
+      "steering_wheel": "Standard",
+      "rearlight": "Original",
+      "signature": false,
+      "drivetrain": "RWD",
+      "wordmark": true,
+      "tesla_badge": true,
+      "fascia": "original",
+      "seat_trim": "Base"
+    },
+    "wheel_scenes": {
+      "Apollo": "res://Ego/Wheels/Wheel_Apollo.tscn",
+      "Gemini": "res://Ego/Wheels/Wheel_Gemini.tscn",
+      "Induction": "res://Ego/Wheels/Wheel_Induction.tscn",
+      "Pinwheel": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+      "PinwheelNoCap": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn",
+      "PinwheelRefresh": "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn",
+      "StilettoBlack": "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn",
+      "StilettoDark": "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn",
+      "StilettoSilver": "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn",
+      "StilettoRefresh": "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn",
+      "UberTurbine": "res://Ego/Wheels/Wheel_Uberturbine.tscn",
+      "ZeroG": "res://Ego/Wheels/Wheel_ZeroG.tscn",
+      "Apollo_19_Metallic_Shadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "Aero": "res://Ego/Wheels_X_S/Wheel_Aero.tscn",
+      "Arachnid": "res://Ego/Wheels_Palladium/Arachnid21.tscn",
+      "ArachnidBlack": "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn",
+      "ArachnidCarbon": "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn",
+      "ArachnidSilver": "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn",
+      "BaseSilver": "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn",
+      "Cardenio": "res://Ego/Wheels_Palladium/Cardenio.tscn",
+      "Cyberstream": "res://Ego/Wheels_Palladium/Cyberstream.tscn",
+      "CycloneSilver": "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn",
+      "CycloneCarbon": "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn",
+      "Helix": "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn",
+      "SlipstreamCarbon": "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn",
+      "SlipstreamDark": "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn",
+      "SlipstreamSilver": "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn",
+      "TempestSilver": "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn",
+      "NewTurbine22Black": "res://Ego/Wheels_Palladium/New_Turbine_22.tscn",
+      "TurbineBlack": "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn",
+      "TurbineSilver": "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn",
+      "TwinTurbineCarbon": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn",
+      "TwinTurbineSilver": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn",
+      "Apollo19MetallicShadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "SemiDefault": "res://Ego/Wheels_Semi/Wheel_F_Semi.glb",
+      "CybertruckBase18": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn",
+      "CybertruckBase20": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn",
+      "CybertruckPremium": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+      "Glider": "res://Ego/v2023/Wheels/Glider.tscn",
+      "Helix19": "res://Ego/v2023/Wheels/Helix_19.tscn",
+      "Wishbone_19": "res://Ego/v2023/Wheels/Wishbone_19.tscn",
+      "Wishbone_20": "res://Ego/v2023/Wheels/Wishbone_20.tscn",
+      "D50_18": "res://Ego/Wheels/Wheel_D50.tscn",
+      "Nova19Dark": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn",
+      "E41_18": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn",
+      "Crossflow_19": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn",
+      "HelixV2_20": "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn",
+      "Standard_19": "res://Ego/Wheels_P3/Wheel_Standard.tscn",
+      "Halo22": "res://Ego/Wheels_P3/Wheel_Halo.tscn",
+      "Riptide20": "res://Ego/Wheels_P3/Wheel_Riptide.tscn",
+      "Cypress21": "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn",
+      "HelixV2_20_Dark": "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn",
+      "ArachnidV2_21": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn",
+      "MachinaV2_19": "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn",
+      "Uberhelix_20": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn"
+    },
+    "cap_overrides": {
+      "Gemini": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn"
+      },
+      "PinwheelRefresh": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn"
+      },
+      "Glider": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Glider_No_Caps.tscn"
+      },
+      "D50_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D50_No_Caps.tscn"
+      },
+      "Nova19Dark": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn"
+      },
+      "E41_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn"
+      },
+      "Crossflow_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn"
+      },
+      "Helix19": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn"
+      },
+      "Standard_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn"
+      },
+      "Halo22": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn"
+      },
+      "Riptide20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn"
+      },
+      "ArachnidV2_21": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn"
+      },
+      "MachinaV2_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn"
+      },
+      "Cardenio": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn"
+      },
+      "Uberhelix_20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn"
+      },
+      "Cypress21": {
+        "caps": true,
+        "scene": "res://Ego/Wheels_P3/Wheel_Cypress.tscn"
+      },
+      "Apollo_19_Metallic_Shadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Apollo19MetallicShadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Wishbone_19": {
+        "caps": true,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_20.tscn"
+      },
+      "Wishbone_20": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_19.tscn"
+      },
+      "CybertruckBase18": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn"
+      },
+      "CybertruckBase20": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn"
+      },
+      "CybertruckPremium": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn"
+      }
+    },
+    "paint_presets": {
+      "RedMulticoat": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "SolidBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SilverMetallic": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightSilver": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "DeepBlue": {
+        "color": "#000919",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "PearlWhite": {
+        "color": "#181818",
+        "metallic": 0.25,
+        "roughness": 0.2
+      },
+      "TitaniumCopper": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Red": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "Black": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "Silver": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "Grey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SignatureBlue": {
+        "color": "#000206",
+        "metallic": 0.2,
+        "roughness": 0.04
+      },
+      "White": {
+        "color": "#141414",
+        "metallic": 0.2,
+        "roughness": 0.3
+      },
+      "Titanium": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Pearl": {
+        "color": "#131313",
+        "metallic": 0.01,
+        "roughness": 0.04
+      },
+      "MetallicBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SteelGrey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Green": {
+        "color": "#060a0a",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Brown": {
+        "color": "#181514",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SigRed": {
+        "color": "#110305",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "Blue": {
+        "color": "#000104",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightCherryRed": {
+        "color": "#200006",
+        "metallic": 0.8,
+        "roughness": 0.01
+      },
+      "Quicksilver": {
+        "color": "#2b2d35",
+        "metallic": 0.85,
+        "roughness": 0.2
+      },
+      "UltraRed": {
+        "color": "#250006",
+        "metallic": 0.7,
+        "roughness": 0.05
+      },
+      "StealthGrey": {
+        "color": "#121417",
+        "metallic": 0.88,
+        "roughness": 0.1
+      },
+      "LunarSilver": {
+        "color": "#343438",
+        "metallic": 0.898,
+        "roughness": 0.28
+      },
+      "GlacierBlue": {
+        "color": "#12161f",
+        "metallic": 0.7,
+        "roughness": 0.1
+      },
+      "DiamondBlack": {
+        "color": "#040404",
+        "metallic": 0.75,
+        "roughness": 0.02
+      },
+      "FrostBlue": {
+        "color": "#111317",
+        "metallic": 0.716,
+        "roughness": 0.05
+      },
+      "SilkroadSilver": {
+        "color": "#2d2c2d",
+        "metallic": 0.826,
+        "roughness": 0.204
+      },
+      "MarineBlue": {
+        "color": "#01050a",
+        "metallic": 0.85,
+        "roughness": 0.02
+      },
+      "GarnetRed": {
+        "color": "#1d0305",
+        "metallic": 0.8,
+        "roughness": 0.05
+      },
+      "CoastalBlue": {
+        "color": "#040710",
+        "metallic": 0.5,
+        "roughness": 0.04
+      }
+    }
+  },
+  "model_3": {
+    "scene": "res://Ego/3_High/Model3_High.tscn",
+    "car_type": "model3",
+    "options": {
+      "wheel": [
+        "Apollo",
+        "Gemini",
+        "Induction",
+        "Pinwheel",
+        "PinwheelNoCap",
+        "PinwheelRefresh",
+        "StilettoBlack",
+        "StilettoDark",
+        "StilettoSilver",
+        "StilettoRefresh",
+        "UberTurbine",
+        "ZeroG",
+        "Apollo_19_Metallic_Shadow",
+        "Aero",
+        "Arachnid",
+        "ArachnidBlack",
+        "ArachnidCarbon",
+        "ArachnidSilver",
+        "BaseSilver",
+        "Cardenio",
+        "Cyberstream",
+        "CycloneSilver",
+        "CycloneCarbon",
+        "Helix",
+        "SlipstreamCarbon",
+        "SlipstreamDark",
+        "SlipstreamSilver",
+        "TempestSilver",
+        "NewTurbine22Black",
+        "TurbineBlack",
+        "TurbineSilver",
+        "TwinTurbineCarbon",
+        "TwinTurbineSilver",
+        "Apollo19MetallicShadow",
+        "SemiDefault",
+        "CybertruckBase18",
+        "CybertruckBase20",
+        "CybertruckPremium",
+        "Glider",
+        "Helix19",
+        "Wishbone_19",
+        "Wishbone_20",
+        "D50_18",
+        "Nova19Dark",
+        "E41_18",
+        "Crossflow_19",
+        "HelixV2_20",
+        "Standard_19",
+        "Halo22",
+        "Riptide20",
+        "Cypress21",
+        "HelixV2_20_Dark",
+        "ArachnidV2_21",
+        "MachinaV2_19",
+        "Uberhelix_20"
+      ],
+      "caps": [
+        "default",
+        "on",
+        "off"
+      ],
+      "part": [
+        "vehicle",
+        "wheel"
+      ],
+      "paint": [
+        "RedMulticoat",
+        "SolidBlack",
+        "SilverMetallic",
+        "MidnightSilver",
+        "DeepBlue",
+        "PearlWhite",
+        "TitaniumCopper",
+        "Red",
+        "Black",
+        "Silver",
+        "Grey",
+        "SignatureBlue",
+        "White",
+        "Titanium",
+        "Pearl",
+        "MetallicBlack",
+        "SteelGrey",
+        "Green",
+        "Brown",
+        "SigRed",
+        "Blue",
+        "MidnightCherryRed",
+        "Quicksilver",
+        "UltraRed",
+        "StealthGrey",
+        "LunarSilver",
+        "GlacierBlue",
+        "DiamondBlack",
+        "FrostBlue",
+        "SilkroadSilver",
+        "MarineBlue",
+        "GarnetRed",
+        "CoastalBlue"
+      ],
+      "plate": [
+        "US",
+        "EU"
+      ],
+      "brakes": [
+        "standard",
+        "performance"
+      ],
+      "rhd": [
+        false,
+        true
+      ],
+      "spoiler": [
+        false,
+        true
+      ],
+      "interior": [
+        "Black",
+        "Black2",
+        "White",
+        "White2"
+      ],
+      "fog_lamps": [
+        false,
+        true
+      ],
+      "exterior_trim": [
+        "Chrome",
+        "Black"
+      ],
+      "headlamp": [
+        "Original",
+        "Global"
+      ]
+    },
+    "defaults": {
+      "wheel": "Pinwheel",
+      "caps": "default",
+      "part": "vehicle",
+      "paint": "PearlWhite",
+      "plate": "US",
+      "brakes": "standard",
+      "rhd": false,
+      "spoiler": false,
+      "interior": "Black",
+      "fog_lamps": true,
+      "exterior_trim": "Black",
+      "headlamp": "Original"
+    },
+    "wheel_scenes": {
+      "Apollo": "res://Ego/Wheels/Wheel_Apollo.tscn",
+      "Gemini": "res://Ego/Wheels/Wheel_Gemini.tscn",
+      "Induction": "res://Ego/Wheels/Wheel_Induction.tscn",
+      "Pinwheel": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+      "PinwheelNoCap": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn",
+      "PinwheelRefresh": "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn",
+      "StilettoBlack": "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn",
+      "StilettoDark": "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn",
+      "StilettoSilver": "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn",
+      "StilettoRefresh": "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn",
+      "UberTurbine": "res://Ego/Wheels/Wheel_Uberturbine.tscn",
+      "ZeroG": "res://Ego/Wheels/Wheel_ZeroG.tscn",
+      "Apollo_19_Metallic_Shadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "Aero": "res://Ego/Wheels_X_S/Wheel_Aero.tscn",
+      "Arachnid": "res://Ego/Wheels_Palladium/Arachnid21.tscn",
+      "ArachnidBlack": "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn",
+      "ArachnidCarbon": "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn",
+      "ArachnidSilver": "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn",
+      "BaseSilver": "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn",
+      "Cardenio": "res://Ego/Wheels_Palladium/Cardenio.tscn",
+      "Cyberstream": "res://Ego/Wheels_Palladium/Cyberstream.tscn",
+      "CycloneSilver": "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn",
+      "CycloneCarbon": "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn",
+      "Helix": "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn",
+      "SlipstreamCarbon": "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn",
+      "SlipstreamDark": "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn",
+      "SlipstreamSilver": "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn",
+      "TempestSilver": "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn",
+      "NewTurbine22Black": "res://Ego/Wheels_Palladium/New_Turbine_22.tscn",
+      "TurbineBlack": "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn",
+      "TurbineSilver": "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn",
+      "TwinTurbineCarbon": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn",
+      "TwinTurbineSilver": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn",
+      "Apollo19MetallicShadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "SemiDefault": "res://Ego/Wheels_Semi/Wheel_F_Semi.glb",
+      "CybertruckBase18": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn",
+      "CybertruckBase20": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn",
+      "CybertruckPremium": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+      "Glider": "res://Ego/v2023/Wheels/Glider.tscn",
+      "Helix19": "res://Ego/v2023/Wheels/Helix_19.tscn",
+      "Wishbone_19": "res://Ego/v2023/Wheels/Wishbone_19.tscn",
+      "Wishbone_20": "res://Ego/v2023/Wheels/Wishbone_20.tscn",
+      "D50_18": "res://Ego/Wheels/Wheel_D50.tscn",
+      "Nova19Dark": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn",
+      "E41_18": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn",
+      "Crossflow_19": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn",
+      "HelixV2_20": "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn",
+      "Standard_19": "res://Ego/Wheels_P3/Wheel_Standard.tscn",
+      "Halo22": "res://Ego/Wheels_P3/Wheel_Halo.tscn",
+      "Riptide20": "res://Ego/Wheels_P3/Wheel_Riptide.tscn",
+      "Cypress21": "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn",
+      "HelixV2_20_Dark": "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn",
+      "ArachnidV2_21": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn",
+      "MachinaV2_19": "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn",
+      "Uberhelix_20": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn"
+    },
+    "cap_overrides": {
+      "Gemini": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn"
+      },
+      "PinwheelRefresh": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn"
+      },
+      "Glider": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Glider_No_Caps.tscn"
+      },
+      "D50_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D50_No_Caps.tscn"
+      },
+      "Nova19Dark": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn"
+      },
+      "E41_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn"
+      },
+      "Crossflow_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn"
+      },
+      "Helix19": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn"
+      },
+      "Standard_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn"
+      },
+      "Halo22": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn"
+      },
+      "Riptide20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn"
+      },
+      "ArachnidV2_21": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn"
+      },
+      "MachinaV2_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn"
+      },
+      "Cardenio": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn"
+      },
+      "Uberhelix_20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn"
+      },
+      "Cypress21": {
+        "caps": true,
+        "scene": "res://Ego/Wheels_P3/Wheel_Cypress.tscn"
+      },
+      "Apollo_19_Metallic_Shadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Apollo19MetallicShadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Wishbone_19": {
+        "caps": true,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_20.tscn"
+      },
+      "Wishbone_20": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_19.tscn"
+      },
+      "CybertruckBase18": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn"
+      },
+      "CybertruckBase20": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn"
+      },
+      "CybertruckPremium": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn"
+      }
+    },
+    "paint_presets": {
+      "RedMulticoat": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "SolidBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SilverMetallic": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightSilver": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "DeepBlue": {
+        "color": "#000919",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "PearlWhite": {
+        "color": "#181818",
+        "metallic": 0.25,
+        "roughness": 0.2
+      },
+      "TitaniumCopper": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Red": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "Black": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "Silver": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "Grey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SignatureBlue": {
+        "color": "#000206",
+        "metallic": 0.2,
+        "roughness": 0.04
+      },
+      "White": {
+        "color": "#141414",
+        "metallic": 0.2,
+        "roughness": 0.3
+      },
+      "Titanium": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Pearl": {
+        "color": "#131313",
+        "metallic": 0.01,
+        "roughness": 0.04
+      },
+      "MetallicBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SteelGrey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Green": {
+        "color": "#060a0a",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Brown": {
+        "color": "#181514",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SigRed": {
+        "color": "#110305",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "Blue": {
+        "color": "#000104",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightCherryRed": {
+        "color": "#200006",
+        "metallic": 0.8,
+        "roughness": 0.01
+      },
+      "Quicksilver": {
+        "color": "#2b2d35",
+        "metallic": 0.85,
+        "roughness": 0.2
+      },
+      "UltraRed": {
+        "color": "#250006",
+        "metallic": 0.7,
+        "roughness": 0.05
+      },
+      "StealthGrey": {
+        "color": "#121417",
+        "metallic": 0.88,
+        "roughness": 0.1
+      },
+      "LunarSilver": {
+        "color": "#343438",
+        "metallic": 0.898,
+        "roughness": 0.28
+      },
+      "GlacierBlue": {
+        "color": "#12161f",
+        "metallic": 0.7,
+        "roughness": 0.1
+      },
+      "DiamondBlack": {
+        "color": "#040404",
+        "metallic": 0.75,
+        "roughness": 0.02
+      },
+      "FrostBlue": {
+        "color": "#111317",
+        "metallic": 0.716,
+        "roughness": 0.05
+      },
+      "SilkroadSilver": {
+        "color": "#2d2c2d",
+        "metallic": 0.826,
+        "roughness": 0.204
+      },
+      "MarineBlue": {
+        "color": "#01050a",
+        "metallic": 0.85,
+        "roughness": 0.02
+      },
+      "GarnetRed": {
+        "color": "#1d0305",
+        "metallic": 0.8,
+        "roughness": 0.05
+      },
+      "CoastalBlue": {
+        "color": "#040710",
+        "metallic": 0.5,
+        "roughness": 0.04
+      }
+    }
+  },
+  "poppyseed": {
+    "scene": "res://Ego/v2023/Poppyseed/Poppyseed.tscn",
+    "car_type": "model3",
+    "options": {
+      "wheel": [
+        "Apollo",
+        "Gemini",
+        "Induction",
+        "Pinwheel",
+        "PinwheelNoCap",
+        "PinwheelRefresh",
+        "StilettoBlack",
+        "StilettoDark",
+        "StilettoSilver",
+        "StilettoRefresh",
+        "UberTurbine",
+        "ZeroG",
+        "Apollo_19_Metallic_Shadow",
+        "Aero",
+        "Arachnid",
+        "ArachnidBlack",
+        "ArachnidCarbon",
+        "ArachnidSilver",
+        "BaseSilver",
+        "Cardenio",
+        "Cyberstream",
+        "CycloneSilver",
+        "CycloneCarbon",
+        "Helix",
+        "SlipstreamCarbon",
+        "SlipstreamDark",
+        "SlipstreamSilver",
+        "TempestSilver",
+        "NewTurbine22Black",
+        "TurbineBlack",
+        "TurbineSilver",
+        "TwinTurbineCarbon",
+        "TwinTurbineSilver",
+        "Apollo19MetallicShadow",
+        "SemiDefault",
+        "CybertruckBase18",
+        "CybertruckBase20",
+        "CybertruckPremium",
+        "Glider",
+        "Helix19",
+        "Wishbone_19",
+        "Wishbone_20",
+        "D50_18",
+        "Nova19Dark",
+        "E41_18",
+        "Crossflow_19",
+        "HelixV2_20",
+        "Standard_19",
+        "Halo22",
+        "Riptide20",
+        "Cypress21",
+        "HelixV2_20_Dark",
+        "ArachnidV2_21",
+        "MachinaV2_19",
+        "Uberhelix_20"
+      ],
+      "caps": [
+        "default",
+        "on",
+        "off"
+      ],
+      "part": [
+        "vehicle",
+        "wheel"
+      ],
+      "paint": [
+        "RedMulticoat",
+        "SolidBlack",
+        "SilverMetallic",
+        "MidnightSilver",
+        "DeepBlue",
+        "PearlWhite",
+        "TitaniumCopper",
+        "Red",
+        "Black",
+        "Silver",
+        "Grey",
+        "SignatureBlue",
+        "White",
+        "Titanium",
+        "Pearl",
+        "MetallicBlack",
+        "SteelGrey",
+        "Green",
+        "Brown",
+        "SigRed",
+        "Blue",
+        "MidnightCherryRed",
+        "Quicksilver",
+        "UltraRed",
+        "StealthGrey",
+        "LunarSilver",
+        "GlacierBlue",
+        "DiamondBlack",
+        "FrostBlue",
+        "SilkroadSilver",
+        "MarineBlue",
+        "GarnetRed",
+        "CoastalBlue"
+      ],
+      "plate": [
+        "US",
+        "EU"
+      ],
+      "brakes": [
+        "standard",
+        "performance"
+      ],
+      "rhd": [
+        false,
+        true
+      ],
+      "interior": [
+        "Black",
+        "White"
+      ],
+      "upper_trim": [
+        "GREY",
+        "BLACK"
+      ],
+      "badging_material": [
+        "CHROME_SILVER",
+        "BLACK_MATTE"
+      ],
+      "fascia": [
+        "basePoppyseed",
+        "performancePoppyseed",
+        "d50Poppyseed"
+      ],
+      "stalk": [
+        false,
+        true
+      ],
+      "front_fascia_camera": [
+        false,
+        true
+      ]
+    },
+    "defaults": {
+      "wheel": "Pinwheel",
+      "caps": "default",
+      "part": "vehicle",
+      "paint": "PearlWhite",
+      "plate": "US",
+      "brakes": "standard",
+      "rhd": false,
+      "interior": "Black",
+      "upper_trim": "GREY",
+      "badging_material": "CHROME_SILVER",
+      "fascia": "basePoppyseed",
+      "stalk": false,
+      "front_fascia_camera": false
+    },
+    "wheel_scenes": {
+      "Apollo": "res://Ego/Wheels/Wheel_Apollo.tscn",
+      "Gemini": "res://Ego/Wheels/Wheel_Gemini.tscn",
+      "Induction": "res://Ego/Wheels/Wheel_Induction.tscn",
+      "Pinwheel": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+      "PinwheelNoCap": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn",
+      "PinwheelRefresh": "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn",
+      "StilettoBlack": "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn",
+      "StilettoDark": "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn",
+      "StilettoSilver": "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn",
+      "StilettoRefresh": "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn",
+      "UberTurbine": "res://Ego/Wheels/Wheel_Uberturbine.tscn",
+      "ZeroG": "res://Ego/Wheels/Wheel_ZeroG.tscn",
+      "Apollo_19_Metallic_Shadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "Aero": "res://Ego/Wheels_X_S/Wheel_Aero.tscn",
+      "Arachnid": "res://Ego/Wheels_Palladium/Arachnid21.tscn",
+      "ArachnidBlack": "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn",
+      "ArachnidCarbon": "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn",
+      "ArachnidSilver": "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn",
+      "BaseSilver": "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn",
+      "Cardenio": "res://Ego/Wheels_Palladium/Cardenio.tscn",
+      "Cyberstream": "res://Ego/Wheels_Palladium/Cyberstream.tscn",
+      "CycloneSilver": "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn",
+      "CycloneCarbon": "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn",
+      "Helix": "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn",
+      "SlipstreamCarbon": "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn",
+      "SlipstreamDark": "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn",
+      "SlipstreamSilver": "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn",
+      "TempestSilver": "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn",
+      "NewTurbine22Black": "res://Ego/Wheels_Palladium/New_Turbine_22.tscn",
+      "TurbineBlack": "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn",
+      "TurbineSilver": "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn",
+      "TwinTurbineCarbon": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn",
+      "TwinTurbineSilver": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn",
+      "Apollo19MetallicShadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "SemiDefault": "res://Ego/Wheels_Semi/Wheel_F_Semi.glb",
+      "CybertruckBase18": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn",
+      "CybertruckBase20": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn",
+      "CybertruckPremium": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+      "Glider": "res://Ego/v2023/Wheels/Glider.tscn",
+      "Helix19": "res://Ego/v2023/Wheels/Helix_19.tscn",
+      "Wishbone_19": "res://Ego/v2023/Wheels/Wishbone_19.tscn",
+      "Wishbone_20": "res://Ego/v2023/Wheels/Wishbone_20.tscn",
+      "D50_18": "res://Ego/Wheels/Wheel_D50.tscn",
+      "Nova19Dark": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn",
+      "E41_18": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn",
+      "Crossflow_19": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn",
+      "HelixV2_20": "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn",
+      "Standard_19": "res://Ego/Wheels_P3/Wheel_Standard.tscn",
+      "Halo22": "res://Ego/Wheels_P3/Wheel_Halo.tscn",
+      "Riptide20": "res://Ego/Wheels_P3/Wheel_Riptide.tscn",
+      "Cypress21": "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn",
+      "HelixV2_20_Dark": "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn",
+      "ArachnidV2_21": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn",
+      "MachinaV2_19": "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn",
+      "Uberhelix_20": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn"
+    },
+    "cap_overrides": {
+      "Gemini": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn"
+      },
+      "PinwheelRefresh": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn"
+      },
+      "Glider": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Glider_No_Caps.tscn"
+      },
+      "D50_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D50_No_Caps.tscn"
+      },
+      "Nova19Dark": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn"
+      },
+      "E41_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn"
+      },
+      "Crossflow_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn"
+      },
+      "Helix19": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn"
+      },
+      "Standard_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn"
+      },
+      "Halo22": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn"
+      },
+      "Riptide20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn"
+      },
+      "ArachnidV2_21": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn"
+      },
+      "MachinaV2_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn"
+      },
+      "Cardenio": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn"
+      },
+      "Uberhelix_20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn"
+      },
+      "Cypress21": {
+        "caps": true,
+        "scene": "res://Ego/Wheels_P3/Wheel_Cypress.tscn"
+      },
+      "Apollo_19_Metallic_Shadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Apollo19MetallicShadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Wishbone_19": {
+        "caps": true,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_20.tscn"
+      },
+      "Wishbone_20": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_19.tscn"
+      },
+      "CybertruckBase18": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn"
+      },
+      "CybertruckBase20": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn"
+      },
+      "CybertruckPremium": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn"
+      }
+    },
+    "paint_presets": {
+      "RedMulticoat": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "SolidBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SilverMetallic": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightSilver": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "DeepBlue": {
+        "color": "#000919",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "PearlWhite": {
+        "color": "#181818",
+        "metallic": 0.25,
+        "roughness": 0.2
+      },
+      "TitaniumCopper": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Red": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "Black": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "Silver": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "Grey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SignatureBlue": {
+        "color": "#000206",
+        "metallic": 0.2,
+        "roughness": 0.04
+      },
+      "White": {
+        "color": "#141414",
+        "metallic": 0.2,
+        "roughness": 0.3
+      },
+      "Titanium": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Pearl": {
+        "color": "#131313",
+        "metallic": 0.01,
+        "roughness": 0.04
+      },
+      "MetallicBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SteelGrey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Green": {
+        "color": "#060a0a",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Brown": {
+        "color": "#181514",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SigRed": {
+        "color": "#110305",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "Blue": {
+        "color": "#000104",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightCherryRed": {
+        "color": "#200006",
+        "metallic": 0.8,
+        "roughness": 0.01
+      },
+      "Quicksilver": {
+        "color": "#2b2d35",
+        "metallic": 0.85,
+        "roughness": 0.2
+      },
+      "UltraRed": {
+        "color": "#250006",
+        "metallic": 0.7,
+        "roughness": 0.05
+      },
+      "StealthGrey": {
+        "color": "#121417",
+        "metallic": 0.88,
+        "roughness": 0.1
+      },
+      "LunarSilver": {
+        "color": "#343438",
+        "metallic": 0.898,
+        "roughness": 0.28
+      },
+      "GlacierBlue": {
+        "color": "#12161f",
+        "metallic": 0.7,
+        "roughness": 0.1
+      },
+      "DiamondBlack": {
+        "color": "#040404",
+        "metallic": 0.75,
+        "roughness": 0.02
+      },
+      "FrostBlue": {
+        "color": "#111317",
+        "metallic": 0.716,
+        "roughness": 0.05
+      },
+      "SilkroadSilver": {
+        "color": "#2d2c2d",
+        "metallic": 0.826,
+        "roughness": 0.204
+      },
+      "MarineBlue": {
+        "color": "#01050a",
+        "metallic": 0.85,
+        "roughness": 0.02
+      },
+      "GarnetRed": {
+        "color": "#1d0305",
+        "metallic": 0.8,
+        "roughness": 0.05
+      },
+      "CoastalBlue": {
+        "color": "#040710",
+        "metallic": 0.5,
+        "roughness": 0.04
+      }
+    }
+  },
+  "model_x": {
+    "scene": "res://Ego/X/Model_X.tscn",
+    "car_type": "modelx",
+    "options": {
+      "wheel": [
+        "Apollo",
+        "Gemini",
+        "Induction",
+        "Pinwheel",
+        "PinwheelNoCap",
+        "PinwheelRefresh",
+        "StilettoBlack",
+        "StilettoDark",
+        "StilettoSilver",
+        "StilettoRefresh",
+        "UberTurbine",
+        "ZeroG",
+        "Apollo_19_Metallic_Shadow",
+        "Aero",
+        "Arachnid",
+        "ArachnidBlack",
+        "ArachnidCarbon",
+        "ArachnidSilver",
+        "BaseSilver",
+        "Cardenio",
+        "Cyberstream",
+        "CycloneSilver",
+        "CycloneCarbon",
+        "Helix",
+        "SlipstreamCarbon",
+        "SlipstreamDark",
+        "SlipstreamSilver",
+        "TempestSilver",
+        "NewTurbine22Black",
+        "TurbineBlack",
+        "TurbineSilver",
+        "TwinTurbineCarbon",
+        "TwinTurbineSilver",
+        "Apollo19MetallicShadow",
+        "SemiDefault",
+        "CybertruckBase18",
+        "CybertruckBase20",
+        "CybertruckPremium",
+        "Glider",
+        "Helix19",
+        "Wishbone_19",
+        "Wishbone_20",
+        "D50_18",
+        "Nova19Dark",
+        "E41_18",
+        "Crossflow_19",
+        "HelixV2_20",
+        "Standard_19",
+        "Halo22",
+        "Riptide20",
+        "Cypress21",
+        "HelixV2_20_Dark",
+        "ArachnidV2_21",
+        "MachinaV2_19",
+        "Uberhelix_20"
+      ],
+      "caps": [
+        "default",
+        "on",
+        "off"
+      ],
+      "part": [
+        "vehicle",
+        "wheel"
+      ],
+      "paint": [
+        "RedMulticoat",
+        "SolidBlack",
+        "SilverMetallic",
+        "MidnightSilver",
+        "DeepBlue",
+        "PearlWhite",
+        "TitaniumCopper",
+        "Red",
+        "Black",
+        "Silver",
+        "Grey",
+        "SignatureBlue",
+        "White",
+        "Titanium",
+        "Pearl",
+        "MetallicBlack",
+        "SteelGrey",
+        "Green",
+        "Brown",
+        "SigRed",
+        "Blue",
+        "MidnightCherryRed",
+        "Quicksilver",
+        "UltraRed",
+        "StealthGrey",
+        "LunarSilver",
+        "GlacierBlue",
+        "DiamondBlack",
+        "FrostBlue",
+        "SilkroadSilver",
+        "MarineBlue",
+        "GarnetRed",
+        "CoastalBlue"
+      ],
+      "plate": [
+        "US",
+        "EU"
+      ],
+      "brakes": [
+        "standard",
+        "performance"
+      ],
+      "rhd": [
+        false,
+        true
+      ],
+      "seat_count": [
+        5,
+        6,
+        7
+      ],
+      "interior": [
+        "Black",
+        "Cream",
+        "White"
+      ],
+      "exterior_trim": [
+        "Chrome",
+        "Black"
+      ]
+    },
+    "defaults": {
+      "wheel": "SlipstreamSilver",
+      "caps": "default",
+      "part": "vehicle",
+      "paint": "PearlWhite",
+      "plate": "US",
+      "brakes": "standard",
+      "rhd": false,
+      "seat_count": 5,
+      "interior": "Black",
+      "exterior_trim": "Chrome"
+    },
+    "wheel_scenes": {
+      "Apollo": "res://Ego/Wheels/Wheel_Apollo.tscn",
+      "Gemini": "res://Ego/Wheels/Wheel_Gemini.tscn",
+      "Induction": "res://Ego/Wheels/Wheel_Induction.tscn",
+      "Pinwheel": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+      "PinwheelNoCap": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn",
+      "PinwheelRefresh": "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn",
+      "StilettoBlack": "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn",
+      "StilettoDark": "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn",
+      "StilettoSilver": "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn",
+      "StilettoRefresh": "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn",
+      "UberTurbine": "res://Ego/Wheels/Wheel_Uberturbine.tscn",
+      "ZeroG": "res://Ego/Wheels/Wheel_ZeroG.tscn",
+      "Apollo_19_Metallic_Shadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "Aero": "res://Ego/Wheels_X_S/Wheel_Aero.tscn",
+      "Arachnid": "res://Ego/Wheels_Palladium/Arachnid21.tscn",
+      "ArachnidBlack": "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn",
+      "ArachnidCarbon": "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn",
+      "ArachnidSilver": "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn",
+      "BaseSilver": "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn",
+      "Cardenio": "res://Ego/Wheels_Palladium/Cardenio.tscn",
+      "Cyberstream": "res://Ego/Wheels_Palladium/Cyberstream.tscn",
+      "CycloneSilver": "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn",
+      "CycloneCarbon": "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn",
+      "Helix": "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn",
+      "SlipstreamCarbon": "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn",
+      "SlipstreamDark": "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn",
+      "SlipstreamSilver": "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn",
+      "TempestSilver": "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn",
+      "NewTurbine22Black": "res://Ego/Wheels_Palladium/New_Turbine_22.tscn",
+      "TurbineBlack": "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn",
+      "TurbineSilver": "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn",
+      "TwinTurbineCarbon": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn",
+      "TwinTurbineSilver": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn",
+      "Apollo19MetallicShadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "SemiDefault": "res://Ego/Wheels_Semi/Wheel_F_Semi.glb",
+      "CybertruckBase18": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn",
+      "CybertruckBase20": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn",
+      "CybertruckPremium": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+      "Glider": "res://Ego/v2023/Wheels/Glider.tscn",
+      "Helix19": "res://Ego/v2023/Wheels/Helix_19.tscn",
+      "Wishbone_19": "res://Ego/v2023/Wheels/Wishbone_19.tscn",
+      "Wishbone_20": "res://Ego/v2023/Wheels/Wishbone_20.tscn",
+      "D50_18": "res://Ego/Wheels/Wheel_D50.tscn",
+      "Nova19Dark": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn",
+      "E41_18": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn",
+      "Crossflow_19": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn",
+      "HelixV2_20": "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn",
+      "Standard_19": "res://Ego/Wheels_P3/Wheel_Standard.tscn",
+      "Halo22": "res://Ego/Wheels_P3/Wheel_Halo.tscn",
+      "Riptide20": "res://Ego/Wheels_P3/Wheel_Riptide.tscn",
+      "Cypress21": "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn",
+      "HelixV2_20_Dark": "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn",
+      "ArachnidV2_21": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn",
+      "MachinaV2_19": "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn",
+      "Uberhelix_20": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn"
+    },
+    "cap_overrides": {
+      "Gemini": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn"
+      },
+      "PinwheelRefresh": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn"
+      },
+      "Glider": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Glider_No_Caps.tscn"
+      },
+      "D50_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D50_No_Caps.tscn"
+      },
+      "Nova19Dark": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn"
+      },
+      "E41_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn"
+      },
+      "Crossflow_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn"
+      },
+      "Helix19": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn"
+      },
+      "Standard_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn"
+      },
+      "Halo22": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn"
+      },
+      "Riptide20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn"
+      },
+      "ArachnidV2_21": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn"
+      },
+      "MachinaV2_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn"
+      },
+      "Cardenio": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn"
+      },
+      "Uberhelix_20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn"
+      },
+      "Cypress21": {
+        "caps": true,
+        "scene": "res://Ego/Wheels_P3/Wheel_Cypress.tscn"
+      },
+      "Apollo_19_Metallic_Shadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Apollo19MetallicShadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Wishbone_19": {
+        "caps": true,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_20.tscn"
+      },
+      "Wishbone_20": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_19.tscn"
+      },
+      "CybertruckBase18": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn"
+      },
+      "CybertruckBase20": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn"
+      },
+      "CybertruckPremium": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn"
+      }
+    },
+    "paint_presets": {
+      "RedMulticoat": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "SolidBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SilverMetallic": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightSilver": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "DeepBlue": {
+        "color": "#000919",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "PearlWhite": {
+        "color": "#181818",
+        "metallic": 0.25,
+        "roughness": 0.2
+      },
+      "TitaniumCopper": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Red": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "Black": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "Silver": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "Grey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SignatureBlue": {
+        "color": "#000206",
+        "metallic": 0.2,
+        "roughness": 0.04
+      },
+      "White": {
+        "color": "#141414",
+        "metallic": 0.2,
+        "roughness": 0.3
+      },
+      "Titanium": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Pearl": {
+        "color": "#131313",
+        "metallic": 0.01,
+        "roughness": 0.04
+      },
+      "MetallicBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SteelGrey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Green": {
+        "color": "#060a0a",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Brown": {
+        "color": "#181514",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SigRed": {
+        "color": "#110305",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "Blue": {
+        "color": "#000104",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightCherryRed": {
+        "color": "#200006",
+        "metallic": 0.8,
+        "roughness": 0.01
+      },
+      "Quicksilver": {
+        "color": "#2b2d35",
+        "metallic": 0.85,
+        "roughness": 0.2
+      },
+      "UltraRed": {
+        "color": "#250006",
+        "metallic": 0.7,
+        "roughness": 0.05
+      },
+      "StealthGrey": {
+        "color": "#121417",
+        "metallic": 0.88,
+        "roughness": 0.1
+      },
+      "LunarSilver": {
+        "color": "#343438",
+        "metallic": 0.898,
+        "roughness": 0.28
+      },
+      "GlacierBlue": {
+        "color": "#12161f",
+        "metallic": 0.7,
+        "roughness": 0.1
+      },
+      "DiamondBlack": {
+        "color": "#040404",
+        "metallic": 0.75,
+        "roughness": 0.02
+      },
+      "FrostBlue": {
+        "color": "#111317",
+        "metallic": 0.716,
+        "roughness": 0.05
+      },
+      "SilkroadSilver": {
+        "color": "#2d2c2d",
+        "metallic": 0.826,
+        "roughness": 0.204
+      },
+      "MarineBlue": {
+        "color": "#01050a",
+        "metallic": 0.85,
+        "roughness": 0.02
+      },
+      "GarnetRed": {
+        "color": "#1d0305",
+        "metallic": 0.8,
+        "roughness": 0.05
+      },
+      "CoastalBlue": {
+        "color": "#040710",
+        "metallic": 0.5,
+        "roughness": 0.04
+      }
+    }
+  },
+  "model_x_palladium": {
+    "scene": "res://Ego/X_Palladium/X_Palladium.tscn",
+    "car_type": "tamarind",
+    "options": {
+      "wheel": [
+        "Apollo",
+        "Gemini",
+        "Induction",
+        "Pinwheel",
+        "PinwheelNoCap",
+        "PinwheelRefresh",
+        "StilettoBlack",
+        "StilettoDark",
+        "StilettoSilver",
+        "StilettoRefresh",
+        "UberTurbine",
+        "ZeroG",
+        "Apollo_19_Metallic_Shadow",
+        "Aero",
+        "Arachnid",
+        "ArachnidBlack",
+        "ArachnidCarbon",
+        "ArachnidSilver",
+        "BaseSilver",
+        "Cardenio",
+        "Cyberstream",
+        "CycloneSilver",
+        "CycloneCarbon",
+        "Helix",
+        "SlipstreamCarbon",
+        "SlipstreamDark",
+        "SlipstreamSilver",
+        "TempestSilver",
+        "NewTurbine22Black",
+        "TurbineBlack",
+        "TurbineSilver",
+        "TwinTurbineCarbon",
+        "TwinTurbineSilver",
+        "Apollo19MetallicShadow",
+        "SemiDefault",
+        "CybertruckBase18",
+        "CybertruckBase20",
+        "CybertruckPremium",
+        "Glider",
+        "Helix19",
+        "Wishbone_19",
+        "Wishbone_20",
+        "D50_18",
+        "Nova19Dark",
+        "E41_18",
+        "Crossflow_19",
+        "HelixV2_20",
+        "Standard_19",
+        "Halo22",
+        "Riptide20",
+        "Cypress21",
+        "HelixV2_20_Dark",
+        "ArachnidV2_21",
+        "MachinaV2_19",
+        "Uberhelix_20"
+      ],
+      "caps": [
+        "default",
+        "on",
+        "off"
+      ],
+      "part": [
+        "vehicle",
+        "wheel"
+      ],
+      "paint": [
+        "RedMulticoat",
+        "SolidBlack",
+        "SilverMetallic",
+        "MidnightSilver",
+        "DeepBlue",
+        "PearlWhite",
+        "TitaniumCopper",
+        "Red",
+        "Black",
+        "Silver",
+        "Grey",
+        "SignatureBlue",
+        "White",
+        "Titanium",
+        "Pearl",
+        "MetallicBlack",
+        "SteelGrey",
+        "Green",
+        "Brown",
+        "SigRed",
+        "Blue",
+        "MidnightCherryRed",
+        "Quicksilver",
+        "UltraRed",
+        "StealthGrey",
+        "LunarSilver",
+        "GlacierBlue",
+        "DiamondBlack",
+        "FrostBlue",
+        "SilkroadSilver",
+        "MarineBlue",
+        "GarnetRed",
+        "CoastalBlue"
+      ],
+      "plate": [
+        "US",
+        "EU"
+      ],
+      "brakes": [
+        "standard",
+        "performance"
+      ],
+      "rhd": [
+        false,
+        true
+      ],
+      "seat_count": [
+        5,
+        6,
+        7
+      ],
+      "interior": [
+        "Black",
+        "Cream",
+        "White",
+        "BlackCarbonFiber",
+        "CreamCarbonFiber",
+        "WhiteCarbonFiber"
+      ],
+      "headlamp": [
+        "Original",
+        "Global"
+      ],
+      "steering_wheel": [
+        "Standard",
+        "Yoke"
+      ],
+      "rearlight": [
+        "Original",
+        "Global"
+      ],
+      "signature": [
+        false,
+        true
+      ],
+      "drivetrain": [
+        "RWD",
+        "AWD",
+        "AWDTriMotor"
+      ],
+      "wordmark": [
+        false,
+        true
+      ]
+    },
+    "defaults": {
+      "wheel": "Cyberstream",
+      "caps": "default",
+      "part": "vehicle",
+      "paint": "PearlWhite",
+      "plate": "US",
+      "brakes": "standard",
+      "rhd": false,
+      "seat_count": 5,
+      "interior": "Black",
+      "headlamp": "Original",
+      "steering_wheel": "Standard",
+      "rearlight": "Original",
+      "signature": false,
+      "drivetrain": "RWD",
+      "wordmark": true
+    },
+    "wheel_scenes": {
+      "Apollo": "res://Ego/Wheels/Wheel_Apollo.tscn",
+      "Gemini": "res://Ego/Wheels/Wheel_Gemini.tscn",
+      "Induction": "res://Ego/Wheels/Wheel_Induction.tscn",
+      "Pinwheel": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+      "PinwheelNoCap": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn",
+      "PinwheelRefresh": "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn",
+      "StilettoBlack": "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn",
+      "StilettoDark": "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn",
+      "StilettoSilver": "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn",
+      "StilettoRefresh": "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn",
+      "UberTurbine": "res://Ego/Wheels/Wheel_Uberturbine.tscn",
+      "ZeroG": "res://Ego/Wheels/Wheel_ZeroG.tscn",
+      "Apollo_19_Metallic_Shadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "Aero": "res://Ego/Wheels_X_S/Wheel_Aero.tscn",
+      "Arachnid": "res://Ego/Wheels_Palladium/Arachnid21.tscn",
+      "ArachnidBlack": "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn",
+      "ArachnidCarbon": "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn",
+      "ArachnidSilver": "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn",
+      "BaseSilver": "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn",
+      "Cardenio": "res://Ego/Wheels_Palladium/Cardenio.tscn",
+      "Cyberstream": "res://Ego/Wheels_Palladium/Cyberstream.tscn",
+      "CycloneSilver": "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn",
+      "CycloneCarbon": "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn",
+      "Helix": "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn",
+      "SlipstreamCarbon": "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn",
+      "SlipstreamDark": "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn",
+      "SlipstreamSilver": "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn",
+      "TempestSilver": "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn",
+      "NewTurbine22Black": "res://Ego/Wheels_Palladium/New_Turbine_22.tscn",
+      "TurbineBlack": "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn",
+      "TurbineSilver": "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn",
+      "TwinTurbineCarbon": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn",
+      "TwinTurbineSilver": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn",
+      "Apollo19MetallicShadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "SemiDefault": "res://Ego/Wheels_Semi/Wheel_F_Semi.glb",
+      "CybertruckBase18": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn",
+      "CybertruckBase20": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn",
+      "CybertruckPremium": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+      "Glider": "res://Ego/v2023/Wheels/Glider.tscn",
+      "Helix19": "res://Ego/v2023/Wheels/Helix_19.tscn",
+      "Wishbone_19": "res://Ego/v2023/Wheels/Wishbone_19.tscn",
+      "Wishbone_20": "res://Ego/v2023/Wheels/Wishbone_20.tscn",
+      "D50_18": "res://Ego/Wheels/Wheel_D50.tscn",
+      "Nova19Dark": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn",
+      "E41_18": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn",
+      "Crossflow_19": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn",
+      "HelixV2_20": "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn",
+      "Standard_19": "res://Ego/Wheels_P3/Wheel_Standard.tscn",
+      "Halo22": "res://Ego/Wheels_P3/Wheel_Halo.tscn",
+      "Riptide20": "res://Ego/Wheels_P3/Wheel_Riptide.tscn",
+      "Cypress21": "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn",
+      "HelixV2_20_Dark": "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn",
+      "ArachnidV2_21": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn",
+      "MachinaV2_19": "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn",
+      "Uberhelix_20": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn"
+    },
+    "cap_overrides": {
+      "Gemini": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn"
+      },
+      "PinwheelRefresh": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn"
+      },
+      "Glider": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Glider_No_Caps.tscn"
+      },
+      "D50_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D50_No_Caps.tscn"
+      },
+      "Nova19Dark": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn"
+      },
+      "E41_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn"
+      },
+      "Crossflow_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn"
+      },
+      "Helix19": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn"
+      },
+      "Standard_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn"
+      },
+      "Halo22": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn"
+      },
+      "Riptide20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn"
+      },
+      "ArachnidV2_21": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn"
+      },
+      "MachinaV2_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn"
+      },
+      "Cardenio": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn"
+      },
+      "Uberhelix_20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn"
+      },
+      "Cypress21": {
+        "caps": true,
+        "scene": "res://Ego/Wheels_P3/Wheel_Cypress.tscn"
+      },
+      "Apollo_19_Metallic_Shadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Apollo19MetallicShadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Wishbone_19": {
+        "caps": true,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_20.tscn"
+      },
+      "Wishbone_20": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_19.tscn"
+      },
+      "CybertruckBase18": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn"
+      },
+      "CybertruckBase20": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn"
+      },
+      "CybertruckPremium": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn"
+      }
+    },
+    "paint_presets": {
+      "RedMulticoat": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "SolidBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SilverMetallic": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightSilver": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "DeepBlue": {
+        "color": "#000919",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "PearlWhite": {
+        "color": "#181818",
+        "metallic": 0.25,
+        "roughness": 0.2
+      },
+      "TitaniumCopper": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Red": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "Black": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "Silver": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "Grey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SignatureBlue": {
+        "color": "#000206",
+        "metallic": 0.2,
+        "roughness": 0.04
+      },
+      "White": {
+        "color": "#141414",
+        "metallic": 0.2,
+        "roughness": 0.3
+      },
+      "Titanium": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Pearl": {
+        "color": "#131313",
+        "metallic": 0.01,
+        "roughness": 0.04
+      },
+      "MetallicBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SteelGrey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Green": {
+        "color": "#060a0a",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Brown": {
+        "color": "#181514",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SigRed": {
+        "color": "#110305",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "Blue": {
+        "color": "#000104",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightCherryRed": {
+        "color": "#200006",
+        "metallic": 0.8,
+        "roughness": 0.01
+      },
+      "Quicksilver": {
+        "color": "#2b2d35",
+        "metallic": 0.85,
+        "roughness": 0.2
+      },
+      "UltraRed": {
+        "color": "#250006",
+        "metallic": 0.7,
+        "roughness": 0.05
+      },
+      "StealthGrey": {
+        "color": "#121417",
+        "metallic": 0.88,
+        "roughness": 0.1
+      },
+      "LunarSilver": {
+        "color": "#343438",
+        "metallic": 0.898,
+        "roughness": 0.28
+      },
+      "GlacierBlue": {
+        "color": "#12161f",
+        "metallic": 0.7,
+        "roughness": 0.1
+      },
+      "DiamondBlack": {
+        "color": "#040404",
+        "metallic": 0.75,
+        "roughness": 0.02
+      },
+      "FrostBlue": {
+        "color": "#111317",
+        "metallic": 0.716,
+        "roughness": 0.05
+      },
+      "SilkroadSilver": {
+        "color": "#2d2c2d",
+        "metallic": 0.826,
+        "roughness": 0.204
+      },
+      "MarineBlue": {
+        "color": "#01050a",
+        "metallic": 0.85,
+        "roughness": 0.02
+      },
+      "GarnetRed": {
+        "color": "#1d0305",
+        "metallic": 0.8,
+        "roughness": 0.05
+      },
+      "CoastalBlue": {
+        "color": "#040710",
+        "metallic": 0.5,
+        "roughness": 0.04
+      }
+    }
+  },
+  "model_y": {
+    "scene": "res://Ego/Y_High/ModelY_High.tscn",
+    "car_type": "modely",
+    "options": {
+      "wheel": [
+        "Apollo",
+        "Gemini",
+        "Induction",
+        "Pinwheel",
+        "PinwheelNoCap",
+        "PinwheelRefresh",
+        "StilettoBlack",
+        "StilettoDark",
+        "StilettoSilver",
+        "StilettoRefresh",
+        "UberTurbine",
+        "ZeroG",
+        "Apollo_19_Metallic_Shadow",
+        "Aero",
+        "Arachnid",
+        "ArachnidBlack",
+        "ArachnidCarbon",
+        "ArachnidSilver",
+        "BaseSilver",
+        "Cardenio",
+        "Cyberstream",
+        "CycloneSilver",
+        "CycloneCarbon",
+        "Helix",
+        "SlipstreamCarbon",
+        "SlipstreamDark",
+        "SlipstreamSilver",
+        "TempestSilver",
+        "NewTurbine22Black",
+        "TurbineBlack",
+        "TurbineSilver",
+        "TwinTurbineCarbon",
+        "TwinTurbineSilver",
+        "Apollo19MetallicShadow",
+        "SemiDefault",
+        "CybertruckBase18",
+        "CybertruckBase20",
+        "CybertruckPremium",
+        "Glider",
+        "Helix19",
+        "Wishbone_19",
+        "Wishbone_20",
+        "D50_18",
+        "Nova19Dark",
+        "E41_18",
+        "Crossflow_19",
+        "HelixV2_20",
+        "Standard_19",
+        "Halo22",
+        "Riptide20",
+        "Cypress21",
+        "HelixV2_20_Dark",
+        "ArachnidV2_21",
+        "MachinaV2_19",
+        "Uberhelix_20"
+      ],
+      "caps": [
+        "default",
+        "on",
+        "off"
+      ],
+      "part": [
+        "vehicle",
+        "wheel"
+      ],
+      "paint": [
+        "RedMulticoat",
+        "SolidBlack",
+        "SilverMetallic",
+        "MidnightSilver",
+        "DeepBlue",
+        "PearlWhite",
+        "TitaniumCopper",
+        "Red",
+        "Black",
+        "Silver",
+        "Grey",
+        "SignatureBlue",
+        "White",
+        "Titanium",
+        "Pearl",
+        "MetallicBlack",
+        "SteelGrey",
+        "Green",
+        "Brown",
+        "SigRed",
+        "Blue",
+        "MidnightCherryRed",
+        "Quicksilver",
+        "UltraRed",
+        "StealthGrey",
+        "LunarSilver",
+        "GlacierBlue",
+        "DiamondBlack",
+        "FrostBlue",
+        "SilkroadSilver",
+        "MarineBlue",
+        "GarnetRed",
+        "CoastalBlue"
+      ],
+      "plate": [
+        "US",
+        "EU"
+      ],
+      "brakes": [
+        "standard",
+        "performance"
+      ],
+      "rhd": [
+        false,
+        true
+      ],
+      "spoiler": [
+        false,
+        true
+      ],
+      "seat_count": [
+        5,
+        7
+      ],
+      "interior": [
+        "Black",
+        "Black2",
+        "White",
+        "White2"
+      ],
+      "fog_lamps": [
+        false,
+        true
+      ],
+      "headlamp": [
+        "Original",
+        "Global"
+      ]
+    },
+    "defaults": {
+      "wheel": "Gemini",
+      "caps": "default",
+      "part": "vehicle",
+      "paint": "PearlWhite",
+      "plate": "US",
+      "brakes": "standard",
+      "rhd": false,
+      "spoiler": false,
+      "seat_count": 5,
+      "interior": "Black",
+      "fog_lamps": true,
+      "headlamp": "Original"
+    },
+    "wheel_scenes": {
+      "Apollo": "res://Ego/Wheels/Wheel_Apollo.tscn",
+      "Gemini": "res://Ego/Wheels/Wheel_Gemini.tscn",
+      "Induction": "res://Ego/Wheels/Wheel_Induction.tscn",
+      "Pinwheel": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+      "PinwheelNoCap": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn",
+      "PinwheelRefresh": "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn",
+      "StilettoBlack": "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn",
+      "StilettoDark": "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn",
+      "StilettoSilver": "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn",
+      "StilettoRefresh": "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn",
+      "UberTurbine": "res://Ego/Wheels/Wheel_Uberturbine.tscn",
+      "ZeroG": "res://Ego/Wheels/Wheel_ZeroG.tscn",
+      "Apollo_19_Metallic_Shadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "Aero": "res://Ego/Wheels_X_S/Wheel_Aero.tscn",
+      "Arachnid": "res://Ego/Wheels_Palladium/Arachnid21.tscn",
+      "ArachnidBlack": "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn",
+      "ArachnidCarbon": "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn",
+      "ArachnidSilver": "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn",
+      "BaseSilver": "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn",
+      "Cardenio": "res://Ego/Wheels_Palladium/Cardenio.tscn",
+      "Cyberstream": "res://Ego/Wheels_Palladium/Cyberstream.tscn",
+      "CycloneSilver": "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn",
+      "CycloneCarbon": "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn",
+      "Helix": "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn",
+      "SlipstreamCarbon": "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn",
+      "SlipstreamDark": "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn",
+      "SlipstreamSilver": "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn",
+      "TempestSilver": "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn",
+      "NewTurbine22Black": "res://Ego/Wheels_Palladium/New_Turbine_22.tscn",
+      "TurbineBlack": "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn",
+      "TurbineSilver": "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn",
+      "TwinTurbineCarbon": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn",
+      "TwinTurbineSilver": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn",
+      "Apollo19MetallicShadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "SemiDefault": "res://Ego/Wheels_Semi/Wheel_F_Semi.glb",
+      "CybertruckBase18": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn",
+      "CybertruckBase20": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn",
+      "CybertruckPremium": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+      "Glider": "res://Ego/v2023/Wheels/Glider.tscn",
+      "Helix19": "res://Ego/v2023/Wheels/Helix_19.tscn",
+      "Wishbone_19": "res://Ego/v2023/Wheels/Wishbone_19.tscn",
+      "Wishbone_20": "res://Ego/v2023/Wheels/Wishbone_20.tscn",
+      "D50_18": "res://Ego/Wheels/Wheel_D50.tscn",
+      "Nova19Dark": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn",
+      "E41_18": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn",
+      "Crossflow_19": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn",
+      "HelixV2_20": "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn",
+      "Standard_19": "res://Ego/Wheels_P3/Wheel_Standard.tscn",
+      "Halo22": "res://Ego/Wheels_P3/Wheel_Halo.tscn",
+      "Riptide20": "res://Ego/Wheels_P3/Wheel_Riptide.tscn",
+      "Cypress21": "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn",
+      "HelixV2_20_Dark": "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn",
+      "ArachnidV2_21": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn",
+      "MachinaV2_19": "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn",
+      "Uberhelix_20": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn"
+    },
+    "cap_overrides": {
+      "Gemini": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn"
+      },
+      "PinwheelRefresh": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn"
+      },
+      "Glider": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Glider_No_Caps.tscn"
+      },
+      "D50_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D50_No_Caps.tscn"
+      },
+      "Nova19Dark": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn"
+      },
+      "E41_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn"
+      },
+      "Crossflow_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn"
+      },
+      "Helix19": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn"
+      },
+      "Standard_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn"
+      },
+      "Halo22": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn"
+      },
+      "Riptide20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn"
+      },
+      "ArachnidV2_21": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn"
+      },
+      "MachinaV2_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn"
+      },
+      "Cardenio": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn"
+      },
+      "Uberhelix_20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn"
+      },
+      "Cypress21": {
+        "caps": true,
+        "scene": "res://Ego/Wheels_P3/Wheel_Cypress.tscn"
+      },
+      "Apollo_19_Metallic_Shadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Apollo19MetallicShadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Wishbone_19": {
+        "caps": true,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_20.tscn"
+      },
+      "Wishbone_20": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_19.tscn"
+      },
+      "CybertruckBase18": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn"
+      },
+      "CybertruckBase20": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn"
+      },
+      "CybertruckPremium": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn"
+      }
+    },
+    "paint_presets": {
+      "RedMulticoat": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "SolidBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SilverMetallic": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightSilver": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "DeepBlue": {
+        "color": "#000919",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "PearlWhite": {
+        "color": "#181818",
+        "metallic": 0.25,
+        "roughness": 0.2
+      },
+      "TitaniumCopper": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Red": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "Black": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "Silver": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "Grey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SignatureBlue": {
+        "color": "#000206",
+        "metallic": 0.2,
+        "roughness": 0.04
+      },
+      "White": {
+        "color": "#141414",
+        "metallic": 0.2,
+        "roughness": 0.3
+      },
+      "Titanium": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Pearl": {
+        "color": "#131313",
+        "metallic": 0.01,
+        "roughness": 0.04
+      },
+      "MetallicBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SteelGrey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Green": {
+        "color": "#060a0a",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Brown": {
+        "color": "#181514",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SigRed": {
+        "color": "#110305",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "Blue": {
+        "color": "#000104",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightCherryRed": {
+        "color": "#200006",
+        "metallic": 0.8,
+        "roughness": 0.01
+      },
+      "Quicksilver": {
+        "color": "#2b2d35",
+        "metallic": 0.85,
+        "roughness": 0.2
+      },
+      "UltraRed": {
+        "color": "#250006",
+        "metallic": 0.7,
+        "roughness": 0.05
+      },
+      "StealthGrey": {
+        "color": "#121417",
+        "metallic": 0.88,
+        "roughness": 0.1
+      },
+      "LunarSilver": {
+        "color": "#343438",
+        "metallic": 0.898,
+        "roughness": 0.28
+      },
+      "GlacierBlue": {
+        "color": "#12161f",
+        "metallic": 0.7,
+        "roughness": 0.1
+      },
+      "DiamondBlack": {
+        "color": "#040404",
+        "metallic": 0.75,
+        "roughness": 0.02
+      },
+      "FrostBlue": {
+        "color": "#111317",
+        "metallic": 0.716,
+        "roughness": 0.05
+      },
+      "SilkroadSilver": {
+        "color": "#2d2c2d",
+        "metallic": 0.826,
+        "roughness": 0.204
+      },
+      "MarineBlue": {
+        "color": "#01050a",
+        "metallic": 0.85,
+        "roughness": 0.02
+      },
+      "GarnetRed": {
+        "color": "#1d0305",
+        "metallic": 0.8,
+        "roughness": 0.05
+      },
+      "CoastalBlue": {
+        "color": "#040710",
+        "metallic": 0.5,
+        "roughness": 0.04
+      }
+    }
+  },
+  "bayberry": {
+    "scene": "res://Ego/Bayberry/Bayberry.tscn",
+    "car_type": "modely",
+    "options": {
+      "wheel": [
+        "Apollo",
+        "Gemini",
+        "Induction",
+        "Pinwheel",
+        "PinwheelNoCap",
+        "PinwheelRefresh",
+        "StilettoBlack",
+        "StilettoDark",
+        "StilettoSilver",
+        "StilettoRefresh",
+        "UberTurbine",
+        "ZeroG",
+        "Apollo_19_Metallic_Shadow",
+        "Aero",
+        "Arachnid",
+        "ArachnidBlack",
+        "ArachnidCarbon",
+        "ArachnidSilver",
+        "BaseSilver",
+        "Cardenio",
+        "Cyberstream",
+        "CycloneSilver",
+        "CycloneCarbon",
+        "Helix",
+        "SlipstreamCarbon",
+        "SlipstreamDark",
+        "SlipstreamSilver",
+        "TempestSilver",
+        "NewTurbine22Black",
+        "TurbineBlack",
+        "TurbineSilver",
+        "TwinTurbineCarbon",
+        "TwinTurbineSilver",
+        "Apollo19MetallicShadow",
+        "SemiDefault",
+        "CybertruckBase18",
+        "CybertruckBase20",
+        "CybertruckPremium",
+        "Glider",
+        "Helix19",
+        "Wishbone_19",
+        "Wishbone_20",
+        "D50_18",
+        "Nova19Dark",
+        "E41_18",
+        "Crossflow_19",
+        "HelixV2_20",
+        "Standard_19",
+        "Halo22",
+        "Riptide20",
+        "Cypress21",
+        "HelixV2_20_Dark",
+        "ArachnidV2_21",
+        "MachinaV2_19",
+        "Uberhelix_20"
+      ],
+      "caps": [
+        "default",
+        "on",
+        "off"
+      ],
+      "part": [
+        "vehicle",
+        "wheel"
+      ],
+      "paint": [
+        "RedMulticoat",
+        "SolidBlack",
+        "SilverMetallic",
+        "MidnightSilver",
+        "DeepBlue",
+        "PearlWhite",
+        "TitaniumCopper",
+        "Red",
+        "Black",
+        "Silver",
+        "Grey",
+        "SignatureBlue",
+        "White",
+        "Titanium",
+        "Pearl",
+        "MetallicBlack",
+        "SteelGrey",
+        "Green",
+        "Brown",
+        "SigRed",
+        "Blue",
+        "MidnightCherryRed",
+        "Quicksilver",
+        "UltraRed",
+        "StealthGrey",
+        "LunarSilver",
+        "GlacierBlue",
+        "DiamondBlack",
+        "FrostBlue",
+        "SilkroadSilver",
+        "MarineBlue",
+        "GarnetRed",
+        "CoastalBlue"
+      ],
+      "plate": [
+        "US",
+        "EU"
+      ],
+      "brakes": [
+        "standard",
+        "performance"
+      ],
+      "rhd": [
+        false,
+        true
+      ],
+      "seat_count": [
+        5,
+        7
+      ],
+      "interior": [
+        "Black",
+        "White"
+      ],
+      "upper_trim": [
+        "GREY",
+        "BLACK"
+      ],
+      "badging_material": [
+        "CHROME_SILVER",
+        "BLACK_MATTE"
+      ],
+      "tesla_badge": [
+        false,
+        true
+      ],
+      "fascia": [
+        "baseBayberry",
+        "performanceBayberry"
+      ]
+    },
+    "defaults": {
+      "wheel": "Gemini",
+      "caps": "default",
+      "part": "vehicle",
+      "paint": "PearlWhite",
+      "plate": "US",
+      "brakes": "standard",
+      "rhd": false,
+      "seat_count": 5,
+      "interior": "Black",
+      "upper_trim": "GREY",
+      "badging_material": "CHROME_SILVER",
+      "tesla_badge": false,
+      "fascia": "baseBayberry"
+    },
+    "wheel_scenes": {
+      "Apollo": "res://Ego/Wheels/Wheel_Apollo.tscn",
+      "Gemini": "res://Ego/Wheels/Wheel_Gemini.tscn",
+      "Induction": "res://Ego/Wheels/Wheel_Induction.tscn",
+      "Pinwheel": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+      "PinwheelNoCap": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn",
+      "PinwheelRefresh": "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn",
+      "StilettoBlack": "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn",
+      "StilettoDark": "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn",
+      "StilettoSilver": "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn",
+      "StilettoRefresh": "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn",
+      "UberTurbine": "res://Ego/Wheels/Wheel_Uberturbine.tscn",
+      "ZeroG": "res://Ego/Wheels/Wheel_ZeroG.tscn",
+      "Apollo_19_Metallic_Shadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "Aero": "res://Ego/Wheels_X_S/Wheel_Aero.tscn",
+      "Arachnid": "res://Ego/Wheels_Palladium/Arachnid21.tscn",
+      "ArachnidBlack": "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn",
+      "ArachnidCarbon": "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn",
+      "ArachnidSilver": "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn",
+      "BaseSilver": "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn",
+      "Cardenio": "res://Ego/Wheels_Palladium/Cardenio.tscn",
+      "Cyberstream": "res://Ego/Wheels_Palladium/Cyberstream.tscn",
+      "CycloneSilver": "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn",
+      "CycloneCarbon": "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn",
+      "Helix": "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn",
+      "SlipstreamCarbon": "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn",
+      "SlipstreamDark": "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn",
+      "SlipstreamSilver": "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn",
+      "TempestSilver": "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn",
+      "NewTurbine22Black": "res://Ego/Wheels_Palladium/New_Turbine_22.tscn",
+      "TurbineBlack": "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn",
+      "TurbineSilver": "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn",
+      "TwinTurbineCarbon": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn",
+      "TwinTurbineSilver": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn",
+      "Apollo19MetallicShadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "SemiDefault": "res://Ego/Wheels_Semi/Wheel_F_Semi.glb",
+      "CybertruckBase18": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn",
+      "CybertruckBase20": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn",
+      "CybertruckPremium": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+      "Glider": "res://Ego/v2023/Wheels/Glider.tscn",
+      "Helix19": "res://Ego/v2023/Wheels/Helix_19.tscn",
+      "Wishbone_19": "res://Ego/v2023/Wheels/Wishbone_19.tscn",
+      "Wishbone_20": "res://Ego/v2023/Wheels/Wishbone_20.tscn",
+      "D50_18": "res://Ego/Wheels/Wheel_D50.tscn",
+      "Nova19Dark": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn",
+      "E41_18": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn",
+      "Crossflow_19": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn",
+      "HelixV2_20": "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn",
+      "Standard_19": "res://Ego/Wheels_P3/Wheel_Standard.tscn",
+      "Halo22": "res://Ego/Wheels_P3/Wheel_Halo.tscn",
+      "Riptide20": "res://Ego/Wheels_P3/Wheel_Riptide.tscn",
+      "Cypress21": "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn",
+      "HelixV2_20_Dark": "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn",
+      "ArachnidV2_21": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn",
+      "MachinaV2_19": "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn",
+      "Uberhelix_20": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn"
+    },
+    "cap_overrides": {
+      "Gemini": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn"
+      },
+      "PinwheelRefresh": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn"
+      },
+      "Glider": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Glider_No_Caps.tscn"
+      },
+      "D50_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D50_No_Caps.tscn"
+      },
+      "Nova19Dark": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn"
+      },
+      "E41_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn"
+      },
+      "Crossflow_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn"
+      },
+      "Helix19": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn"
+      },
+      "Standard_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn"
+      },
+      "Halo22": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn"
+      },
+      "Riptide20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn"
+      },
+      "ArachnidV2_21": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn"
+      },
+      "MachinaV2_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn"
+      },
+      "Cardenio": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn"
+      },
+      "Uberhelix_20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn"
+      },
+      "Cypress21": {
+        "caps": true,
+        "scene": "res://Ego/Wheels_P3/Wheel_Cypress.tscn"
+      },
+      "Apollo_19_Metallic_Shadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Apollo19MetallicShadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Wishbone_19": {
+        "caps": true,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_20.tscn"
+      },
+      "Wishbone_20": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_19.tscn"
+      },
+      "CybertruckBase18": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn"
+      },
+      "CybertruckBase20": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn"
+      },
+      "CybertruckPremium": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn"
+      }
+    },
+    "paint_presets": {
+      "RedMulticoat": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "SolidBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SilverMetallic": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightSilver": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "DeepBlue": {
+        "color": "#000919",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "PearlWhite": {
+        "color": "#181818",
+        "metallic": 0.25,
+        "roughness": 0.2
+      },
+      "TitaniumCopper": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Red": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "Black": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "Silver": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "Grey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SignatureBlue": {
+        "color": "#000206",
+        "metallic": 0.2,
+        "roughness": 0.04
+      },
+      "White": {
+        "color": "#141414",
+        "metallic": 0.2,
+        "roughness": 0.3
+      },
+      "Titanium": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Pearl": {
+        "color": "#131313",
+        "metallic": 0.01,
+        "roughness": 0.04
+      },
+      "MetallicBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SteelGrey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Green": {
+        "color": "#060a0a",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Brown": {
+        "color": "#181514",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SigRed": {
+        "color": "#110305",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "Blue": {
+        "color": "#000104",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightCherryRed": {
+        "color": "#200006",
+        "metallic": 0.8,
+        "roughness": 0.01
+      },
+      "Quicksilver": {
+        "color": "#2b2d35",
+        "metallic": 0.85,
+        "roughness": 0.2
+      },
+      "UltraRed": {
+        "color": "#250006",
+        "metallic": 0.7,
+        "roughness": 0.05
+      },
+      "StealthGrey": {
+        "color": "#121417",
+        "metallic": 0.88,
+        "roughness": 0.1
+      },
+      "LunarSilver": {
+        "color": "#343438",
+        "metallic": 0.898,
+        "roughness": 0.28
+      },
+      "GlacierBlue": {
+        "color": "#12161f",
+        "metallic": 0.7,
+        "roughness": 0.1
+      },
+      "DiamondBlack": {
+        "color": "#040404",
+        "metallic": 0.75,
+        "roughness": 0.02
+      },
+      "FrostBlue": {
+        "color": "#111317",
+        "metallic": 0.716,
+        "roughness": 0.05
+      },
+      "SilkroadSilver": {
+        "color": "#2d2c2d",
+        "metallic": 0.826,
+        "roughness": 0.204
+      },
+      "MarineBlue": {
+        "color": "#01050a",
+        "metallic": 0.85,
+        "roughness": 0.02
+      },
+      "GarnetRed": {
+        "color": "#1d0305",
+        "metallic": 0.8,
+        "roughness": 0.05
+      },
+      "CoastalBlue": {
+        "color": "#040710",
+        "metallic": 0.5,
+        "roughness": 0.04
+      }
+    }
+  },
+  "bayberry_e41": {
+    "scene": "res://Ego/BayberryE41/BayberryE41.tscn",
+    "car_type": "modely",
+    "options": {
+      "wheel": [
+        "Apollo",
+        "Gemini",
+        "Induction",
+        "Pinwheel",
+        "PinwheelNoCap",
+        "PinwheelRefresh",
+        "StilettoBlack",
+        "StilettoDark",
+        "StilettoSilver",
+        "StilettoRefresh",
+        "UberTurbine",
+        "ZeroG",
+        "Apollo_19_Metallic_Shadow",
+        "Aero",
+        "Arachnid",
+        "ArachnidBlack",
+        "ArachnidCarbon",
+        "ArachnidSilver",
+        "BaseSilver",
+        "Cardenio",
+        "Cyberstream",
+        "CycloneSilver",
+        "CycloneCarbon",
+        "Helix",
+        "SlipstreamCarbon",
+        "SlipstreamDark",
+        "SlipstreamSilver",
+        "TempestSilver",
+        "NewTurbine22Black",
+        "TurbineBlack",
+        "TurbineSilver",
+        "TwinTurbineCarbon",
+        "TwinTurbineSilver",
+        "Apollo19MetallicShadow",
+        "SemiDefault",
+        "CybertruckBase18",
+        "CybertruckBase20",
+        "CybertruckPremium",
+        "Glider",
+        "Helix19",
+        "Wishbone_19",
+        "Wishbone_20",
+        "D50_18",
+        "Nova19Dark",
+        "E41_18",
+        "Crossflow_19",
+        "HelixV2_20",
+        "Standard_19",
+        "Halo22",
+        "Riptide20",
+        "Cypress21",
+        "HelixV2_20_Dark",
+        "ArachnidV2_21",
+        "MachinaV2_19",
+        "Uberhelix_20"
+      ],
+      "caps": [
+        "default",
+        "on",
+        "off"
+      ],
+      "part": [
+        "vehicle",
+        "wheel"
+      ],
+      "paint": [
+        "RedMulticoat",
+        "SolidBlack",
+        "SilverMetallic",
+        "MidnightSilver",
+        "DeepBlue",
+        "PearlWhite",
+        "TitaniumCopper",
+        "Red",
+        "Black",
+        "Silver",
+        "Grey",
+        "SignatureBlue",
+        "White",
+        "Titanium",
+        "Pearl",
+        "MetallicBlack",
+        "SteelGrey",
+        "Green",
+        "Brown",
+        "SigRed",
+        "Blue",
+        "MidnightCherryRed",
+        "Quicksilver",
+        "UltraRed",
+        "StealthGrey",
+        "LunarSilver",
+        "GlacierBlue",
+        "DiamondBlack",
+        "FrostBlue",
+        "SilkroadSilver",
+        "MarineBlue",
+        "GarnetRed",
+        "CoastalBlue"
+      ],
+      "plate": [
+        "US",
+        "EU"
+      ],
+      "brakes": [
+        "standard",
+        "performance"
+      ],
+      "rhd": [
+        false,
+        true
+      ],
+      "upper_trim": [
+        "GREY",
+        "BLACK"
+      ],
+      "badging_material": [
+        "CHROME_SILVER",
+        "BLACK_MATTE"
+      ],
+      "tesla_badge": [
+        false,
+        true
+      ]
+    },
+    "defaults": {
+      "wheel": "Gemini",
+      "caps": "default",
+      "part": "vehicle",
+      "paint": "PearlWhite",
+      "plate": "US",
+      "brakes": "standard",
+      "rhd": false,
+      "upper_trim": "GREY",
+      "badging_material": "CHROME_SILVER",
+      "tesla_badge": false
+    },
+    "wheel_scenes": {
+      "Apollo": "res://Ego/Wheels/Wheel_Apollo.tscn",
+      "Gemini": "res://Ego/Wheels/Wheel_Gemini.tscn",
+      "Induction": "res://Ego/Wheels/Wheel_Induction.tscn",
+      "Pinwheel": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+      "PinwheelNoCap": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn",
+      "PinwheelRefresh": "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn",
+      "StilettoBlack": "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn",
+      "StilettoDark": "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn",
+      "StilettoSilver": "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn",
+      "StilettoRefresh": "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn",
+      "UberTurbine": "res://Ego/Wheels/Wheel_Uberturbine.tscn",
+      "ZeroG": "res://Ego/Wheels/Wheel_ZeroG.tscn",
+      "Apollo_19_Metallic_Shadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "Aero": "res://Ego/Wheels_X_S/Wheel_Aero.tscn",
+      "Arachnid": "res://Ego/Wheels_Palladium/Arachnid21.tscn",
+      "ArachnidBlack": "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn",
+      "ArachnidCarbon": "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn",
+      "ArachnidSilver": "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn",
+      "BaseSilver": "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn",
+      "Cardenio": "res://Ego/Wheels_Palladium/Cardenio.tscn",
+      "Cyberstream": "res://Ego/Wheels_Palladium/Cyberstream.tscn",
+      "CycloneSilver": "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn",
+      "CycloneCarbon": "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn",
+      "Helix": "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn",
+      "SlipstreamCarbon": "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn",
+      "SlipstreamDark": "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn",
+      "SlipstreamSilver": "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn",
+      "TempestSilver": "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn",
+      "NewTurbine22Black": "res://Ego/Wheels_Palladium/New_Turbine_22.tscn",
+      "TurbineBlack": "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn",
+      "TurbineSilver": "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn",
+      "TwinTurbineCarbon": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn",
+      "TwinTurbineSilver": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn",
+      "Apollo19MetallicShadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "SemiDefault": "res://Ego/Wheels_Semi/Wheel_F_Semi.glb",
+      "CybertruckBase18": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn",
+      "CybertruckBase20": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn",
+      "CybertruckPremium": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+      "Glider": "res://Ego/v2023/Wheels/Glider.tscn",
+      "Helix19": "res://Ego/v2023/Wheels/Helix_19.tscn",
+      "Wishbone_19": "res://Ego/v2023/Wheels/Wishbone_19.tscn",
+      "Wishbone_20": "res://Ego/v2023/Wheels/Wishbone_20.tscn",
+      "D50_18": "res://Ego/Wheels/Wheel_D50.tscn",
+      "Nova19Dark": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn",
+      "E41_18": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn",
+      "Crossflow_19": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn",
+      "HelixV2_20": "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn",
+      "Standard_19": "res://Ego/Wheels_P3/Wheel_Standard.tscn",
+      "Halo22": "res://Ego/Wheels_P3/Wheel_Halo.tscn",
+      "Riptide20": "res://Ego/Wheels_P3/Wheel_Riptide.tscn",
+      "Cypress21": "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn",
+      "HelixV2_20_Dark": "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn",
+      "ArachnidV2_21": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn",
+      "MachinaV2_19": "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn",
+      "Uberhelix_20": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn"
+    },
+    "cap_overrides": {
+      "Gemini": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn"
+      },
+      "PinwheelRefresh": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn"
+      },
+      "Glider": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Glider_No_Caps.tscn"
+      },
+      "D50_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D50_No_Caps.tscn"
+      },
+      "Nova19Dark": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn"
+      },
+      "E41_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn"
+      },
+      "Crossflow_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn"
+      },
+      "Helix19": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn"
+      },
+      "Standard_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn"
+      },
+      "Halo22": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn"
+      },
+      "Riptide20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn"
+      },
+      "ArachnidV2_21": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn"
+      },
+      "MachinaV2_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn"
+      },
+      "Cardenio": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn"
+      },
+      "Uberhelix_20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn"
+      },
+      "Cypress21": {
+        "caps": true,
+        "scene": "res://Ego/Wheels_P3/Wheel_Cypress.tscn"
+      },
+      "Apollo_19_Metallic_Shadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Apollo19MetallicShadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Wishbone_19": {
+        "caps": true,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_20.tscn"
+      },
+      "Wishbone_20": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_19.tscn"
+      },
+      "CybertruckBase18": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn"
+      },
+      "CybertruckBase20": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn"
+      },
+      "CybertruckPremium": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn"
+      }
+    },
+    "paint_presets": {
+      "RedMulticoat": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "SolidBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SilverMetallic": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightSilver": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "DeepBlue": {
+        "color": "#000919",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "PearlWhite": {
+        "color": "#181818",
+        "metallic": 0.25,
+        "roughness": 0.2
+      },
+      "TitaniumCopper": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Red": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "Black": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "Silver": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "Grey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SignatureBlue": {
+        "color": "#000206",
+        "metallic": 0.2,
+        "roughness": 0.04
+      },
+      "White": {
+        "color": "#141414",
+        "metallic": 0.2,
+        "roughness": 0.3
+      },
+      "Titanium": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Pearl": {
+        "color": "#131313",
+        "metallic": 0.01,
+        "roughness": 0.04
+      },
+      "MetallicBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SteelGrey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Green": {
+        "color": "#060a0a",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Brown": {
+        "color": "#181514",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SigRed": {
+        "color": "#110305",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "Blue": {
+        "color": "#000104",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightCherryRed": {
+        "color": "#200006",
+        "metallic": 0.8,
+        "roughness": 0.01
+      },
+      "Quicksilver": {
+        "color": "#2b2d35",
+        "metallic": 0.85,
+        "roughness": 0.2
+      },
+      "UltraRed": {
+        "color": "#250006",
+        "metallic": 0.7,
+        "roughness": 0.05
+      },
+      "StealthGrey": {
+        "color": "#121417",
+        "metallic": 0.88,
+        "roughness": 0.1
+      },
+      "LunarSilver": {
+        "color": "#343438",
+        "metallic": 0.898,
+        "roughness": 0.28
+      },
+      "GlacierBlue": {
+        "color": "#12161f",
+        "metallic": 0.7,
+        "roughness": 0.1
+      },
+      "DiamondBlack": {
+        "color": "#040404",
+        "metallic": 0.75,
+        "roughness": 0.02
+      },
+      "FrostBlue": {
+        "color": "#111317",
+        "metallic": 0.716,
+        "roughness": 0.05
+      },
+      "SilkroadSilver": {
+        "color": "#2d2c2d",
+        "metallic": 0.826,
+        "roughness": 0.204
+      },
+      "MarineBlue": {
+        "color": "#01050a",
+        "metallic": 0.85,
+        "roughness": 0.02
+      },
+      "GarnetRed": {
+        "color": "#1d0305",
+        "metallic": 0.8,
+        "roughness": 0.05
+      },
+      "CoastalBlue": {
+        "color": "#040710",
+        "metallic": 0.5,
+        "roughness": 0.04
+      }
+    }
+  },
+  "bayberry_e80": {
+    "scene": "res://Ego/BayberryE80/BayberryE80.tscn",
+    "car_type": "modely",
+    "options": {
+      "wheel": [
+        "Apollo",
+        "Gemini",
+        "Induction",
+        "Pinwheel",
+        "PinwheelNoCap",
+        "PinwheelRefresh",
+        "StilettoBlack",
+        "StilettoDark",
+        "StilettoSilver",
+        "StilettoRefresh",
+        "UberTurbine",
+        "ZeroG",
+        "Apollo_19_Metallic_Shadow",
+        "Aero",
+        "Arachnid",
+        "ArachnidBlack",
+        "ArachnidCarbon",
+        "ArachnidSilver",
+        "BaseSilver",
+        "Cardenio",
+        "Cyberstream",
+        "CycloneSilver",
+        "CycloneCarbon",
+        "Helix",
+        "SlipstreamCarbon",
+        "SlipstreamDark",
+        "SlipstreamSilver",
+        "TempestSilver",
+        "NewTurbine22Black",
+        "TurbineBlack",
+        "TurbineSilver",
+        "TwinTurbineCarbon",
+        "TwinTurbineSilver",
+        "Apollo19MetallicShadow",
+        "SemiDefault",
+        "CybertruckBase18",
+        "CybertruckBase20",
+        "CybertruckPremium",
+        "Glider",
+        "Helix19",
+        "Wishbone_19",
+        "Wishbone_20",
+        "D50_18",
+        "Nova19Dark",
+        "E41_18",
+        "Crossflow_19",
+        "HelixV2_20",
+        "Standard_19",
+        "Halo22",
+        "Riptide20",
+        "Cypress21",
+        "HelixV2_20_Dark",
+        "ArachnidV2_21",
+        "MachinaV2_19",
+        "Uberhelix_20"
+      ],
+      "caps": [
+        "default",
+        "on",
+        "off"
+      ],
+      "part": [
+        "vehicle",
+        "wheel"
+      ],
+      "paint": [
+        "RedMulticoat",
+        "SolidBlack",
+        "SilverMetallic",
+        "MidnightSilver",
+        "DeepBlue",
+        "PearlWhite",
+        "TitaniumCopper",
+        "Red",
+        "Black",
+        "Silver",
+        "Grey",
+        "SignatureBlue",
+        "White",
+        "Titanium",
+        "Pearl",
+        "MetallicBlack",
+        "SteelGrey",
+        "Green",
+        "Brown",
+        "SigRed",
+        "Blue",
+        "MidnightCherryRed",
+        "Quicksilver",
+        "UltraRed",
+        "StealthGrey",
+        "LunarSilver",
+        "GlacierBlue",
+        "DiamondBlack",
+        "FrostBlue",
+        "SilkroadSilver",
+        "MarineBlue",
+        "GarnetRed",
+        "CoastalBlue"
+      ],
+      "plate": [
+        "US",
+        "EU"
+      ],
+      "brakes": [
+        "standard",
+        "performance"
+      ],
+      "rhd": [
+        false,
+        true
+      ],
+      "interior": [
+        "Black",
+        "White"
+      ],
+      "upper_trim": [
+        "GREY",
+        "BLACK"
+      ],
+      "badging_material": [
+        "CHROME_SILVER",
+        "BLACK_MATTE"
+      ],
+      "tesla_badge": [
+        false,
+        true
+      ]
+    },
+    "defaults": {
+      "wheel": "Gemini",
+      "caps": "default",
+      "part": "vehicle",
+      "paint": "PearlWhite",
+      "plate": "US",
+      "brakes": "standard",
+      "rhd": false,
+      "interior": "Black",
+      "upper_trim": "GREY",
+      "badging_material": "CHROME_SILVER",
+      "tesla_badge": false
+    },
+    "wheel_scenes": {
+      "Apollo": "res://Ego/Wheels/Wheel_Apollo.tscn",
+      "Gemini": "res://Ego/Wheels/Wheel_Gemini.tscn",
+      "Induction": "res://Ego/Wheels/Wheel_Induction.tscn",
+      "Pinwheel": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+      "PinwheelNoCap": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn",
+      "PinwheelRefresh": "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn",
+      "StilettoBlack": "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn",
+      "StilettoDark": "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn",
+      "StilettoSilver": "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn",
+      "StilettoRefresh": "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn",
+      "UberTurbine": "res://Ego/Wheels/Wheel_Uberturbine.tscn",
+      "ZeroG": "res://Ego/Wheels/Wheel_ZeroG.tscn",
+      "Apollo_19_Metallic_Shadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "Aero": "res://Ego/Wheels_X_S/Wheel_Aero.tscn",
+      "Arachnid": "res://Ego/Wheels_Palladium/Arachnid21.tscn",
+      "ArachnidBlack": "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn",
+      "ArachnidCarbon": "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn",
+      "ArachnidSilver": "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn",
+      "BaseSilver": "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn",
+      "Cardenio": "res://Ego/Wheels_Palladium/Cardenio.tscn",
+      "Cyberstream": "res://Ego/Wheels_Palladium/Cyberstream.tscn",
+      "CycloneSilver": "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn",
+      "CycloneCarbon": "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn",
+      "Helix": "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn",
+      "SlipstreamCarbon": "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn",
+      "SlipstreamDark": "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn",
+      "SlipstreamSilver": "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn",
+      "TempestSilver": "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn",
+      "NewTurbine22Black": "res://Ego/Wheels_Palladium/New_Turbine_22.tscn",
+      "TurbineBlack": "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn",
+      "TurbineSilver": "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn",
+      "TwinTurbineCarbon": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn",
+      "TwinTurbineSilver": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn",
+      "Apollo19MetallicShadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "SemiDefault": "res://Ego/Wheels_Semi/Wheel_F_Semi.glb",
+      "CybertruckBase18": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn",
+      "CybertruckBase20": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn",
+      "CybertruckPremium": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+      "Glider": "res://Ego/v2023/Wheels/Glider.tscn",
+      "Helix19": "res://Ego/v2023/Wheels/Helix_19.tscn",
+      "Wishbone_19": "res://Ego/v2023/Wheels/Wishbone_19.tscn",
+      "Wishbone_20": "res://Ego/v2023/Wheels/Wishbone_20.tscn",
+      "D50_18": "res://Ego/Wheels/Wheel_D50.tscn",
+      "Nova19Dark": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn",
+      "E41_18": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn",
+      "Crossflow_19": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn",
+      "HelixV2_20": "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn",
+      "Standard_19": "res://Ego/Wheels_P3/Wheel_Standard.tscn",
+      "Halo22": "res://Ego/Wheels_P3/Wheel_Halo.tscn",
+      "Riptide20": "res://Ego/Wheels_P3/Wheel_Riptide.tscn",
+      "Cypress21": "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn",
+      "HelixV2_20_Dark": "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn",
+      "ArachnidV2_21": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn",
+      "MachinaV2_19": "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn",
+      "Uberhelix_20": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn"
+    },
+    "cap_overrides": {
+      "Gemini": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn"
+      },
+      "PinwheelRefresh": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn"
+      },
+      "Glider": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Glider_No_Caps.tscn"
+      },
+      "D50_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D50_No_Caps.tscn"
+      },
+      "Nova19Dark": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn"
+      },
+      "E41_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn"
+      },
+      "Crossflow_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn"
+      },
+      "Helix19": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn"
+      },
+      "Standard_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn"
+      },
+      "Halo22": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn"
+      },
+      "Riptide20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn"
+      },
+      "ArachnidV2_21": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn"
+      },
+      "MachinaV2_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn"
+      },
+      "Cardenio": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn"
+      },
+      "Uberhelix_20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn"
+      },
+      "Cypress21": {
+        "caps": true,
+        "scene": "res://Ego/Wheels_P3/Wheel_Cypress.tscn"
+      },
+      "Apollo_19_Metallic_Shadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Apollo19MetallicShadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Wishbone_19": {
+        "caps": true,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_20.tscn"
+      },
+      "Wishbone_20": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_19.tscn"
+      },
+      "CybertruckBase18": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn"
+      },
+      "CybertruckBase20": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn"
+      },
+      "CybertruckPremium": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn"
+      }
+    },
+    "paint_presets": {
+      "RedMulticoat": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "SolidBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SilverMetallic": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightSilver": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "DeepBlue": {
+        "color": "#000919",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "PearlWhite": {
+        "color": "#181818",
+        "metallic": 0.25,
+        "roughness": 0.2
+      },
+      "TitaniumCopper": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Red": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "Black": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "Silver": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "Grey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SignatureBlue": {
+        "color": "#000206",
+        "metallic": 0.2,
+        "roughness": 0.04
+      },
+      "White": {
+        "color": "#141414",
+        "metallic": 0.2,
+        "roughness": 0.3
+      },
+      "Titanium": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Pearl": {
+        "color": "#131313",
+        "metallic": 0.01,
+        "roughness": 0.04
+      },
+      "MetallicBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SteelGrey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Green": {
+        "color": "#060a0a",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Brown": {
+        "color": "#181514",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SigRed": {
+        "color": "#110305",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "Blue": {
+        "color": "#000104",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightCherryRed": {
+        "color": "#200006",
+        "metallic": 0.8,
+        "roughness": 0.01
+      },
+      "Quicksilver": {
+        "color": "#2b2d35",
+        "metallic": 0.85,
+        "roughness": 0.2
+      },
+      "UltraRed": {
+        "color": "#250006",
+        "metallic": 0.7,
+        "roughness": 0.05
+      },
+      "StealthGrey": {
+        "color": "#121417",
+        "metallic": 0.88,
+        "roughness": 0.1
+      },
+      "LunarSilver": {
+        "color": "#343438",
+        "metallic": 0.898,
+        "roughness": 0.28
+      },
+      "GlacierBlue": {
+        "color": "#12161f",
+        "metallic": 0.7,
+        "roughness": 0.1
+      },
+      "DiamondBlack": {
+        "color": "#040404",
+        "metallic": 0.75,
+        "roughness": 0.02
+      },
+      "FrostBlue": {
+        "color": "#111317",
+        "metallic": 0.716,
+        "roughness": 0.05
+      },
+      "SilkroadSilver": {
+        "color": "#2d2c2d",
+        "metallic": 0.826,
+        "roughness": 0.204
+      },
+      "MarineBlue": {
+        "color": "#01050a",
+        "metallic": 0.85,
+        "roughness": 0.02
+      },
+      "GarnetRed": {
+        "color": "#1d0305",
+        "metallic": 0.8,
+        "roughness": 0.05
+      },
+      "CoastalBlue": {
+        "color": "#040710",
+        "metallic": 0.5,
+        "roughness": 0.04
+      }
+    }
+  },
+  "semi": {
+    "scene": "res://Ego/Semi/Semi.tscn",
+    "car_type": "semitruck",
+    "options": {
+      "wheel": [
+        "Apollo",
+        "Gemini",
+        "Induction",
+        "Pinwheel",
+        "PinwheelNoCap",
+        "PinwheelRefresh",
+        "StilettoBlack",
+        "StilettoDark",
+        "StilettoSilver",
+        "StilettoRefresh",
+        "UberTurbine",
+        "ZeroG",
+        "Apollo_19_Metallic_Shadow",
+        "Aero",
+        "Arachnid",
+        "ArachnidBlack",
+        "ArachnidCarbon",
+        "ArachnidSilver",
+        "BaseSilver",
+        "Cardenio",
+        "Cyberstream",
+        "CycloneSilver",
+        "CycloneCarbon",
+        "Helix",
+        "SlipstreamCarbon",
+        "SlipstreamDark",
+        "SlipstreamSilver",
+        "TempestSilver",
+        "NewTurbine22Black",
+        "TurbineBlack",
+        "TurbineSilver",
+        "TwinTurbineCarbon",
+        "TwinTurbineSilver",
+        "Apollo19MetallicShadow",
+        "SemiDefault",
+        "CybertruckBase18",
+        "CybertruckBase20",
+        "CybertruckPremium",
+        "Glider",
+        "Helix19",
+        "Wishbone_19",
+        "Wishbone_20",
+        "D50_18",
+        "Nova19Dark",
+        "E41_18",
+        "Crossflow_19",
+        "HelixV2_20",
+        "Standard_19",
+        "Halo22",
+        "Riptide20",
+        "Cypress21",
+        "HelixV2_20_Dark",
+        "ArachnidV2_21",
+        "MachinaV2_19",
+        "Uberhelix_20"
+      ],
+      "caps": [
+        "default"
+      ],
+      "part": [
+        "vehicle",
+        "wheel",
+        "rear_wheel"
+      ],
+      "paint": [
+        "RedMulticoat",
+        "SolidBlack",
+        "SilverMetallic",
+        "MidnightSilver",
+        "DeepBlue",
+        "PearlWhite",
+        "TitaniumCopper",
+        "Red",
+        "Black",
+        "Silver",
+        "Grey",
+        "SignatureBlue",
+        "White",
+        "Titanium",
+        "Pearl",
+        "MetallicBlack",
+        "SteelGrey",
+        "Green",
+        "Brown",
+        "SigRed",
+        "Blue",
+        "MidnightCherryRed",
+        "Quicksilver",
+        "UltraRed",
+        "StealthGrey",
+        "LunarSilver",
+        "GlacierBlue",
+        "DiamondBlack",
+        "FrostBlue",
+        "SilkroadSilver",
+        "MarineBlue",
+        "GarnetRed",
+        "CoastalBlue"
+      ]
+    },
+    "defaults": {
+      "wheel": "SemiDefault",
+      "caps": "default",
+      "part": "vehicle",
+      "paint": "PearlWhite"
+    },
+    "wheel_scenes": {
+      "Apollo": "res://Ego/Wheels/Wheel_Apollo.tscn",
+      "Gemini": "res://Ego/Wheels/Wheel_Gemini.tscn",
+      "Induction": "res://Ego/Wheels/Wheel_Induction.tscn",
+      "Pinwheel": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+      "PinwheelNoCap": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn",
+      "PinwheelRefresh": "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn",
+      "StilettoBlack": "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn",
+      "StilettoDark": "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn",
+      "StilettoSilver": "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn",
+      "StilettoRefresh": "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn",
+      "UberTurbine": "res://Ego/Wheels/Wheel_Uberturbine.tscn",
+      "ZeroG": "res://Ego/Wheels/Wheel_ZeroG.tscn",
+      "Apollo_19_Metallic_Shadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "Aero": "res://Ego/Wheels_X_S/Wheel_Aero.tscn",
+      "Arachnid": "res://Ego/Wheels_Palladium/Arachnid21.tscn",
+      "ArachnidBlack": "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn",
+      "ArachnidCarbon": "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn",
+      "ArachnidSilver": "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn",
+      "BaseSilver": "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn",
+      "Cardenio": "res://Ego/Wheels_Palladium/Cardenio.tscn",
+      "Cyberstream": "res://Ego/Wheels_Palladium/Cyberstream.tscn",
+      "CycloneSilver": "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn",
+      "CycloneCarbon": "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn",
+      "Helix": "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn",
+      "SlipstreamCarbon": "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn",
+      "SlipstreamDark": "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn",
+      "SlipstreamSilver": "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn",
+      "TempestSilver": "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn",
+      "NewTurbine22Black": "res://Ego/Wheels_Palladium/New_Turbine_22.tscn",
+      "TurbineBlack": "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn",
+      "TurbineSilver": "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn",
+      "TwinTurbineCarbon": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn",
+      "TwinTurbineSilver": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn",
+      "Apollo19MetallicShadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "SemiDefault": "res://Ego/Wheels_Semi/Wheel_F_Semi.glb",
+      "CybertruckBase18": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn",
+      "CybertruckBase20": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn",
+      "CybertruckPremium": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+      "Glider": "res://Ego/v2023/Wheels/Glider.tscn",
+      "Helix19": "res://Ego/v2023/Wheels/Helix_19.tscn",
+      "Wishbone_19": "res://Ego/v2023/Wheels/Wishbone_19.tscn",
+      "Wishbone_20": "res://Ego/v2023/Wheels/Wishbone_20.tscn",
+      "D50_18": "res://Ego/Wheels/Wheel_D50.tscn",
+      "Nova19Dark": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn",
+      "E41_18": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn",
+      "Crossflow_19": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn",
+      "HelixV2_20": "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn",
+      "Standard_19": "res://Ego/Wheels_P3/Wheel_Standard.tscn",
+      "Halo22": "res://Ego/Wheels_P3/Wheel_Halo.tscn",
+      "Riptide20": "res://Ego/Wheels_P3/Wheel_Riptide.tscn",
+      "Cypress21": "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn",
+      "HelixV2_20_Dark": "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn",
+      "ArachnidV2_21": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn",
+      "MachinaV2_19": "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn",
+      "Uberhelix_20": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn"
+    },
+    "cap_overrides": {
+      "Gemini": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn"
+      },
+      "PinwheelRefresh": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn"
+      },
+      "Glider": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Glider_No_Caps.tscn"
+      },
+      "D50_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D50_No_Caps.tscn"
+      },
+      "Nova19Dark": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn"
+      },
+      "E41_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn"
+      },
+      "Crossflow_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn"
+      },
+      "Helix19": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn"
+      },
+      "Standard_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn"
+      },
+      "Halo22": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn"
+      },
+      "Riptide20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn"
+      },
+      "ArachnidV2_21": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn"
+      },
+      "MachinaV2_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn"
+      },
+      "Cardenio": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn"
+      },
+      "Uberhelix_20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn"
+      },
+      "Cypress21": {
+        "caps": true,
+        "scene": "res://Ego/Wheels_P3/Wheel_Cypress.tscn"
+      },
+      "Apollo_19_Metallic_Shadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Apollo19MetallicShadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Wishbone_19": {
+        "caps": true,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_20.tscn"
+      },
+      "Wishbone_20": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_19.tscn"
+      },
+      "CybertruckBase18": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn"
+      },
+      "CybertruckBase20": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn"
+      },
+      "CybertruckPremium": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn"
+      }
+    },
+    "paint_presets": {
+      "RedMulticoat": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "SolidBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SilverMetallic": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightSilver": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "DeepBlue": {
+        "color": "#000919",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "PearlWhite": {
+        "color": "#181818",
+        "metallic": 0.25,
+        "roughness": 0.2
+      },
+      "TitaniumCopper": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Red": {
+        "color": "#0a0101",
+        "metallic": 0.1,
+        "roughness": 0.04
+      },
+      "Black": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "Silver": {
+        "color": "#161616",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "Grey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SignatureBlue": {
+        "color": "#000206",
+        "metallic": 0.2,
+        "roughness": 0.04
+      },
+      "White": {
+        "color": "#141414",
+        "metallic": 0.2,
+        "roughness": 0.3
+      },
+      "Titanium": {
+        "color": "#181510",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Pearl": {
+        "color": "#131313",
+        "metallic": 0.01,
+        "roughness": 0.04
+      },
+      "MetallicBlack": {
+        "color": "#0e0e0e",
+        "metallic": 1.0,
+        "roughness": 0.04
+      },
+      "SteelGrey": {
+        "color": "#131416",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Green": {
+        "color": "#060a0a",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "Brown": {
+        "color": "#181514",
+        "metallic": 0.8,
+        "roughness": 0.04
+      },
+      "SigRed": {
+        "color": "#110305",
+        "metallic": 0.7,
+        "roughness": 0.04
+      },
+      "Blue": {
+        "color": "#000104",
+        "metallic": 0.6,
+        "roughness": 0.04
+      },
+      "MidnightCherryRed": {
+        "color": "#200006",
+        "metallic": 0.8,
+        "roughness": 0.01
+      },
+      "Quicksilver": {
+        "color": "#2b2d35",
+        "metallic": 0.85,
+        "roughness": 0.2
+      },
+      "UltraRed": {
+        "color": "#250006",
+        "metallic": 0.7,
+        "roughness": 0.05
+      },
+      "StealthGrey": {
+        "color": "#121417",
+        "metallic": 0.88,
+        "roughness": 0.1
+      },
+      "LunarSilver": {
+        "color": "#343438",
+        "metallic": 0.898,
+        "roughness": 0.28
+      },
+      "GlacierBlue": {
+        "color": "#12161f",
+        "metallic": 0.7,
+        "roughness": 0.1
+      },
+      "DiamondBlack": {
+        "color": "#040404",
+        "metallic": 0.75,
+        "roughness": 0.02
+      },
+      "FrostBlue": {
+        "color": "#111317",
+        "metallic": 0.716,
+        "roughness": 0.05
+      },
+      "SilkroadSilver": {
+        "color": "#2d2c2d",
+        "metallic": 0.826,
+        "roughness": 0.204
+      },
+      "MarineBlue": {
+        "color": "#01050a",
+        "metallic": 0.85,
+        "roughness": 0.02
+      },
+      "GarnetRed": {
+        "color": "#1d0305",
+        "metallic": 0.8,
+        "roughness": 0.05
+      },
+      "CoastalBlue": {
+        "color": "#040710",
+        "metallic": 0.5,
+        "roughness": 0.04
+      }
+    }
+  },
+  "cybertruck": {
+    "scene": "res://Ego/Cybertruck/Cybertruck.tscn",
+    "car_type": "cybertruck",
+    "options": {
+      "wheel": [
+        "Apollo",
+        "Gemini",
+        "Induction",
+        "Pinwheel",
+        "PinwheelNoCap",
+        "PinwheelRefresh",
+        "StilettoBlack",
+        "StilettoDark",
+        "StilettoSilver",
+        "StilettoRefresh",
+        "UberTurbine",
+        "ZeroG",
+        "Apollo_19_Metallic_Shadow",
+        "Aero",
+        "Arachnid",
+        "ArachnidBlack",
+        "ArachnidCarbon",
+        "ArachnidSilver",
+        "BaseSilver",
+        "Cardenio",
+        "Cyberstream",
+        "CycloneSilver",
+        "CycloneCarbon",
+        "Helix",
+        "SlipstreamCarbon",
+        "SlipstreamDark",
+        "SlipstreamSilver",
+        "TempestSilver",
+        "NewTurbine22Black",
+        "TurbineBlack",
+        "TurbineSilver",
+        "TwinTurbineCarbon",
+        "TwinTurbineSilver",
+        "Apollo19MetallicShadow",
+        "SemiDefault",
+        "CybertruckBase18",
+        "CybertruckBase20",
+        "CybertruckPremium",
+        "Glider",
+        "Helix19",
+        "Wishbone_19",
+        "Wishbone_20",
+        "D50_18",
+        "Nova19Dark",
+        "E41_18",
+        "Crossflow_19",
+        "HelixV2_20",
+        "Standard_19",
+        "Halo22",
+        "Riptide20",
+        "Cypress21",
+        "HelixV2_20_Dark",
+        "ArachnidV2_21",
+        "MachinaV2_19",
+        "Uberhelix_20"
+      ],
+      "caps": [
+        "default",
+        "on",
+        "off"
+      ],
+      "part": [
+        "vehicle",
+        "wheel"
+      ],
+      "plate": [
+        "US",
+        "EU"
+      ],
+      "brakes": [
+        "standard"
+      ],
+      "interior": [
+        "Black",
+        "White",
+        "TacticalGrey"
+      ],
+      "seat_trim": [
+        "Base",
+        "Textile"
+      ],
+      "drivetrain": [
+        "RWD",
+        "AWD",
+        "AWDTriMotor"
+      ],
+      "foundation": [
+        false,
+        true
+      ],
+      "bed_lighting": [
+        "Unspecified",
+        "Base",
+        "Premium"
+      ],
+      "automatic_tonneau": [
+        "auto",
+        true,
+        false
+      ],
+      "rear_display": [
+        false,
+        true
+      ],
+      "lightbar": [
+        "NONE",
+        "HELLA"
+      ],
+      "basecamp": [
+        false,
+        true
+      ]
+    },
+    "defaults": {
+      "wheel": "CybertruckPremium",
+      "caps": "default",
+      "part": "vehicle",
+      "plate": "US",
+      "brakes": "standard",
+      "interior": "Black",
+      "seat_trim": "Base",
+      "drivetrain": "RWD",
+      "foundation": false,
+      "bed_lighting": "Unspecified",
+      "automatic_tonneau": "auto",
+      "rear_display": true,
+      "lightbar": "NONE",
+      "basecamp": false
+    },
+    "wheel_scenes": {
+      "Apollo": "res://Ego/Wheels/Wheel_Apollo.tscn",
+      "Gemini": "res://Ego/Wheels/Wheel_Gemini.tscn",
+      "Induction": "res://Ego/Wheels/Wheel_Induction.tscn",
+      "Pinwheel": "res://Ego/Wheels/Wheel_Pinwheel.tscn",
+      "PinwheelNoCap": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn",
+      "PinwheelRefresh": "res://Ego/Wheels/Wheel_Pinwheel_Refresh.tscn",
+      "StilettoBlack": "res://Ego/Wheels/Wheel_Stiletto_Armor_Black.tscn",
+      "StilettoDark": "res://Ego/Wheels/Wheel_Stiletto_Dark.tscn",
+      "StilettoSilver": "res://Ego/Wheels/Wheel_Stiletto_Silver.tscn",
+      "StilettoRefresh": "res://Ego/Wheels/Wheel_Stiletto_Refresh.tscn",
+      "UberTurbine": "res://Ego/Wheels/Wheel_Uberturbine.tscn",
+      "ZeroG": "res://Ego/Wheels/Wheel_ZeroG.tscn",
+      "Apollo_19_Metallic_Shadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "Aero": "res://Ego/Wheels_X_S/Wheel_Aero.tscn",
+      "Arachnid": "res://Ego/Wheels_Palladium/Arachnid21.tscn",
+      "ArachnidBlack": "res://Ego/Wheels_X_S/Wheel_Arachnid_Armor_Black.tscn",
+      "ArachnidCarbon": "res://Ego/Wheels_X_S/Wheel_Arachnid_Sonic_Carbon.tscn",
+      "ArachnidSilver": "res://Ego/Wheels_X_S/Wheel_Arachnid_Silver.tscn",
+      "BaseSilver": "res://Ego/Wheels_X_S/Wheel_Base_Silver.tscn",
+      "Cardenio": "res://Ego/Wheels_Palladium/Cardenio.tscn",
+      "Cyberstream": "res://Ego/Wheels_Palladium/Cyberstream.tscn",
+      "CycloneSilver": "res://Ego/Wheels_X_S/Wheel_Cyclone_Silver.tscn",
+      "CycloneCarbon": "res://Ego/Wheels_X_S/Wheel_Cyclone_Sonic_Carbon.tscn",
+      "Helix": "res://Ego/Wheels_X_S/Wheel_Helix_Silver.tscn",
+      "SlipstreamCarbon": "res://Ego/Wheels_X_S/Wheel_Slipstream_Sonic_Carbon.tscn",
+      "SlipstreamDark": "res://Ego/Wheels_X_S/Wheel_Slipstream_Two_Tone.tscn",
+      "SlipstreamSilver": "res://Ego/Wheels_X_S/Wheel_Slipstream_Silver.tscn",
+      "TempestSilver": "res://Ego/Wheels_X_S/Wheel_Tempest_Sonic_Silver.tscn",
+      "NewTurbine22Black": "res://Ego/Wheels_Palladium/New_Turbine_22.tscn",
+      "TurbineBlack": "res://Ego/Wheels_X_S/Wheel_Turbine_Onyx_Black.tscn",
+      "TurbineSilver": "res://Ego/Wheels_X_S/Wheel_Turbine_Silver.tscn",
+      "TwinTurbineCarbon": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Sonic_Carbon.tscn",
+      "TwinTurbineSilver": "res://Ego/Wheels_X_S/Wheel_Twin_Turbine_Silver.tscn",
+      "Apollo19MetallicShadow": "res://Ego/Wheels/Wheel_Apollo_19_Metallic_Shadow.tscn",
+      "SemiDefault": "res://Ego/Wheels_Semi/Wheel_F_Semi.glb",
+      "CybertruckBase18": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD.tscn",
+      "CybertruckBase20": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard.tscn",
+      "CybertruckPremium": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium.tscn",
+      "Glider": "res://Ego/v2023/Wheels/Glider.tscn",
+      "Helix19": "res://Ego/v2023/Wheels/Helix_19.tscn",
+      "Wishbone_19": "res://Ego/v2023/Wheels/Wishbone_19.tscn",
+      "Wishbone_20": "res://Ego/v2023/Wheels/Wishbone_20.tscn",
+      "D50_18": "res://Ego/Wheels/Wheel_D50.tscn",
+      "Nova19Dark": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19.tscn",
+      "E41_18": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41.tscn",
+      "Crossflow_19": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark.tscn",
+      "HelixV2_20": "res://Ego/Wheels_Bayberry/Helix2/Helix2.tscn",
+      "Standard_19": "res://Ego/Wheels_P3/Wheel_Standard.tscn",
+      "Halo22": "res://Ego/Wheels_P3/Wheel_Halo.tscn",
+      "Riptide20": "res://Ego/Wheels_P3/Wheel_Riptide.tscn",
+      "Cypress21": "res://Ego/Wheels_P3/Wheel_Cypress_NoInsert.tscn",
+      "HelixV2_20_Dark": "res://Ego/Wheels_Bayberry/Helix2_Dark/Helix2_Dark.tscn",
+      "ArachnidV2_21": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21.tscn",
+      "MachinaV2_19": "res://Ego/Wheels_Bayberry/Machina2/Machina2.tscn",
+      "Uberhelix_20": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix.tscn"
+    },
+    "cap_overrides": {
+      "Gemini": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Gemini_No_Caps.tscn"
+      },
+      "PinwheelRefresh": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Pinwheel_No_Cap.tscn"
+      },
+      "Glider": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Glider_No_Caps.tscn"
+      },
+      "D50_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D50_No_Caps.tscn"
+      },
+      "Nova19Dark": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_D33_Dark_Nova_19_No_Caps.tscn"
+      },
+      "E41_18": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/BayberryE41/Wheel_E41_NoCaps.tscn"
+      },
+      "Crossflow_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/GeminiDark/GeminiDark_No_Caps.tscn"
+      },
+      "Helix19": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Helix_19_No_Caps.tscn"
+      },
+      "Standard_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Standard_No_Caps.tscn"
+      },
+      "Halo22": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Halo_No_Caps.tscn"
+      },
+      "Riptide20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_P3/Wheel_Riptide_No_Caps.tscn"
+      },
+      "ArachnidV2_21": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Arachnid_V2/Arachnid_V2_21_NoCaps.tscn"
+      },
+      "MachinaV2_19": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Machina2/Machina2_No_Caps.tscn"
+      },
+      "Cardenio": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Palladium/Cardenio_No_Caps.tscn"
+      },
+      "Uberhelix_20": {
+        "caps": false,
+        "scene": "res://Ego/Wheels_Bayberry/Uberhelix/Uberhelix_No_Caps.tscn"
+      },
+      "Cypress21": {
+        "caps": true,
+        "scene": "res://Ego/Wheels_P3/Wheel_Cypress.tscn"
+      },
+      "Apollo_19_Metallic_Shadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Apollo19MetallicShadow": {
+        "caps": false,
+        "scene": "res://Ego/Wheels/Wheel_Apollo.tscn"
+      },
+      "Wishbone_19": {
+        "caps": true,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_20.tscn"
+      },
+      "Wishbone_20": {
+        "caps": false,
+        "scene": "res://Ego/v2023/Wheels/Wishbone_19.tscn"
+      },
+      "CybertruckBase18": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_RWD_No_Cap.tscn"
+      },
+      "CybertruckBase20": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Standard_No_Cap.tscn"
+      },
+      "CybertruckPremium": {
+        "caps": false,
+        "scene": "res://Ego/Cybertruck/Wheels/Wheel_Cybertruck_Premium_No_Cap.tscn"
+      }
+    },
+    "paint_presets": {}
+  }
+}

@@ -90,24 +90,16 @@ struct BackendSection: View {
                         .foregroundStyle(.secondary)
                 }
 
-                HStack(spacing: 12) {
-                    Button {
-                        onProbeAccount()
-                    } label: {
-                        Label("Probe Tessie", systemImage: "network")
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 12) {
+                        probeAccountButton
+                        reloadFleetButton
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.regular)
-                    .disabled(diagnostics.isProbeRunning)
 
-                    Button {
-                        Task { await onReloadFleet() }
-                    } label: {
-                        Label("Reload Fleet", systemImage: "arrow.clockwise")
+                    VStack(alignment: .leading, spacing: 10) {
+                        probeAccountButton
+                        reloadFleetButton
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.regular)
-                    .disabled(store.loadState.isLoading || store.isRefreshing)
                 }
 
                 Button {
@@ -140,6 +132,28 @@ struct BackendSection: View {
                 }
             }
         }
+    }
+
+    private var probeAccountButton: some View {
+        Button {
+            onProbeAccount()
+        } label: {
+            Label("Probe Tessie", systemImage: "network")
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.regular)
+        .disabled(diagnostics.isProbeRunning)
+    }
+
+    private var reloadFleetButton: some View {
+        Button {
+            Task { await onReloadFleet() }
+        } label: {
+            Label("Reload Fleet", systemImage: "arrow.clockwise")
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.regular)
+        .disabled(store.loadState.isLoading || store.isRefreshing)
     }
 
     private func capabilitiesSummary(_ capabilities: FleetCapabilities) -> String {

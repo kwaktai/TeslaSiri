@@ -1,0 +1,309 @@
+{
+  "panes": {
+    "Body/Door_LF_Spatial/Window_LF_Spatial/Window_LF2/surface_01": [
+      {
+        "mesh": "Gb995a8248db34722587e",
+        "edge": "9dc9b83f49e766a57aa2.png",
+        "span": [
+          1.031871878800227,
+          0.5789390459615962
+        ],
+        "role": "door"
+      }
+    ],
+    "Body/Door_LR_Spatial/Window_LR_Spatial/Window_LR2/surface_01": [
+      {
+        "mesh": "G41b66a3bec23a303ff02",
+        "edge": "f0f56a6df5c97fad6e44.png",
+        "span": [
+          0.8007607168010024,
+          0.5044735457239645
+        ],
+        "role": "privacy"
+      }
+    ],
+    "Body/Door_RF_Spatial/Window_RF_Spatial/Window_RF2/surface_01": [
+      {
+        "mesh": "G289f0703fbc808d72c91",
+        "edge": "787d97e612cf615db5c5.png",
+        "span": [
+          1.0316719948866817,
+          0.5789976567726723
+        ],
+        "role": "door"
+      }
+    ],
+    "Body/Door_RR_Spatial/Window_RR_Spatial/Window_RR2/surface_01": [
+      {
+        "mesh": "G6f98ff86d5ec4be63d66",
+        "edge": "3ba39afff31bbe170423.png",
+        "span": [
+          0.8007610384516366,
+          0.5044736288280378
+        ],
+        "role": "privacy"
+      }
+    ],
+    "Body/Window_R2/surface_01": [
+      {
+        "mesh": "Gdf10a11f9b71bd8b6588",
+        "edge": "47b91d1ad43a7d8dd2cf.png",
+        "span": [
+          1.3845750961303893,
+          0.2993294794469693
+        ],
+        "role": "tintedBack"
+      }
+    ],
+    "Body/Windows_Top2/surface_00": [
+      {
+        "mesh": "G5c3a36952b318b2a91b8",
+        "edge": "33d4818a98dbcd33da64.png",
+        "span": [
+          1.49372295791701,
+          0.08876657523315347
+        ],
+        "role": "roof"
+      },
+      {
+        "mesh": "Ga12ca048bd5cea406a60",
+        "edge": "33d4818a98dbcd33da64.png",
+        "span": [
+          1.4937229579170093,
+          0.08876657523315348
+        ],
+        "role": "roof"
+      },
+      {
+        "mesh": "G88632b6f923832e4d5f9",
+        "edge": "4cf5c6d9394ef36c9bfa.png",
+        "span": [
+          1.5539370366954501,
+          1.481446069960512
+        ],
+        "role": "roof"
+      }
+    ],
+    "Body/Windows_Top2/surface_04": [
+      {
+        "mesh": "Gaacdfebe1b366cd1ff9a",
+        "edge": "a63d5b81792dbc956008.png",
+        "span": [
+          1.8628519444264573,
+          1.7843617097361015
+        ],
+        "role": "windshield"
+      }
+    ],
+    "Body/Windows_Top2/surface_06": [
+      {
+        "mesh": "Gfe55e7003eef067e1853",
+        "edge": "fa308c85d1d06e84b5f4.png",
+        "span": [
+          0.22714245699525523,
+          0.10362324829344877
+        ],
+        "role": "tintedQuarter"
+      },
+      {
+        "mesh": "Gfb498a0288d69e32aa4b",
+        "edge": "fff6b1b81af640355dec.png",
+        "span": [
+          0.09809938916376092,
+          0.05199956166983159
+        ],
+        "role": "tintedQuarter"
+      },
+      {
+        "mesh": "Gcb219eccf8100d3c0986",
+        "edge": "fa308c85d1d06e84b5f4.png",
+        "span": [
+          0.22714245699525518,
+          0.10362324829344871
+        ],
+        "role": "tintedQuarter"
+      },
+      {
+        "mesh": "G2f1366b0e92683343f6e",
+        "edge": "7a605920bc2426d3f972.png",
+        "span": [
+          0.09809938916376076,
+          0.051999561669831565
+        ],
+        "role": "tintedQuarter"
+      },
+      {
+        "mesh": "G4491412f06d4cd3383c7",
+        "edge": "7265374bccc48ecc95a1.png",
+        "span": [
+          0.40270744285153703,
+          0.16819758743971328
+        ],
+        "role": "tintedQuarter"
+      },
+      {
+        "mesh": "G21d6437b7768add057be",
+        "edge": "e82576af91578487a9c8.png",
+        "span": [
+          0.17719957084760607,
+          0.0524425884041861
+        ],
+        "role": "tintedQuarter"
+      },
+      {
+        "mesh": "Gb79f6dd01430a8b6a07c",
+        "edge": "d65261939b12808faf04.png",
+        "span": [
+          0.17719957084760612,
+          0.05244258840418609
+        ],
+        "role": "tintedQuarter"
+      },
+      {
+        "mesh": "G220fb0f934a101d70c92",
+        "edge": "7265374bccc48ecc95a1.png",
+        "span": [
+          0.4027074434459925,
+          0.1681975873072025
+        ],
+        "role": "tintedQuarter"
+      }
+    ],
+    "Body/Windows_Top2/surface_07": [
+      {
+        "mesh": "G34696ac39fc1fa6d2dd8",
+        "edge": "7bb0f54220b036b2c440.png",
+        "span": [
+          1.0140186123424364,
+          0.2887003847295636
+        ],
+        "role": "quarter"
+      },
+      {
+        "mesh": "G1b80f02f7383335a4675",
+        "edge": "86ea4de198f6a0dc4fb2.png",
+        "span": [
+          1.0140186124053985,
+          0.28870038469423825
+        ],
+        "role": "quarter"
+      }
+    ]
+  },
+  "accents": {
+    "Body/Door_LF_Spatial/Window_LF_Spatial/Window_LF2/surface_02": {
+      "base": null,
+      "details": {
+        "seal": "G58c9f9fa14550b2d39ae"
+      }
+    },
+    "Body/Door_LF_Spatial/Door_LF2/surface_03": {
+      "base": "G00891a2431f07d437ab9",
+      "details": {
+        "surround": "G406d0780b08731fa87b3"
+      }
+    },
+    "Body/Door_LF_Spatial/Door_LF2/surface_05": {
+      "base": "Gc3bfa2a0c7fb34538a0b",
+      "details": {
+        "seal": "Ga1af4b3c60e53cc6def4"
+      }
+    },
+    "Body/Door_RF_Spatial/Window_RF_Spatial/Window_RF2/surface_02": {
+      "base": null,
+      "details": {
+        "seal": "Gd51d672f24d8ba750fc8"
+      }
+    },
+    "Body/Door_RF_Spatial/Door_RF2/surface_03": {
+      "base": "G443ccd96defcaefd0b13",
+      "details": {
+        "surround": "Gde585250347d9ba2dc9f"
+      }
+    },
+    "Body/Door_RF_Spatial/Door_RF2/surface_05": {
+      "base": "G4e1e9e7859820ea5ac10",
+      "details": {
+        "seal": "G98b7dc9c44266b5117cc"
+      }
+    },
+    "Body/Door_LR_Spatial/Window_LR_Spatial/Window_LR2/surface_02": {
+      "base": null,
+      "details": {
+        "seal": "G8ac89d4f39c6cf565904"
+      }
+    },
+    "Body/Door_LR_Spatial/Door_LR2/surface_03": {
+      "base": null,
+      "details": {
+        "surround": "G091df5c49b84c4fe6f47"
+      }
+    },
+    "Body/Door_LR_Spatial/Door_LR2/surface_04": {
+      "base": "G9450a8160a90c47daaee",
+      "details": {
+        "seal": "Gd34af1a70e535994c900"
+      }
+    },
+    "Body/Door_RR_Spatial/Window_RR_Spatial/Window_RR2/surface_02": {
+      "base": null,
+      "details": {
+        "seal": "Gfa52919158d05bb8314b"
+      }
+    },
+    "Body/Door_RR_Spatial/Door_RR2/surface_03": {
+      "base": null,
+      "details": {
+        "surround": "G02253b130dfc56ed4c30"
+      }
+    },
+    "Body/Door_RR_Spatial/Door_RR2/surface_04": {
+      "base": "Gd1955f34b266ddcb48c3",
+      "details": {
+        "seal": "G23bbf6285750f8e029cc"
+      }
+    },
+    "Body/Body2/surface_00": {
+      "base": "G6a1a84ca8bd9f8c9089b",
+      "details": {
+        "surround": "G627617aba977a54fc630"
+      }
+    },
+    "Body/Body2/surface_02": {
+      "base": "Gc1e6b59cea436f3fb743",
+      "details": {
+        "seal": "G95ba12ae275a6133e4e3"
+      }
+    },
+    "Body/Body2/surface_03": {
+      "base": "Gf651e475a8bec9fefcdc",
+      "details": {
+        "surround": "Gbada13a00a9e9404682c"
+      }
+    },
+    "Body/Body2/surface_04": {
+      "base": null,
+      "details": {
+        "seal": "Gdf6d3cecbb680c791a95"
+      }
+    },
+    "Body/Body2/surface_10": {
+      "base": null,
+      "details": {
+        "seal": "Gca8be22aa14f28ddb27f"
+      }
+    },
+    "Body/Windows_Top2/surface_01": {
+      "base": null,
+      "details": {
+        "seal": "Ga143cc92d549819fd7d2"
+      }
+    },
+    "Body/Windows_Top2/surface_08": {
+      "base": null,
+      "details": {
+        "seal": "G1f30dceefaacb6e381de"
+      }
+    }
+  }
+}
