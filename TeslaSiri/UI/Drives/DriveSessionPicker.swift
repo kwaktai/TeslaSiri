@@ -60,6 +60,7 @@ struct DriveSessionPicker: View {
                                 }
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("Drive from \(drive.startedAtDate.formatted(date: .abbreviated, time: .shortened))")
+                                .accessibilityValue(driveEndpointSummary(drive, endpointAddresses: endpointAddresses[drive.sessionID]))
                                 .accessibilityAddTraits(selectedSessionID == drive.sessionID ? .isSelected : [])
                                 .id(drive.sessionID)
                             }

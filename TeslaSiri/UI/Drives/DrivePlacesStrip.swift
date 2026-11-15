@@ -6,6 +6,7 @@ struct DrivePlacesStrip: View {
     let places: [DrivePlace]
     let isIndexing: Bool
     @Binding var selectedPlaceID: String?
+    let onEditNickname: (DrivePlace) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -37,7 +38,8 @@ struct DrivePlacesStrip: View {
                         ForEach(places) { place in
                             PlaceChip(
                                 place: place,
-                                isSelected: place.id == selectedPlaceID
+                                isSelected: place.id == selectedPlaceID,
+                                onEditNickname: { onEditNickname(place) }
                             ) {
                                 selectedPlaceID = place.id == selectedPlaceID ? nil : place.id
                             }
@@ -56,17 +58,20 @@ struct DrivePlacesStrip: View {
 private struct PlaceChip: View {
     let place: DrivePlace
     let isSelected: Bool
-    let action: () -> Void
+    let onEditNickname: () -> Void
+    let onSelect: () -> Void
 
     var body: some View {
-        Button(action: action) {
+        Menu {
+            Button("Edit Nickname", systemImage: "pencil", action: onEditNickname)
+        } label: {
             HStack(spacing: 8) {
                 Image(systemName: place.systemImage)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(isSelected ? AnyShapeStyle(.white) : AnyShapeStyle(.tint))
                     .frame(width: 20)
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(place.name)
+                    Text(place.displayName)
                         .font(.subheadline.weight(.semibold))
                         .lineLimit(1)
                     Text(place.visitCount == 1 ? "1 visit" : "\(place.visitCount) visits")
@@ -86,10 +91,14 @@ private struct PlaceChip: View {
                     .strokeBorder(isSelected ? .clear : AppTheme.hairline, lineWidth: 0.75)
             }
             .contentShape(.capsule)
+        } primaryAction: {
+            onSelect()
         }
+        .menuIndicator(.hidden)
         .buttonStyle(.plain)
-        .accessibilityLabel(place.name)
+        .accessibilityLabel(place.displayName)
         .accessibilityValue(place.visitCount == 1 ? "1 visit" : "\(place.visitCount) visits")
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityAction(named: "Edit Nickname", onEditNickname)
     }
 }

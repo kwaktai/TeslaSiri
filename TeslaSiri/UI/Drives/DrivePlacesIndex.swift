@@ -17,6 +17,8 @@ final class DrivePlacesIndex {
 
     @ObservationIgnored private let vin: String
     @ObservationIgnored private var refreshTask: Task<Void, Never>?
+    @ObservationIgnored private var pendingSave: Task<Void, Error>?
+    @ObservationIgnored private var savingNicknameFor: String?
     @ObservationIgnored private var didLoadCache = false
     private var placeOffsets: [String: Int] = [:]
     private var frequentPlaceOffsets: [Int] = []
@@ -59,6 +61,17 @@ final class DrivePlacesIndex {
 
     func place(id: String) -> DrivePlace? {
         placeOffsets[id].map { places[$0] }
+    }
+
+    func setNickname(_ nickname: String, for placeID: String) async throws {
+        let trimmed = nickname.trimmingCharacters(in: .whitespacesAndNewlines)
+        try await saveToDisk(renaming: (placeID, trimmed.isEmpty ? nil : trimmed))
+    }
+
+    private enum NicknameError: LocalizedError {
+        case placeUnavailable
+
+        var errorDescription: String? { "This place is no longer in your drive history." }
     }
 
     /// Drives that ended at, or started from, `place`, newest first.
@@ -132,7 +145,7 @@ final class DrivePlacesIndex {
                 drives = history
                 applyClusters(membership)
                 labelHome()
-                await saveToDisk()
+                try? await saveToDisk()
             }
         }
 
@@ -153,7 +166,7 @@ final class DrivePlacesIndex {
                 do {
                     let resolution = try await DrivePlaceResolver.resolve(place.coordinate, tessieLabel: label)
                     guard isCurrent(), let index = placeOffsets[place.id] else { break }
-                    var resolved = place
+                    var resolved = places[index]
                     resolved.name = resolution.name
                     resolved.category = resolution.category
                     resolved.address = resolution.address ?? place.address
@@ -167,7 +180,7 @@ final class DrivePlacesIndex {
             }
             if changed {
                 labelHome()
-                await saveToDisk()
+                try? await saveToDisk()
             }
             guard isCurrent() else { return }
             let remaining = places.lazy.filter { !$0.isResolved }.count
@@ -279,7 +292,10 @@ final class DrivePlacesIndex {
                 placeIDsByDeparture[drive.sessionID] = updated[index].id
             }
         }
-        replacePlaces(with: updated.filter { !$0.arrivalIDs.isEmpty || !$0.departureIDs.isEmpty })
+        // Keep nicknamed places, including an edit currently writing to disk, as future cluster anchors.
+        replacePlaces(with: updated.filter {
+            $0.nickname != nil || $0.id == savingNicknameFor || !$0.arrivalIDs.isEmpty || !$0.departureIDs.isEmpty
+        })
     }
 
     /// Names the place the car most often spends the night "Home": the place where an evening
@@ -318,9 +334,26 @@ final class DrivePlacesIndex {
 
     // MARK: - Persistence
 
-    private func saveToDisk() async {
-        let snapshot = Snapshot(places: places, drives: drives, arrivals: placeIDsByArrival, departures: placeIDsByDeparture)
-        await snapshot.save(for: vin)
+    private func saveToDisk(renaming edit: (id: String, nickname: String?)? = nil) async throws {
+        let previous = pendingSave
+        let task = Task {
+            // Take the snapshot after earlier writes have committed their nicknames.
+            _ = await previous?.result
+            var snapshot = Snapshot(places: places, drives: drives, arrivals: placeIDsByArrival, departures: placeIDsByDeparture)
+            if let edit {
+                guard let offset = placeOffsets[edit.id] else { throw NicknameError.placeUnavailable }
+                savingNicknameFor = edit.id
+                snapshot.places[offset].nickname = edit.nickname
+            }
+            defer { savingNicknameFor = nil }
+            try await snapshot.save(for: vin)
+            if let edit, let offset = placeOffsets[edit.id] {
+                places[offset].nickname = edit.nickname
+            }
+        }
+        pendingSave = task
+        defer { if pendingSave == task { pendingSave = nil } }
+        try await task.value
     }
 
     private nonisolated struct Snapshot: Codable, Sendable {
@@ -329,27 +362,27 @@ final class DrivePlacesIndex {
         var arrivals: [String: String]
         var departures: [String: String]
 
-        private static func fileURL(for vin: String) -> URL? {
-            guard let support = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true) else { return nil }
+        private static func fileURL(for vin: String) throws -> URL {
+            let support = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             let directory = support.appendingPathComponent("DrivePlaces", isDirectory: true)
-            try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             let safe = vin.filter { $0.isLetter || $0.isNumber }
             return directory.appendingPathComponent("\(safe).json")
         }
 
         @concurrent static func load(for vin: String) async -> Self? {
-            guard let url = fileURL(for: vin), let data = try? Data(contentsOf: url) else { return nil }
+            guard let data = try? Data(contentsOf: fileURL(for: vin)) else { return nil }
             return try? JSONDecoder().decode(Self.self, from: data)
         }
 
-        @concurrent func save(for vin: String) async {
-            guard let url = Self.fileURL(for: vin) else { return }
+        @concurrent func save(for vin: String) async throws {
+            let url = try Self.fileURL(for: vin)
             var compact = self
             for index in compact.drives.indices where !compact.drives[index].route.isEmpty {
                 compact.drives[index].route = []
             }
-            guard let data = try? JSONEncoder().encode(compact) else { return }
-            try? data.write(to: url, options: [.atomic, .completeFileProtection])
+            let data = try JSONEncoder().encode(compact)
+            try data.write(to: url, options: [.atomic, .completeFileProtection])
         }
     }
 }

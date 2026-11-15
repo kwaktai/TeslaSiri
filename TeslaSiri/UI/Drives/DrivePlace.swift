@@ -8,6 +8,7 @@ import MapKit
 struct DrivePlace: Codable, Hashable, Identifiable, Sendable {
     var id: String
     var name: String
+    var nickname: String?
     /// Raw `MKPointOfInterestCategory` value when the name came from a point of interest.
     var category: String?
     var address: String?
@@ -21,12 +22,14 @@ struct DrivePlace: Codable, Hashable, Identifiable, Sendable {
     /// Whether the name has been looked up (not just taken from Tessie's address).
     var isResolved: Bool
 
+    var displayName: String { nickname ?? name }
+    var endpointName: String? { nickname ?? (isResolved ? name : nil) }
     var visitCount: Int { arrivalIDs.count }
     var coordinate: CLLocationCoordinate2D { CLLocationCoordinate2D(latitude: latitude, longitude: longitude) }
     var location: CLLocation { CLLocation(latitude: latitude, longitude: longitude) }
 
     var systemImage: String {
-        let lowered = name.lowercased()
+        let lowered = displayName.lowercased()
         if lowered == "home" { return "house.fill" }
         if lowered == "work" || lowered == "office" { return "briefcase.fill" }
         guard let category else { return "mappin.circle.fill" }
@@ -40,7 +43,8 @@ struct DrivePlace: Codable, Hashable, Identifiable, Sendable {
     }
 
     func matches(_ query: String) -> Bool {
-        name.localizedStandardContains(query)
+        nickname?.localizedStandardContains(query) == true
+            || name.localizedStandardContains(query)
             || address?.localizedStandardContains(query) == true
             || categoryName?.localizedStandardContains(query) == true
     }

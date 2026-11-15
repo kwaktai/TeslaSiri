@@ -12,6 +12,9 @@ struct DrivesView: View {
     @State private var selectedSessionID: String?
     @State private var selectedPlaceID: String?
     @State private var searchText = ""
+    @State private var placeToRename: DrivePlace?
+    @State private var nicknameDraft = ""
+    @State private var nicknameSaveError: String?
 
     private var placesIndex: DrivePlacesIndex? {
         store.selectedVehicle.map { DrivePlacesIndex.shared(vin: $0.vin) }
@@ -40,11 +43,12 @@ struct DrivesView: View {
         let results = query.isEmpty ? nil : index?.search(query, at: place)
         let visiblePlaces = results?.places ?? index?.frequentPlaces ?? []
         let visibleDrives = results?.drives ?? place.flatMap { index?.drives(at: $0) } ?? recentDrives
-        let title = place.map { "Drives to and from \($0.name)" } ?? (query.isEmpty ? "Recent drives" : "Matching drives")
+        let title = place.map { "Drives to and from \($0.displayName)" } ?? (query.isEmpty ? "Recent drives" : "Matching drives")
         let targetID = selectedSessionID ?? requestedSessionID
         let selected = visibleDrives.first { $0.sessionID == targetID } ?? visibleDrives.first
         let selection = selectedSessionBinding(fallback: visibleDrives.first?.sessionID)
         let lookups = endpointLookups(for: visibleDrives)
+        let labels = labeledEndpointAddresses(for: visibleDrives)
 
         DrivesPostureContainer(
             store: store,
@@ -53,8 +57,12 @@ struct DrivesView: View {
             places: visiblePlaces,
             isIndexingPlaces: index?.isIndexing ?? false,
             selectedPlaceID: $selectedPlaceID,
+            onEditNickname: { place in
+                nicknameDraft = place.nickname ?? ""
+                placeToRename = place
+            },
             selectedDrive: selected,
-            endpointAddresses: labeledEndpointAddresses(for: visibleDrives),
+            endpointAddresses: labels,
             selectedSessionID: selection,
             selectedPointIndex: $selectedPointIndex,
             resolvedRoute: resolvedRoute(for:),
@@ -66,7 +74,33 @@ struct DrivesView: View {
         .navigationTitle("Drives")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            drivesToolbarContent(for: visibleDrives, selectedID: selected?.sessionID, selection: selection)
+            drivesToolbarContent(for: visibleDrives, labels: labels, selectedID: selected?.sessionID, selection: selection)
+        }
+        .alert("Edit Nickname", item: $placeToRename) { place in
+            TextField("Nickname", text: $nicknameDraft)
+                .textInputAutocapitalization(.words)
+            Button("Cancel", role: .cancel) {}
+            Button("Save") {
+                let nickname = nicknameDraft
+                Task {
+                    do {
+                        try await index?.setNickname(nickname, for: place.id)
+                    } catch {
+                        nicknameSaveError = error.localizedDescription
+                    }
+                }
+            }
+            .keyboardShortcut(.defaultAction)
+        } message: { place in
+            Text("Leave the nickname blank to use “\(place.name)”.")
+        }
+        .alert("Couldn’t Save Nickname", item: $nicknameSaveError) { _ in
+            Button("OK", role: .cancel) {}
+        } message: { message in
+            Text(message)
+        }
+        .onChange(of: store.selectedVehicle?.vin) {
+            placeToRename = nil
         }
         .onChange(of: requestedSessionID, initial: true) { _, newValue in
             guard let newValue, !newValue.isEmpty else { return }
@@ -102,15 +136,20 @@ struct DrivesView: View {
                 start: drive.startAddress ?? endpointAddresses[drive.sessionID]?.start,
                 end: drive.endAddress ?? endpointAddresses[drive.sessionID]?.end
             )
-            if let origin = placesIndex.origin(of: drive), origin.isResolved { addresses.start = origin.name }
-            if let destination = placesIndex.destination(of: drive), destination.isResolved { addresses.end = destination.name }
+            if let name = placesIndex.origin(of: drive)?.endpointName { addresses.start = name }
+            if let name = placesIndex.destination(of: drive)?.endpointName { addresses.end = name }
             labeled[drive.sessionID] = addresses
         }
         return labeled
     }
 
     @ToolbarContentBuilder
-    private func drivesToolbarContent(for drives: [FleetDriveSession], selectedID: String?, selection: Binding<String>) -> some ToolbarContent {
+    private func drivesToolbarContent(
+        for drives: [FleetDriveSession],
+        labels: [String: DriveEndpointAddresses],
+        selectedID: String?,
+        selection: Binding<String>
+    ) -> some ToolbarContent {
         if drives.count > 1 {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
@@ -118,7 +157,7 @@ struct DrivesView: View {
                         Button {
                             selection.wrappedValue = drive.sessionID
                         } label: {
-                            let label = toolbarSessionTitle(for: drive)
+                            let label = toolbarSessionTitle(for: drive, addresses: labels[drive.sessionID])
                             if drive.sessionID == selectedID {
                                 Label(label, systemImage: "checkmark")
                             } else {
@@ -158,9 +197,9 @@ struct DrivesView: View {
         .disabled(store.isLoadingDrives || store.isRefreshing)
     }
 
-    private func toolbarSessionTitle(for drive: FleetDriveSession) -> String {
+    private func toolbarSessionTitle(for drive: FleetDriveSession, addresses: DriveEndpointAddresses?) -> String {
         let date = drive.startedAtDate.formatted(date: .abbreviated, time: .shortened)
-        let summary = driveEndpointSummary(drive, endpointAddresses: endpointAddresses[drive.sessionID])
+        let summary = driveEndpointSummary(drive, endpointAddresses: addresses)
         return "\(date) · \(summary)"
     }
 
@@ -248,6 +287,7 @@ private struct DrivesPostureContainer: View {
     let places: [DrivePlace]
     let isIndexingPlaces: Bool
     @Binding var selectedPlaceID: String?
+    let onEditNickname: (DrivePlace) -> Void
     let selectedDrive: FleetDriveSession?
     let endpointAddresses: [String: DriveEndpointAddresses]
     @Binding var selectedSessionID: String
@@ -400,7 +440,12 @@ private struct DrivesPostureContainer: View {
 
 extension DrivesPostureContainer {
     var placesStrip: some View {
-        DrivePlacesStrip(places: places, isIndexing: isIndexingPlaces, selectedPlaceID: $selectedPlaceID)
+        DrivePlacesStrip(
+            places: places,
+            isIndexing: isIndexingPlaces,
+            selectedPlaceID: $selectedPlaceID,
+            onEditNickname: onEditNickname
+        )
     }
 }
 
