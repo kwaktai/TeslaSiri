@@ -322,6 +322,14 @@ struct FleetSiriAIToolsTests {
             #expect(matches.count == 1)
             #expect(matches.first?.endAddress == "SFO International Airport")
             #expect(matches.first?.distanceMiles == 34.8)
+
+            intent.filter = DriveFilterCriteria(maximumResults: 1)
+            let latest = try #require(try await intent.perform().value)
+            #expect(latest.map(\.id) == ["VIN-1:102"])
+
+            intent.filter = DriveFilterCriteria(minimumDurationMinutes: 11, sortBy: .longestDuration, maximumResults: 1)
+            let longer = try #require(try await intent.perform().value)
+            #expect(longer.map(\.id) == ["VIN-1:101"])
         }
     }
 

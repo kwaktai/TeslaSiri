@@ -34,7 +34,7 @@ final class DriveRoadPath: Sendable {
     var length: Double { cumulative.last ?? 0 }
     var duration: Double { sampleTimes.last ?? 0 }
 
-    private init(
+    private nonisolated init(
         points: [SIMD2<Double>],
         cumulative: [Double],
         sampleDistances: [Double],
@@ -57,27 +57,29 @@ final class DriveRoadPath: Sendable {
 
     // MARK: - Playback queries
 
-    /// The last recorded sample at or before `time`.
-    func sampleIndex(atTime time: Double) -> Int {
-        guard !sampleTimes.isEmpty else { return 0 }
+    struct Sample {
+        let index: Int
+        let distance: Double
+        let speedMPH: Double
+        let isSelfDriving: Bool
+    }
+
+    /// All telemetry at this playhead uses the last recorded sample at or before it.
+    func sample(atTime time: Double) -> Sample {
         var low = 0, high = sampleTimes.count - 1
         while low < high {
             let mid = (low + high + 1) / 2
             if sampleTimes[mid] <= time { low = mid } else { high = mid - 1 }
         }
-        return low
-    }
-
-    func distance(atTime time: Double) -> Double {
-        interpolate(sampleDistances, atTime: time)
-    }
-
-    func speed(atTime time: Double) -> Double {
-        interpolate(sampleSpeeds, atTime: time)
-    }
-
-    func isSelfDriving(atTime time: Double) -> Bool {
-        sampleSelfDriving.isEmpty ? false : sampleSelfDriving[sampleIndex(atTime: time)]
+        let next = min(low + 1, sampleTimes.count - 1)
+        let span = sampleTimes[next] - sampleTimes[low]
+        let fraction = span > 0 ? min(max((time - sampleTimes[low]) / span, 0), 1) : 0
+        return Sample(
+            index: low,
+            distance: sampleDistances[low] + (sampleDistances[next] - sampleDistances[low]) * fraction,
+            speedMPH: sampleSpeeds[low] + (sampleSpeeds[next] - sampleSpeeds[low]) * fraction,
+            isSelfDriving: sampleSelfDriving[low]
+        )
     }
 
     func time(ofSample index: Int) -> Double {
@@ -135,15 +137,6 @@ final class DriveRoadPath: Sendable {
 
     // MARK: - Geometry
 
-    private func interpolate(_ values: [Double], atTime time: Double) -> Double {
-        guard !values.isEmpty, values.count == sampleTimes.count else { return values.first ?? 0 }
-        let index = sampleIndex(atTime: time)
-        guard index + 1 < values.count else { return values[index] }
-        let span = sampleTimes[index + 1] - sampleTimes[index]
-        let fraction = span > 0 ? min(max((time - sampleTimes[index]) / span, 0), 1) : 0
-        return values[index] + (values[index + 1] - values[index]) * fraction
-    }
-
     /// Position at `distance`, continuing straight past either end.
     private func position(atDistance distance: Double, segment: Int) -> SIMD2<Double> {
         guard points.count >= 2 else { return points.first ?? .zero }
@@ -186,9 +179,13 @@ extension DriveRoadPath {
     @MainActor private static var cache: [(driveSessionID: String?, samples: [FleetRoutePoint], path: DriveRoadPath)] = []
     private static let cacheLimit = 8
 
-    /// Builds the road path for a recorded drive, reusing recently matched routes.
+    /// On a cache miss, makes the recorded road available while MapKit refines it.
     @MainActor
-    static func build(for route: [FleetRoutePoint], driveSessionID: String?) async -> DriveRoadPath? {
+    static func build(
+        for route: [FleetRoutePoint],
+        driveSessionID: String?,
+        onRecordedPath: @MainActor (DriveRoadPath) -> Void
+    ) async -> DriveRoadPath? {
         guard !Task.isCancelled else { return nil }
         if let index = cache.lastIndex(where: { $0.driveSessionID == driveSessionID && $0.samples == route }) {
             let entry = cache.remove(at: index)
@@ -211,6 +208,22 @@ extension DriveRoadPath {
             )
         }
         let sampleLocal = samples.map { local($0.0) }
+
+        let startTime = samples[0].1.timestamp ?? 0
+        var times: [Double] = []
+        times.reserveCapacity(samples.count)
+        for (index, sample) in samples.enumerated() {
+            let raw = sample.1.timestamp.map { Double($0 - startTime) / 1000 } ?? Double(index) * 30
+            times.append(max(raw, times.last ?? 0))
+        }
+        let speeds = samples.map { max($0.1.speed ?? 0, 0) }
+        let selfDriving = samples.map { $0.1.isSelfDriving }
+        let recorded = await makePath(
+            polyline: sampleLocal, sampleLocations: sampleLocal, times: times, speeds: speeds,
+            selfDriving: selfDriving, origin: origin, matchedFraction: 0
+        )
+        guard !Task.isCancelled else { return nil }
+        if let recorded { onRecordedPath(recorded) }
 
         // Legs of roughly 600 m keep MapKit on the roads the car used while staying well
         // inside its request budget (about 15 requests for a 10-mile drive).
@@ -251,39 +264,43 @@ extension DriveRoadPath {
         }
 
         guard !Task.isCancelled else { return nil }
-        // Remove duplicate vertices, then place every sample at its distance along the road.
-        var cleaned: [SIMD2<Double>] = []
-        for point in polyline where cleaned.last.map({ simd_distance($0, point) > 0.5 }) ?? true {
-            cleaned.append(point)
+        let path: DriveRoadPath?
+        if matchedLegs == 0 {
+            path = recorded
+        } else {
+            path = await makePath(
+                polyline: polyline, sampleLocations: sampleLocal, times: times, speeds: speeds,
+                selfDriving: selfDriving, origin: origin, matchedFraction: Double(matchedLegs) / Double(legs.count)
+            )
         }
-        guard cleaned.count >= 2 else { return nil }
-        let projection = projectedDistances(of: sampleLocal, onto: cleaned)
-
-        let startTime = samples[0].1.timestamp ?? 0
-        var times: [Double] = []
-        for (index, sample) in samples.enumerated() {
-            let raw = sample.1.timestamp.map { Double($0 - startTime) / 1000 } ?? Double(index) * 30
-            times.append(max(raw, times.last ?? 0))
-        }
-
-        let path = DriveRoadPath(
-            points: cleaned,
-            cumulative: projection.cumulative,
-            sampleDistances: projection.distances,
-            sampleTimes: times,
-            sampleSpeeds: samples.map { max($0.1.speed ?? 0, 0) },
-            sampleSelfDriving: samples.map { $0.1.isSelfDriving },
-            origin: origin,
-            matchedFraction: legs.isEmpty ? 0 : Double(matchedLegs) / Double(legs.count)
-        )
-        log.info("Matched \(matchedLegs, privacy: .public)/\(legs.count, privacy: .public) legs, \(cleaned.count, privacy: .public) road points for \(samples.count, privacy: .public) samples")
-        guard !Task.isCancelled else { return nil }
+        guard !Task.isCancelled, let path else { return nil }
+        log.info("Matched \(matchedLegs, privacy: .public)/\(legs.count, privacy: .public) legs, \(path.points.count, privacy: .public) road points for \(samples.count, privacy: .public) samples")
         cache.removeAll { entry in
             entry.driveSessionID == driveSessionID && (driveSessionID != nil || entry.samples == route)
         }
         cache.append((driveSessionID, route, path))
         if cache.count > cacheLimit { cache.removeFirst() }
         return path
+    }
+
+    /// Clean and project away from the render loop for both recorded and matched geometry.
+    @concurrent private static func makePath(
+        polyline: [SIMD2<Double>], sampleLocations: [SIMD2<Double>],
+        times: [Double], speeds: [Double], selfDriving: [Bool],
+        origin: CLLocationCoordinate2D, matchedFraction: Double
+    ) async -> DriveRoadPath? {
+        var cleaned: [SIMD2<Double>] = []
+        cleaned.reserveCapacity(polyline.count)
+        for point in polyline where cleaned.last.map({ simd_distance($0, point) > 0.5 }) ?? true {
+            cleaned.append(point)
+        }
+        guard cleaned.count >= 2, !Task.isCancelled,
+              let projection = projectedDistances(of: sampleLocations, onto: cleaned) else { return nil }
+        return DriveRoadPath(
+            points: cleaned, cumulative: projection.cumulative, sampleDistances: projection.distances,
+            sampleTimes: times, sampleSpeeds: speeds, sampleSelfDriving: selfDriving,
+            origin: origin, matchedFraction: matchedFraction
+        )
     }
 
     /// Driving directions for one leg, accepted only if they plausibly match the drive.
@@ -300,6 +317,7 @@ extension DriveRoadPath {
         request.transportType = .automobile
         request.requestsAlternateRoutes = true
         let response = try await MKDirections(request: request).calculate()
+        try Task.checkCancellation()
 
         var straight = 0.0
         for index in (leg.start + 1)...leg.end {
@@ -335,7 +353,7 @@ extension DriveRoadPath {
         return false
     }
 
-    private static func closestPoint(_ point: SIMD2<Double>, _ a: SIMD2<Double>, _ b: SIMD2<Double>) -> (point: SIMD2<Double>, fraction: Double) {
+    private nonisolated static func closestPoint(_ point: SIMD2<Double>, _ a: SIMD2<Double>, _ b: SIMD2<Double>) -> (point: SIMD2<Double>, fraction: Double) {
         let ab = b - a
         let lengthSquared = simd_length_squared(ab)
         guard lengthSquared > 0 else { return (a, 0) }
@@ -345,10 +363,10 @@ extension DriveRoadPath {
 
     /// Distance along `polyline` for each sample, searching forward from the previous sample
     /// so the car never moves backward along the road.
-    private static func projectedDistances(
+    private nonisolated static func projectedDistances(
         of samples: [SIMD2<Double>],
         onto polyline: [SIMD2<Double>]
-    ) -> (cumulative: [Double], distances: [Double]) {
+    ) -> (cumulative: [Double], distances: [Double])? {
         var cumulative: [Double] = [0]
         for index in polyline.indices.dropFirst() {
             cumulative.append(cumulative[index - 1] + simd_distance(polyline[index - 1], polyline[index]))
@@ -356,6 +374,7 @@ extension DriveRoadPath {
         var result: [Double] = []
         var segment = 0
         for sample in samples {
+            guard !Task.isCancelled else { return nil }
             var bestDistance = Double.infinity
             var bestAlong = cumulative[segment]
             var bestSegment = segment
@@ -369,7 +388,7 @@ extension DriveRoadPath {
                     bestSegment = index
                     bestAlong = cumulative[index] + (cumulative[index + 1] - cumulative[index]) * closest.fraction
                 }
-                if cumulative[index] - bestAlong > 1_500 { break }
+                if bestDistance == 0 || cumulative[index] - bestAlong > 1_500 { break }
                 index += 1
             }
             segment = bestSegment

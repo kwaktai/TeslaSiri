@@ -26,6 +26,7 @@ nonisolated struct TessieAccessTokenStore: FleetAccessTokenProviding, Sendable {
         self.keychain = keychain
     }
 
+    @concurrent
     func accessToken() async throws -> String {
         try keychain.loadAccessToken()
     }

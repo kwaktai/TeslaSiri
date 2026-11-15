@@ -4,6 +4,12 @@ import Testing
 @testable import FleetKit
 
 struct FleetEntityIndexingTests {
+    @Test(arguments: [0, -1])
+    func spotlightSearchWithNonpositiveLimitReturnsNoHits(limit: Int) async throws {
+        let results = try await FleetSpotlightIndexer.search("Tesla", limit: limit)
+        #expect(results.isEmpty)
+    }
+
     @Test(arguments: ["battery car", "status", "missing", ""])
     func statusSearchFetchesOnlyMatchingVehicleStates(query: String) async throws {
         let roster = #"{"results":[{"vin":"A","last_state":{"display_name":"Battery Car"}},{"vin":"B","last_state":{"display_name":"Roadrunner"}}]}"#

@@ -10,7 +10,12 @@ struct DriveEndpointAddresses: Equatable, Sendable {
 let driveEndpointAddressGeocoder = DriveEndpointAddressGeocoder()
 
 actor DriveEndpointAddressGeocoder {
-    private var cachedAddresses: [String: String] = [:]
+    private let cachedAddresses = NSCache<NSString, NSString>()
+    private var pending: [String: Task<String?, Never>] = [:]
+
+    init() {
+        cachedAddresses.countLimit = 512
+    }
 
     func addresses(for drive: FleetDriveSession, route: [FleetRoutePoint]) async -> DriveEndpointAddresses {
         let startAddress: String?
@@ -39,15 +44,25 @@ actor DriveEndpointAddressGeocoder {
     }
 
     private func address(for point: FleetRoutePoint?) async -> String? {
-        guard let point, let latitude = point.latitude, let longitude = point.longitude else {
+        guard !Task.isCancelled, let point, let latitude = point.latitude, let longitude = point.longitude else {
             return nil
         }
 
-        let cacheKey = point.coordinateKey
-        if let cachedAddress = cachedAddresses[cacheKey] {
-            return cachedAddress
-        }
+        let key = point.coordinateKey
+        if let cached = cachedAddresses.object(forKey: key as NSString) { return cached as String }
+        if let lookup = pending[key] { return await lookup.value }
 
+        let lookup = Task { await lookupAddress(latitude: latitude, longitude: longitude) }
+        pending[key] = lookup
+        let address = await lookup.value
+        pending[key] = nil
+        if let address {
+            cachedAddresses.setObject(address as NSString, forKey: key as NSString)
+        }
+        return address
+    }
+
+    private func lookupAddress(latitude: Double, longitude: Double) async -> String? {
         let location = CLLocation(latitude: latitude, longitude: longitude)
         guard let request = MKReverseGeocodingRequest(location: location) else {
             return nil
@@ -57,9 +72,7 @@ actor DriveEndpointAddressGeocoder {
             guard let mapItem = try await request.mapItems.first else {
                 return nil
             }
-            let address = formattedAddress(from: mapItem)
-            cachedAddresses[cacheKey] = address
-            return address
+            return formattedAddress(from: mapItem)
         } catch {
             return nil
         }

@@ -43,8 +43,7 @@ final class DriveReplayController {
             if isPlaying, let path, time >= path.duration - 0.5 { time = 0 }
             sincePublish = 0
             sinceStreet = 0
-            publish()
-            publishStreetCoordinate()
+            publishPosition()
         }
     }
 
@@ -57,30 +56,42 @@ final class DriveReplayController {
     @ObservationIgnored private var shownDistance: Double?
     @ObservationIgnored private var shownShape: RoadShape?
     @ObservationIgnored private var loadedRoute: Route?
+    @ObservationIgnored private var finishedMatching = false
     @ObservationIgnored private var loadGeneration = 0
     @ObservationIgnored private var sincePublish: Double = 0
     @ObservationIgnored private var sinceStreet: Double = 0
 
     func load(_ route: Route) async {
-        guard !Task.isCancelled, route != loadedRoute else { return }
+        guard !Task.isCancelled, route != loadedRoute || !finishedMatching else { return }
         loadGeneration += 1
         let generation = loadGeneration
-        loadedRoute = nil
-        path = nil
-        isPlaying = false
-        shownDistance = nil
-        shownShape = nil
-        streetCoordinate = nil
+        if route != loadedRoute {
+            loadedRoute = route
+            finishedMatching = false
+            path = nil
+            isPlaying = false
+            shownDistance = nil
+            shownShape = nil
+            streetCoordinate = nil
+        }
         isMatchingRoads = true
-        let built = await DriveRoadPath.build(for: route.points, driveSessionID: route.driveSessionID)
+        let built = await DriveRoadPath.build(for: route.points, driveSessionID: route.driveSessionID) { recorded in
+            guard generation == self.loadGeneration, !Task.isCancelled, self.path == nil else { return }
+            self.install(recorded)
+        }
         guard generation == loadGeneration else { return }
         isMatchingRoads = false
         guard !Task.isCancelled else { return }
-        loadedRoute = route
-        path = built
-        time = built?.time(ofSample: sampleIndex) ?? 0
-        publish()
-        publishStreetCoordinate()
+        finishedMatching = true
+        if let built, path !== built { install(built) }
+    }
+
+    private func install(_ newPath: DriveRoadPath) {
+        if path == nil { time = newPath.time(ofSample: sampleIndex) }
+        path = newPath
+        shownDistance = nil
+        shownShape = nil
+        publishPosition()
     }
 
     func hasLoadedDrive(_ driveSessionID: String?) -> Bool {
@@ -93,8 +104,7 @@ final class DriveReplayController {
         sampleIndex = index
         guard let path else { return }
         time = path.time(ofSample: index)
-        publish()
-        publishStreetCoordinate()
+        publishPosition()
     }
 
     /// Advances playback by one frame and drives the stage, if the 3D view is showing.
@@ -108,8 +118,9 @@ final class DriveReplayController {
             if time >= path.duration { isPlaying = false }
         }
 
+        let sample = path.sample(atTime: time)
         if let stage {
-            updateStage(stage, path: path, deltaTime: deltaTime)
+            updateStage(stage, path: path, sample: sample, deltaTime: deltaTime)
         } else {
             // A newly enabled 3D stage starts at the current playhead.
             shownDistance = nil
@@ -120,17 +131,17 @@ final class DriveReplayController {
         sincePublish += deltaTime
         if sincePublish >= 0.25 {
             sincePublish = 0
-            publish()
+            publish(sample)
         }
         sinceStreet += deltaTime
         if sinceStreet >= 2 {
             sinceStreet = 0
-            publishStreetCoordinate()
+            streetCoordinate = path.coordinate(atDistance: sample.distance)
         }
     }
 
-    private func updateStage(_ stage: VehicleStage, path: DriveRoadPath, deltaTime: Double) {
-        let target = path.distance(atTime: time)
+    private func updateStage(_ stage: VehicleStage, path: DriveRoadPath, sample: DriveRoadPath.Sample, deltaTime: Double) {
+        let target = sample.distance
         let previous = shownDistance ?? target
         let gap = target - previous
         let shown: Double
@@ -150,7 +161,7 @@ final class DriveReplayController {
             shownShape = shape
         }
 
-        let recordedSpeed = path.speed(atTime: time)
+        let recordedSpeed = sample.speedMPH
         let travel = shown - previous
         // The paused stage still animates its wheels and lane lines at the recorded speed.
         let travelSpeed = deltaTime > 0 && abs(travel) > 0.001 ? travel / deltaTime : recordedSpeed * 0.44704
@@ -158,22 +169,21 @@ final class DriveReplayController {
             speedMPH: recordedSpeed,
             travelSpeed: Float(travelSpeed),
             shape: shape,
-            isSelfDriving: path.isSelfDriving(atTime: time)
+            isSelfDriving: sample.isSelfDriving
         ))
     }
 
-    private func publish() {
-        guard let path else { return }
-        let index = path.sampleIndex(atTime: time)
-        if index != sampleIndex { sampleIndex = index }
-        let roundedSpeed = path.speed(atTime: time).rounded()
+    private func publish(_ sample: DriveRoadPath.Sample) {
+        if sample.index != sampleIndex { sampleIndex = sample.index }
+        let roundedSpeed = sample.speedMPH.rounded()
         if roundedSpeed != speedMPH { speedMPH = roundedSpeed }
-        let selfDriving = path.isSelfDriving(atTime: time)
-        if selfDriving != isSelfDriving { isSelfDriving = selfDriving }
+        if sample.isSelfDriving != isSelfDriving { isSelfDriving = sample.isSelfDriving }
     }
 
-    private func publishStreetCoordinate() {
+    private func publishPosition() {
         guard let path else { return }
-        streetCoordinate = path.coordinate(atDistance: path.distance(atTime: time))
+        let sample = path.sample(atTime: time)
+        publish(sample)
+        streetCoordinate = path.coordinate(atDistance: sample.distance)
     }
 }

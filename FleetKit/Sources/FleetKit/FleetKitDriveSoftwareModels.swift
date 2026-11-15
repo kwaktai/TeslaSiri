@@ -58,6 +58,8 @@ public struct FleetDriveInfo: Decodable, Sendable, Identifiable {
     public var startedAtDate: Date { Date(timeIntervalSince1970: TimeInterval(startedAt) / 1000) }
     public var endedAtDate: Date? { endedAt.map { Date(timeIntervalSince1970: TimeInterval($0) / 1000) } }
 
+    var durationMinutes: Int? { durationMS.map { Int($0 / 60_000) } }
+
     public var batteryUsedPercent: Int? {
         guard let start = startingBatteryPercent, let end = endingBatteryPercent else { return nil }
         return start - end

@@ -295,13 +295,13 @@ struct FleetAPIClient {
         if let limit {
             query.append(URLQueryItem(name: "limit", value: String(limit)))
         }
-        let response: Response<TessieResults<TessieJSONObject>> = try await send(Endpoint(
+        let response: Response<TessieResults<TessieSelectedObject<TessieDriveField>>> = try await send(Endpoint(
             path: "/\(encoded(vin))/drives",
             queryItems: query
         ))
         return page(
             response.data.results
-                .compactMap { TessieModelAdapter.drive(from: $0, vin: vin) }
+                .compactMap { TessieModelAdapter.drive(from: $0.fields, vin: vin) }
                 .sorted { $0.startedAt > $1.startedAt },
             requestID: response.requestID
         )
@@ -390,7 +390,7 @@ struct FleetAPIClient {
             query.append(URLQueryItem(name: "limit", value: String(limit)))
         }
         async let stateResponse = vehicleState(vin: vin)
-        let charges: Response<TessieResults<TessieJSONObject>> = try await send(
+        let charges: Response<TessieResults<TessieSelectedObject<TessieChargeField>>> = try await send(
             Endpoint(path: "/\(encoded(vin))/charges", queryItems: query)
         )
         let state = try? await stateResponse
@@ -398,7 +398,7 @@ struct FleetAPIClient {
 
         var sessions = state.flatMap { TessieModelAdapter.activeCharge(vin: vin, state: $0.data) }.map { [$0] } ?? []
         sessions.append(contentsOf: charges.data.results
-            .compactMap { TessieModelAdapter.completedCharge(from: $0, vin: vin) }
+            .compactMap { TessieModelAdapter.completedCharge(from: $0.fields, vin: vin) }
             .sorted { $0.startedAt > $1.startedAt })
         if let limit {
             sessions = Array(sessions.prefix(max(limit, 0)))
@@ -569,10 +569,24 @@ struct FleetAPIClient {
             Endpoint(path: "\(vehiclePath)/plate")
         ]
 
-        var responses = [state]
-        for endpoint in endpoints {
+        // Bound simultaneous downloads, particularly the map and two history payloads.
+        let responses = try await withThrowingTaskGroup(of: (Int, FleetRawAPIResponse).self) { group in
+            var ordered = [FleetRawAPIResponse?](repeating: nil, count: endpoints.count)
+            for (index, endpoint) in endpoints.enumerated() {
+                if index >= 3, let (finished, response) = try await group.next() {
+                    ordered[finished] = response
+                }
+                try Task.checkCancellation()
+                group.addTask { @MainActor in
+                    let response = try await fetchRawResponse(for: endpoint, accessToken: accessToken)
+                    return (index, response)
+                }
+            }
+            for try await (index, response) in group {
+                ordered[index] = response
+            }
             try Task.checkCancellation()
-            responses.append(try await fetchRawResponse(for: endpoint, accessToken: accessToken))
+            return [state] + ordered.compactMap { $0 }
         }
 
         return FleetRawDataExport(
@@ -709,8 +723,12 @@ struct FleetAPIClient {
         cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy
     ) async throws -> Response<TessieJSONObject> {
         let endpoint = Endpoint(path: "/\(encoded(vin))/state", cachePolicy: cachePolicy)
+        func readState(accessToken: String? = nil) async throws -> Response<TessieJSONObject> {
+            let response: Response<TessieVehicleState> = try await send(endpoint, accessToken: accessToken)
+            return Response(data: response.data.fields, requestID: response.requestID)
+        }
         guard cachePolicy == .useProtocolCachePolicy, let scope = Self.vehicleStateScope, scope.vin == vin else {
-            return try await send(endpoint)
+            return try await readState()
         }
 
         let token = try await accessTokenProvider.accessToken()
@@ -719,7 +737,7 @@ struct FleetAPIClient {
             return cached.response
         }
 
-        let response: Response<TessieJSONObject> = try await send(endpoint, accessToken: token)
+        let response = try await readState(accessToken: token)
         try Task.checkCancellation()
         if scope.vin == vin {
             scope.cached = (token, configuration.baseURL, response)
@@ -874,6 +892,7 @@ struct FleetAPIClient {
     }
 
     private func fetchRawResponse(for endpoint: Endpoint, accessToken: String) async throws -> FleetRawAPIResponse {
+        try Task.checkCancellation()
         let request = try await makeRequest(for: endpoint, accessToken: accessToken)
         let startedAt = Self.currentTimeMilliseconds()
         do {
@@ -881,15 +900,8 @@ struct FleetAPIClient {
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw URLError(.badServerResponse)
             }
-            let decodedBody: JSONValue?
-            if let contentType = httpResponse.mimeType, contentType.hasPrefix("image/") {
-                decodedBody = .object([
-                    "content_type": .string(contentType),
-                    "base64": .string(data.base64EncodedString())
-                ])
-            } else {
-                decodedBody = try? await Self.decode(JSONValue.self, from: data)
-            }
+            let payload = await Self.rawPayload(data, contentType: httpResponse.mimeType)
+            try Task.checkCancellation()
             return rawResponse(
                 endpoint: endpoint,
                 request: request,
@@ -897,8 +909,8 @@ struct FleetAPIClient {
                 statusCode: httpResponse.statusCode,
                 cacheControl: httpResponse.value(forHTTPHeaderField: "Cache-Control"),
                 requestID: requestID(from: httpResponse),
-                body: decodedBody,
-                bodyText: decodedBody == nil ? String(data: data, encoding: .utf8) : nil,
+                body: payload.body,
+                bodyText: payload.text,
                 errorMessage: nil
             )
         } catch {
@@ -915,6 +927,20 @@ struct FleetAPIClient {
                 errorMessage: error.localizedDescription
             )
         }
+    }
+
+    @concurrent
+    private static func rawPayload(_ data: Data, contentType: String?) async -> (body: JSONValue?, text: String?) {
+        if let contentType, contentType.hasPrefix("image/") {
+            return (.object([
+                "content_type": .string(contentType),
+                "base64": .string(data.base64EncodedString())
+            ]), nil)
+        }
+        if let json = try? JSONDecoder().decode(JSONValue.self, from: data) {
+            return (json, nil)
+        }
+        return (nil, String(data: data, encoding: .utf8))
     }
 
     private func rawResponse(

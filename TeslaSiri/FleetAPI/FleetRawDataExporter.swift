@@ -7,7 +7,9 @@ nonisolated enum FleetRawDataExporter {
         let latestRequestID: String?
     }
 
-    static func write(_ export: FleetRawDataExport) throws -> URL {
+    @concurrent
+    static func write(_ export: FleetRawDataExport) async throws -> URL {
+        try Task.checkCancellation()
         let directoryURL = try exportDirectoryURL()
         let fileURL = directoryURL.appendingPathComponent(
             fileName(vin: export.vin, generatedAt: export.generatedAt)
@@ -18,8 +20,14 @@ nonisolated enum FleetRawDataExporter {
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
 
         let data = try encoder.encode(export)
+        try Task.checkCancellation()
         try data.write(to: fileURL, options: [.atomic, .completeFileProtection])
         return fileURL
+    }
+
+    @concurrent
+    static func discard(_ url: URL) async {
+        try? FileManager.default.removeItem(at: url)
     }
 
     static func summary(for export: FleetRawDataExport) -> Summary {
@@ -62,6 +70,6 @@ nonisolated enum FleetRawDataExporter {
     private static func fileName(vin: String, generatedAt: Int64) -> String {
         let safeVINSuffix = vin.suffix(6).filter { $0.isLetter || $0.isNumber }
         let suffix = safeVINSuffix.isEmpty ? "vehicle" : String(safeVINSuffix)
-        return "fleet-raw-\(suffix)-\(generatedAt / 1_000).json"
+        return "fleet-raw-\(suffix)-\(generatedAt / 1_000)-\(UUID().uuidString).json"
     }
 }

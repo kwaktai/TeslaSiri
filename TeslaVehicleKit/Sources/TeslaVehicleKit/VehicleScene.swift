@@ -522,7 +522,7 @@ public enum VehicleError: Error, CustomStringConvertible {
         guard let classicComponents, var model = node.components[ModelComponent.self] else { return }
         let originals = model.materials
         let isCustomPaint = hasCustomParkedPaint && originalPaint[path] != nil
-        let reversedWinding = simd_determinant(node.transformMatrix(relativeTo: entity)) < 0
+        lazy var reversedWinding = simd_determinant(node.transformMatrix(relativeTo: self.entity)) < 0
         var changed = false
         for (slot, material) in originals.enumerated() where material is PhysicallyBasedMaterial {
             if let finish = classicComponents.finish(for: material, path: bodyPath, slot: slot,
@@ -653,9 +653,26 @@ public enum VehicleError: Error, CustomStringConvertible {
     }
 
     func restoreSurfaceMaterials(onlyPaint: Bool = false) {
-        for (path, materials) in parkedOriginals where !onlyPaint || manifest.paintSurfaces.contains(path) {
-            guard let e = indexed[path], var m = e.components[ModelComponent.self] else { continue }
-            m.materials = materials; e.components.set(m); parkedOriginals.removeValue(forKey: path)
+        guard !parkedOriginals.isEmpty else { return }
+        func restore(_ path: String, _ materials: [any Material]) -> Bool {
+            guard let node = indexed[path], var model = node.components[ModelComponent.self] else { return false }
+            model.materials = materials
+            node.components.set(model)
+            return true
+        }
+
+        if onlyPaint {
+            for path in manifest.paintSurfaces {
+                if let materials = parkedOriginals[path], restore(path, materials) {
+                    parkedOriginals.removeValue(forKey: path)
+                }
+            }
+        } else {
+            let originals = parkedOriginals
+            parkedOriginals = [:]
+            for (path, materials) in originals {
+                if !restore(path, materials) { parkedOriginals[path] = materials }
+            }
         }
     }
 

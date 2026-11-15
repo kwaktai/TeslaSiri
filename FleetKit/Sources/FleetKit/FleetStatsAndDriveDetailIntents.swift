@@ -349,27 +349,15 @@ public struct GetRecentChargesIntent: AppIntent, PredictableIntent {
             )
             let trimmedLoc = locationQuery?.trimmingCharacters(in: .whitespacesAndNewlines)
 
-            let filtered = raw
-                .map(ChargeSessionEntity.init(info:))
-                .filter { session in
-                    if let scOnly = superchargersOnly, session.isSupercharger != scOnly {
-                        return false
-                    }
-                    if let startDate, session.startedAt < startDate {
-                        return false
-                    }
-                    if let endDate, session.startedAt > endDate {
-                        return false
-                    }
-                    if let loc = trimmedLoc, !loc.isEmpty {
-                        guard session.location?.localizedCaseInsensitiveContains(loc) == true else {
-                            return false
-                        }
-                    }
-                    return true
-                }
-
-            let results = Array(filtered.prefix(clamped))
+            let matching = raw.lazy.filter { session in
+                if let scOnly = self.superchargersOnly, session.isSupercharger != scOnly { return false }
+                if let startDate = self.startDate, session.startedAtDate < startDate { return false }
+                if let endDate = self.endDate, session.startedAtDate > endDate { return false }
+                if let loc = trimmedLoc, !loc.isEmpty,
+                   session.location?.localizedCaseInsensitiveContains(loc) != true { return false }
+                return true
+            }
+            let results: [ChargeSessionEntity] = matching.prefix(clamped).map(ChargeSessionEntity.init(info:))
             log.success("returned \(results.count) charge session(s) for \(resolved.name)")
 
             let dialogText: String

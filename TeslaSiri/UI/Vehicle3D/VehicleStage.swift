@@ -75,6 +75,8 @@ final class VehicleStage {
     @ObservationIgnored private var blinkCount = 0
     @ObservationIgnored private var flashStart: Double = -10
 
+    @ObservationIgnored private var cameraFit: CameraFit?
+    @ObservationIgnored private var lastProjection: HotspotProjection?
     @ObservationIgnored private var cameraTransform = Transform()
     @ObservationIgnored private var cameraFOV: Float = 30
     @ObservationIgnored private var cameraPivot: SIMD3<Float> = [0, 0.7, 0]
@@ -137,6 +139,7 @@ final class VehicleStage {
         camera.transform = cameraTransform
         camera.camera.fieldOfViewInDegrees = cameraFOV
         hostID = ObjectIdentifier(anchor)
+        lastProjection = nil
         transition = nil
         isInteracting = false
         onFrame = nil
@@ -234,17 +237,20 @@ final class VehicleStage {
         }
         _ = Self.removeEmbeddedCameras(in: loaded.entity)
 
-        let frame = Self.measureFrame(of: loaded)
+        let bodyBounds = loaded.body.visualBounds(relativeTo: loaded.entity)
+        let frame = Self.measureFrame(of: loaded, bounds: bodyBounds)
         self.frame = frame
         wheels = Self.rigWheels(of: loaded, frame: frame)
         clips = Self.findClips(in: loaded)
-        anchors = Self.findAnchors(in: loaded, clips: clips, frame: frame)
+        anchors = Self.findAnchors(in: loaded, clips: clips, frame: frame, bodyBounds: bodyBounds)
+        lastProjection = nil
         controls = loaded.manifest.controls ?? [:]
         baselineLights = Set(controls.compactMap { name, paths in
             paths.contains { loaded.node(at: $0)?.isEnabled == true } ? name : nil
         })
         activeLights = nil
         poses = Self.cameraPoses(of: loaded, frame: frame, anchors: anchors)
+        cameraFit = nil
         lightingLook = .studio
 
         road = nil
@@ -365,7 +371,10 @@ final class VehicleStage {
         case .driving:
             try? scene.setLighting(view: "DRIVE")
         case .studio:
-            Task { try? await scene.applyParkedAppearance() }
+            Task {
+                guard self.scene === scene, lightingLook == .studio else { return }
+                try? await scene.applyParkedAppearance()
+            }
         }
     }
 
@@ -563,12 +572,21 @@ final class VehicleStage {
     }
 
     private func stepCamera(_ dt: Float) {
-        guard let pose = poses[currentPoseKind] ?? poses[.parked] else { return }
         let aspect = viewSize.height > 1 ? Float(viewSize.width / viewSize.height) : 1.9
-
-        var transform = pose.resolvedTransform(aspect: aspect)
-        var fov = pose.fittedFOV(aspect: aspect) / framingZoom
-        var pivot = pose.pivot
+        if cameraFit?.kind != currentPoseKind || cameraFit?.aspect != aspect {
+            guard let pose = poses[currentPoseKind] ?? poses[.parked] else { return }
+            cameraFit = CameraFit(
+                kind: currentPoseKind,
+                aspect: aspect,
+                transform: pose.resolvedTransform(aspect: aspect),
+                fieldOfView: pose.fittedFOV(aspect: aspect),
+                pivot: pose.pivot
+            )
+        }
+        guard let cameraFit else { return }
+        var transform = cameraFit.transform
+        var fov = cameraFit.fieldOfView / framingZoom
+        var pivot = cameraFit.pivot
 
         if let transition {
             let linear = Float(min(1, (time - transition.start) / transition.duration))
@@ -620,30 +638,38 @@ final class VehicleStage {
 
     private func updateHotspots() {
         guard let scene, viewSize.width > 1, viewSize.height > 1 else { return }
-        var visible: [VehicleHotspot] = []
-        switch state.mode {
-        case .parked: visible = [.lock, .frunk, .trunk, .chargePort]
-        case .charging: visible = [.lock, .chargePort]
-        case .driving: visible = []
-        }
-        if transition != nil || isInteracting || zoom > 1.25 { visible = [] }
-        guard !visible.isEmpty else {
+        guard state.mode != .driving, transition == nil, !isInteracting, zoom <= 1.25 else {
+            lastProjection = nil
             if !hotspots.isEmpty { hotspots = [] }
             return
         }
+        let projection = HotspotProjection(
+            camera: cameraTransform, fieldOfView: cameraFOV, size: viewSize,
+            mode: state.mode, roll: bodyRoll, pitch: bodyPitch
+        )
+        guard lastProjection != projection else { return }
+        lastProjection = projection
 
-        let view = camera.transformMatrix(relativeTo: nil).inverse
+        let visible: [VehicleHotspot] = state.mode == .charging ? [.lock, .chargePort] : [.lock, .frunk, .trunk, .chargePort]
+        let cameraMatrix = camera.transformMatrix(relativeTo: root)
+        let view = cameraMatrix.inverse
+        let modelMatrix = scene.entity.transformMatrix(relativeTo: root)
+        func rootPosition(_ anchor: SIMD3<Float>) -> SIMD3<Float> {
+            let point = modelMatrix * SIMD4(anchor, 1)
+            return SIMD3(point.x, point.y, point.z)
+        }
         let tanHalf = tan(cameraFOV * .pi / 360)
         let aspect = Float(viewSize.width / viewSize.height)
         var placements: [VehicleHotspotPlacement] = []
         for hotspot in visible {
             guard let anchor = anchors[hotspot] else { continue }
-            let world = scene.entity.convert(position: anchor, to: root)
+            let world = rootPosition(anchor)
             // Hide the charge-port callout when its side of the car faces away. The roof,
             // frunk and trunk lids face up, so their callouts always show.
             if hotspot == .chargePort, let frame {
-                let center = scene.entity.convert(position: frame.origin, to: root)
-                let cameraPosition = camera.position(relativeTo: nil)
+                let center = rootPosition(frame.origin)
+                let eyePosition = cameraMatrix.columns.3
+                let cameraPosition = SIMD3(eyePosition.x, eyePosition.y, eyePosition.z)
                 var outward = world - center
                 var toCamera = cameraPosition - center
                 outward.y = 0
@@ -834,6 +860,23 @@ private struct CameraPose {
     }
 }
 
+private struct CameraFit {
+    let kind: PoseKind
+    let aspect: Float
+    let transform: Transform
+    let fieldOfView: Float
+    let pivot: SIMD3<Float>
+}
+
+private struct HotspotProjection: Equatable {
+    let camera: Transform
+    let fieldOfView: Float
+    let size: CGSize
+    let mode: VehicleStageState.Mode
+    let roll: Float
+    let pitch: Float
+}
+
 private struct CameraTransition {
     var from: Transform
     var fromFOV: Float
@@ -984,7 +1027,7 @@ extension VehicleStage {
         return node
     }
 
-    fileprivate static func measureFrame(of scene: VehicleScene) -> VehicleFrame {
+    fileprivate static func measureFrame(of scene: VehicleScene, bounds: BoundingBox) -> VehicleFrame {
         let mounts = activeMounts(of: scene)
         var front: [SIMD3<Float>] = []
         var rear: [SIMD3<Float>] = []
@@ -993,7 +1036,6 @@ extension VehicleStage {
             let position = socket.position(relativeTo: scene.entity)
             if isFront(mount.socket) { front.append(position) } else { rear.append(position) }
         }
-        let bounds = scene.body.visualBounds(relativeTo: scene.entity)
         let frontCenter = front.isEmpty ? SIMD3<Float>(0, 0, 1.4) : front.reduce(.zero, +) / Float(front.count)
         let rearCenter = rear.isEmpty ? SIMD3<Float>(0, 0, -1.4) : rear.reduce(.zero, +) / Float(rear.count)
         var forward = frontCenter - rearCenter
@@ -1048,9 +1090,10 @@ extension VehicleStage {
     fileprivate static func findClips(in scene: VehicleScene) -> [VehicleOpening: ClipPose] {
         var result: [VehicleOpening: ClipPose] = [:]
         let clips = scene.manifest.clips
+        let names = clips.keys.sorted()
         for opening in VehicleOpening.allCases {
             for prefix in opening.clipPrefixes {
-                guard let name = clips.keys.sorted().first(where: { $0.split(separator: "/").first.map(String.init) == prefix }),
+                guard let name = names.first(where: { $0.split(separator: "/").first.map(String.init) == prefix }),
                       let clip = clips[name],
                       clip.tracks.allSatisfy({ scene.node(at: $0.target) != nil })
                 else { continue }
@@ -1064,7 +1107,8 @@ extension VehicleStage {
     fileprivate static func findAnchors(
         in scene: VehicleScene,
         clips: [VehicleOpening: ClipPose],
-        frame: VehicleFrame
+        frame: VehicleFrame,
+        bodyBounds: BoundingBox
     ) -> [VehicleHotspot: SIMD3<Float>] {
         func bounds(for opening: VehicleOpening) -> BoundingBox? {
             guard let clip = clips[opening],
@@ -1094,8 +1138,7 @@ extension VehicleStage {
         } else if let node = clips[.chargePort].flatMap({ scene.manifest.clips[$0.name]?.tracks.first?.target }).flatMap({ scene.node(at: $0) }) {
             anchors[.chargePort] = node.position(relativeTo: scene.entity)
         }
-        let roof = scene.body.visualBounds(relativeTo: scene.entity)
-        let roofHeight = roof.max.y.isFinite ? min(roof.max.y, frame.origin.y + frame.height) : frame.origin.y + frame.height
+        let roofHeight = bodyBounds.max.y.isFinite ? min(bodyBounds.max.y, frame.origin.y + frame.height) : frame.origin.y + frame.height
         anchors[.lock] = SIMD3(frame.origin.x, roofHeight, frame.origin.z) - frame.forward * (frame.length * 0.06)
         return anchors
     }

@@ -32,8 +32,8 @@ struct VehicleTelemetryCards: View {
             }
             .fixedSize(horizontal: false, vertical: true)
 
-            if includeLocation, snapshot.latitude != nil, snapshot.longitude != nil {
-                VehicleLocationCard(vehicleName: vehicle.name, snapshot: snapshot)
+            if includeLocation, let latitude = snapshot.latitude, let longitude = snapshot.longitude {
+                VehicleLocationCard(vehicleName: vehicle.name, latitude: latitude, longitude: longitude)
             }
 
             if let tires = snapshot.tires, tires.hasAnyReading {
@@ -464,7 +464,8 @@ private struct CompactLabelStyle: LabelStyle {
 
 struct VehicleLocationCard: View {
     let vehicleName: String
-    let snapshot: FleetLatestSnapshot
+    let latitude: Double
+    let longitude: Double
     var mapHeight: CGFloat = 176
 
     @State private var resolvedAddress: String?
@@ -479,45 +480,41 @@ struct VehicleLocationCard: View {
                 }
             }
         } content: {
-            if let coordinate {
-                VStack(alignment: .leading, spacing: 10) {
-                    Map(
-                        position: .constant(.camera(MapCamera(centerCoordinate: coordinate, distance: 900))),
-                        interactionModes: []
-                    ) {
-                        Marker(vehicleName, systemImage: "car.fill", coordinate: coordinate)
-                            .tint(.red)
-                    }
-                    .mapControlVisibility(.hidden)
-                    .frame(height: mapHeight)
-                    .clipShape(.rect(cornerRadius: 14, style: .continuous))
-                    .accessibilityLabel("Map showing \(vehicleName)'s location")
+            VStack(alignment: .leading, spacing: 10) {
+                Map(
+                    position: .constant(.camera(MapCamera(centerCoordinate: coordinate, distance: 900))),
+                    interactionModes: []
+                ) {
+                    Marker(vehicleName, systemImage: "car.fill", coordinate: coordinate)
+                        .tint(.red)
+                }
+                .mapControlVisibility(.hidden)
+                .frame(height: mapHeight)
+                .clipShape(.rect(cornerRadius: 14, style: .continuous))
+                .accessibilityLabel("Map showing \(vehicleName)'s location")
 
-                    Text(resolvedAddress ?? formattedCoordinate(latitude: snapshot.latitude, longitude: snapshot.longitude))
-                        .font(.subheadline.weight(.medium))
-                        .textSelection(.enabled)
-                }
-                .task(id: coordinateTaskID) {
-                    resolvedAddress = await driveEndpointAddressGeocoder.address(
-                        latitude: snapshot.latitude,
-                        longitude: snapshot.longitude
-                    )
-                }
+                Text(resolvedAddress ?? coordinateTaskID)
+                    .font(.subheadline.weight(.medium))
+                    .textSelection(.enabled)
+            }
+            .task(id: coordinateTaskID) {
+                resolvedAddress = nil
+                let address = await driveEndpointAddressGeocoder.address(latitude: latitude, longitude: longitude)
+                guard !Task.isCancelled else { return }
+                resolvedAddress = address
             }
         }
     }
 
-    private var coordinate: CLLocationCoordinate2D? {
-        guard let latitude = snapshot.latitude, let longitude = snapshot.longitude else { return nil }
-        return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    private var coordinate: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
 
     private var coordinateTaskID: String {
-        formattedCoordinate(latitude: snapshot.latitude, longitude: snapshot.longitude)
+        formattedCoordinate(latitude: latitude, longitude: longitude)
     }
 
     private var mapsURL: URL? {
-        guard let latitude = snapshot.latitude, let longitude = snapshot.longitude else { return nil }
         var components = URLComponents(string: "https://maps.apple.com/")
         components?.queryItems = [
             URLQueryItem(name: "ll", value: "\(latitude),\(longitude)"),

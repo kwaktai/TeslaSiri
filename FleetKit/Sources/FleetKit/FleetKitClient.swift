@@ -77,8 +77,8 @@ public struct FleetIntentClient: Sendable {
             FleetVehicleInfo(
                 vin: vehicle.vin,
                 displayName: vehicle.lastState?.displayName,
-                carType: vehicle.lastState?.object("vehicle_config").string("car_type"),
-                exteriorColor: vehicle.lastState?.object("vehicle_config").string("exterior_color")
+                carType: vehicle.lastState?.carType,
+                exteriorColor: vehicle.lastState?.exteriorColor
             )
         }
     }
@@ -93,13 +93,14 @@ public struct FleetIntentClient: Sendable {
     }
 
     private func snapshotState(vin: String) async throws -> (snapshot: FleetSnapshotInfo, state: TessieObject) {
+        async let tireRead: TessieObject = get(
+            "/\(encoded(vin))/tire_pressure",
+            query: [URLQueryItem(name: "pressure_format", value: "psi")]
+        )
         let state: TessieObject = try await get("/\(encoded(vin))/state")
         let tireState: TessieObject?
         do {
-            tireState = try await get(
-                "/\(encoded(vin))/tire_pressure",
-                query: [URLQueryItem(name: "pressure_format", value: "psi")]
-            )
+            tireState = try await tireRead
         } catch FleetKitError.sessionExpired {
             throw FleetKitError.sessionExpired
         } catch FleetKitError.notSignedIn {
@@ -156,7 +157,7 @@ public struct FleetIntentClient: Sendable {
     ) async throws -> [FleetDriveRoutePoint] {
         let fromSec = Int64(from.timeIntervalSince1970)
         let toSec = max(Int64(to.timeIntervalSince1970), fromSec + 1)
-        let response: TessieResults<TessieObject> = try await get(
+        let response: TessieResults<TessiePathSample> = try await get(
             "/\(encoded(vin))/path",
             query: [
                 URLQueryItem(name: "from", value: String(fromSec)),
@@ -510,11 +511,63 @@ private struct TessieResults<Value: Decodable>: Decodable {
 
 private struct TessieVehicle: Decodable {
     let vin: String
-    let lastState: TessieObject?
+    let lastState: RosterState?
 
     enum CodingKeys: String, CodingKey {
         case vin
         case lastState = "last_state"
+    }
+}
+
+private struct RosterState: Decodable {
+    let displayName: String?
+    let carType: String?
+    let exteriorColor: String?
+    let units: String?
+
+    private enum Field: String, CodingKey {
+        case displayName = "display_name", vehicleState = "vehicle_state", vehicleName = "vehicle_name"
+        case config = "vehicle_config", carType = "car_type", exteriorColor = "exterior_color"
+        case settings = "gui_settings", temperature = "gui_temperature_units", distance = "gui_distance_units"
+    }
+
+    init(from decoder: Decoder) throws {
+        let state = try decoder.container(keyedBy: Field.self)
+        let vehicle = try? state.nestedContainer(keyedBy: Field.self, forKey: .vehicleState)
+        let config = try? state.nestedContainer(keyedBy: Field.self, forKey: .config)
+        let settings = try? state.nestedContainer(keyedBy: Field.self, forKey: .settings)
+        func string(_ field: Field, in container: KeyedDecodingContainer<Field>?) throws -> String? {
+            try container?.decodeIfPresent(TessieValue.self, forKey: field)?.stringValue
+        }
+        displayName = try string(.displayName, in: state) ?? string(.vehicleName, in: vehicle)
+        carType = try string(.carType, in: config)
+        exteriorColor = try string(.exteriorColor, in: config)
+        if let temperature = try string(.temperature, in: settings) {
+            units = temperature.lowercased().hasPrefix("f") ? "imperial" : "metric"
+        } else {
+            units = try string(.distance, in: settings).map { $0.lowercased().contains("km") ? "metric" : "imperial" }
+        }
+    }
+}
+
+private struct TessiePathSample: Decodable {
+    let latitude: TessieValue?
+    let longitude: TessieValue?
+    let speed: TessieValue?
+    let heading: TessieValue?
+    let autopilot: TessieValue?
+    let timestamp: TessieValue?
+
+    var routePoint: FleetDriveRoutePoint? {
+        guard let latitude = latitude?.doubleValue, let longitude = longitude?.doubleValue else { return nil }
+        return FleetDriveRoutePoint(
+            latitude: latitude,
+            longitude: longitude,
+            speedMPH: speed?.doubleValue,
+            heading: heading?.doubleValue,
+            autopilotState: autopilot?.stringValue,
+            timestampMS: timestamp?.int64Value.map(TessieObject.milliseconds)
+        )
     }
 }
 
@@ -630,10 +683,6 @@ private extension Dictionary where Key == String, Value == TessieValue {
         self[key]?.boolValue
     }
 
-    var displayName: String? {
-        string("display_name") ?? object("vehicle_state").string("vehicle_name")
-    }
-
     var usesFahrenheit: Bool {
         let settings = object("gui_settings")
         if let temperature = settings.string("gui_temperature_units")?.lowercased() {
@@ -648,15 +697,6 @@ private extension Dictionary where Key == String, Value == TessieValue {
     func displayTemperature(_ celsius: Double?) -> Double? {
         guard let celsius else { return nil }
         return usesFahrenheit ? (celsius * 9 / 5) + 32 : celsius
-    }
-
-    var units: String? {
-        let settings = object("gui_settings")
-        if let temperature = settings.string("gui_temperature_units")?.lowercased() {
-            return temperature.hasPrefix("f") ? "imperial" : "metric"
-        }
-        guard let distance = settings.string("gui_distance_units")?.lowercased() else { return nil }
-        return distance.contains("km") ? "metric" : "imperial"
     }
 
     func snapshot(vin: String, tireState: TessieObject?) -> FleetSnapshotInfo {
@@ -801,18 +841,6 @@ private extension Dictionary where Key == String, Value == TessieValue {
             insideTempF: double("average_inside_temperature"),
             outsideTempF: double("average_outside_temperature"),
             tag: string("tag")
-        )
-    }
-
-    var routePoint: FleetDriveRoutePoint? {
-        guard let lat = double("latitude"), let lon = double("longitude") else { return nil }
-        return FleetDriveRoutePoint(
-            latitude: lat,
-            longitude: lon,
-            speedMPH: double("speed"),
-            heading: double("heading"),
-            autopilotState: string("autopilot"),
-            timestampMS: int64("timestamp").map(Self.milliseconds)
         )
     }
 

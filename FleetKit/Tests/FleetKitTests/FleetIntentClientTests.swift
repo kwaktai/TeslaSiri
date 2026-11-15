@@ -37,7 +37,7 @@ struct FleetIntentClientTests {
 
         let snapshot = try await client.snapshot(vin: "VIN/ABC 123")
 
-        #expect(MockURLProtocol.requests.map { $0.url?.path(percentEncoded: true) } == [
+        #expect(MockURLProtocol.requests.compactMap { $0.url?.path(percentEncoded: true) }.sorted() == [
             "/VIN%2FABC%20123/state",
             "/VIN%2FABC%20123/tire_pressure"
         ])
@@ -47,6 +47,73 @@ struct FleetIntentClientTests {
         #expect(snapshot.outsideTemp == 50)
         #expect(snapshot.petModeOn == true)
         #expect(abs((snapshot.tires?.frontLeftPSI ?? 0) - 39.4) < 0.001)
+    }
+
+    @Test func rosterDecodesOnlyVehicleIdentityAndAccountUnits() async throws {
+        let json = """
+            {"results":[
+              {"vin":"A","last_state":{"display_name":42,"vehicle_state":{"vehicle_name":"ignored"},
+                "vehicle_config":{"car_type":"modely","exterior_color":true},
+                "gui_settings":{"gui_temperature_units":"F","gui_distance_units":"km"},
+                "unknown":{"telemetry":[0,1,null]}}},
+              {"vin":"B","last_state":{"vehicle_state":{"vehicle_name":"Fallback"},"vehicle_config":false}},
+              {"vin":"C","last_state":null}
+            ]}
+            """
+        let client = makeMockClient { _ in (200, Data(json.utf8)) }
+        let vehicles = try await client.vehicles()
+        #expect(vehicles.map(\.vin) == ["A", "B", "C"])
+        #expect(vehicles.map(\.displayName) == ["42", "Fallback", nil])
+        #expect(vehicles.map(\.carType) == ["modely", nil, nil])
+        #expect(vehicles.map(\.exteriorColor) == ["true", nil, nil])
+        #expect(try await client.user().units == "imperial")
+    }
+
+    @Test func drivePathPreservesScalarCoercionsAndSampledEndpoints() async throws {
+        let json = """
+            {"results":[
+              {"latitude":"3","longitude":-3,"autopilot":true,"timestamp":1710000002000},
+              {"latitude":0,"longitude":"-1","heading":"340","speed":"12.5","timestamp":"1710000000",
+               "extra":{"payload":[true,false,null]}},
+              {"latitude":2,"longitude":-2,"timestamp":1710000001,"autopilot":2},
+              {"latitude":"NaN","longitude":-9}, {"latitude":[],"longitude":1}
+            ]}
+            """
+        let client = makeMockClient { _ in (200, Data(json.utf8)) }
+        let start = Date(timeIntervalSince1970: 1710000000)
+        let end = start.addingTimeInterval(3)
+        let full = try await client.drivePath(vin: "A", from: start, to: end, maxPoints: 1)
+        #expect(full.map(\.latitude) == [0, 2, 3])
+        #expect(full.map(\.timestampMS) == [1710000000000, 1710000001000, 1710000002000])
+        #expect(full.map(\.autopilotState) == [nil, "2", "true"])
+        #expect(full.first?.speedMPH == 12.5 && full.first?.heading == 340)
+        let sampled = try await client.drivePath(vin: "A", from: start, to: end, maxPoints: 2)
+        #expect(sampled == [full[0], full[2]])
+    }
+
+    @Test func snapshotPreservesRequiredStateErrorWhenBothReadsFail() async {
+        let client = makeMockClient { request in
+            request.url?.lastPathComponent == "state"
+                ? (503, Data(#"{"error":"state unavailable"}"#.utf8))
+                : (401, Data())
+        }
+        let error = await #expect(throws: FleetKitError.self) {
+            try await client.snapshot(vin: "A")
+        }
+        #expect(error?.localizedDescription == "state unavailable")
+    }
+
+    @Test func routeImageIdentityIncludesGeometryAndVisibleAutopilotSegments() {
+        let a = FleetDriveRoutePoint(latitude: 1, longitude: 2)
+        func key(_ b: FleetDriveRoutePoint, width: Double = 380) -> SiriMapImageKey {
+            .route(driveID: "A:1", style: .standard, size: CGSize(width: width, height: 172),
+                   points: [a, b].map(SiriMapImageKey.Point.init))
+        }
+        let original = key(a)
+        #expect(key(FleetDriveRoutePoint(latitude: 1, longitude: 3)) != original)
+        #expect(key(FleetDriveRoutePoint(latitude: 1, longitude: 2, autopilotState: "FSD")) != original)
+        #expect(key(a, width: 380.5) != original)
+        #expect(key(FleetDriveRoutePoint(latitude: 1, longitude: 2, speedMPH: 50)) == original)
     }
 
     @Test func spotlightStatusAndSoftwareUseOneStateResponse() async throws {
@@ -59,7 +126,7 @@ struct FleetIntentClientTests {
         let result = try await FleetIntentService(client: client).snapshotAndSoftware(vin: "VIN-1")
         #expect(result.snapshot.batteryLevel == 82.4)
         #expect(result.software.availableVersion == "2026.8.4")
-        #expect(MockURLProtocol.requests.compactMap { $0.url?.path } == ["/VIN-1/state", "/VIN-1/tire_pressure"])
+        #expect(MockURLProtocol.requests.compactMap { $0.url?.path }.sorted() == ["/VIN-1/state", "/VIN-1/tire_pressure"])
     }
 
     @Test(arguments: [200, 401, 503])

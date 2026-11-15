@@ -21,28 +21,7 @@ struct DrivesView: View {
         searchText.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    /// Places shown in the strip: frequent places, or those matching the search.
-    private var visiblePlaces: [DrivePlace] {
-        guard let placesIndex else { return [] }
-        return trimmedSearch.isEmpty ? placesIndex.frequentPlaces : placesIndex.places(matching: trimmedSearch)
-    }
-
-    private var drivesTitle: String {
-        if let place = selectedPlaceID.flatMap({ placesIndex?.place(id: $0) }) {
-            return "Drives to and from \(place.name)"
-        }
-        return trimmedSearch.isEmpty ? "Recent drives" : "Matching drives"
-    }
-
-    private var drives: [FleetDriveSession] {
-        if let placesIndex {
-            if let place = selectedPlaceID.flatMap({ placesIndex.place(id: $0) }) {
-                return placesIndex.drives(at: place)
-            }
-            if !trimmedSearch.isEmpty {
-                return placesIndex.drives(matching: trimmedSearch)
-            }
-        }
+    private var recentDrives: [FleetDriveSession] {
         let recent = store.selectedVehicleRecentDrives
         var visible = Array(recent.prefix(10))
         if let targetID = selectedSessionID ?? requestedSessionID,
@@ -55,7 +34,13 @@ struct DrivesView: View {
     }
 
     var body: some View {
-        let visibleDrives = drives
+        let index = placesIndex
+        let query = trimmedSearch
+        let place = selectedPlaceID.flatMap { index?.place(id: $0) }
+        let results = query.isEmpty ? nil : index?.search(query, at: place)
+        let visiblePlaces = results?.places ?? index?.frequentPlaces ?? []
+        let visibleDrives = results?.drives ?? place.flatMap { index?.drives(at: $0) } ?? recentDrives
+        let title = place.map { "Drives to and from \($0.name)" } ?? (query.isEmpty ? "Recent drives" : "Matching drives")
         let targetID = selectedSessionID ?? requestedSessionID
         let selected = visibleDrives.first { $0.sessionID == targetID } ?? visibleDrives.first
         let selection = selectedSessionBinding(fallback: visibleDrives.first?.sessionID)
@@ -64,9 +49,9 @@ struct DrivesView: View {
         DrivesPostureContainer(
             store: store,
             drives: visibleDrives,
-            drivesTitle: drivesTitle,
+            drivesTitle: title,
             places: visiblePlaces,
-            isIndexingPlaces: placesIndex?.isIndexing ?? false,
+            isIndexingPlaces: index?.isIndexing ?? false,
             selectedPlaceID: $selectedPlaceID,
             selectedDrive: selected,
             endpointAddresses: labeledEndpointAddresses(for: visibleDrives),

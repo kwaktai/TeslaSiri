@@ -68,19 +68,20 @@ final class DrivePlacesIndex {
         }
     }
 
-    func places(matching query: String) -> [DrivePlace] {
-        frequentPlaces.filter { $0.matches(query) }
-    }
+    func search(_ query: String, at selectedPlace: DrivePlace?) -> (places: [DrivePlace], drives: [FleetDriveSession]) {
+        let matches = places.map { $0.matches(query) }
+        let matchingPlaces = frequentPlaceOffsets.compactMap { matches[$0] ? places[$0] : nil }
+        if let selectedPlace { return (matchingPlaces, drives(at: selectedPlace)) }
 
-    /// Drives whose start or destination place, or Tessie address, matches `query`.
-    func drives(matching query: String) -> [FleetDriveSession] {
-        let matches = Set(places.lazy.filter { $0.matches(query) }.map(\.id))
-        return drives.filter { drive in
-            if let id = placeIDsByArrival[drive.sessionID], matches.contains(id) { return true }
-            if let id = placeIDsByDeparture[drive.sessionID], matches.contains(id) { return true }
+        // Departure-only places can match a drive even though they have no chip in the strip.
+        let matchingIDs = Set(places.indices.compactMap { matches[$0] ? places[$0].id : nil })
+        let matchingDrives = drives.filter { drive in
+            if let id = placeIDsByArrival[drive.sessionID], matchingIDs.contains(id) { return true }
+            if let id = placeIDsByDeparture[drive.sessionID], matchingIDs.contains(id) { return true }
             return drive.startAddress?.localizedStandardContains(query) == true
                 || drive.endAddress?.localizedStandardContains(query) == true
         }
+        return (matchingPlaces, matchingDrives)
     }
 
     // MARK: - Indexing
@@ -193,22 +194,38 @@ final class DrivePlacesIndex {
     @concurrent private nonisolated static func cluster(
         _ drives: [FleetDriveSession], around coordinates: [CLLocationCoordinate2D]
     ) async -> [(arrival: Int?, departure: Int?)]? {
-        var locations = coordinates.map { CLLocation(latitude: $0.latitude, longitude: $0.longitude) }
+        // A 0.002° latitude band is over 220 m wide even at the equator. Any endpoint
+        // within 120 m lies in this band or an adjacent one, including across the dateline.
+        func band(for latitude: Double) -> Int { Int(floor(latitude / 0.002)) }
+        var bands: [Int: [(index: Int, location: CLLocation)]] = [:]
+        for (index, coordinate) in coordinates.enumerated() where CLLocationCoordinate2DIsValid(coordinate) {
+            let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+            bands[band(for: coordinate.latitude), default: []].append((index, location))
+        }
+        var nextIndex = coordinates.count
+
         func nearest(to latitude: Double?, _ longitude: Double?) -> Int? {
             guard let coordinate = Self.coordinate(latitude, longitude) else { return nil }
             let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-            var nearest: Int?
+            let centralBand = band(for: coordinate.latitude)
+            var nearestIndex = nextIndex
             var shortest = CLLocationDistance.infinity
-            for index in locations.indices {
-                let distance = locations[index].distance(from: location)
-                if distance <= clusterRadius, distance < shortest {
-                    nearest = index
-                    shortest = distance
+            for neighbor in (centralBand - 1)...(centralBand + 1) {
+                guard let candidates = bands[neighbor] else { continue }
+                for candidate in candidates {
+                    let distance = candidate.location.distance(from: location)
+                    if distance <= clusterRadius,
+                       distance < shortest || (distance == shortest && candidate.index < nearestIndex) {
+                        nearestIndex = candidate.index
+                        shortest = distance
+                    }
                 }
             }
-            if let nearest { return nearest }
-            locations.append(location)
-            return locations.count - 1
+            if nearestIndex == nextIndex {
+                bands[centralBand, default: []].append((nextIndex, location))
+                nextIndex += 1
+            }
+            return nearestIndex
         }
 
         var membership: [(arrival: Int?, departure: Int?)] = []

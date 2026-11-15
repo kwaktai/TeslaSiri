@@ -192,9 +192,15 @@ public struct ToggleSnippetMapStyleIntent: AppIntent {
 
     public func perform() async throws -> some IntentResult {
         SiriSnippetStateStore.shared.toggleMapStyle(for: scope)
-        DriveRouteSnippetIntent.reload()
-        ChargeSessionSnippetIntent.reload()
-        GetVehicleStatusIntent.reload()
+        switch scope {
+        case "drive": DriveRouteSnippetIntent.reload()
+        case "charge": ChargeSessionSnippetIntent.reload()
+        case "vehicle": GetVehicleStatusIntent.reload()
+        default:
+            DriveRouteSnippetIntent.reload()
+            ChargeSessionSnippetIntent.reload()
+            GetVehicleStatusIntent.reload()
+        }
         return .result()
     }
 }
@@ -210,20 +216,29 @@ public struct SelectSnippetItemIntent: AppIntent {
     @Parameter(title: "Target Index")
     public var targetIndex: Int
 
+    @Parameter(title: "Card Type")
+    public var cardType: String?
+
     public init() {
         self.sessionKey = "latest"
         self.targetIndex = 0
     }
 
-    public init(sessionKey: String, targetIndex: Int) {
+    public init(sessionKey: String, targetIndex: Int, cardType: String? = nil) {
         self.sessionKey = sessionKey
         self.targetIndex = targetIndex
+        self.cardType = cardType
     }
 
     public func perform() async throws -> some IntentResult {
         SiriSnippetStateStore.shared.setSelectedDriveIndex(targetIndex, for: sessionKey)
-        DriveRouteSnippetIntent.reload()
-        ChargeSessionSnippetIntent.reload()
+        switch cardType {
+        case "drive": DriveRouteSnippetIntent.reload()
+        case "charge": ChargeSessionSnippetIntent.reload()
+        default:
+            DriveRouteSnippetIntent.reload()
+            ChargeSessionSnippetIntent.reload()
+        }
         return .result()
     }
 }
@@ -281,7 +296,7 @@ public struct AdjustSnippetClimateIntent: AppIntent {
                 humanName: "setting the cabin temperature"
             )
         }
-        SiriSnippetStateStore.shared.notifyChanged()
+        SiriSnippetStateStore.shared.notifyChanged(.vehicleStatus(vin: vehicle.id))
         ClimateControlSnippetIntent.reload()
         GetVehicleStatusIntent.reload()
         return .result()

@@ -67,6 +67,27 @@ nonisolated struct FleetCachedState: Codable, Equatable, Sendable {
         self.vehicles = vehicles
     }
 
+    func normalizedForHydration(isCached: Bool) -> Self {
+        var result = self
+        result.activeCharging = FleetDataNormalizer.chargeSessions(activeCharging)
+        result.activeDrivesByVIN = FleetDataNormalizer.activeDrivesByVIN(activeDrivesByVIN)
+        result.capabilities = FleetDataNormalizer.capabilities(capabilities)
+        result.driveRoutesBySessionID = FleetDataNormalizer.routePointsBySessionID(driveRoutesBySessionID)
+        result.locationHistoryByVIN = FleetDataNormalizer.routePointsByVIN(locationHistoryByVIN)
+        result.recentDrives = FleetDataNormalizer.driveSessions(recentDrives)
+        result.telemetrySeriesByVIN = FleetDataNormalizer.telemetrySeriesByVIN(telemetrySeriesByVIN)
+        result.user = FleetDataNormalizer.user(user)
+        result.vehicles = FleetDataNormalizer.vehicles(vehicles)
+        result.softwareUpdatesByVIN = [:]
+        result.softwareUpdatesByVIN.mergeNormalizedUpdates(
+            FleetDataNormalizer.softwareUpdatesByVIN(softwareUpdatesByVIN), fromCache: isCached
+        )
+        result.softwareUpdatesByVIN.mergeNormalizedUpdates(
+            FleetDataNormalizer.softwareUpdatesByVIN(from: result.vehicles), fromCache: isCached
+        )
+        return result
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         activeCharging = try container.decodeIfPresent([FleetChargeSession].self, forKey: .activeCharging) ?? []
@@ -83,6 +104,33 @@ nonisolated struct FleetCachedState: Codable, Equatable, Sendable {
         telemetrySeriesByVIN = try container.decodeIfPresent([String: [FleetTelemetrySeriesPoint]].self, forKey: .telemetrySeriesByVIN) ?? [:]
         user = try container.decodeIfPresent(FleetUser.self, forKey: .user)
         vehicles = try container.decodeIfPresent([FleetVehicle].self, forKey: .vehicles) ?? []
+    }
+}
+
+nonisolated extension Dictionary where Key == String, Value == FleetSoftwareUpdate {
+    mutating func mergeNormalizedUpdates(_ updates: Self, fromCache: Bool = false) {
+        for (vin, incoming) in updates {
+            var update = incoming
+            if fromCache, update.releaseNotesCount == 0, update.releaseNotes.isEmpty {
+                // Older builds used zero for release notes they had never requested.
+                update.releaseNotesCount = nil
+            }
+            if let previous = self[vin] {
+                if let incomingTimestamp = update.sourceTimestamp,
+                   let previousTimestamp = previous.sourceTimestamp,
+                   incomingTimestamp < previousTimestamp {
+                    continue
+                }
+                if update.releaseNotesCount == nil,
+                   update.releaseNotes.isEmpty,
+                   update.currentVersion == previous.currentVersion,
+                   update.availableVersion == previous.availableVersion {
+                    update.releaseNotes = previous.releaseNotes
+                    update.releaseNotesCount = previous.releaseNotesCount
+                }
+            }
+            self[vin] = update
+        }
     }
 }
 
@@ -113,14 +161,15 @@ actor FleetDiskCache: FleetDataCaching {
 
     func load() async throws -> FleetCachedState? {
         let url = try cacheFileURL(createDirectory: false)
-        guard FileManager.default.fileExists(atPath: url.path) else {
+        let data: Data
+        do {
+            data = try Data(contentsOf: url)
+        } catch let error as CocoaError where error.code == .fileReadNoSuchFile {
             return nil
         }
-
         do {
-            let data = try Data(contentsOf: url)
             return try decoder.decode(FleetCachedState.self, from: data)
-        } catch {
+        } catch is DecodingError {
             try? FileManager.default.removeItem(at: url)
             return nil
         }

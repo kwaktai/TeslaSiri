@@ -9,20 +9,25 @@ import OSLog
 enum FleetTokenBridge {
     private static let logger = Logger(subsystem: FleetKitLog.subsystem, category: "TokenBridge")
 
-    static func sync(store: FleetDataStore) async {
+    @discardableResult
+    static func sync(store: FleetDataStore) async -> Bool {
         let tokenStore = FleetBackend.makeAccessTokenStore()
+        let hasLiveToken: Bool
 
         do {
             let token = try await tokenStore.accessToken()
             FleetSharedTokenStore.shared.save(accessToken: token)
+            hasLiveToken = true
             logger.notice("Mirrored access token to shared keychain")
         } catch {
             FleetSharedTokenStore.shared.clearAccessToken()
+            hasLiveToken = false
             logger.warning("No valid session — cleared shared access token (\(error.localizedDescription, privacy: .public))")
         }
 
         syncSelectedVehicle(store: store, forceShortcutRefresh: true)
         await FleetIntentDonations.syncCarSuggestions(for: store.selectedVehicle)
+        return hasLiveToken
     }
 
     static func syncSelectedVehicle(store: FleetDataStore, forceShortcutRefresh: Bool = false) {

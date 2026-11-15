@@ -40,8 +40,9 @@ struct DrivePlace: Codable, Hashable, Identifiable, Sendable {
     }
 
     func matches(_ query: String) -> Bool {
-        let fields = [name, address, categoryName].compactMap { $0 }
-        return fields.contains { $0.localizedStandardContains(query) }
+        name.localizedStandardContains(query)
+            || address?.localizedStandardContains(query) == true
+            || categoryName?.localizedStandardContains(query) == true
     }
 
     private static let symbols: [MKPointOfInterestCategory: String] = [
@@ -131,11 +132,14 @@ enum DrivePlaceResolver {
     /// Looks up a place for `coordinate`. `tessieLabel` is Tessie's ending/starting location,
     /// which is either a saved name (e.g. "Home") or an address.
     static func resolve(_ coordinate: CLLocationCoordinate2D, tessieLabel: String?) async throws -> Resolution {
-        let address = try await reverseGeocode(coordinate)
+        async let addressLookup = reverseGeocode(coordinate)
         if let saved = savedName(from: tessieLabel) {
+            let address = try await addressLookup
             return Resolution(name: saved, category: nil, address: address ?? tessieLabel)
         }
-        if let poi = try await nearestPointOfInterest(to: coordinate) {
+        let poi = try await nearestPointOfInterest(to: coordinate)
+        let address = try await addressLookup
+        if let poi {
             return Resolution(
                 name: poi.name ?? address ?? "Unknown place",
                 category: poi.pointOfInterestCategory?.rawValue,

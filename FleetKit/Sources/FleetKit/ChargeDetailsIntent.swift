@@ -168,7 +168,8 @@ public struct ChargeSessionSnippetView: View {
                     Button(
                         intent: SelectSnippetItemIntent(
                             sessionKey: sessionKey,
-                            targetIndex: max(0, selectedIndex - 1)
+                            targetIndex: max(0, selectedIndex - 1),
+                            cardType: "charge"
                         )
                     ) {
                         Image(systemName: "chevron.left")
@@ -184,7 +185,8 @@ public struct ChargeSessionSnippetView: View {
                     Button(
                         intent: SelectSnippetItemIntent(
                             sessionKey: sessionKey,
-                            targetIndex: min(allSessions.count - 1, selectedIndex + 1)
+                            targetIndex: min(allSessions.count - 1, selectedIndex + 1),
+                            cardType: "charge"
                         )
                     ) {
                         Image(systemName: "chevron.right")

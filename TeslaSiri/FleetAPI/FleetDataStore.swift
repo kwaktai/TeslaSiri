@@ -36,6 +36,7 @@ final class FleetDataStore {
     @TaskLocal private static var batchesCacheWrites = false
     @ObservationIgnored private var sessionGeneration = 0
     @ObservationIgnored private var isHydratingCache = false
+    @ObservationIgnored private var lastRosterRefresh: Date?
     @ObservationIgnored private var loadingCounts: [LoadingKind: Int] = [:]
     @ObservationIgnored private var pollingTask: Task<Void, Never>?
     @ObservationIgnored private var selectionRefreshTask: Task<Void, Never>?
@@ -251,6 +252,7 @@ final class FleetDataStore {
             isShowingCachedData = false
             lastRequestID = page.requestID
             lastRefreshDate = Date()
+            lastRosterRefresh = lastRefreshDate
             loadState = .loaded
             await refreshSelectedVehicleDetails()
         } catch {
@@ -299,6 +301,7 @@ final class FleetDataStore {
         cacheDate = nil
         isShowingCachedData = false
         lastRefreshDate = nil
+        lastRosterRefresh = nil
         lastRequestID = nil
         lastErrorMessage = nil
 
@@ -572,22 +575,34 @@ final class FleetDataStore {
             return
         }
 
+        let generation = sessionGeneration
         isExportingRawData = true
+        rawDataExportURL = nil
         rawDataExportMessage = "Exporting raw Tessie data."
-        defer { isExportingRawData = false }
+        defer {
+            if generation == sessionGeneration { isExportingRawData = false }
+        }
 
         do {
             let export = try await apiClient.rawVehicleDataExport(vin: vin)
-            let exportURL = try await Task.detached(priority: .utility) {
-                try FleetRawDataExporter.write(export)
-            }.value
-            let summary = FleetRawDataExporter.summary(for: export)
+            try validateReadResult(for: vin, generation: generation)
+            let exportURL = try await FleetRawDataExporter.write(export)
+            guard generation == sessionGeneration, selectedVehicle?.vin == vin, !Task.isCancelled else {
+                await FleetRawDataExporter.discard(exportURL)
+                throw CancellationError()
+            }
 
+            let summary = FleetRawDataExporter.summary(for: export)
             rawDataExportURL = exportURL
             rawDataExportMessage = summary.message
             lastErrorMessage = nil
             lastRequestID = summary.latestRequestID ?? lastRequestID
         } catch {
+            guard generation == sessionGeneration else { return }
+            if Task.isCancelled || error is CancellationError || selectedVehicle?.vin != vin {
+                rawDataExportMessage = "Export cancelled."
+                return
+            }
             let message = error.localizedDescription
             lastErrorMessage = message
             rawDataExportMessage = message
@@ -597,26 +612,27 @@ final class FleetDataStore {
     // MARK: - Snapshot & Cache Hydration
 
     func applySnapshotState(_ state: FleetCachedState, isCached: Bool) {
-        activeCharging = FleetDataNormalizer.chargeSessions(state.activeCharging)
-        activeDrivesByVIN = FleetDataNormalizer.activeDrivesByVIN(state.activeDrivesByVIN)
+        applyNormalizedSnapshot(state.normalizedForHydration(isCached: isCached), isCached: isCached)
+    }
+
+    private func applyNormalizedSnapshot(_ state: FleetCachedState, isCached: Bool) {
+        activeCharging = state.activeCharging
+        activeDrivesByVIN = state.activeDrivesByVIN
         cacheDate = state.savedAt
-        capabilities = FleetDataNormalizer.capabilities(state.capabilities)
+        capabilities = state.capabilities
         cursor = state.cursor
-        driveRoutesBySessionID = FleetDataNormalizer.routePointsBySessionID(state.driveRoutesBySessionID)
+        driveRoutesBySessionID = state.driveRoutesBySessionID
         isShowingCachedData = isCached
         lastRefreshDate = state.savedAt
         lastRequestID = nil
-        locationHistoryByVIN = FleetDataNormalizer.routePointsByVIN(state.locationHistoryByVIN)
-        recentDrives = FleetDataNormalizer.driveSessions(state.recentDrives)
+        locationHistoryByVIN = state.locationHistoryByVIN
+        recentDrives = state.recentDrives
         selectedVIN = state.selectedVIN
-        softwareUpdatesByVIN = [:]
-        mergeSoftwareUpdates(state.softwareUpdatesByVIN, fromCachedState: isCached)
-        telemetrySeriesByVIN = FleetDataNormalizer.telemetrySeriesByVIN(state.telemetrySeriesByVIN)
-        user = FleetDataNormalizer.user(state.user)
-        vehicles = FleetDataNormalizer.vehicles(state.vehicles)
-        mergeSoftwareUpdates(FleetDataNormalizer.softwareUpdatesByVIN(from: vehicles), fromCachedState: isCached)
+        softwareUpdatesByVIN = state.softwareUpdatesByVIN
+        telemetrySeriesByVIN = state.telemetrySeriesByVIN
+        user = state.user
+        vehicles = state.vehicles
         loadState = .loaded
-
         keepValidSelectionOrSelectFirst()
     }
 
@@ -751,7 +767,7 @@ final class FleetDataStore {
             return
         }
 
-        if let lastRefreshDate, Date().timeIntervalSince(lastRefreshDate) < 15 {
+        if let lastRosterRefresh, Date().timeIntervalSince(lastRosterRefresh) < 15 {
             return
         }
 
@@ -817,14 +833,16 @@ final class FleetDataStore {
             return
         }
 
-        do {
-            guard let cachedState = try await cache.load(),
-                  generation == sessionGeneration, !Task.isCancelled, vehicles.isEmpty,
-                  !loadState.isLoading, FleetSandboxStore.shared.mode() != .demoVehicle else { return }
-            applySnapshotState(cachedState, isCached: true)
-        } catch {
-            if generation == sessionGeneration, !Task.isCancelled { try? await cache.clear() }
-        }
+        guard let cachedState = try? await Self.loadCachedSnapshot(from: cache),
+              generation == sessionGeneration, !Task.isCancelled, vehicles.isEmpty,
+              !loadState.isLoading, FleetSandboxStore.shared.mode() != .demoVehicle else { return }
+        applyNormalizedSnapshot(cachedState, isCached: true)
+    }
+
+    @concurrent private static func loadCachedSnapshot(from cache: any FleetDataCaching) async throws -> FleetCachedState? {
+        let snapshot = try await cache.load()
+        try Task.checkCancellation()
+        return snapshot?.normalizedForHydration(isCached: true)
     }
 
     private func applyBootstrap(_ bootstrap: FleetBootstrap, cursor: Int64?, requestID: String?, isCached: Bool) {
@@ -834,6 +852,7 @@ final class FleetDataStore {
         cacheDate = nil
         isShowingCachedData = isCached
         lastRefreshDate = Date()
+        lastRosterRefresh = lastRefreshDate
         lastRequestID = requestID
         recentDrives = FleetDataNormalizer.driveSessions(bootstrap.recentDrives)
         user = FleetDataNormalizer.user(bootstrap.user)
@@ -928,29 +947,8 @@ final class FleetDataStore {
         recentDrives = otherDrives.isEmpty ? normalizedDrives : FleetDataNormalizer.driveSessions(otherDrives + normalizedDrives)
     }
 
-    private func mergeSoftwareUpdates(_ updates: [String: FleetSoftwareUpdate], fromCachedState: Bool = false) {
-        for (vin, incoming) in FleetDataNormalizer.softwareUpdatesByVIN(updates) {
-            var update = incoming
-            if fromCachedState, update.releaseNotesCount == 0, update.releaseNotes.isEmpty {
-                // Older builds used zero for release notes they had never requested.
-                update.releaseNotesCount = nil
-            }
-            if let previous = softwareUpdatesByVIN[vin] {
-                if let incomingTimestamp = update.sourceTimestamp,
-                   let previousTimestamp = previous.sourceTimestamp,
-                   incomingTimestamp < previousTimestamp {
-                    continue
-                }
-                if update.releaseNotesCount == nil,
-                   update.releaseNotes.isEmpty,
-                   update.currentVersion == previous.currentVersion,
-                   update.availableVersion == previous.availableVersion {
-                    update.releaseNotes = previous.releaseNotes
-                    update.releaseNotesCount = previous.releaseNotesCount
-                }
-            }
-            softwareUpdatesByVIN[vin] = update
-        }
+    private func mergeSoftwareUpdates(_ updates: [String: FleetSoftwareUpdate]) {
+        if !updates.isEmpty { softwareUpdatesByVIN.mergeNormalizedUpdates(updates) }
     }
 
     private func mergeActiveDrive(_ drive: FleetActiveDriveSession, for vin: String) {

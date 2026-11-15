@@ -6,6 +6,104 @@ nonisolated struct TessieResults<Value: Decodable & Sendable>: Decodable, Sendab
     var results: [Value]
 }
 
+/// Retains only the wire fields a given adapter consumes, with Tessie's original JSON scalar types.
+nonisolated struct TessieSelectedObject<Field: CodingKey>: Decodable, Sendable {
+    let fields: TessieJSONObject
+
+    init(from decoder: Decoder) throws {
+        try self.init(decoder.container(keyedBy: Field.self))
+    }
+
+    fileprivate init(_ container: KeyedDecodingContainer<Field>) throws {
+        var fields: TessieJSONObject = [:]
+        let keys = container.allKeys
+        fields.reserveCapacity(keys.count)
+        for key in keys {
+            fields[key.stringValue] = try container.decode(JSONValue.self, forKey: key)
+        }
+        self.fields = fields
+    }
+}
+
+nonisolated enum TessieDriveField: String, CodingKey {
+    case id
+    case startedAt = "started_at", endedAt = "ended_at"
+    case averageSpeed = "average_speed", maxSpeed = "max_speed"
+    case odometerDistance = "odometer_distance", energyUsed = "energy_used"
+    case startingLocation = "starting_location", endingLocation = "ending_location"
+    case startingLatitude = "starting_latitude", startingLongitude = "starting_longitude"
+    case endingLatitude = "ending_latitude", endingLongitude = "ending_longitude"
+}
+
+nonisolated enum TessieChargeField: String, CodingKey {
+    case id, cost
+    case startedAt = "started_at", endedAt = "ended_at"
+    case startingBattery = "starting_battery", endingBattery = "ending_battery"
+    case energyAdded = "energy_added"
+}
+
+nonisolated struct TessieVehicleState: Decodable, Sendable {
+    let fields: TessieJSONObject
+
+    private enum Section: String, CodingKey {
+        case displayName = "display_name", charge = "charge_state", climate = "climate_state"
+        case drive = "drive_state", vehicle = "vehicle_state", configuration = "vehicle_config", gui = "gui_settings"
+    }
+
+    private enum ChargeField: String, CodingKey {
+        case timestamp, batteryLevel = "battery_level", range = "battery_range", limit = "charge_limit_soc"
+        case rate = "charge_rate", power = "charger_power", portOpen = "charge_port_door_open"
+        case state = "charging_state", timeToFull = "time_to_full_charge", energy = "charge_energy_added"
+    }
+
+    private enum ClimateField: String, CodingKey {
+        case timestamp, climateOn = "is_climate_on", inside = "inside_temp", outside = "outside_temp"
+        case driverTarget = "driver_temp_setting"
+    }
+
+    private enum DriveField: String, CodingKey {
+        case timestamp, speed, latitude, longitude, heading, shiftState = "shift_state"
+    }
+
+    private enum VehicleField: String, CodingKey {
+        case timestamp, locked, odometer, df, pf, dr, pr, ft, rt
+        case driverWindow = "fd_window", passengerWindow = "fp_window"
+        case rearDriverWindow = "rd_window", rearPassengerWindow = "rp_window"
+        case sentry = "sentry_mode", vehicleName = "vehicle_name", carVersion = "car_version"
+        case softwareUpdate = "software_update", frontLeft = "tpms_pressure_fl", frontRight = "tpms_pressure_fr"
+        case rearLeft = "tpms_pressure_rl", rearRight = "tpms_pressure_rr"
+    }
+
+    private enum ConfigurationField: String, CodingKey {
+        case carType = "car_type", chassisType = "chassis_type", exteriorColor = "exterior_color"
+        case fascia = "fascia_type", interiorTrim = "interior_trim_type", paintOverride = "paint_color_override"
+        case rhd, trimBadging, snakeCaseTrimBadging = "trim_badging", wheelType = "wheel_type"
+    }
+
+    private enum GUIField: String, CodingKey {
+        case temperature = "gui_temperature_units", distance = "gui_distance_units"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: Section.self)
+        var fields: TessieJSONObject = [:]
+        fields[Section.displayName.rawValue] = try container.decodeIfPresent(JSONValue.self, forKey: .displayName)
+
+        func read<Field: CodingKey>(_ section: Section, keys: Field.Type) throws {
+            // Tessie's adapter treats a missing, null or non-object section as empty.
+            guard let nested = try? container.nestedContainer(keyedBy: keys, forKey: section) else { return }
+            fields[section.rawValue] = .object(try TessieSelectedObject(nested).fields)
+        }
+        try read(.charge, keys: ChargeField.self)
+        try read(.climate, keys: ClimateField.self)
+        try read(.drive, keys: DriveField.self)
+        try read(.vehicle, keys: VehicleField.self)
+        try read(.configuration, keys: ConfigurationField.self)
+        try read(.gui, keys: GUIField.self)
+        self.fields = fields
+    }
+}
+
 nonisolated struct TessieVehicleRecord: Decodable {
     var vin: String
     var isActive: Bool
@@ -21,7 +119,7 @@ nonisolated struct TessieVehicleRecord: Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         vin = try container.decode(String.self, forKey: .vin)
         isActive = try container.decodeIfPresent(Bool.self, forKey: .isActive) ?? true
-        lastState = try container.decodeIfPresent(TessieJSONObject.self, forKey: .lastState)
+        lastState = try container.decodeIfPresent(TessieVehicleState.self, forKey: .lastState)?.fields
     }
 }
 

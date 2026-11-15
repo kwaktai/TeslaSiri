@@ -474,56 +474,54 @@ public struct FindDrivesIntent: AppIntent {
             let endLoc = filter.endLocationQuery?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
             let tagLower = normalizedTag?.lowercased()
 
-            var matched = rawDrives
-                .map(DriveEntity.init(info:))
-                .filter { drive in
-                    if let startDate = filter.startDate, drive.startedAt < startDate {
-                        return false
-                    }
-                    if let endDate = filter.endDate, drive.startedAt > endDate {
-                        return false
-                    }
-                    if let minMiles = filter.minimumDistanceMiles {
-                        guard let distance = drive.distanceMiles, distance >= minMiles else {
-                            return false
-                        }
-                    }
-                    if let maxMiles = filter.maximumDistanceMiles {
-                        guard let distance = drive.distanceMiles, distance <= maxMiles else {
-                            return false
-                        }
-                    }
-                    if let minDuration = filter.minimumDurationMinutes {
-                        guard let duration = drive.durationMinutes, duration >= minDuration else {
-                            return false
-                        }
-                    }
-                    if let query = generalLoc, !query.isEmpty {
-                        let startMatch = drive.startAddress?.lowercased().contains(query) == true
-                        let endMatch = drive.endAddress?.lowercased().contains(query) == true
-                        guard startMatch || endMatch else { return false }
-                    }
-                    if let startQuery = startLoc, !startQuery.isEmpty {
-                        guard drive.startAddress?.lowercased().contains(startQuery) == true else {
-                            return false
-                        }
-                    }
-                    if let endQuery = endLoc, !endQuery.isEmpty {
-                        guard drive.endAddress?.lowercased().contains(endQuery) == true else {
-                            return false
-                        }
-                    }
-                    if let tagQuery = tagLower, !tagQuery.isEmpty {
-                        guard drive.tag?.lowercased().contains(tagQuery) == true else {
-                            return false
-                        }
-                    }
-                    return true
+            var matched = rawDrives.filter { drive in
+                if let startDate = filter.startDate, drive.startedAtDate < startDate {
+                    return false
                 }
+                if let endDate = filter.endDate, drive.startedAtDate > endDate {
+                    return false
+                }
+                if let minMiles = filter.minimumDistanceMiles {
+                    guard let distance = drive.distanceMiles, distance >= minMiles else {
+                        return false
+                    }
+                }
+                if let maxMiles = filter.maximumDistanceMiles {
+                    guard let distance = drive.distanceMiles, distance <= maxMiles else {
+                        return false
+                    }
+                }
+                if let minDuration = filter.minimumDurationMinutes {
+                    guard let duration = drive.durationMinutes, duration >= minDuration else {
+                        return false
+                    }
+                }
+                if let query = generalLoc, !query.isEmpty {
+                    let startMatch = drive.startAddress?.lowercased().contains(query) == true
+                    let endMatch = drive.endAddress?.lowercased().contains(query) == true
+                    guard startMatch || endMatch else { return false }
+                }
+                if let startQuery = startLoc, !startQuery.isEmpty {
+                    guard drive.startAddress?.lowercased().contains(startQuery) == true else {
+                        return false
+                    }
+                }
+                if let endQuery = endLoc, !endQuery.isEmpty {
+                    guard drive.endAddress?.lowercased().contains(endQuery) == true else {
+                        return false
+                    }
+                }
+                if let tagQuery = tagLower, !tagQuery.isEmpty {
+                    guard drive.tag?.lowercased().contains(tagQuery) == true else {
+                        return false
+                    }
+                }
+                return true
+            }
 
             switch filter.sortBy ?? .mostRecent {
             case .mostRecent:
-                matched.sort { $0.startedAt > $1.startedAt }
+                break // Both live and demo history arrive newest first.
             case .longestDistance:
                 matched.sort { ($0.distanceMiles ?? -1) > ($1.distanceMiles ?? -1) }
             case .longestDuration:
@@ -534,7 +532,7 @@ public struct FindDrivesIntent: AppIntent {
                 matched.sort { ($0.efficiencyWhPerMile ?? .infinity) < ($1.efficiencyWhPerMile ?? .infinity) }
             }
 
-            let results = Array(matched.prefix(maxResults))
+            let results = matched.prefix(maxResults).map(DriveEntity.init(info:))
             log.success("matched \(results.count) drive(s) for \(resolved.name)")
 
             let dialogText: String

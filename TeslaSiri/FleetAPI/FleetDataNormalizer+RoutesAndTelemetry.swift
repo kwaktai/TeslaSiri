@@ -9,35 +9,38 @@ nonisolated extension FleetDataNormalizer {
 
     // MARK: - Route Points
 
+    private struct RoutePointKey: Hashable {
+        let timestamp: Int64?
+        // FleetRoutePoint.id distinguishes the textual representations of +0.0 and -0.0.
+        let latitudeBits: UInt64
+        let longitudeBits: UInt64
+    }
+
     static func routePoints(_ points: [FleetRoutePoint], limit: Int? = nil) -> [FleetRoutePoint] {
         let cappedLimit = min(limit ?? maxCachedRoutePoints, maxCachedRoutePoints)
-        var seenIDs = Set<String>()
+        guard cappedLimit > 0, !points.isEmpty else { return [] }
 
-        let normalizedPoints: [FleetRoutePoint] = points.compactMap { rawPoint in
-            var point = rawPoint
+        var seen = Set<RoutePointKey>()
+        var normalized: [FleetRoutePoint] = []
+        normalized.reserveCapacity(min(points.count, cappedLimit))
+        var lastTimestamp: Int64 = 0
+        var needsSort = false
+        for var point in points {
             guard let latitude = coordinate(point.latitude, min: -90, max: 90),
-                  let longitude = coordinate(point.longitude, min: -180, max: 180) else {
-                return nil
-            }
-
-            point.latitude = latitude
-            point.longitude = longitude
+                  let longitude = coordinate(point.longitude, min: -180, max: 180) else { continue }
+            point.timestamp = normalizedEpochMilliseconds(point.timestamp)
+            let key = RoutePointKey(timestamp: point.timestamp, latitudeBits: latitude.bitPattern, longitudeBits: longitude.bitPattern)
+            guard seen.insert(key).inserted else { continue }
             point.odometer = nonNegative(point.odometer)
             point.speed = nonNegative(point.speed)
-            point.timestamp = normalizedEpochMilliseconds(point.timestamp)
-
-            let id = point.id
-            guard !id.isEmpty, seenIDs.insert(id).inserted else {
-                return nil
-            }
-            return point
+            let timestamp = point.timestamp ?? 0
+            if timestamp < lastTimestamp { needsSort = true }
+            lastTimestamp = timestamp
+            normalized.append(point)
         }
-        .sorted { ($0.timestamp ?? 0) < ($1.timestamp ?? 0) }
-
-        guard normalizedPoints.count > cappedLimit else {
-            return normalizedPoints
-        }
-        return Array(normalizedPoints.suffix(cappedLimit))
+        if needsSort { normalized.sort { ($0.timestamp ?? 0) < ($1.timestamp ?? 0) } }
+        guard normalized.count > cappedLimit else { return normalized }
+        return Array(normalized.suffix(cappedLimit))
     }
 
     static func routePointsByVIN(_ values: [String: [FleetRoutePoint]]) -> [String: [FleetRoutePoint]] {
@@ -55,9 +58,8 @@ nonisolated extension FleetDataNormalizer {
             return nil
         }
 
-        let odometerValues = route.compactMap(\.odometer)
-        if let firstOdometer = odometerValues.first,
-           let lastOdometer = odometerValues.last,
+        if let firstOdometer = route.first(where: { $0.odometer != nil })?.odometer,
+           let lastOdometer = route.last(where: { $0.odometer != nil })?.odometer,
            let odometerDistance = nonNegative(lastOdometer - firstOdometer),
            odometerDistance > 0 {
             return odometerDistance
@@ -84,15 +86,18 @@ nonisolated extension FleetDataNormalizer {
             }
         }
 
-        let speeds = route.compactMap(\.speed).filter { $0.isFinite && $0 >= 0 }
-        guard !speeds.isEmpty else {
-            return nil
+        var total = 0.0
+        var count = 0
+        for point in route {
+            guard let speed = nonNegative(point.speed) else { continue }
+            total += speed
+            count += 1
         }
-        return speeds.reduce(0, +) / Double(speeds.count)
+        return count > 0 ? total / Double(count) : nil
     }
 
     static func derivedMaxSpeedMPH(from route: [FleetRoutePoint]) -> Double? {
-        route.compactMap(\.speed).filter { $0.isFinite && $0 >= 0 }.max()
+        route.lazy.compactMap { nonNegative($0.speed) }.max()
     }
 
     private static func distanceMeters(from start: FleetRoutePoint, to end: FleetRoutePoint) -> Double {
@@ -121,15 +126,16 @@ nonisolated extension FleetDataNormalizer {
         limit: Int? = nil
     ) -> [FleetTelemetrySeriesPoint] {
         let cappedLimit = min(limit ?? maxCachedTelemetryPoints, maxCachedTelemetryPoints)
-        return points
-            .compactMap { rawPoint in
-                var point = rawPoint
-                point.fields = normalizedTelemetryFields(point.fields)
-                return point.isEmpty ? nil : point
-            }
-            .sorted { telemetryTimestamp($0) > telemetryTimestamp($1) }
-            .prefix(cappedLimit)
-            .map { $0 }
+        guard cappedLimit > 0 else { return [] }
+        var normalized = points.compactMap { rawPoint -> FleetTelemetrySeriesPoint? in
+            let fields = normalizedTelemetryFields(rawPoint.fields)
+            return fields.isEmpty ? nil : FleetTelemetrySeriesPoint(fields)
+        }
+        normalized.sort { telemetryTimestamp($0) > telemetryTimestamp($1) }
+        if normalized.count > cappedLimit {
+            return Array(normalized.prefix(cappedLimit))
+        }
+        return normalized
     }
 
     static func telemetrySeriesByVIN(
@@ -140,6 +146,7 @@ nonisolated extension FleetDataNormalizer {
 
     private static func normalizedTelemetryFields(_ fields: [String: JSONValue]) -> [String: JSONValue] {
         var normalizedFields: [String: JSONValue] = [:]
+        normalizedFields.reserveCapacity(fields.count)
         for (key, value) in fields {
             guard let normalizedKey = normalizedString(key) else {
                 continue

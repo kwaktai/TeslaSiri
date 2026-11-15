@@ -181,7 +181,26 @@ private struct SiriDynamicWidgetsPreviewSheet: View {
     @State private var chargeMapData: SiriRenderedMapData?
     @State private var drivingStats: DrivingStatsEntity?
     @State private var previewService: FleetIntentService?
-    @State private var refreshRevision: Int?
+    @State private var driveMapRevision = 0
+    @State private var chargeMapRevision = 0
+    @State private var vehicleStatusRevision = 0
+    @State private var vehicleMapRevision = 0
+    @State private var vehicleMapStyle: SiriMapVisualStyle = .standard
+
+    private struct VehiclePin: Equatable {
+        let latitude: Double?
+        let longitude: Double?
+        let fallbackAddress: String?
+        let style: SiriMapVisualStyle
+        let revision: Int
+    }
+
+    private var vehiclePin: VehiclePin? {
+        guard previewService != nil, let statusEntity else { return nil }
+        return VehiclePin(latitude: statusEntity.latitude, longitude: statusEntity.longitude,
+                          fallbackAddress: statusEntity.locationAddress, style: vehicleMapStyle,
+                          revision: vehicleMapRevision)
+    }
 
     private let previewDriveSessionKey = "preview-drives"
     private let previewChargeSessionKey = "preview-charges"
@@ -279,19 +298,73 @@ private struct SiriDynamicWidgetsPreviewSheet: View {
             }
         }
         .task {
-            refreshRevision = nil
+            previewService = nil
             SiriSnippetStateStore.shared.setSelectedDriveIndex(0, for: previewDriveSessionKey)
             SiriSnippetStateStore.shared.setSelectedDriveIndex(0, for: previewChargeSessionKey)
             await loadWidgetData()
         }
-        .onReceive(NotificationCenter.default.publisher(for: SiriSnippetStateStore.stateDidChangeNotification)) { _ in
-            if let refreshRevision {
-                self.refreshRevision = refreshRevision + 1
+        .onReceive(NotificationCenter.default.publisher(for: SiriSnippetStateStore.stateDidChangeNotification)) { notification in
+            guard previewService != nil else { return }
+            switch SiriSnippetStateStore.Change(notification: notification) {
+            case .selection(let key):
+                if key == previewDriveSessionKey { driveMapRevision += 1 }
+                if key == previewChargeSessionKey { chargeMapRevision += 1 }
+            case .mapStyle("drive"):
+                driveMapRevision += 1
+            case .mapStyle("charge"):
+                chargeMapRevision += 1
+            case .mapStyle("vehicle"):
+                vehicleMapStyle = SiriSnippetStateStore.shared.mapStyle(for: "vehicle")
+            case .vehicleStatus(let vin):
+                if vin == vehicleEntity.id { vehicleStatusRevision += 1 }
+            case .all, .mapStyle:
+                refreshGalleryMaps()
+                vehicleMapRevision += 1
+                vehicleStatusRevision += 1
             }
         }
-        .task(id: refreshRevision) { [refreshRevision] in
-            guard let refreshRevision, let previewService else { return }
-            await refreshInteractiveState(service: previewService, refreshStatus: refreshRevision > 0)
+        .task(id: driveMapRevision) {
+            guard let previewService, !drives.isEmpty else { return }
+            let store = SiriSnippetStateStore.shared
+            let index = store.selectedDriveIndex(for: previewDriveSessionKey, count: drives.count)
+            if selectedDriveIndex != index {
+                driveMapData = nil
+                selectedDriveIndex = index
+            }
+            let map = await SiriMapSnapshotRenderer.renderDriveRoute(
+                for: drives[index], service: previewService, style: store.mapStyle(for: "drive")
+            )
+            if !Task.isCancelled { driveMapData = map }
+        }
+        .task(id: chargeMapRevision) {
+            guard previewService != nil, !charges.isEmpty else { return }
+            let store = SiriSnippetStateStore.shared
+            let index = store.selectedDriveIndex(for: previewChargeSessionKey, count: charges.count)
+            if selectedChargeIndex != index {
+                chargeMapData = nil
+                selectedChargeIndex = index
+            }
+            let charge = charges[index]
+            let map = await SiriMapSnapshotRenderer.renderLocationPin(
+                latitude: charge.latitude, longitude: charge.longitude, fallbackPlaceQuery: charge.location,
+                style: store.mapStyle(for: "charge"), accentHex: charge.isSupercharger ? 0xFF3B30 : 0x30D158
+            )
+            if !Task.isCancelled { chargeMapData = map }
+        }
+        .task(id: vehicleStatusRevision) {
+            guard vehicleStatusRevision > 0, let previewService,
+                  let snapshot = try? await previewService.snapshot(vin: vehicleEntity.id),
+                  !Task.isCancelled else { return }
+            statusEntity = VehicleStatusEntity(snapshot: snapshot, vehicleName: vehicleName,
+                                               locationAddress: statusEntity?.locationAddress ?? "Apple Park Way, Cupertino")
+        }
+        .task(id: vehiclePin) { [vehiclePin] in
+            guard let vehiclePin else { return }
+            let map = await SiriMapSnapshotRenderer.renderLocationPin(
+                latitude: vehiclePin.latitude, longitude: vehiclePin.longitude,
+                fallbackPlaceQuery: vehiclePin.fallbackAddress, style: vehiclePin.style
+            )
+            if !Task.isCancelled { vehicleMapData = map }
         }
     }
 
@@ -356,7 +429,7 @@ private struct SiriDynamicWidgetsPreviewSheet: View {
 
             charges = rawCharges.map(ChargeSessionEntity.init(info:))
             previewService = service
-            refreshRevision = 0
+            refreshGalleryMaps()
         } catch {
             guard !Task.isCancelled else { return }
             let demoSandbox = FleetSandboxStore(appGroup: "TeslaSiri.WidgetPreviewDemo")
@@ -379,71 +452,15 @@ private struct SiriDynamicWidgetsPreviewSheet: View {
                 charges = rawCharges.map(ChargeSessionEntity.init(info:))
                 guard !Task.isCancelled else { return }
                 previewService = demoService
-                refreshRevision = 0
+                refreshGalleryMaps()
             }
         }
     }
 
-    private func refreshInteractiveState(service: FleetIntentService, refreshStatus: Bool) async {
-        let store = SiriSnippetStateStore.shared
-
-        if refreshStatus, let snap = try? await service.snapshot(vin: vehicleEntity.id) {
-            guard !Task.isCancelled else { return }
-            statusEntity = VehicleStatusEntity(
-                snapshot: snap,
-                vehicleName: vehicleName,
-                locationAddress: statusEntity?.locationAddress ?? "Apple Park Way, Cupertino"
-            )
-        }
-
-        guard !Task.isCancelled else { return }
-        if !drives.isEmpty {
-            let idx = store.selectedDriveIndex(for: previewDriveSessionKey, count: drives.count)
-            selectedDriveIndex = idx
-            let map = await SiriMapSnapshotRenderer.renderDriveRoute(
-                for: drives[idx],
-                service: service,
-                style: store.mapStyle(for: "drive"),
-                allowNetworkSnapshot: true
-            )
-            guard !Task.isCancelled else { return }
-            driveMapData = map
-        }
-
-        if let statusEntity {
-            let map = await SiriMapSnapshotRenderer.renderLocationPin(
-                latitude: statusEntity.latitude,
-                longitude: statusEntity.longitude,
-                fallbackPlaceQuery: statusEntity.locationAddress,
-                style: store.mapStyle(for: "vehicle"),
-                accentHex: 0x0A84FF,
-                allowNetworkSnapshot: true
-            )
-            guard !Task.isCancelled else { return }
-            vehicleMapData = map
-        }
-
-        if !charges.isEmpty {
-            let idx = store.selectedChargeIndexFallback(for: previewChargeSessionKey, count: charges.count)
-            selectedChargeIndex = idx
-            let activeCharge = charges[idx]
-            let map = await SiriMapSnapshotRenderer.renderLocationPin(
-                latitude: activeCharge.latitude,
-                longitude: activeCharge.longitude,
-                fallbackPlaceQuery: activeCharge.location,
-                style: store.mapStyle(for: "charge"),
-                accentHex: activeCharge.isSupercharger ? 0xFF3B30 : 0x30D158,
-                allowNetworkSnapshot: true
-            )
-            guard !Task.isCancelled else { return }
-            chargeMapData = map
-        }
-    }
-}
-
-private extension SiriSnippetStateStore {
-    func selectedChargeIndexFallback(for sessionKey: String, count: Int) -> Int {
-        selectedDriveIndex(for: sessionKey, count: count)
+    private func refreshGalleryMaps() {
+        driveMapRevision += 1
+        chargeMapRevision += 1
+        vehicleMapStyle = SiriSnippetStateStore.shared.mapStyle(for: "vehicle")
     }
 }
 

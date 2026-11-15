@@ -179,10 +179,8 @@ private struct DashboardPostureContainer: View {
                     )
 
                     DashboardCardStack {
-                        if let snapshot = vehicle.latest,
-                           snapshot.latitude != nil,
-                           snapshot.longitude != nil {
-                            VehicleLocationCard(vehicleName: vehicle.name, snapshot: snapshot, mapHeight: 220)
+                        if let latitude = vehicle.latest?.latitude, let longitude = vehicle.latest?.longitude {
+                            VehicleLocationCard(vehicleName: vehicle.name, latitude: latitude, longitude: longitude, mapHeight: 220)
                         }
                     }
                 }

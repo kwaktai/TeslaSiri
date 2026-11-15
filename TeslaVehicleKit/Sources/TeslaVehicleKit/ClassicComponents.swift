@@ -153,10 +153,13 @@ import RealityKit
 
     var isActive: Bool { !active.isEmpty }
 
-    func finish(for original: any Material, path: String?, slot: Int, customPaintSurface: Bool, reversedWinding: Bool) -> ShaderGraphMaterial? {
+    func finish(
+        for original: any Material, path: String?, slot: Int,
+        customPaintSurface: Bool, reversedWinding: @autoclosure () -> Bool
+    ) -> ShaderGraphMaterial? {
         guard let id = identifier(for: original, path: path, slot: slot),
               !customPaintSurface || index.materials[id]?.paint == true, var graph = active[id] else { return nil }
-        guard reversedWinding else { return graph }
+        guard reversedWinding() else { return graph }
         if let variant = mirrored[id] { return variant }
         guard graph.parameterNames.contains("NormalSign") else { return graph }
         // A negatively scaled instance reverses triangle winding. RealityKit

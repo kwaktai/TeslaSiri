@@ -15,7 +15,11 @@ struct VehicleShowroomStage: View {
     var onCommand: ((VehicleControlCommand) -> Void)?
     var onLiveRefresh: (() async -> Void)?
 
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var isInViewport = true
     @State private var headingTracker = HeadingCurvatureTracker()
+
+    private var isVisibleAndActive: Bool { isInViewport && scenePhase == .active }
 
     private var spec: VehicleModelSpec {
         VehicleModelSpec(configuration: snapshot.vehicleConfiguration, vin: vehicle.vin)
@@ -48,11 +52,12 @@ struct VehicleShowroomStage: View {
             }
         }
         .animation(.smooth, value: state.mode)
+        .onScrollVisibilityChange(threshold: 0.01) { isInViewport = $0 }
         .onChange(of: snapshot, initial: true) { _, newValue in
             headingTracker.record(newValue)
         }
-        .task(id: state.mode == .driving) {
-            guard state.mode == .driving, let onLiveRefresh else { return }
+        .task(id: isVisibleAndActive && state.mode == .driving) {
+            guard isVisibleAndActive, state.mode == .driving, let onLiveRefresh else { return }
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(15))
                 guard !Task.isCancelled else { return }
@@ -74,6 +79,7 @@ struct VehicleShowroomStage: View {
             framingZoom: 1,
             accessibilityDescription: accessibilityDescription(for: state),
             showsAmbientLight: true,
+            isRendering: isVisibleAndActive,
             onHotspot: hotspotHandler,
             hotspotLabel: hotspotLabel(for:),
             placeholder: placeholderArtwork

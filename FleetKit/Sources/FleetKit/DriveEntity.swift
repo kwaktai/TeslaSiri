@@ -98,7 +98,7 @@ public struct DriveEntity: AppEntity, IndexedEntity, SyncableEntity, Identifiabl
         self.id = info.sessionID
         self.vin = info.vin
         self.distanceMiles = info.distanceMiles
-        self.durationMinutes = info.durationMS.map { Int($0 / 60_000) }
+        self.durationMinutes = info.durationMinutes
         self.avgSpeedMPH = info.avgSpeedMPH
         self.maxSpeedMPH = info.maxSpeedMPH
         self.energyUsedKWH = info.energyUsedKWH

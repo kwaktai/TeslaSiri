@@ -1,5 +1,6 @@
 import AppIntents
 import Foundation
+import Synchronization
 import Testing
 @testable import FleetKit
 
@@ -301,6 +302,33 @@ struct FleetSandboxTests {
             let statusMatches = try await VehicleStatusEntityQuery().entities(matching: "warm up my car")
             #expect(statusMatches.first?.vin == FleetDemoVehicleState.demoVIN)
         }
+    }
+
+    @Test func `snippet notifications identify the changed card and skip unchanged selections`() {
+        let key = UUID().uuidString
+        let changes = Mutex<[SiriSnippetStateStore.Change]>([])
+        let name = SiriSnippetStateStore.stateDidChangeNotification
+        let observer = NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { notification in
+            let change = SiriSnippetStateStore.Change(notification: notification)
+            switch change {
+            case .selection(let value), .mapStyle(let value), .vehicleStatus(let value):
+                if value == key { changes.withLock { $0.append(change) } }
+            case .all:
+                break
+            }
+        }
+        defer { NotificationCenter.default.removeObserver(observer) }
+
+        let store = SiriSnippetStateStore.shared
+        store.setSelectedDriveIndex(0, for: key)
+        store.setSelectedDriveIndex(1, for: key)
+        store.setSelectedDriveIndex(1, for: key)
+        store.toggleMapStyle(for: key)
+        store.notifyChanged(.vehicleStatus(vin: key))
+
+        let recorded = changes.withLock { $0 }
+        #expect(recorded == [.selection(sessionKey: key), .mapStyle(scope: key), .vehicleStatus(vin: key)])
+        #expect(SiriSnippetStateStore.Change(notification: Notification(name: name)) == .all)
     }
 
     @Test func `Interactive Siri route charge and climate widgets resolve GPS paths Apple Maps URLs and live controls`() async throws {

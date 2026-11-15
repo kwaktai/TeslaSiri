@@ -75,8 +75,19 @@ public final class SiriSnippetStateStore: @unchecked Sendable {
         self.defaults = UserDefaults(suiteName: FleetKitConfig.appGroupIdentifier)
     }
 
-    public func notifyChanged() {
-        NotificationCenter.default.post(name: Self.stateDidChangeNotification, object: nil)
+    public enum Change: Equatable, Sendable {
+        case all
+        case mapStyle(scope: String)
+        case selection(sessionKey: String)
+        case vehicleStatus(vin: String)
+
+        public init(notification: Notification) {
+            self = notification.userInfo?["change"] as? Self ?? .all
+        }
+    }
+
+    public func notifyChanged(_ change: Change = .all) {
+        NotificationCenter.default.post(name: Self.stateDidChangeNotification, object: nil, userInfo: ["change": change])
     }
 
     public func mapStyle(for key: String = "global") -> SiriMapVisualStyle {
@@ -90,8 +101,14 @@ public final class SiriSnippetStateStore: @unchecked Sendable {
 
     @discardableResult
     public func toggleMapStyle(for key: String = "global") -> SiriMapVisualStyle {
-        let next = mapStyle(for: key).toggled
-        writeString(next.rawValue, forKey: "siri.snippet.mapStyle.\(key)")
+        let storageKey = "siri.snippet.mapStyle.\(key)"
+        let next = lock.withLock {
+            let current = (defaults?.string(forKey: storageKey) ?? memoryFallback[storageKey]).flatMap(SiriMapVisualStyle.init(rawValue:))
+            let next = (current ?? .standard).toggled
+            writeString(next.rawValue, forKey: storageKey)
+            return next
+        }
+        notifyChanged(.mapStyle(scope: key))
         return next
     }
 
@@ -103,40 +120,58 @@ public final class SiriSnippetStateStore: @unchecked Sendable {
     }
 
     public func setSelectedDriveIndex(_ index: Int, for sessionKey: String) {
-        writeString(String(max(index, 0)), forKey: "siri.snippet.driveIndex.\(sessionKey)")
+        let key = "siri.snippet.driveIndex.\(sessionKey)"
+        let index = max(index, 0)
+        let changed = lock.withLock {
+            let previous = defaults?.string(forKey: key) ?? memoryFallback[key]
+            guard (previous.flatMap(Int.init) ?? 0) != index else { return false }
+            writeString(String(index), forKey: key)
+            return true
+        }
+        if changed { notifyChanged(.selection(sessionKey: sessionKey)) }
     }
 
     private func readString(forKey key: String) -> String? {
-        if let defaults, let value = defaults.string(forKey: key) {
-            return value
-        }
-        lock.lock()
-        defer { lock.unlock() }
-        return memoryFallback[key]
+        lock.withLock { defaults?.string(forKey: key) ?? memoryFallback[key] }
     }
 
+    /// The caller holds the lock through the read and write.
     private func writeString(_ value: String, forKey key: String) {
         defaults?.set(value, forKey: key)
-        lock.lock()
         memoryFallback[key] = value
-        lock.unlock()
-        notifyChanged()
     }
+}
+
+enum SiriMapImageKey: Hashable {
+    struct Point: Hashable {
+        let latitude: Double
+        let longitude: Double
+        let isAutopilotActive: Bool
+
+        init(_ sample: FleetDriveRoutePoint) {
+            latitude = sample.latitude
+            longitude = sample.longitude
+            isAutopilotActive = sample.isAutopilotActive
+        }
+    }
+
+    case route(driveID: String, style: SiriMapVisualStyle, size: CGSize, points: [Point])
+    case pin(String)
 }
 
 private final class SnapshotMemoryCache: @unchecked Sendable {
     private let lock = NSLock()
-    private var entries: [String: Data] = [:]
-    private var order: [String] = []
+    private var entries: [SiriMapImageKey: Data] = [:]
+    private var order: [SiriMapImageKey] = []
     private let limit = 32
 
-    func data(forKey key: String) -> Data? {
+    func data(forKey key: SiriMapImageKey) -> Data? {
         lock.lock()
         defer { lock.unlock() }
         return entries[key]
     }
 
-    func store(_ data: Data, forKey key: String) {
+    func store(_ data: Data, forKey key: SiriMapImageKey) {
         lock.lock()
         defer { lock.unlock() }
         if entries[key] == nil {
@@ -164,11 +199,13 @@ public enum SiriMapSnapshotRenderer {
         allowNetworkSnapshot: Bool = true
     ) async -> SiriRenderedMapData {
         let points = await resolveRoutePoints(for: drive, service: service, allowGeocoding: allowNetworkSnapshot)
-        guard points.count >= 2, allowNetworkSnapshot else {
+        guard points.count >= 2, allowNetworkSnapshot, !Task.isCancelled else {
             return SiriRenderedMapData(pngData: nil, points: points, style: style)
         }
 
-        let cacheKey = "route:\(drive.id):\(style.rawValue):\(Int(size.width))x\(Int(size.height)):\(points.count)"
+        let cacheKey = SiriMapImageKey.route(
+            driveID: drive.id, style: style, size: size, points: points.map(SiriMapImageKey.Point.init)
+        )
         if let cached = cache.data(forKey: cacheKey) {
             return SiriRenderedMapData(pngData: cached, points: points, style: style)
         }
@@ -212,7 +249,7 @@ public enum SiriMapSnapshotRenderer {
         }
 
         let coordKey = String(format: "%.4f,%.4f", lat, lon)
-        let cacheKey = "pin:\(coordKey):\(style.rawValue):\(accentHex):\(Int(size.width))x\(Int(size.height))"
+        let cacheKey = SiriMapImageKey.pin("\(coordKey):\(style.rawValue):\(accentHex):\(Int(size.width))x\(Int(size.height))")
         if let cached = cache.data(forKey: cacheKey) {
             return SiriRenderedMapData(pngData: cached, points: singlePoint, style: style)
         }
@@ -247,6 +284,7 @@ public enum SiriMapSnapshotRenderer {
             return fetched
         }
 
+        guard !Task.isCancelled else { return [] }
         var startCoord: CLLocationCoordinate2D?
         if let sLat = drive.startLatitude, let sLon = drive.startLongitude {
             startCoord = CLLocationCoordinate2D(latitude: sLat, longitude: sLon)
@@ -254,6 +292,7 @@ public enum SiriMapSnapshotRenderer {
             startCoord = await geocodeCoordinate(query: startAddress)
         }
 
+        guard !Task.isCancelled else { return [] }
         var endCoord: CLLocationCoordinate2D?
         if let eLat = drive.endLatitude, let eLon = drive.endLongitude {
             endCoord = CLLocationCoordinate2D(latitude: eLat, longitude: eLon)
@@ -261,6 +300,7 @@ public enum SiriMapSnapshotRenderer {
             endCoord = await geocodeCoordinate(query: endAddress)
         }
 
+        guard !Task.isCancelled else { return [] }
         if let startCoord, let endCoord {
             if allowGeocoding, let roadRoute = await directionsPolyline(from: startCoord, to: endCoord), roadRoute.count >= 2 {
                 return roadRoute

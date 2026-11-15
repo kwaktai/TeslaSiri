@@ -199,10 +199,11 @@ public enum FleetSpotlightIndexer {
     }
 
     public static func search(_ term: String, limit: Int = 20) async throws -> [FleetSpotlightSearchResult] {
+        guard limit > 0 else { return [] }
         let start = ContinuousClock.now
         let predicate = queryString(for: term)
         let context = CSSearchQueryContext()
-        context.fetchAttributes = ["title", "displayName", "contentDescription", "textContent", "keywords", "kind"]
+        context.fetchAttributes = ["title", "displayName", "contentDescription", "keywords", "kind"]
         let query = CSSearchQuery(queryString: predicate, queryContext: context)
 
         var results: [FleetSpotlightSearchResult] = []
@@ -242,12 +243,7 @@ public enum FleetSpotlightIndexer {
     public static func deleteAllIndexedEntities() async throws {
         let index = CSSearchableIndex(name: indexName)
         do {
-            try await index.deleteAppEntities(ofType: VehicleEntity.self)
-            try await index.deleteAppEntities(ofType: VehicleStatusEntity.self)
-            try await index.deleteAppEntities(ofType: DriveEntity.self)
-            try await index.deleteAppEntities(ofType: ChargeSessionEntity.self)
-            try await index.deleteAppEntities(ofType: SoftwareUpdateEntity.self)
-            try await index.deleteAppEntities(ofType: ReleaseNoteEntity.self)
+            try await index.deleteAllSearchableItems()
             FleetKitLog.spotlight.notice("Deleted all FleetKit indexed entities")
         } catch {
             FleetKitLog.spotlight.error("Deleting FleetKit indexed entities failed — \(error.localizedDescription, privacy: .public)")

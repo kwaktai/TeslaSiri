@@ -17,6 +17,7 @@ struct VehicleStageView<Placeholder: View, Overlay: View>: View {
     var accessibilityDescription: String
     /// Washes the background in the paint color, like the Tesla app's showroom.
     var showsAmbientLight = false
+    var isRendering = true
     /// Runs every rendered frame while this view hosts the stage, before the stage moves.
     var onFrame: ((VehicleStage, Double) -> Void)?
     var onHotspot: ((VehicleHotspot) -> Void)?
@@ -40,15 +41,15 @@ struct VehicleStageView<Placeholder: View, Overlay: View>: View {
                 .animation(.smooth(duration: 0.8), value: isShowingStage && showsAmbientLight && state.mode != .driving)
 
             placeholder()
-                .opacity(isShowingStage ? 0 : 1)
+                .opacity(isShowingStage && isRendering ? 0 : 1)
                 .animation(.smooth(duration: 0.6), value: isShowingStage)
 
-            if isOnscreen && isHost {
+            if isOnscreen && isHost && isRendering {
                 VehicleStageCanvas(stage: stage, host: host, isVisible: isShowingStage)
             }
 
-            if isShowingStage {
-                hotspotLayer
+            if isShowingStage && isRendering {
+                VehicleHotspotLayer(stage: stage, viewWidth: viewSize.width, onHotspot: onHotspot, hotspotLabel: hotspotLabel)
             }
         }
         .contentShape(.rect)
@@ -116,12 +117,39 @@ struct VehicleStageView<Placeholder: View, Overlay: View>: View {
         stage.apply(state)
     }
 
-    /// Tesla-style callouts: each label sits above the car with a hairline leader down to the
-    /// part it controls.
-    private var hotspotLayer: some View {
+    /// The paint color as soft studio light behind and around the car.
+    @ViewBuilder
+    private var ambientLight: some View {
+        if let paint = stage.paintHighlight {
+            let strength = colorScheme == .dark ? 0.34 : 0.14
+            EllipticalGradient(
+                stops: [
+                    .init(color: Color(uiColor: paint).opacity(strength), location: 0),
+                    .init(color: Color(uiColor: paint).opacity(strength * 0.45), location: 0.45),
+                    .init(color: .clear, location: 1)
+                ],
+                center: UnitPoint(x: 0.5, y: 0.55),
+                startRadiusFraction: 0,
+                endRadiusFraction: 0.5
+            )
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+        }
+    }
+}
+
+/// Reads projected placements here so camera motion only invalidates the callouts.
+private struct VehicleHotspotLayer<Overlay: View>: View {
+    let stage: VehicleStage
+    let viewWidth: CGFloat
+    let onHotspot: ((VehicleHotspot) -> Void)?
+    @ViewBuilder var hotspotLabel: (VehicleHotspot) -> Overlay
+
+    var body: some View {
+        let placements = stage.hotspots
         ZStack(alignment: .topLeading) {
             Canvas { context, _ in
-                for placement in stage.hotspots {
+                for placement in placements {
                     guard let leader = callout(for: placement).leader else { continue }
                     var path = Path()
                     path.move(to: leader.start)
@@ -131,7 +159,7 @@ struct VehicleStageView<Placeholder: View, Overlay: View>: View {
             }
             .allowsHitTesting(false)
 
-            ForEach(stage.hotspots) { placement in
+            ForEach(placements) { placement in
                 let geometry = callout(for: placement)
                 Button {
                     onHotspot?(placement.hotspot)
@@ -146,7 +174,7 @@ struct VehicleStageView<Placeholder: View, Overlay: View>: View {
                 .transition(.opacity)
             }
         }
-        .animation(.smooth, value: stage.hotspots.map(\.hotspot))
+        .animation(.smooth, value: placements.map(\.hotspot))
     }
 
     private struct Callout {
@@ -157,7 +185,7 @@ struct VehicleStageView<Placeholder: View, Overlay: View>: View {
     }
 
     private func callout(for placement: VehicleHotspotPlacement) -> Callout {
-        let width = max(viewSize.width, 1)
+        let width = max(viewWidth, 1)
         let anchor = placement.point
         switch placement.hotspot {
         case .lock:
@@ -182,26 +210,6 @@ struct VehicleStageView<Placeholder: View, Overlay: View>: View {
                 alignment: textOnRight ? .leading : .trailing,
                 leader: leader
             )
-        }
-    }
-
-    /// The paint color as soft studio light behind and around the car.
-    @ViewBuilder
-    private var ambientLight: some View {
-        if let paint = stage.paintHighlight {
-            let strength = colorScheme == .dark ? 0.34 : 0.14
-            EllipticalGradient(
-                stops: [
-                    .init(color: Color(uiColor: paint).opacity(strength), location: 0),
-                    .init(color: Color(uiColor: paint).opacity(strength * 0.45), location: 0.45),
-                    .init(color: .clear, location: 1)
-                ],
-                center: UnitPoint(x: 0.5, y: 0.55),
-                startRadiusFraction: 0,
-                endRadiusFraction: 0.5
-            )
-            .allowsHitTesting(false)
-            .accessibilityHidden(true)
         }
     }
 }

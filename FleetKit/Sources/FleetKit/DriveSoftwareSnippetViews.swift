@@ -179,7 +179,7 @@ public struct DriveSnippetView: View {
         let nextIndex = (selectedIndex + 1) % allDrives.count
 
         return HStack(spacing: 6) {
-            Button(intent: SelectSnippetItemIntent(sessionKey: sessionKey, targetIndex: prevIndex)) {
+            Button(intent: SelectSnippetItemIntent(sessionKey: sessionKey, targetIndex: prevIndex, cardType: "drive")) {
                 Image(systemName: "chevron.left")
                     .font(.caption2.weight(.bold))
                     .foregroundStyle(.white)
@@ -194,7 +194,7 @@ public struct DriveSnippetView: View {
                 .monospacedDigit()
                 .foregroundStyle(.white)
 
-            Button(intent: SelectSnippetItemIntent(sessionKey: sessionKey, targetIndex: nextIndex)) {
+            Button(intent: SelectSnippetItemIntent(sessionKey: sessionKey, targetIndex: nextIndex, cardType: "drive")) {
                 Image(systemName: "chevron.right")
                     .font(.caption2.weight(.bold))
                     .foregroundStyle(.white)
