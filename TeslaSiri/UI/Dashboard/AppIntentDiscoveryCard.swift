@@ -20,7 +20,10 @@ struct AppIntentDiscoveryCard: View {
     var body: some View {
         DashboardCard("Siri & Shortcuts", systemImage: "waveform") {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Say \"Warm up my car\", \"Show my last drive\", or \"How's my car?\" for live Apple Maps route and telemetry widgets right inside Siri.")
+                Text(WattieCopy.text(
+                    "Say \"Warm up my car\", \"Show my last drive\", or \"How's my car?\" for live Apple Maps route and telemetry widgets right inside Siri.",
+                    "“차 따뜻하게 해 줘”, “마지막 주행 보여 줘”, “차 어때?”라고 말하면 Siri 안에서 지도와 차량 카드를 볼 수 있습니다."
+                ))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -46,7 +49,10 @@ struct AppIntentDiscoveryCard: View {
                             Text("Preview Dynamic Siri Widgets")
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(.primary)
-                            Text("Embedded Apple Maps drive routes, live cabin & charger cards")
+                            Text(WattieCopy.text(
+                                "Embedded Apple Maps drive routes, live cabin & charger cards",
+                                "지도 경로, 실내·충전기 카드"
+                            ))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)
@@ -210,7 +216,7 @@ private struct SiriDynamicWidgetsPreviewSheet: View {
             VStack(alignment: .leading, spacing: 18) {
                 Picker("Widget Category", selection: $selectedSection) {
                     ForEach(FilterSection.allCases) { section in
-                        Text(section.rawValue).tag(section)
+                        Text(LocalizedStringKey(section.rawValue)).tag(section)
                     }
                 }
                 .pickerStyle(.segmented)

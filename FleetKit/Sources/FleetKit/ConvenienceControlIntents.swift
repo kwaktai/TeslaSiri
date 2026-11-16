@@ -43,7 +43,7 @@ public struct FlashLightsIntent: AppIntent, PredictableIntent {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             try await service.runControl(action: "flash_lights", vin: resolved.vin, humanName: "flashing the lights")
-            let summary = "Flashing \(resolved.name)'s lights."
+            let summary = FleetCopy.text("Flashing \(resolved.name)'s lights.", "\(resolved.name) 라이트를 깜빡입니다.")
             let result = VehicleCommandResultEntity(vehicle: resolved, action: "flash_lights", summary: summary)
             log.success("flashed lights on \(resolved.name)")
             return .result(value: result, dialog: IntentDialog("\(summary)"))
@@ -92,7 +92,7 @@ public struct HonkHornIntent: AppIntent, PredictableIntent {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             try await service.runControl(action: "honk_horn", vin: resolved.vin, humanName: "honking the horn")
-            let summary = "Honking \(resolved.name)'s horn."
+            let summary = FleetCopy.text("Honking \(resolved.name)'s horn.", "\(resolved.name) 경적을 울립니다.")
             let result = VehicleCommandResultEntity(vehicle: resolved, action: "honk_horn", summary: summary)
             log.success("honked horn on \(resolved.name)")
             return .result(value: result, dialog: IntentDialog("\(summary)"))
@@ -162,7 +162,7 @@ public struct SendNavigationIntent: AppIntent, PredictableIntent {
                 params: ["value": .string(trimmed), "locale": .string(locale)],
                 humanName: "sending the destination"
             )
-            let summary = "Sent \(trimmed) to \(resolved.name)."
+            let summary = FleetCopy.text("Sent \(trimmed) to \(resolved.name).", "\(trimmed)을(를) \(resolved.name)에 보냈습니다.")
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "navigation_request",

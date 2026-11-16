@@ -39,8 +39,12 @@ public struct GetRecentDrivesIntent: AppIntent, PredictableIntent {
 
     public static var predictionConfiguration: some IntentPredictionConfiguration {
         IntentPrediction(parameters: (\.$vehicle, \.$count)) { vehicle, count in
-            let target = vehicle?.name ?? FleetIntentMetadata.myCar
-            return DisplayRepresentation(title: LocalizedStringResource(stringLiteral: "Show \(count) recent drives for \(target)"))
+            let target = vehicle?.name ?? FleetCopy.text("my car", "내 차")
+            let phrase = FleetCopy.text(
+                "Show \(count) recent drives for \(target)",
+                "\(target) 최근 주행 \(count)건"
+            )
+            return DisplayRepresentation(title: LocalizedStringResource(stringLiteral: phrase))
         }
     }
 
@@ -53,8 +57,14 @@ public struct GetRecentDrivesIntent: AppIntent, PredictableIntent {
             let drives = try await service.drives(vin: resolved.vin, limit: clampedCount).map(DriveEntity.init(info:))
             log.success("returned \(drives.count) drive(s) for \(resolved.name)")
             let dialogText = drives.isEmpty
-                ? "No recent drives were found for \(resolved.name)."
-                : "Found \(drives.count) recent drive\(drives.count == 1 ? "" : "s") for \(resolved.name)."
+                ? FleetCopy.text(
+                    "No recent drives were found for \(resolved.name).",
+                    "\(resolved.name)의 최근 주행이 없습니다."
+                )
+                : FleetCopy.text(
+                    "Found \(drives.count) recent drive\(drives.count == 1 ? "" : "s") for \(resolved.name).",
+                    "\(resolved.name) 최근 주행 \(drives.count)건입니다."
+                )
             return .result(
                 value: drives,
                 dialog: IntentDialog("\(dialogText)"),

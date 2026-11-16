@@ -114,7 +114,10 @@ struct SignInBanner: View {
     }
 
     private var generateTokenLink: some View {
-        Text("Default server is \(TeslaFleetAPI.defaultBaseURLString).")
+        Text(WattieCopy.text(
+            "Default server is \(TeslaFleetAPI.defaultBaseURLString).",
+            "기본 서버는 \(TeslaFleetAPI.defaultBaseURLString)입니다."
+        ))
             .font(.footnote)
             .foregroundStyle(.secondary)
             .fixedSize(horizontal: false, vertical: true)

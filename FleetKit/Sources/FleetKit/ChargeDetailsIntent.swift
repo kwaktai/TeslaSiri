@@ -404,7 +404,10 @@ public struct EmptyChargeSnippetView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("No Charging Sessions Found")
                     .font(.subheadline.weight(.semibold))
-                Text("No matching charges recorded for \(vehicleName).")
+                Text(FleetCopy.text(
+                    "No matching charges recorded for \(vehicleName).",
+                    "\(vehicleName)의 충전 기록이 없습니다."
+                ))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

@@ -76,7 +76,10 @@ public struct VehicleStatusSnippetView: View {
                     .monospacedDigit()
 
                 if let range = status.batteryRangeMiles {
-                    Text("· \(Int(range.rounded())) mi")
+                    Text(FleetCopy.text(
+                        "· \(Int(range.rounded())) mi",
+                        "· \(Int(range.rounded()))마일"
+                    ))
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
                         .monospacedDigit()
@@ -122,7 +125,7 @@ public struct VehicleStatusSnippetView: View {
 
             HStack {
                 if let limit = status.chargeLimitPercent {
-                    Text("Charge limit \(limit)%")
+                    Text(FleetCopy.text("Charge limit \(limit)%", "충전 한도 \(limit)%"))
                         .monospacedDigit()
                 }
                 Spacer()
@@ -131,7 +134,7 @@ public struct VehicleStatusSnippetView: View {
                         .foregroundStyle(.green)
                         .monospacedDigit()
                 } else if let minutes = status.minutesToFullCharge, minutes > 0 {
-                    Text("\(minutes)m to limit")
+                    Text(FleetCopy.text("\(minutes)m to limit", "한도까지 \(minutes)분"))
                         .monospacedDigit()
                 }
             }
@@ -144,7 +147,7 @@ public struct VehicleStatusSnippetView: View {
 
     private func chargingBadge(for state: String) -> some View {
         let isCharging = state.localizedStandardContains("charging") && !state.localizedStandardContains("dis")
-        return Label(state.capitalized, systemImage: isCharging ? "bolt.fill" : "powerplug")
+        return Label(FleetCopy.chargingStateTitle(state), systemImage: isCharging ? "bolt.fill" : "powerplug")
             .font(.caption2.weight(.semibold))
             .foregroundStyle(isCharging ? AnyShapeStyle(Color.green) : AnyShapeStyle(.secondary))
             .padding(.horizontal, 8)
@@ -502,12 +505,24 @@ public struct ClimateControlSnippetView: View {
 
                 VStack(alignment: .trailing, spacing: 4) {
                     if let inside = status?.insideTemp {
-                        Label("Cabin \(Int(inside.rounded()))\(unit)", systemImage: "car.fill")
+                        Label(
+                            FleetCopy.text(
+                                "Cabin \(Int(inside.rounded()))\(unit)",
+                                "실내 \(Int(inside.rounded()))\(unit)"
+                            ),
+                            systemImage: "car.fill"
+                        )
                             .font(.caption.weight(.semibold))
                             .monospacedDigit()
                     }
                     if let outside = status?.outsideTemp {
-                        Label("Outside \(Int(outside.rounded()))\(unit)", systemImage: "cloud.sun.fill")
+                        Label(
+                            FleetCopy.text(
+                                "Outside \(Int(outside.rounded()))\(unit)",
+                                "실외 \(Int(outside.rounded()))\(unit)"
+                            ),
+                            systemImage: "cloud.sun.fill"
+                        )
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                             .monospacedDigit()

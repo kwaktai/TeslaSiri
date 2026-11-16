@@ -48,7 +48,10 @@ struct DriveRoutePositionScrubber: View {
             )
             .disabled(sampleCount < 2)
 
-            Text("Point \(min(selectedSampleIndex + 1, sampleCount)) of \(sampleCount)")
+            Text(WattieCopy.text(
+                "Point \(min(selectedSampleIndex + 1, sampleCount)) of \(sampleCount)",
+                "\(sampleCount)개 중 \(min(selectedSampleIndex + 1, sampleCount))"
+            ))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .center)

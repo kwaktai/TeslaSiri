@@ -11,6 +11,39 @@ enum FleetCopy {
     static func text(_ english: String, _ korean: String) -> String {
         prefersKorean ? korean : english
     }
+
+    static func chargingStateTitle(_ raw: String) -> String {
+        let key = raw.lowercased().replacingOccurrences(of: "_", with: " ")
+        let korean: String
+        switch key {
+        case "charging": korean = "충전 중"
+        case "complete", "completed": korean = "충전 완료"
+        case "stopped": korean = "중지됨"
+        case "starting": korean = "시작 중"
+        case "no power", "nopower": korean = "전원 없음"
+        case "disconnected": korean = "분리됨"
+        default: korean = raw
+        }
+        return text(raw.replacingOccurrences(of: "_", with: " ").capitalized, korean)
+    }
+
+    /// Short nouns that get appended to suggestion titles.
+    static func noun(_ english: String) -> String {
+        switch english {
+        case "trunk": "트렁크"
+        case "frunk": "프렁크"
+        case "lights": "라이트"
+        case "horn": "경적"
+        case "windows": "창문"
+        case "charge port": "충전구"
+        case "mileage": "주행거리"
+        case "tire pressure": "타이어 공기압"
+        case "battery": "배터리"
+        case "status": "상태"
+        case "battery health": "배터리 건강"
+        default: english
+        }
+    }
 }
 
 public enum FleetKitError: Swift.Error, LocalizedError, CustomLocalizedStringResourceConvertible {

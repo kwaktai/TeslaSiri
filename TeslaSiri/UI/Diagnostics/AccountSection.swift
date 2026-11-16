@@ -26,7 +26,7 @@ private struct AccountRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(label)
+            Text(LocalizedStringKey(label))
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Text(value)

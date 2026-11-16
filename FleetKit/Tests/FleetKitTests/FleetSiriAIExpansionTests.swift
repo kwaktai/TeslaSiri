@@ -145,13 +145,13 @@ struct FleetSiriAIExpansionTests {
                 confirmations.append(String(describing: dialog))
             }
             #expect(rear.appliedValue == "rear")
-            #expect(rear.summary == "Opening the trunk on Roadrunner.")
+            #expect(rear.summary == "Opening the trunk on Roadrunner." || rear.summary == "Roadrunner 트렁크를 엽니다.")
 
             let front = try await OpenTrunkIntent.open(.front, vehicle: nil) { dialog in
                 confirmations.append(String(describing: dialog))
             }
             #expect(front.appliedValue == "front")
-            #expect(front.summary == "Opening the frunk on Roadrunner.")
+            #expect(front.summary == "Opening the frunk on Roadrunner." || front.summary == "Roadrunner 프렁크를 엽니다.")
             #expect(confirmations.count == 2)
             #expect(OpenTrunkIntent(trunk: .front).trunk == .front)
 
@@ -281,10 +281,14 @@ struct FleetSiriAIExpansionTests {
     @Test func `software status only treats downloaded updates as installable`() throws {
         let ready = FleetSoftwareInfo(currentVersion: "2026.2.1", availableVersion: "2026.8.4", updateAvailable: true, installable: true, status: "available", downloadPercent: 100, installPercent: nil, expectedDurationMinutes: 25)
         let readyEntity = SoftwareUpdateEntity(info: ready, vin: "VIN-1", vehicleName: "Roadrunner")
-        #expect(readyEntity.spokenStatus == "Software update 2026.8.4 is ready to install on Roadrunner. Installing takes about 25 minutes, and the car can't be driven during it.")
+        #expect(
+            readyEntity.spokenStatus == "Software update 2026.8.4 is ready to install on Roadrunner. Installing takes about 25 minutes, and the car can't be driven during it."
+                || readyEntity.spokenStatus == "Roadrunner에 2026.8.4 업데이트를 설치할 수 있습니다. 설치에 약 25분이 걸리며 그 동안 운전할 수 없습니다."
+        )
 
         let upToDate = FleetSoftwareInfo(currentVersion: "2026.2.1", availableVersion: nil, updateAvailable: false, installable: false, status: nil, downloadPercent: nil, installPercent: nil, expectedDurationMinutes: nil)
-        #expect(SoftwareUpdateEntity(info: upToDate, vin: "VIN-1", vehicleName: "Roadrunner").spokenStatus == "Roadrunner is up to date on 2026.2.1.")
+        let upToDateStatus = SoftwareUpdateEntity(info: upToDate, vin: "VIN-1", vehicleName: "Roadrunner").spokenStatus
+        #expect(upToDateStatus == "Roadrunner is up to date on 2026.2.1." || upToDateStatus == "Roadrunner은(는) 2026.2.1으로 최신입니다.")
     }
 
     // MARK: - Skills bundle

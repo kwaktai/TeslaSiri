@@ -87,7 +87,10 @@ enum FleetAPIError: Error, LocalizedError {
                 "\(feature)은(는) 이 Tesla 서버에서 제공하지 않습니다. 주행 기록, 충전 기록, 배터리 건강, 릴리즈 노트는 이 서버에 없는 데이터입니다."
             )
         case .keychain(let status):
-            return "Keychain operation failed with status \(status)."
+            return WattieCopy.text(
+                "Keychain operation failed with status \(status).",
+                "키체인 작업이 실패했습니다 (상태 \(status))."
+            )
         }
     }
 

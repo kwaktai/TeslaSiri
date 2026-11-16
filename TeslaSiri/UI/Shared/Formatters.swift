@@ -21,12 +21,12 @@ func formattedDuration(milliseconds: Int64?) -> String {
     let seconds = totalSeconds % 60
 
     if hours > 0 {
-        return "\(hours) hr \(minutes) min"
+        return WattieCopy.text("\(hours) hr \(minutes) min", "\(hours)시간 \(minutes)분")
     }
     if minutes > 0 {
-        return "\(minutes) min"
+        return WattieCopy.text("\(minutes) min", "\(minutes)분")
     }
-    return "\(seconds) sec"
+    return WattieCopy.text("\(seconds) sec", "\(seconds)초")
 }
 
 /// Turns raw backend states such as "In_Progress" or "charging" into "In progress" / "Charging".
@@ -36,7 +36,30 @@ func humanizedStatus(_ raw: String) -> String {
         .trimmingCharacters(in: .whitespacesAndNewlines)
         .lowercased()
     guard let first = spaced.first else { return raw }
-    return first.uppercased() + spaced.dropFirst()
+    let titled = first.uppercased() + spaced.dropFirst()
+    let korean: [String: String] = [
+        "charging": "충전 중",
+        "complete": "완료",
+        "completed": "완료",
+        "stopped": "중지됨",
+        "starting": "시작 중",
+        "nopower": "전원 없음",
+        "no power": "전원 없음",
+        "disconnected": "분리됨",
+        "in progress": "진행 중",
+        "available": "설치 가능",
+        "downloading": "다운로드 중",
+        "installing": "설치 중",
+        "scheduled": "예약됨",
+        "asleep": "절전",
+        "offline": "오프라인",
+        "online": "온라인",
+        "parked": "주차",
+        "locked": "잠김",
+        "unlocked": "잠금 해제",
+        "connected": "연결됨"
+    ]
+    return WattieCopy.text(titled, korean[spaced] ?? titled)
 }
 
 func formattedCoordinate(latitude: Double?, longitude: Double?) -> String {
@@ -55,13 +78,13 @@ func driveEndpointSummary(_ drive: FleetDriveSession, endpointAddresses: DriveEn
 
     switch (startAddress, endAddress) {
     case let (start?, end?):
-        return "\(start) to \(end)"
+        return WattieCopy.text("\(start) to \(end)", "\(start)에서 \(end)")
     case let (start?, nil):
-        return "From \(start)"
+        return WattieCopy.text("From \(start)", "\(start)에서 출발")
     case let (nil, end?):
-        return "To \(end)"
+        return WattieCopy.text("To \(end)", "\(end)에 도착")
     case (nil, nil):
-        return "Resolving addresses"
+        return WattieCopy.text("Resolving addresses", "주소 찾는 중")
     }
 }
 

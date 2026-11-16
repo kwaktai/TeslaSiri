@@ -545,9 +545,9 @@ struct EmptyStateView: View {
     var body: some View {
         CardContainer {
             ContentUnavailableView(
-                title,
+                LocalizedStringKey(title),
                 systemImage: systemImage,
-                description: Text(description)
+                description: Text(LocalizedStringKey(description))
             )
             .frame(maxWidth: .infinity)
         }

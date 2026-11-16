@@ -8,8 +8,8 @@ public enum ChargePortAction: String, AppEnum, Sendable {
 
     public static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Charge Port Action")
     public static let caseDisplayRepresentations: [ChargePortAction: DisplayRepresentation] = [
-        .open: DisplayRepresentation(title: "Open", subtitle: "Open and unlock the charge port"),
-        .close: DisplayRepresentation(title: "Close", subtitle: "Close the motorized charge port door")
+        .open: DisplayRepresentation(title: "Open", subtitle: "Open and unlock the charge port", synonyms: ["열기", "충전구 열기"]),
+        .close: DisplayRepresentation(title: "Close", subtitle: "Close the motorized charge port door", synonyms: ["닫기", "충전구 닫기"])
     ]
 }
 
@@ -54,7 +54,7 @@ public struct StartChargingIntent: AppIntent, PredictableIntent {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             try await service.runControl(action: "charge_start", vin: resolved.vin, humanName: "starting charging")
-            let summary = "Started charging \(resolved.name)."
+            let summary = FleetCopy.text("Started charging \(resolved.name).", "\(resolved.name) 충전을 시작했습니다.")
             let result = VehicleCommandResultEntity(vehicle: resolved, action: "charge_start", summary: summary)
             log.success("started charging \(resolved.name)")
             return .result(value: result, dialog: IntentDialog("\(summary)"))
@@ -104,9 +104,12 @@ public struct StopChargingIntent: AppIntent, PredictableIntent {
         do {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
-            try await confirmWithSafetyGate(dialog: IntentDialog("Stop charging \(resolved.name)?"))
+            try await confirmWithSafetyGate(dialog: FleetCopy.dialog(
+                "Stop charging \(resolved.name)?",
+                "\(resolved.name) 충전을 중지할까요?"
+            ))
             try await service.runControl(action: "charge_stop", vin: resolved.vin, humanName: "stopping charging")
-            let summary = "Stopped charging \(resolved.name)."
+            let summary = FleetCopy.text("Stopped charging \(resolved.name).", "\(resolved.name) 충전을 중지했습니다.")
             let result = VehicleCommandResultEntity(vehicle: resolved, action: "charge_stop", summary: summary)
             log.success("stopped charging \(resolved.name)")
             return .result(value: result, dialog: IntentDialog("\(summary)"))
@@ -164,14 +167,17 @@ public struct SetChargePortIntent: AppIntent, PredictableIntent {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             if action == .open {
-                try await confirmWithSafetyGate(dialog: IntentDialog("Open the charge port on \(resolved.name)?"))
+                try await confirmWithSafetyGate(dialog: FleetCopy.dialog(
+                    "Open the charge port on \(resolved.name)?",
+                    "\(resolved.name) 충전구를 열까요?"
+                ))
             }
             let controlAction = action == .open ? "charge_port_door_open" : "charge_port_door_close"
             let humanName = action == .open ? "opening the charge port" : "closing the charge port"
             try await service.runControl(action: controlAction, vin: resolved.vin, humanName: humanName)
             let summary = action == .open
-                ? "Opened the charge port on \(resolved.name)."
-                : "Closed the charge port on \(resolved.name)."
+                ? FleetCopy.text("Opened the charge port on \(resolved.name).", "\(resolved.name) 충전구를 열었습니다.")
+                : FleetCopy.text("Closed the charge port on \(resolved.name).", "\(resolved.name) 충전구를 닫았습니다.")
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: controlAction,
@@ -223,8 +229,12 @@ public struct SetSentryModeIntent: AppIntent, PredictableIntent {
 
     public static var predictionConfiguration: some IntentPredictionConfiguration {
         IntentPrediction(parameters: (\.$vehicle, \.$on)) { vehicle, on in
-            let target = vehicle?.name ?? FleetIntentMetadata.myCar
-            return DisplayRepresentation(title: LocalizedStringResource(stringLiteral: "Turn Sentry Mode \(on ? "on" : "off") on \(target)"))
+            let target = vehicle?.name ?? FleetCopy.text("my car", "내 차")
+            let phrase = FleetCopy.text(
+                "Turn Sentry Mode \(on ? "on" : "off") on \(target)",
+                on ? "\(target) 감시 모드 켜기" : "\(target) 감시 모드 끄기"
+            )
+            return DisplayRepresentation(title: LocalizedStringResource(stringLiteral: phrase))
         }
     }
 
@@ -234,7 +244,10 @@ public struct SetSentryModeIntent: AppIntent, PredictableIntent {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             if !on {
-                try await confirmWithSafetyGate(dialog: IntentDialog("Turn off Sentry Mode on \(resolved.name)?"))
+                try await confirmWithSafetyGate(dialog: FleetCopy.dialog(
+                    "Turn off Sentry Mode on \(resolved.name)?",
+                    "\(resolved.name) 감시 모드를 끌까요?"
+                ))
             }
             try await service.runControl(
                 action: "set_sentry_mode",
@@ -242,7 +255,9 @@ public struct SetSentryModeIntent: AppIntent, PredictableIntent {
                 params: ["on": .bool(on)],
                 humanName: "setting Sentry Mode"
             )
-            let summary = on ? "Sentry Mode is on for \(resolved.name)." : "Sentry Mode is off for \(resolved.name)."
+            let summary = on
+                ? FleetCopy.text("Sentry Mode is on for \(resolved.name).", "\(resolved.name) 감시 모드를 켰습니다.")
+                : FleetCopy.text("Sentry Mode is off for \(resolved.name).", "\(resolved.name) 감시 모드를 껐습니다.")
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "set_sentry_mode",
@@ -300,7 +315,10 @@ public struct ConfigureCabinClimateIntent: AppIntent {
             let resolved = try await service.resolvedVehicle(vehicle?.id)
 
             if settings.enablePetMode == false {
-                try await confirmWithSafetyGate(dialog: IntentDialog("Turn off dog mode in \(resolved.name)?"))
+                try await confirmWithSafetyGate(dialog: FleetCopy.dialog(
+                    "Turn off dog mode in \(resolved.name)?",
+                    "\(resolved.name) 펫 모드를 끌까요?"
+                ))
             }
 
             var appliedParts: [String] = []
@@ -320,7 +338,7 @@ public struct ConfigureCabinClimateIntent: AppIntent {
                     vin: resolved.vin,
                     humanName: "starting climate"
                 )
-                appliedParts.append("climate on")
+                appliedParts.append(FleetCopy.text("climate on", "공조 켜짐"))
             }
 
             if let requestedCelsius = settings.targetTemperatureCelsius {
@@ -346,7 +364,9 @@ public struct ConfigureCabinClimateIntent: AppIntent {
                     params: ["on": .bool(defrost)],
                     humanName: "setting max defrost"
                 )
-                appliedParts.append(defrost ? "max defrost on" : "max defrost off")
+                appliedParts.append(defrost
+                    ? FleetCopy.text("max defrost on", "최대 성에 제거 켜짐")
+                    : FleetCopy.text("max defrost off", "최대 성에 제거 꺼짐"))
             }
 
             let seatLevels: [(seat: String, name: String, level: Int?)] = [
@@ -362,7 +382,12 @@ public struct ConfigureCabinClimateIntent: AppIntent {
                     params: ["seat": .string(entry.seat), "level": .int(level)],
                     humanName: "the seat heater"
                 )
-                appliedParts.append(level > 0 ? "\(entry.name) heat \(level)" : "\(entry.name) heat off")
+                let seatLabel = entry.name == "driver seat"
+                    ? FleetCopy.text("driver seat", "운전석")
+                    : FleetCopy.text("passenger seat", "조수석")
+                appliedParts.append(level > 0
+                    ? FleetCopy.text("\(entry.name) heat \(level)", "\(seatLabel) 열선 \(level)")
+                    : FleetCopy.text("\(entry.name) heat off", "\(seatLabel) 열선 꺼짐"))
             }
 
             if let wheelHeat = settings.steeringWheelHeat {
@@ -372,7 +397,9 @@ public struct ConfigureCabinClimateIntent: AppIntent {
                     params: ["on": .bool(wheelHeat)],
                     humanName: "the steering wheel heater"
                 )
-                appliedParts.append(wheelHeat ? "steering wheel heat on" : "steering wheel heat off")
+                appliedParts.append(wheelHeat
+                    ? FleetCopy.text("steering wheel heat on", "핸들 열선 켜짐")
+                    : FleetCopy.text("steering wheel heat off", "핸들 열선 꺼짐"))
             }
 
             if let petMode = settings.enablePetMode {
@@ -382,7 +409,9 @@ public struct ConfigureCabinClimateIntent: AppIntent {
                     params: ["on": .bool(petMode)],
                     humanName: "setting dog mode"
                 )
-                appliedParts.append(petMode ? "Dog Mode on" : "Dog Mode off")
+                appliedParts.append(petMode
+                    ? FleetCopy.text("Dog Mode on", "펫 모드 켜짐")
+                    : FleetCopy.text("Dog Mode off", "펫 모드 꺼짐"))
             }
 
             if let bioweapon = settings.enableBioweaponDefenseMode {
@@ -392,11 +421,16 @@ public struct ConfigureCabinClimateIntent: AppIntent {
                     params: ["on": .bool(bioweapon), "manual_override": .bool(false)],
                     humanName: "setting Bioweapon Defense Mode"
                 )
-                appliedParts.append(bioweapon ? "Bioweapon Defense on" : "Bioweapon Defense off")
+                appliedParts.append(bioweapon
+                    ? FleetCopy.text("Bioweapon Defense on", "생화학 방어 켜짐")
+                    : FleetCopy.text("Bioweapon Defense off", "생화학 방어 꺼짐"))
             }
 
             let detail = appliedParts.joined(separator: ", ")
-            let summary = "Configured \(resolved.name) (\(detail))."
+            let summary = FleetCopy.text(
+                "Configured \(resolved.name) (\(detail)).",
+                "\(resolved.name) 실내를 설정했습니다 (\(detail))."
+            )
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "configure_cabin_climate",
@@ -537,20 +571,32 @@ public struct FindDrivesIntent: AppIntent {
 
             let dialogText: String
             if results.isEmpty {
-                dialogText = "No drives matched those criteria for \(resolved.name)."
+                dialogText = FleetCopy.text(
+                    "No drives matched those criteria for \(resolved.name).",
+                    "\(resolved.name)에서 조건에 맞는 주행이 없습니다."
+                )
             } else if results.count == 1, let only = results.first {
-                dialogText = "Found 1 matching drive for \(resolved.name). \(only.spokenSummary(vehicleName: resolved.name))"
+                dialogText = FleetCopy.text(
+                    "Found 1 matching drive for \(resolved.name). \(only.spokenSummary(vehicleName: resolved.name))",
+                    "\(resolved.name) 주행 1건을 찾았습니다. \(only.spokenSummary(vehicleName: resolved.name))"
+                )
             } else if let top = results.first {
                 let totalMiles = results.compactMap(\.distanceMiles).reduce(0, +)
-                dialogText = String(
-                    format: "Found %d matching drives for %@ totaling %.1f miles. Top match: %@",
-                    results.count,
-                    resolved.name,
-                    totalMiles,
-                    top.spokenSummary(vehicleName: resolved.name)
+                dialogText = FleetCopy.text(
+                    String(
+                        format: "Found %d matching drives for %@ totaling %.1f miles. Top match: %@",
+                        results.count,
+                        resolved.name,
+                        totalMiles,
+                        top.spokenSummary(vehicleName: resolved.name)
+                    ),
+                    "\(resolved.name) 주행 \(results.count)건, 합계 \(String(format: "%.1f", totalMiles))마일을 찾았습니다. 첫 결과: \(top.spokenSummary(vehicleName: resolved.name))"
                 )
             } else {
-                dialogText = "Found \(results.count) matching drives for \(resolved.name)."
+                dialogText = FleetCopy.text(
+                    "Found \(results.count) matching drives for \(resolved.name).",
+                    "\(resolved.name) 주행 \(results.count)건을 찾았습니다."
+                )
             }
 
             return .result(
@@ -634,7 +680,10 @@ public struct GetReleaseNotesIntent: AppIntent, PredictableIntent {
             guard let targetVersion, !targetVersion.isEmpty else {
                 return .result(
                     value: [],
-                    dialog: IntentDialog("No software version was reported for \(resolved.name)."),
+                    dialog: FleetCopy.dialog(
+                        "No software version was reported for \(resolved.name).",
+                        "\(resolved.name)의 소프트웨어 버전이 없습니다."
+                    ),
                     view: ReleaseNotesSnippetView(vehicleName: resolved.name, version: "Unknown", notes: [])
                 )
             }
@@ -729,14 +778,17 @@ public struct CloseWindowsIntent: AppIntent, PredictableIntent {
         do {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
-            try await confirmWithSafetyGate(dialog: IntentDialog("Close windows on \(resolved.name)?"))
+            try await confirmWithSafetyGate(dialog: FleetCopy.dialog(
+                "Close windows on \(resolved.name)?",
+                "\(resolved.name) 창문을 닫을까요?"
+            ))
             try await service.runControl(
                 action: "window_control",
                 vin: resolved.vin,
                 params: ["command": .string("close")],
                 humanName: "closing windows"
             )
-            let summary = "Closed windows on \(resolved.name)."
+            let summary = FleetCopy.text("Closed windows on \(resolved.name).", "\(resolved.name) 창문을 닫았습니다.")
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "window_control",

@@ -50,7 +50,7 @@ public struct InstallSoftwareUpdateIntent: AppIntent, LongRunningIntent, Predict
 
             let info = try await service.software(vin: resolved.vin)
             guard info.updateAvailable || info.installable else {
-                let summary = "\(resolved.name) is already up to date."
+                let summary = FleetCopy.text("\(resolved.name) is already up to date.", "\(resolved.name)은(는) 이미 최신입니다.")
                 let result = VehicleCommandResultEntity(
                     vehicle: resolved,
                     action: "schedule_software_update",
@@ -77,20 +77,31 @@ public struct InstallSoftwareUpdateIntent: AppIntent, LongRunningIntent, Predict
             }
 
             let offsetSec = startTime.map { max(Int($0.timeIntervalSinceNow.rounded()), 0) } ?? 0
-            let whenText = offsetSec > 60
-                ? " at \((startTime ?? .now).formatted(date: .omitted, time: .shortened))"
-                : " now"
+            let clock = (startTime ?? .now).formatted(date: .omitted, time: .shortened)
+            let whenText = offsetSec > 60 ? " at \(clock)" : " now"
             let version = info.availableVersion.map { " \($0)" } ?? ""
+            let versionLabel = info.availableVersion ?? ""
             try await confirmWithSafetyGate(
-                dialog: IntentDialog("Install software update\(version) on \(resolved.name)\(whenText)? The car can't be driven while it installs.")
+                dialog: FleetCopy.dialog(
+                    "Install software update\(version) on \(resolved.name)\(whenText)? The car can't be driven while it installs.",
+                    offsetSec > 60
+                        ? "\(resolved.name)에 소프트웨어 업데이트 \(versionLabel)을(를) \(clock)에 설치할까요? 설치 중에는 운전할 수 없습니다."
+                        : "\(resolved.name)에 소프트웨어 업데이트 \(versionLabel)을(를) 지금 설치할까요? 설치 중에는 운전할 수 없습니다."
+                )
             )
 
             try await performSandboxAwareBackgroundTask {
                 try await service.installSoftwareUpdate(vin: resolved.vin, offsetSec: offsetSec)
             }
             let summary = offsetSec > 60
-                ? "\(resolved.name) will install the update\(whenText)."
-                : "Starting the software update on \(resolved.name)."
+                ? FleetCopy.text(
+                    "\(resolved.name) will install the update\(whenText).",
+                    "\(resolved.name) 업데이트를 \(clock)에 설치합니다."
+                )
+                : FleetCopy.text(
+                    "Starting the software update on \(resolved.name).",
+                    "\(resolved.name) 소프트웨어 업데이트를 시작합니다."
+                )
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "schedule_software_update",
@@ -144,9 +155,15 @@ public struct CancelSoftwareUpdateIntent: AppIntent, PredictableIntent {
         do {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
-            try await confirmWithSafetyGate(dialog: IntentDialog("Cancel the software update on \(resolved.name)?"))
+            try await confirmWithSafetyGate(dialog: FleetCopy.dialog(
+                "Cancel the software update on \(resolved.name)?",
+                "\(resolved.name) 소프트웨어 업데이트를 취소할까요?"
+            ))
             try await service.cancelSoftwareUpdate(vin: resolved.vin)
-            let summary = "Canceled the software update on \(resolved.name)."
+            let summary = FleetCopy.text(
+                "Canceled the software update on \(resolved.name).",
+                "\(resolved.name) 소프트웨어 업데이트를 취소했습니다."
+            )
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "cancel_software_update",

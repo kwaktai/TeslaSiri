@@ -42,6 +42,17 @@ public enum SeatPosition: String, AppEnum, Sendable {
         case .rearRight: "rear right seat"
         }
     }
+
+    var koreanName: String {
+        switch self {
+        case .driver: "운전석"
+        case .passenger: "조수석"
+        case .frontSeats: "앞좌석"
+        case .rearLeft: "뒷좌석 왼쪽"
+        case .rearCenter: "뒷좌석 가운데"
+        case .rearRight: "뒷좌석 오른쪽"
+        }
+    }
 }
 
 /// Whether a seat command heats or cools (ventilates) the seat.
@@ -142,10 +153,17 @@ public struct SetSeatClimateIntent: AppIntent, PredictableIntent {
                 )
             }
 
-            let verb = mode == .heat ? "heat" : "cooling"
+            let seatName = seat.spokenName
+            let koreanSeat = seat.koreanName
             let summary = clamped == 0
-                ? "Turned off \(seat.spokenName) \(verb) in \(resolved.name)."
-                : "Set \(seat.spokenName) \(verb) to \(clamped) in \(resolved.name)."
+                ? FleetCopy.text(
+                    "Turned off \(seatName) \(mode == .heat ? "heat" : "cooling") in \(resolved.name).",
+                    "\(resolved.name) \(koreanSeat) \(mode == .heat ? "열선" : "통풍")을 껐습니다."
+                )
+                : FleetCopy.text(
+                    "Set \(seatName) \(mode == .heat ? "heat" : "cooling") to \(clamped) in \(resolved.name).",
+                    "\(resolved.name) \(koreanSeat) \(mode == .heat ? "열선" : "통풍")을 \(clamped)단계로 설정했습니다."
+                )
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: action,
@@ -212,7 +230,9 @@ public struct SetSteeringWheelHeaterIntent: AppIntent, PredictableIntent {
                 params: ["on": .bool(on)],
                 humanName: "the steering wheel heater"
             )
-            let summary = "The steering wheel heater is \(on ? "on" : "off") in \(resolved.name)."
+            let summary = on
+                ? FleetCopy.text("The steering wheel heater is on in \(resolved.name).", "\(resolved.name) 스티어링 휠 열선을 켰습니다.")
+                : FleetCopy.text("The steering wheel heater is off in \(resolved.name).", "\(resolved.name) 스티어링 휠 열선을 껐습니다.")
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "steering_wheel_heater",
@@ -281,7 +301,10 @@ public struct SetChargingAmpsIntent: AppIntent, PredictableIntent {
                 params: ["amps": .int(clamped)],
                 humanName: "setting charging amps"
             )
-            let summary = "\(resolved.name) will charge at up to \(clamped) amps."
+            let summary = FleetCopy.text(
+                "\(resolved.name) will charge at up to \(clamped) amps.",
+                "\(resolved.name) 충전 전류를 최대 \(clamped)A로 설정했습니다."
+            )
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "set_charging_amps",

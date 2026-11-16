@@ -99,7 +99,7 @@ private struct DriveSummaryTile: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
 
-            Text(title)
+            Text(LocalizedStringKey(title))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)

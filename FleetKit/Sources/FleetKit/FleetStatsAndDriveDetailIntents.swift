@@ -131,10 +131,12 @@ public struct GetDrivingStatsIntent: AppIntent, PredictableIntent {
 
     public static var predictionConfiguration: some IntentPredictionConfiguration {
         IntentPrediction(parameters: (\.$vehicle, \.$period)) { vehicle, period in
-            let target = vehicle?.name ?? FleetIntentMetadata.myCar
-            return DisplayRepresentation(
-                title: LocalizedStringResource(stringLiteral: "Show \(period.displayTitle.lowercased()) driving stats for \(target)")
+            let name = vehicle?.name ?? "my car"
+            let phrase = FleetCopy.text(
+                "Show \(period.displayTitle.lowercased()) driving stats for \(name)",
+                "\(vehicle?.name ?? "내 차") \(period.displayTitle) 주행 통계"
             )
+            return DisplayRepresentation(title: LocalizedStringResource(stringLiteral: phrase))
         }
     }
 
@@ -225,10 +227,12 @@ public struct GetChargingStatsIntent: AppIntent, PredictableIntent {
 
     public static var predictionConfiguration: some IntentPredictionConfiguration {
         IntentPrediction(parameters: (\.$vehicle, \.$period)) { vehicle, period in
-            let target = vehicle?.name ?? FleetIntentMetadata.myCar
-            return DisplayRepresentation(
-                title: LocalizedStringResource(stringLiteral: "Show \(period.displayTitle.lowercased()) charging stats for \(target)")
+            let name = vehicle?.name ?? "my car"
+            let phrase = FleetCopy.text(
+                "Show \(period.displayTitle.lowercased()) charging stats for \(name)",
+                "\(vehicle?.name ?? "내 차") \(period.displayTitle) 충전 통계"
             )
+            return DisplayRepresentation(title: LocalizedStringResource(stringLiteral: phrase))
         }
     }
 
@@ -362,20 +366,29 @@ public struct GetRecentChargesIntent: AppIntent, PredictableIntent {
 
             let dialogText: String
             if results.isEmpty {
-                dialogText = "No matching charging sessions were found for \(resolved.name)."
+                dialogText = FleetCopy.text(
+                    "No matching charging sessions were found for \(resolved.name).",
+                    "\(resolved.name)에서 조건에 맞는 충전이 없습니다."
+                )
             } else if results.count == 1, let only = results.first {
                 dialogText = only.spokenSummary(vehicleName: resolved.name)
             } else if let latest = results.first {
                 let totalKWH = results.compactMap(\.energyAddedKWH).reduce(0, +)
-                dialogText = String(
-                    format: "Found %d charging sessions for %@ adding %.1f kWh total. Most recent: %@",
-                    results.count,
-                    resolved.name,
-                    totalKWH,
-                    latest.spokenSummary(vehicleName: resolved.name)
+                dialogText = FleetCopy.text(
+                    String(
+                        format: "Found %d charging sessions for %@ adding %.1f kWh total. Most recent: %@",
+                        results.count,
+                        resolved.name,
+                        totalKWH,
+                        latest.spokenSummary(vehicleName: resolved.name)
+                    ),
+                    "\(resolved.name) 충전 \(results.count)건, 합계 \(String(format: "%.1f", totalKWH)) kWh입니다. 최근: \(latest.spokenSummary(vehicleName: resolved.name))"
                 )
             } else {
-                dialogText = "Found \(results.count) charging sessions for \(resolved.name)."
+                dialogText = FleetCopy.text(
+                    "Found \(results.count) charging sessions for \(resolved.name).",
+                    "\(resolved.name) 충전 \(results.count)건입니다."
+                )
             }
 
             return .result(

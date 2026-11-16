@@ -122,11 +122,13 @@ public struct DriveEntity: AppEntity, IndexedEntity, SyncableEntity, Identifiabl
     }
 
     public var distanceText: String {
-        distanceMiles.map { String(format: "%.1f mi", $0) } ?? "Drive"
+        distanceMiles.map { miles in
+            FleetCopy.text(String(format: "%.1f mi", miles), String(format: "%.1f마일", miles))
+        } ?? FleetCopy.text("Drive", "주행")
     }
 
     public var durationText: String? {
-        durationMinutes.map { "\($0) min" }
+        durationMinutes.map { FleetCopy.text("\($0) min", "\($0)분") }
     }
 
     public var batterySummaryText: String? {
@@ -140,10 +142,10 @@ public struct DriveEntity: AppEntity, IndexedEntity, SyncableEntity, Identifiabl
 
     public var routeText: String {
         if let startAddress, let endAddress {
-            return "\(startAddress) to \(endAddress)"
+            return FleetCopy.text("\(startAddress) to \(endAddress)", "\(startAddress)에서 \(endAddress)")
         }
-        if let startAddress { return "Started at \(startAddress)" }
-        if let endAddress { return "Ended at \(endAddress)" }
+        if let startAddress { return FleetCopy.text("Started at \(startAddress)", "\(startAddress)에서 출발") }
+        if let endAddress { return FleetCopy.text("Ended at \(endAddress)", "\(endAddress)에 도착") }
         return startedAt.formatted(date: .abbreviated, time: .shortened)
     }
 
@@ -169,8 +171,14 @@ public struct DriveEntity: AppEntity, IndexedEntity, SyncableEntity, Identifiabl
     public var detailText: String {
         var parts: [String] = [routeText]
         if let durationText { parts.append(durationText) }
-        if let avgSpeedMPH { parts.append("avg \(Int(avgSpeedMPH.rounded())) mph") }
-        if let maxSpeedMPH { parts.append("max \(Int(maxSpeedMPH.rounded())) mph") }
+        if let avgSpeedMPH {
+            let speed = Int(avgSpeedMPH.rounded())
+            parts.append(FleetCopy.text("avg \(speed) mph", "평균 \(speed) mph"))
+        }
+        if let maxSpeedMPH {
+            let speed = Int(maxSpeedMPH.rounded())
+            parts.append(FleetCopy.text("max \(speed) mph", "최고 \(speed) mph"))
+        }
         if let energyUsedKWH { parts.append(String(format: "%.1f kWh", energyUsedKWH)) }
         if let efficiencyText { parts.append(efficiencyText) }
         if let batterySummaryText { parts.append(batterySummaryText) }
@@ -180,8 +188,43 @@ public struct DriveEntity: AppEntity, IndexedEntity, SyncableEntity, Identifiabl
     /// Detailed natural-language summary suitable for Siri voice readout.
     public func spokenSummary(vehicleName: String? = nil) -> String {
         let whenText = startedAt.formatted(date: .abbreviated, time: .shortened)
-        let subject = vehicleName ?? "Your Tesla"
+        let subject = vehicleName ?? FleetCopy.text("Your Tesla", "내 Tesla")
         var sentences: [String] = []
+
+        if FleetCopy.prefersKorean {
+            var lead = "\(whenText)에 \(subject)가 \(distanceText) 달렸습니다"
+            if let startAddress, let endAddress {
+                lead += ". \(startAddress)에서 \(endAddress)"
+            } else if let endAddress {
+                lead += ". 도착 \(endAddress)"
+            } else if let startAddress {
+                lead += ". 출발 \(startAddress)"
+            }
+            if let minutes = durationMinutes {
+                lead += ", \(minutes)분"
+            }
+            sentences.append(lead + ".")
+            var energy: [String] = []
+            if let start = startingBatteryPercent, let end = endingBatteryPercent {
+                energy.append("배터리 \(start)%에서 \(end)%")
+            }
+            if let used = energyUsedKWH {
+                energy.append(String(format: "%.1f kWh 사용", used))
+            }
+            if let wh = efficiencyWhPerMile {
+                energy.append(String(format: "%.0f Wh/mi", wh))
+            }
+            if !energy.isEmpty { sentences.append(energy.joined(separator: ", ") + ".") }
+            var speed: [String] = []
+            if let avg = avgSpeedMPH { speed.append("평균 \(Int(avg.rounded())) mph") }
+            if let max = maxSpeedMPH { speed.append("최고 \(Int(max.rounded())) mph") }
+            if let ap = autopilotDistanceMiles, ap > 0.05 {
+                speed.append(String(format: "오토파일럿 %.1f마일", ap))
+            }
+            if !speed.isEmpty { sentences.append(speed.joined(separator: ", ") + ".") }
+            if let tag, !tag.isEmpty { sentences.append("태그 \(tag).") }
+            return sentences.joined(separator: " ")
+        }
 
         var lead = "On \(whenText), \(subject) drove \(distanceText)"
         if let startAddress, let endAddress {
@@ -227,7 +270,7 @@ public struct DriveEntity: AppEntity, IndexedEntity, SyncableEntity, Identifiabl
         }
 
         if let tag, !tag.isEmpty {
-            sentences.append("Tagged as \(tag).")
+            sentences.append(FleetCopy.text("Tagged as \(tag).", "태그 \(tag)."))
         }
 
         return sentences.joined(separator: " ")

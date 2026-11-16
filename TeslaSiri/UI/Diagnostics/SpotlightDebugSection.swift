@@ -187,7 +187,7 @@ private struct SpotlightDebugRow: View {
 
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
-            Text(label)
+            Text(LocalizedStringKey(label))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Spacer(minLength: 12)

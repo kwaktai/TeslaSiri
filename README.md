@@ -4,7 +4,11 @@ Wattie는 Tesla 차량을 보고 제어하는 독립 SwiftUI 앱입니다. 차�
 
 이 포크는 Tessie 대신 소유자의 자체 Tesla 서버를 사용합니다. 기본 주소는 `https://t.kwakhome.com`입니다. API 키는 앱에 넣지 않고, 연결 카드에서 입력한 뒤 Keychain에 저장합니다.
 
+아이폰 언어가 한국어이면 화면과 Siri 문구가 한국어로 나옵니다. 개발 언어는 영어이고, 번역은 `Localizable.xcstrings`의 `ko`입니다. 앱 이름 Wattie와 아이콘은 그대로입니다.
+
 Wattie is an independent SwiftUI app for viewing and controlling Tesla vehicles. This fork talks to a self-hosted Tesla server instead of Tessie. The default server is `https://t.kwakhome.com`. The API key is entered in the app and stored in Keychain. It is never committed.
+
+A Korean-language iPhone shows Korean UI and Siri copy. The development language stays English; Korean lives in the `ko` entries of `Localizable.xcstrings`. The Wattie name and icon stay as they are.
 
 ## Mac에서 빌드하기
 

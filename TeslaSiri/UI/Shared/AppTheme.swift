@@ -94,9 +94,15 @@ struct RelativeTimeText: View {
             case .plain:
                 Text(date, format: Self.format)
             case .updated:
-                Text("Updated \(date, format: Self.format)")
+                Text(WattieCopy.text(
+                    "Updated \(date.formatted(Self.format))",
+                    "업데이트 \(date.formatted(Self.format))"
+                ))
             case .started:
-                Text("Started \(date, format: Self.format)")
+                Text(WattieCopy.text(
+                    "Started \(date.formatted(Self.format))",
+                    "시작 \(date.formatted(Self.format))"
+                ))
             }
         }
     }

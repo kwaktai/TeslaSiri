@@ -13,9 +13,9 @@ enum AppTab: Hashable, Identifiable, CaseIterable {
 
     var title: String {
         switch self {
-        case .dashboard: "Vehicle"
-        case .drives: "Drives"
-        case .diagnostics: "Diagnostics"
+        case .dashboard: String(localized: "Vehicle")
+        case .drives: String(localized: "Drives")
+        case .diagnostics: String(localized: "Diagnostics")
         }
     }
 

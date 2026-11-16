@@ -16,7 +16,7 @@ struct DriveMetricTile: View {
                 .background(Color.accentColor.opacity(0.11), in: Circle())
 
             VStack(alignment: .leading, spacing: 3) {
-                Text(title)
+                Text(LocalizedStringKey(title))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)

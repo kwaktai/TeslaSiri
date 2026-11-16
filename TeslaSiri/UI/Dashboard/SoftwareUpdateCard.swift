@@ -322,7 +322,7 @@ private struct SoftwareReleaseNoteDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 if let version, !version.isEmpty {
-                    Text("Version \(version)")
+                    Text(WattieCopy.text("Version \(version)", "버전 \(version)"))
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }

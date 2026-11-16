@@ -26,7 +26,7 @@ struct DiagnosticMonospacedValue: View {
     }
 
     private var titleText: some View {
-        Text(title)
+        Text(LocalizedStringKey(title))
             .font(.subheadline)
             .foregroundStyle(.secondary)
     }
@@ -47,7 +47,7 @@ struct DiagnosticGroupHeader: View {
     }
 
     var body: some View {
-        Text(title)
+        Text(LocalizedStringKey(title))
             .font(.footnote.weight(.semibold))
             .foregroundStyle(.tint)
             .padding(.top, 6)

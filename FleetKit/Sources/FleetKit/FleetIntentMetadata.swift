@@ -11,6 +11,42 @@ enum FleetIntentMetadata {
     static let myCar = "my car"
 }
 
+extension FleetCopy {
+    /// A dialog whose text is already chosen for the user's language.
+    /// `stringLiteral` displays that sentence as-is, so Korean does not depend on
+    /// format-string extraction.
+    static func dialog(_ english: String, _ korean: String) -> IntentDialog {
+        IntentDialog(LocalizedStringResource(stringLiteral: text(english, korean)))
+    }
+
+    static func verb(_ english: String) -> String {
+        let map = [
+            "Lock": "잠그기",
+            "Unlock": "잠금 해제",
+            "Open": "열기",
+            "Warm up": "예열",
+            "Stop climate in": "공조 끄기",
+            "Update": "업데이트",
+            "Cancel update on": "업데이트 취소",
+            "Flash": "라이트",
+            "Honk": "경적",
+            "Check": "확인",
+            "Show": "보기",
+            "Set": "설정",
+            "Vent": "환기",
+            "Close": "닫기",
+            "Start": "시작",
+            "Stop": "중지",
+            "Read": "읽기",
+            "Find": "찾기",
+            "Get": "조회",
+            "Install": "설치",
+            "Cancel": "취소"
+        ]
+        return text(english, map[english] ?? english)
+    }
+}
+
 /// Loads vehicles from the Fleet API for App Shortcut parameter pickers and
 /// defaults to the app’s currently selected VIN.
 public struct SelectedVehicleOptionsProvider: DynamicOptionsProvider {
@@ -39,16 +75,18 @@ public struct SelectedVehicleOptionsProvider: DynamicOptionsProvider {
 extension VehicleEntity {
     /// Siri/Shortcuts label for proactive suggestions when a vehicle is optional.
     static func predictionTitle(verb: String, vehicle: VehicleEntity?) -> LocalizedStringResource {
-        if let vehicle {
-            return LocalizedStringResource(stringLiteral: "\(verb) \(vehicle.name)")
-        }
-        return LocalizedStringResource(stringLiteral: "\(verb) \(FleetIntentMetadata.myCar)")
+        let name = vehicle?.name ?? FleetCopy.text("my car", "내 차")
+        let english = vehicle == nil ? "\(verb) my car" : "\(verb) \(name)"
+        let korean = "\(name) \(FleetCopy.verb(verb))"
+        return LocalizedStringResource(stringLiteral: FleetCopy.text(english, korean))
     }
 
     static func predictionTitle(verb: String, vehicle: VehicleEntity?, suffix: String) -> LocalizedStringResource {
-        if let vehicle {
-            return LocalizedStringResource(stringLiteral: "\(verb) \(vehicle.name) \(suffix)")
-        }
-        return LocalizedStringResource(stringLiteral: "\(verb) my car \(suffix)")
+        let name = vehicle?.name ?? FleetCopy.text("my car", "내 차")
+        let englishSuffix = suffix
+        let koreanSuffix = FleetCopy.text(suffix, FleetCopy.noun(suffix))
+        let english = vehicle == nil ? "\(verb) my car \(englishSuffix)" : "\(verb) \(name) \(englishSuffix)"
+        let korean = "\(name) \(koreanSuffix) \(FleetCopy.verb(verb))"
+        return LocalizedStringResource(stringLiteral: FleetCopy.text(english, korean))
     }
 }

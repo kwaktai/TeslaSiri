@@ -74,7 +74,9 @@ private struct PlaceChip: View {
                     Text(place.displayName)
                         .font(.subheadline.weight(.semibold))
                         .lineLimit(1)
-                    Text(place.visitCount == 1 ? "1 visit" : "\(place.visitCount) visits")
+                    Text(place.visitCount == 1
+                        ? WattieCopy.text("1 visit", "1회")
+                        : WattieCopy.text("\(place.visitCount) visits", "\(place.visitCount)회"))
                         .font(.caption)
                         .foregroundStyle(isSelected ? AnyShapeStyle(.white.opacity(0.85)) : AnyShapeStyle(.secondary))
                 }

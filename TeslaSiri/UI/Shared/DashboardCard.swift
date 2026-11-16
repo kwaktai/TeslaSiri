@@ -58,7 +58,7 @@ struct DashboardCardHeader: View {
 
     var body: some View {
         Label {
-            Text(title)
+            Text(LocalizedStringKey(title))
                 .foregroundStyle(.secondary)
         } icon: {
             Image(systemName: systemImage)
@@ -102,7 +102,11 @@ struct DashboardCardLinkLabel: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            Label(title, systemImage: systemImage)
+            Label {
+                Text(LocalizedStringKey(title))
+            } icon: {
+                Image(systemName: systemImage)
+            }
                 .foregroundStyle(.primary)
             Spacer(minLength: 8)
             if let detail {

@@ -44,14 +44,21 @@ public struct GetBatteryLevelIntent: AppIntent, PredictableIntent {
             let snapshot = try await service.snapshot(vin: resolved.vin)
             let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: resolved.name)
 
-            let battery = entity.batteryPercent.map { "\($0)%" } ?? "an unknown level"
-            let range = entity.batteryRangeMiles.map { " (\(Int($0.rounded())) mi range)" } ?? ""
+            let battery = entity.batteryPercent.map { "\($0)%" } ?? FleetCopy.text("an unknown level", "알 수 없는 잔량")
+            let miles = entity.batteryRangeMiles.map { Int($0.rounded()) }
+            let range = miles.map { " (\($0) mi range)" } ?? ""
             let charging = (snapshot.chargingState?.lowercased() == "charging") ? " and charging" : ""
             log.success("\(resolved.name) at \(battery)\(range)\(charging)")
-            return .result(
-                value: entity,
-                dialog: IntentDialog("\(resolved.name) is at \(battery)\(range)\(charging).")
+            let spoken = FleetCopy.text(
+                "\(resolved.name) is at \(battery)\(range)\(charging).",
+                {
+                    var sentence = "\(resolved.name) 배터리는 \(battery)"
+                    if let miles { sentence += ", 약 \(miles)마일" }
+                    if snapshot.chargingState?.lowercased() == "charging" { sentence += ", 충전 중" }
+                    return sentence + "입니다."
+                }()
             )
+            return .result(value: entity, dialog: IntentDialog(LocalizedStringResource(stringLiteral: spoken)))
         } catch {
             throw log.failure(error)
         }
@@ -100,12 +107,13 @@ public struct GetVehicleMileageIntent: AppIntent, PredictableIntent {
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             let snapshot = try await service.snapshot(vin: resolved.vin)
             let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: resolved.name)
-            let mileage = entity.odometerDisplay ?? "unknown mileage"
+            let mileage = entity.odometerDisplay ?? FleetCopy.text("unknown mileage", "알 수 없는 주행거리")
             log.success("\(resolved.name) odometer \(mileage)")
-            return .result(
-                value: entity,
-                dialog: IntentDialog("\(resolved.name)'s odometer is \(mileage).")
+            let spoken = FleetCopy.text(
+                "\(resolved.name)'s odometer is \(mileage).",
+                "\(resolved.name) 누적 주행거리는 \(mileage)입니다."
             )
+            return .result(value: entity, dialog: IntentDialog(LocalizedStringResource(stringLiteral: spoken)))
         } catch {
             throw log.failure(error)
         }
@@ -154,12 +162,13 @@ public struct GetTirePressureIntent: AppIntent, PredictableIntent {
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             let snapshot = try await service.snapshot(vin: resolved.vin)
             let entity = VehicleStatusEntity(snapshot: snapshot, vehicleName: resolved.name)
-            let tires = entity.tireSummary ?? "no recent tire pressure reading"
+            let tires = entity.tireSummary ?? FleetCopy.text("no recent tire pressure reading", "최근 타이어 공기압 없음")
             log.success("\(resolved.name) tires: \(tires)")
-            return .result(
-                value: entity,
-                dialog: IntentDialog("\(resolved.name)'s tire pressure: \(tires).")
+            let spoken = FleetCopy.text(
+                "\(resolved.name)'s tire pressure: \(tires).",
+                "\(resolved.name) 타이어 공기압: \(tires)."
             )
+            return .result(value: entity, dialog: IntentDialog(LocalizedStringResource(stringLiteral: spoken)))
         } catch {
             throw log.failure(error)
         }
@@ -231,7 +240,10 @@ public struct GetVehicleStatusIntent: AppIntent, PredictableIntent, SnippetInten
             log.success("status snippet for \(resolved.name)")
             return .result(
                 value: entity,
-                dialog: IntentDialog("Here's the latest on \(resolved.name)."),
+                dialog: FleetCopy.dialog(
+                    "Here's the latest on \(resolved.name).",
+                    "\(resolved.name) 최신 상태입니다."
+                ),
                 view: VehicleStatusSnippetView(status: entity, mapData: mapData)
             )
         } catch {

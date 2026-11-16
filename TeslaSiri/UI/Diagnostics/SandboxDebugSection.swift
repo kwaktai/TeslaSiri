@@ -289,7 +289,10 @@ struct SandboxDebugSection: View {
             }
 
             if commandLog.isEmpty {
-                Text("No simulated commands yet. Ask Siri to \"warm up my car\" or \"cool down my car to 68\" and the intercepted tool calls will appear here.")
+                Text(WattieCopy.text(
+                    "No simulated commands yet. Ask Siri to \"warm up my car\" or \"cool down my car to 68\" and the intercepted tool calls will appear here.",
+                    "아직 시뮬레이션된 명령이 없습니다. Siri에게 “차 따뜻하게 해 줘”라고 말하면 여기에 표시됩니다."
+                ))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -311,7 +314,7 @@ private struct SandboxStateSummaryRow: View {
     var body: some View {
         ViewThatFits(in: .horizontal) {
             HStack(alignment: .firstTextBaseline, spacing: 10) {
-                Text(label)
+                Text(LocalizedStringKey(label))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Spacer(minLength: 8)
@@ -321,7 +324,7 @@ private struct SandboxStateSummaryRow: View {
             }
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(label)
+                Text(LocalizedStringKey(label))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Text(value)

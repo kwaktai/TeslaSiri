@@ -165,9 +165,15 @@ struct DriveReplayStage: View {
                         .contentShape(.circle)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Playback speed, \(replay.speed.title)")
+                .accessibilityLabel(WattieCopy.text(
+                    "Playback speed, \(replay.speed.title)",
+                    "재생 속도, \(replay.speed.title)"
+                ))
 
-                Button(replay.isPlaying ? "Pause" : "Play", systemImage: replay.isPlaying ? "pause.fill" : "play.fill") {
+                Button(
+                    replay.isPlaying ? WattieCopy.text("Pause", "일시정지") : WattieCopy.text("Play", "재생"),
+                    systemImage: replay.isPlaying ? "pause.fill" : "play.fill"
+                ) {
                     replay.isPlaying.toggle()
                 }
                 .labelStyle(.iconOnly)
