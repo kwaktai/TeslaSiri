@@ -61,7 +61,7 @@ struct DiagnosticsView: View {
                     ProgressView()
                         .controlSize(.small)
                 } else {
-                    Label("Probe Tessie", systemImage: "network")
+                    Label("Probe Tesla server", systemImage: "network")
                 }
             }
             .disabled(diagnostics.isProbeRunning)

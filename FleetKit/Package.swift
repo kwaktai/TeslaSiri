@@ -10,8 +10,11 @@ let package = Package(
     products: [
         .library(name: "FleetKit", targets: ["FleetKit"])
     ],
+    dependencies: [
+        .package(path: "../TeslaFleetTransport")
+    ],
     targets: [
-        .target(name: "FleetKit"),
+        .target(name: "FleetKit", dependencies: ["TeslaFleetTransport"]),
         .testTarget(name: "FleetKitTests", dependencies: ["FleetKit"])
     ]
 )

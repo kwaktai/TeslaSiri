@@ -47,7 +47,7 @@ public struct StopClimateIntent: AppIntent, PredictableIntent {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             try await service.runControl(action: "auto_conditioning_stop", vin: resolved.vin, humanName: "stopping climate")
-            let summary = "Climate is turning off in \(resolved.name)."
+            let summary = FleetCopy.text("Climate is turning off in \(resolved.name).", "\(resolved.name) 공조를 끕니다.")
             let result = VehicleCommandResultEntity(vehicle: resolved, action: "auto_conditioning_stop", summary: summary)
             log.success("stopped climate in \(resolved.name)")
             return .result(
@@ -147,7 +147,10 @@ public struct SetCabinTemperatureIntent: AppIntent, PredictableIntent {
             let applied = Measurement(value: targetCelsius, unit: UnitTemperature.celsius)
                 .converted(to: temperature.unit)
                 .formatted(.measurement(width: .abbreviated, usage: .asProvided, numberFormatStyle: .number.precision(.fractionLength(0...1))))
-            let summary = "Started climate and set \(resolved.name)'s cabin to \(applied)."
+            let summary = FleetCopy.text(
+                "Started climate and set \(resolved.name)'s cabin to \(applied).",
+                "\(resolved.name) 공조를 켜고 실내 온도를 \(applied)로 맞췄습니다."
+            )
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "set_temps",
@@ -222,7 +225,9 @@ public struct SetMaxDefrostIntent: AppIntent, PredictableIntent {
                 params: ["on": .bool(on)],
                 humanName: "setting max defrost"
             )
-            let summary = on ? "Max defrost is on in \(resolved.name)." : "Max defrost is off in \(resolved.name)."
+            let summary = on
+                ? FleetCopy.text("Max defrost is on in \(resolved.name).", "\(resolved.name) 최대 성에 제거를 켰습니다.")
+                : FleetCopy.text("Max defrost is off in \(resolved.name).", "\(resolved.name) 최대 성에 제거를 껐습니다.")
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "remote_defrost",
@@ -285,7 +290,10 @@ public struct SetPetModeIntent: AppIntent, PredictableIntent {
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             if !on {
                 // Turning dog mode off remotely could leave a pet without climate.
-                try await confirmWithSafetyGate(dialog: IntentDialog("Turn off dog mode in \(resolved.name)?"))
+                try await confirmWithSafetyGate(dialog: FleetCopy.dialog(
+                    "Turn off dog mode in \(resolved.name)?",
+                    "\(resolved.name) 펫 모드를 끌까요?"
+                ))
             }
             try await service.runControl(
                 action: "set_pet_mode",
@@ -293,7 +301,9 @@ public struct SetPetModeIntent: AppIntent, PredictableIntent {
                 params: ["on": .bool(on)],
                 humanName: "setting dog mode"
             )
-            let summary = on ? "Dog mode is on in \(resolved.name)." : "Dog mode is off in \(resolved.name)."
+            let summary = on
+                ? FleetCopy.text("Dog mode is on in \(resolved.name).", "\(resolved.name) 펫 모드를 켰습니다.")
+                : FleetCopy.text("Dog mode is off in \(resolved.name).", "\(resolved.name) 펫 모드를 껐습니다.")
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "set_pet_mode",
@@ -360,7 +370,9 @@ public struct SetBioweaponModeIntent: AppIntent, PredictableIntent {
                 params: ["on": .bool(on), "manual_override": .bool(false)],
                 humanName: "setting Bioweapon Defense Mode"
             )
-            let summary = on ? "Bioweapon Defense Mode is on in \(resolved.name)." : "Bioweapon Defense Mode is off in \(resolved.name)."
+            let summary = on
+                ? FleetCopy.text("Bioweapon Defense Mode is on in \(resolved.name).", "\(resolved.name) 생화학 방어 모드를 켰습니다.")
+                : FleetCopy.text("Bioweapon Defense Mode is off in \(resolved.name).", "\(resolved.name) 생화학 방어 모드를 껐습니다.")
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "set_bioweapon_mode",

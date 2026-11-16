@@ -1,6 +1,6 @@
 ---
 name: overnight-security-check
-description: Check and secure the user's parked car or Tesla for the night or while they're away, covering locks, Sentry Mode, windows, the charge port, climate left running, and whether it's charging. Use when the user asks if my car is locked, asks for a bedtime or end-of-day car check, asks to lock up or secure my car, or asks whether my car is plugged in for the night. Not for getting the car ready to drive, which the prepare-trip skill covers.
+description: 주차된 차를 밤이나 외출 중에 확인합니다. 잠금, 감시 모드, 창문, 충전구, 켜 둔 공조, 충전 여부를 다룹니다. 차가 잠겼는지, 취침 전 점검, 잠그기, 밤에 꽂혀 있는지를 물을 때 사용합니다. 출발 준비는 prepare-trip 스킬이 담당합니다.
 ---
 
 # Overnight Security Check

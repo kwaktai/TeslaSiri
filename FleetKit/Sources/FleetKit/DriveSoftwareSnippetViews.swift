@@ -138,7 +138,7 @@ public struct DriveSnippetView: View {
                                 .foregroundStyle(.white)
 
                             if let minutes = drive.durationMinutes {
-                                Text("\(minutes) min")
+                                Text(FleetCopy.text("\(minutes) min", "\(minutes)분"))
                                     .font(.subheadline.weight(.semibold))
                                     .foregroundStyle(.white.opacity(0.88))
                             }
@@ -154,7 +154,7 @@ public struct DriveSnippetView: View {
                     if allDrives.count > 1 {
                         driveCarouselStepper
                     } else if let apPct = autopilotSharePercent {
-                        Label("\(apPct)% Autopilot", systemImage: "steeringwheel")
+                        Label(FleetCopy.text("\(apPct)% Autopilot", "오토파일럿 \(apPct)%"), systemImage: "steeringwheel")
                             .font(.caption2.weight(.semibold))
                             .foregroundStyle(.cyan)
                             .padding(.horizontal, 8)
@@ -270,7 +270,10 @@ public struct DriveSnippetView: View {
                             .font(.caption.weight(.semibold))
                         Spacer()
                         if let energy = drive.energyUsedKWH {
-                            Text(String(format: "%.1f kWh used", energy))
+                            Text(FleetCopy.text(
+                                String(format: "%.1f kWh used", energy),
+                                String(format: "%.1f kWh 사용", energy)
+                            ))
                                 .font(.caption2.weight(.medium))
                                 .foregroundStyle(.secondary)
                         }
@@ -302,12 +305,14 @@ public struct DriveSnippetView: View {
                     snippetMetricPill(icon: "leaf.fill", tint: .green, value: efficiency, label: "Efficiency")
                 }
                 if let avg = drive.avgSpeedMPH {
-                    let maxPart = drive.maxSpeedMPH.map { " • \(Int($0.rounded())) top" } ?? ""
+                    let maxPart = drive.maxSpeedMPH.map {
+                        FleetCopy.text(" • \(Int($0.rounded())) top", " · 최고 \(Int($0.rounded()))")
+                    } ?? ""
                     snippetMetricPill(
                         icon: "speedometer",
                         tint: .blue,
                         value: "\(Int(avg.rounded())) mph",
-                        label: "Avg\(maxPart)"
+                        label: FleetCopy.text("Avg\(maxPart)", "평균\(maxPart)")
                     )
                 }
                 if let ap = drive.autopilotDistanceMiles, ap > 0.05 {
@@ -333,7 +338,7 @@ public struct DriveSnippetView: View {
                     .monospacedDigit()
                     .lineLimit(1)
             }
-            Text(label)
+            Text(LocalizedStringKey(label))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
@@ -380,7 +385,10 @@ struct EmptyDriveSnippetView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("No Matching Drives")
                     .font(.subheadline.weight(.semibold))
-                Text("No completed drives matched for \(vehicleName).")
+                Text(FleetCopy.text(
+                    "No completed drives matched for \(vehicleName).",
+                    "\(vehicleName)의 완료된 주행이 없습니다."
+                ))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -416,7 +424,10 @@ public struct ReleaseNotesSnippetView: View {
             }
 
             if notes.isEmpty {
-                Text("No release notes available for version \(version).")
+                Text(FleetCopy.text(
+                    "No release notes available for version \(version).",
+                    "\(version) 릴리스 노트가 없습니다."
+                ))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             } else {
@@ -452,7 +463,10 @@ public struct ReleaseNotesSnippetView: View {
                 }
 
                 if notes.count > 4 {
-                    Text("+\(notes.count - 4) more feature update\(notes.count - 4 == 1 ? "" : "s")")
+                    Text(FleetCopy.text(
+                        "+\(notes.count - 4) more feature update\(notes.count - 4 == 1 ? "" : "s")",
+                        "기능 업데이트 \(notes.count - 4)개 더"
+                    ))
                         .font(.caption2.weight(.medium))
                         .foregroundStyle(.secondary)
                 }
@@ -476,7 +490,7 @@ public struct SoftwareSnippetView: View {
                     .font(.headline)
                 Spacer()
                 if let current = software.currentVersion {
-                    Text("Installed \(current)")
+                    Text(FleetCopy.text("Installed \(current)", "설치됨 \(current)"))
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 8)

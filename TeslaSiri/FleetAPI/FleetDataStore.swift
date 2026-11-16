@@ -359,7 +359,7 @@ final class FleetDataStore {
         let generation = sessionGeneration
         activeControlAction = action
         isRunningControl = true
-        vehicleControlMessage = "Sending command…"
+        vehicleControlMessage = WattieCopy.text("Sending command…", "명령을 보내는 중…")
         defer {
             if generation == sessionGeneration {
                 activeControlAction = nil
@@ -374,11 +374,11 @@ final class FleetDataStore {
             lastRequestID = page.requestID ?? lastRequestID
             switch FleetSandboxStore.shared.mode() {
             case .live:
-                vehicleControlMessage = "Command sent"
+                vehicleControlMessage = WattieCopy.text("Command sent", "명령을 보냈습니다")
             case .dryRun:
-                vehicleControlMessage = "Simulated (Dry-Run) — car untouched"
+                vehicleControlMessage = WattieCopy.text("Simulated (Dry-Run) — car untouched", "시뮬레이션(드라이런) — 차는 그대로입니다")
             case .demoVehicle:
-                vehicleControlMessage = "Simulated on demo car"
+                vehicleControlMessage = WattieCopy.text("Simulated on demo car", "데모 차량에서 시뮬레이션했습니다")
             }
             await refreshSelectedVehicleLive()
             return true
@@ -434,8 +434,10 @@ final class FleetDataStore {
     @discardableResult
     func installSelectedVehicleSoftwareUpdate(offsetSec: Int = 0) async -> Bool {
         await performSoftwareMutation(
-            progressMessage: "Scheduling software update.",
-            successMessage: offsetSec == 0 ? "Requested software install." : "Scheduled software install."
+            progressMessage: WattieCopy.text("Scheduling software update.", "소프트웨어 업데이트를 예약하는 중."),
+            successMessage: offsetSec == 0
+                ? WattieCopy.text("Requested software install.", "소프트웨어 설치를 요청했습니다.")
+                : WattieCopy.text("Scheduled software install.", "소프트웨어 설치를 예약했습니다.")
         ) { vin in
             try await apiClient.installSoftwareUpdate(vin: vin, offsetSec: offsetSec)
         }
@@ -444,8 +446,8 @@ final class FleetDataStore {
     @discardableResult
     func cancelSelectedVehicleSoftwareUpdate() async -> Bool {
         await performSoftwareMutation(
-            progressMessage: "Canceling software update.",
-            successMessage: "Canceled software update."
+            progressMessage: WattieCopy.text("Canceling software update.", "소프트웨어 업데이트를 취소하는 중."),
+            successMessage: WattieCopy.text("Canceled software update.", "소프트웨어 업데이트를 취소했습니다.")
         ) { vin in
             try await apiClient.cancelSoftwareUpdate(vin: vin)
         }
@@ -578,7 +580,7 @@ final class FleetDataStore {
         let generation = sessionGeneration
         isExportingRawData = true
         rawDataExportURL = nil
-        rawDataExportMessage = "Exporting raw Tessie data."
+        rawDataExportMessage = "Exporting Tesla server data."
         defer {
             if generation == sessionGeneration { isExportingRawData = false }
         }

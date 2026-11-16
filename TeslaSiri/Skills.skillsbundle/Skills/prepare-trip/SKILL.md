@@ -1,6 +1,6 @@
 ---
 name: prepare-trip
-description: Get the user's car or Tesla ready to leave, by checking range and tire pressure, warming or cooling the cabin, and sending the destination to the car's navigation. Use when the user asks to get my car ready, prep the car for a commute or road trip, warm up or cool down my car before leaving, or asks if my car is ready to drive somewhere. Not for a single command like only setting the temperature or only sending an address, and not for securing a parked car overnight.
+description: 출발 전에 주행 가능 거리와 타이어 공기압을 확인하고, 실내를 예열하거나 냉방하고, 목적지를 차 내비게이션으로 보냅니다. 차 준비, 출근이나 장거리 준비, 출발 전 예열이나 냉방, 출발해도 되는지를 물을 때 사용합니다. 온도만 바꾸거나 주소만 보내는 한 가지 명령과 밤사이 보안 점검에는 쓰지 않습니다.
 ---
 
 # Prepare a Trip

@@ -12,20 +12,29 @@ public enum FleetSandboxMode: String, Codable, CaseIterable, Identifiable, Senda
 
     public var shortTitle: String {
         switch self {
-        case .live: "Live"
-        case .dryRun: "Dry-Run"
-        case .demoVehicle: "Demo Car"
+        case .live: FleetCopy.text("Live", "실제")
+        case .dryRun: FleetCopy.text("Dry-Run", "드라이런")
+        case .demoVehicle: FleetCopy.text("Demo Car", "데모 차량")
         }
     }
 
     public var explanation: String {
         switch self {
         case .live:
-            "Reads and controls your real Tesla through Tessie."
+            FleetCopy.text(
+                "Reads and controls your Tesla through your server.",
+                "서버를 통해 Tesla를 읽고 제어합니다."
+            )
         case .dryRun:
-            "Reads your real car's live status, but intercepts and logs every Siri and app command without touching your car."
+            FleetCopy.text(
+                "Reads your car's live status, but intercepts and logs every Siri and app command without touching the car.",
+                "실시간 상태는 읽지만, Siri와 앱 명령은 차에 보내지 않고 기록만 합니다."
+            )
         case .demoVehicle:
-            "Simulates a Model Y for both the app and Siri—no Tessie sign-in needed. Commands update the demo car locally."
+            FleetCopy.text(
+                "Simulates a Model Y for both the app and Siri. Commands update the demo car on this device.",
+                "앱과 Siri용 Model Y를 시뮬레이션합니다. 명령은 이 기기의 데모 차량만 바꿉니다."
+            )
         }
     }
 
@@ -46,23 +55,35 @@ public enum FleetDemoPreset: String, Codable, CaseIterable, Identifiable, Sendab
 
     public var title: String {
         switch self {
-        case .mildCommute: "Mild Morning"
-        case .freezingMorning: "Freezing Morning"
-        case .hotCabin: "Hot Summer Cabin"
-        case .roadTripPrep: "Trip Prep (Low Battery)"
+        case .mildCommute: FleetCopy.text("Mild Morning", "선선한 아침")
+        case .freezingMorning: FleetCopy.text("Freezing Morning", "추운 아침")
+        case .hotCabin: FleetCopy.text("Hot Summer Cabin", "더운 실내")
+        case .roadTripPrep: FleetCopy.text("Trip Prep (Low Battery)", "여행 준비 (배터리 부족)")
         }
     }
 
     public var subtitle: String {
         switch self {
         case .mildCommute:
-            "66°F inside · 58°F outside · 78% battery · Update ready"
+            FleetCopy.text(
+                "66°F inside · 58°F outside · 78% battery · Update ready",
+                "실내 66°F · 실외 58°F · 배터리 78% · 업데이트 준비됨"
+            )
         case .freezingMorning:
-            "26°F inside · 22°F outside · Plugged in · Low FR tire (36.5 PSI)"
+            FleetCopy.text(
+                "26°F inside · 22°F outside · Plugged in · Low FR tire (36.5 PSI)",
+                "실내 26°F · 실외 22°F · 충전 연결 · 앞 오른쪽 타이어 낮음 (36.5 PSI)"
+            )
         case .hotCabin:
-            "104°F inside · 93°F outside · Unlocked · Driver window vented"
+            FleetCopy.text(
+                "104°F inside · 93°F outside · Unlocked · Driver window vented",
+                "실내 104°F · 실외 93°F · 잠금 해제 · 운전석 창문 열림"
+            )
         case .roadTripPrep:
-            "42% battery (132 mi) · Plugged in at 80% limit · 70°F inside"
+            FleetCopy.text(
+                "42% battery (132 mi) · Plugged in at 80% limit · 70°F inside",
+                "배터리 42% (132마일) · 한도 80%로 충전 중 · 실내 70°F"
+            )
         }
     }
 

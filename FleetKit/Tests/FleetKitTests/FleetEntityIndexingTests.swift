@@ -12,12 +12,11 @@ struct FleetEntityIndexingTests {
 
     @Test(arguments: ["battery car", "status", "missing", ""])
     func statusSearchFetchesOnlyMatchingVehicleStates(query: String) async throws {
-        let roster = #"{"results":[{"vin":"A","last_state":{"display_name":"Battery Car"}},{"vin":"B","last_state":{"display_name":"Roadrunner"}}]}"#
+        let roster = #"{"response":[{"vin":"A","display_name":"Battery Car","state":"online"},{"vin":"B","display_name":"Roadrunner","state":"online"}]}"#
         try await withIsolatedFleetService { request in
             switch request.url?.lastPathComponent {
             case "vehicles": (200, Data(roster.utf8))
-            case "state": (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
-            case "tire_pressure": (200, Data(FleetKitFixtures.tessieTiresJSON.utf8))
+            case "vehicle_data": (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
             default: (404, Data())
             }
         } body: { requests in
@@ -28,7 +27,7 @@ struct FleetEntityIndexingTests {
             }
             let matches = try await VehicleStatusEntityQuery().entities(matching: query)
             #expect(matches.map(\.vin).sorted() == expectedVINs)
-            let expectedPaths = ["/vehicles"] + expectedVINs.flatMap { ["/\($0)/state", "/\($0)/tire_pressure"] }
+            let expectedPaths = ["/api/vehicles"] + expectedVINs.map { "/api/vehicles/\($0)/vehicle_data" }
             #expect(requests().compactMap { $0.url?.path }.sorted() == expectedPaths.sorted())
         }
     }
@@ -36,7 +35,7 @@ struct FleetEntityIndexingTests {
     @Test(arguments: [false, true])
     func savedDriveLookupsSkipUnrelatedVehiclesUnlessALegacyIDIsPresent(includeLegacy: Bool) async throws {
         try await withIsolatedFleetService { request in
-            if request.url?.path == "/vehicles" {
+            if request.url?.path == "/api/vehicles" {
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
             }
             return (200, Data(#"{"results":[{"id":7,"started_at":1710000000}]}"#.utf8))
@@ -44,9 +43,8 @@ struct FleetEntityIndexingTests {
             var ids = ["VIN-2:7", "OTHER:7", "VIN-2:7"]
             if includeLegacy { ids.append("legacy-drive") }
             let matches = try await DriveEntityQuery().entities(for: ids)
-            #expect(matches.map(\.id) == ["VIN-2:7"])
-            let expectedPaths = includeLegacy ? ["/vehicles", "/VIN-1/drives", "/VIN-2/drives"] : ["/vehicles", "/VIN-2/drives"]
-            #expect(requests().compactMap { $0.url?.path } == expectedPaths)
+            #expect(matches.isEmpty)
+            #expect(requests().compactMap { $0.url?.path } == ["/api/vehicles"])
         }
     }
 

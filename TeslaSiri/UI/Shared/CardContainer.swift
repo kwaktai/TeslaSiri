@@ -24,7 +24,7 @@ struct CardContainer<Content: View>: View {
                 if let systemImage {
                     DashboardCardHeader(title: title, systemImage: systemImage, tint: .accentColor)
                 } else {
-                    Text(title)
+                    Text(LocalizedStringKey(title))
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(.secondary)
                         .accessibilityAddTraits(.isHeader)
@@ -57,7 +57,7 @@ struct StatusBadge: View {
             if let systemImage {
                 Image(systemName: systemImage)
             }
-            Text(text)
+            Text(LocalizedStringKey(text))
                 .lineLimit(1)
         }
         .font(.caption.weight(.semibold))
@@ -78,7 +78,7 @@ struct LoadingRow: View {
     var body: some View {
         HStack(spacing: 12) {
             ProgressView()
-            Text(label)
+            Text(LocalizedStringKey(label))
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

@@ -1,6 +1,6 @@
 ---
 name: software-update-advisor
-description: Explain the user's car or Tesla software update status and what's new, read the release notes aloud, and install or cancel an update when the user asks. Use when the user asks if my car has an update, what's new in the car update or the current version, to read the release notes, whether now is a good time to update my car, or to install or cancel a car software update.
+description: 소프트웨어 업데이트 상태와 새로운 내용을 설명하고, 릴리즈 노트를 읽어 주며, 요청하면 설치하거나 취소합니다. 업데이트가 있는지, 새 기능, 릴리즈 노트, 지금 업데이트해도 되는지, 설치나 취소를 물을 때 사용합니다.
 ---
 
 # Software Update Advisor

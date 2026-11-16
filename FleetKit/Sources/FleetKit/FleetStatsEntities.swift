@@ -22,21 +22,21 @@ public enum StatsPeriod: String, AppEnum, Sendable {
 
     public var displayTitle: String {
         switch self {
-        case .sinceLastCharge: "Since Last Charge"
-        case .today: "Today"
-        case .last7Days: "Last 7 Days"
-        case .last30Days: "Last 30 Days"
-        case .last90Days: "Last 90 Days"
+        case .sinceLastCharge: FleetCopy.text("Since Last Charge", "마지막 충전 이후")
+        case .today: FleetCopy.text("Today", "오늘")
+        case .last7Days: FleetCopy.text("Last 7 Days", "최근 7일")
+        case .last30Days: FleetCopy.text("Last 30 Days", "최근 30일")
+        case .last90Days: FleetCopy.text("Last 90 Days", "최근 90일")
         }
     }
 
     public var spokenLabel: String {
         switch self {
-        case .sinceLastCharge: "since the last charge"
-        case .today: "today"
-        case .last7Days: "over the last 7 days"
-        case .last30Days: "over the last 30 days"
-        case .last90Days: "over the last 90 days"
+        case .sinceLastCharge: FleetCopy.text("since the last charge", "마지막 충전 이후")
+        case .today: FleetCopy.text("today", "오늘")
+        case .last7Days: FleetCopy.text("over the last 7 days", "최근 7일")
+        case .last30Days: FleetCopy.text("over the last 30 days", "최근 30일")
+        case .last90Days: FleetCopy.text("over the last 90 days", "최근 90일")
         }
     }
 
@@ -195,6 +195,15 @@ public struct DrivingStatsEntity: TransientAppEntity {
     }
 
     public func spokenSummary(period: StatsPeriod) -> String {
+        if FleetCopy.prefersKorean {
+            if driveCount == 0 && totalDistanceMiles < 0.05 {
+                if let idle = idleEnergySinceChargeKWH, idle > 0.05 {
+                    return "\(vehicleName)은(는) \(period.spokenLabel) 기록된 주행이 없고, 주차 중 \(String(format: "%.1f", idle)) kWh를 썼습니다."
+                }
+                return "\(vehicleName)은(는) \(period.spokenLabel) 기록된 주행이 없습니다."
+            }
+            return "\(vehicleName) \(period.spokenLabel): 주행 \(driveCount)회, \(String(format: "%.1f", totalDistanceMiles))마일, \(totalDurationMinutes)분, \(String(format: "%.1f", totalEnergyUsedKWH)) kWh."
+        }
         if driveCount == 0 && totalDistanceMiles < 0.05 {
             if let idle = idleEnergySinceChargeKWH, idle > 0.05 {
                 return String(
@@ -406,6 +415,28 @@ public struct ChargeSessionEntity: AppEntity, IndexedEntity, SyncableEntity, Ide
 
     public func spokenSummary(vehicleName: String? = nil) -> String {
         let whenText = startedAt.formatted(date: .abbreviated, time: .shortened)
+        if FleetCopy.prefersKorean {
+            let subject = vehicleName ?? "내 Tesla"
+            let place = location.map { " \($0)에서" } ?? ""
+            let kind = isSupercharger ? "슈퍼차저로 충전했습니다" : "충전했습니다"
+            var sentence = "\(whenText)에 \(subject)가\(place) \(kind)"
+            if let start = startingBatteryPercent, let end = endingBatteryPercent {
+                sentence += ", \(start)%에서 \(end)%"
+            }
+            if let kwh = energyAddedKWH {
+                sentence += String(format: ", %.1f kWh", kwh)
+            }
+            if let miles = milesAdded, miles > 0 {
+                sentence += String(format: " (약 %.0f마일)", miles)
+            }
+            if let minutes = durationMinutes, minutes > 0 {
+                sentence += ", \(minutes)분"
+            }
+            if let cost, cost > 0 {
+                sentence += String(format: ", $%.2f", cost)
+            }
+            return sentence + "."
+        }
         let charger = isSupercharger ? "Supercharged" : "charged"
         let place = location.map { " at \($0)" } ?? ""
         let subject = vehicleName ?? "Your Tesla"
@@ -443,7 +474,12 @@ public struct ChargeSessionEntityQuery: EntityQuery, EntityStringQuery, IndexedE
         // Only query the vehicles the identifiers belong to ("<VIN>:<id>").
         let requestedVINs = Set(identifiers.compactMap { $0.split(separator: ":").first.map(String.init) })
         for vehicle in vehicles where !remaining.isEmpty && (requestedVINs.isEmpty || requestedVINs.contains(vehicle.vin)) {
-            let charges = try await service.charges(vin: vehicle.vin, limit: 200)
+            let charges: [FleetChargeInfo]
+            do {
+                charges = try await service.charges(vin: vehicle.vin, limit: 200)
+            } catch let error as FleetKitError where error.isUnavailableFeature {
+                continue
+            }
             for charge in charges where remaining.contains(charge.sessionID) {
                 found.append(ChargeSessionEntity(info: charge))
                 remaining.remove(charge.sessionID)
@@ -458,8 +494,12 @@ public struct ChargeSessionEntityQuery: EntityQuery, EntityStringQuery, IndexedE
         let service = FleetIntentService.make()
         var all: [ChargeSessionEntity] = []
         for vehicle in try await service.vehicles() {
-            let charges = try await service.charges(vin: vehicle.vin, limit: 50).map(ChargeSessionEntity.init(info:))
-            all.append(contentsOf: charges)
+            do {
+                let charges = try await service.charges(vin: vehicle.vin, limit: 50).map(ChargeSessionEntity.init(info:))
+                all.append(contentsOf: charges)
+            } catch let error as FleetKitError where error.isUnavailableFeature {
+                continue
+            }
         }
         guard !query.isEmpty else { return Array(all.prefix(10)) }
         return all.filter { session in
@@ -472,7 +512,11 @@ public struct ChargeSessionEntityQuery: EntityQuery, EntityStringQuery, IndexedE
     public func suggestedEntities() async throws -> [ChargeSessionEntity] {
         let service = FleetIntentService.make()
         let vehicle = try await service.resolvedVehicle(nil)
-        return try await service.charges(vin: vehicle.vin, limit: 10).map(ChargeSessionEntity.init(info:))
+        do {
+            return try await service.charges(vin: vehicle.vin, limit: 10).map(ChargeSessionEntity.init(info:))
+        } catch let error as FleetKitError where error.isUnavailableFeature {
+            return []
+        }
     }
 
     public func reindexEntities(for identifiers: [ChargeSessionEntity.ID], indexDescription: CSSearchableIndexDescription) async throws {
@@ -483,7 +527,11 @@ public struct ChargeSessionEntityQuery: EntityQuery, EntityStringQuery, IndexedE
         let service = FleetIntentService.make()
         var all: [ChargeSessionEntity] = []
         for vehicle in try await service.vehicles() {
-            all.append(contentsOf: try await service.charges(vin: vehicle.vin, limit: FleetSpotlightIndexer.chargesPerVehicle).map(ChargeSessionEntity.init(info:)))
+            do {
+                all.append(contentsOf: try await service.charges(vin: vehicle.vin, limit: FleetSpotlightIndexer.chargesPerVehicle).map(ChargeSessionEntity.init(info:)))
+            } catch let error as FleetKitError where error.isUnavailableFeature {
+                continue
+            }
         }
         try await FleetSpotlightIndexer.donate(all)
     }
@@ -579,6 +627,19 @@ public struct ChargingStatsEntity: TransientAppEntity {
     }
 
     public func spokenSummary(period: StatsPeriod) -> String {
+        if FleetCopy.prefersKorean {
+            if sessionCount == 0 {
+                return "\(vehicleName)은(는) \(period.spokenLabel) 기록된 충전이 없습니다."
+            }
+            var sentence = "\(vehicleName) \(period.spokenLabel): 충전 \(sessionCount)회, \(String(format: "%.1f", totalEnergyAddedKWH)) kWh, 약 \(String(format: "%.0f", totalMilesAdded))마일."
+            if superchargerCount > 0 {
+                sentence += " 슈퍼차저 \(superchargerCount)회."
+            }
+            if totalCost > 0 {
+                sentence += String(format: " 요금 $%.2f.", totalCost)
+            }
+            return sentence
+        }
         if sessionCount == 0 {
             return "\(vehicleName) has no recorded charging sessions \(period.spokenLabel)."
         }
@@ -716,6 +777,26 @@ public struct BatteryHealthEntity: TransientAppEntity {
     }
 
     public var spokenSummary: String {
+        if FleetCopy.prefersKorean {
+            var sentences: [String] = []
+            if let health = healthPercent {
+                if let deg = degradationPercent {
+                    sentences.append("\(vehicleName) 배터리 건강은 \(String(format: "%.1f", health))%이고, 추정 노화는 \(String(format: "%.1f", deg))%입니다.")
+                } else {
+                    sentences.append("\(vehicleName) 배터리 건강은 \(String(format: "%.1f", health))%입니다.")
+                }
+            }
+            if let cap = usableCapacityKWH {
+                sentences.append(String(format: "사용 가능 용량 %.1f kWh.", cap))
+            }
+            if let maxRange = maxRangeMiles {
+                sentences.append(String(format: "완충 시 약 %.0f마일.", maxRange))
+            }
+            if sentences.isEmpty {
+                return "\(vehicleName) 배터리 건강 데이터가 아직 없습니다."
+            }
+            return sentences.joined(separator: " ")
+        }
         var sentences: [String] = []
         if let health = healthPercent {
             if let deg = degradationPercent {

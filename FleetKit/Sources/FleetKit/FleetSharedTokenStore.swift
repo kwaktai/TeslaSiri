@@ -1,5 +1,6 @@
 import Foundation
 import Security
+import TeslaFleetTransport
 
 /// Reads and writes the small amount of state shared between the app and the
 /// App Intents extension.
@@ -8,8 +9,9 @@ import Security
 /// `keychain-access-groups` entitlement). The selected VIN is stored in the App
 /// Group's `UserDefaults` because it is not secret.
 ///
-/// The app is the source of truth and mirrors the Tessie access token here so
-/// the extension can authenticate.
+/// The app is the source of truth and mirrors the Tesla server API key here so
+/// the extension can authenticate. The server URL is not secret and lives in the
+/// App Group defaults.
 public struct FleetSharedTokenStore: Sendable {
     public static let shared = FleetSharedTokenStore()
 
@@ -52,6 +54,18 @@ public struct FleetSharedTokenStore: Sendable {
     public func clearAccessToken() {
         try? SharedAccessTokenKeychain.delete()
         defaults?.removeObject(forKey: FleetKitConfig.accessTokenDefaultsKey)
+    }
+
+    public func serverBaseURL() -> URL {
+        if let raw = defaults?.string(forKey: FleetKitConfig.serverBaseURLDefaultsKey),
+           let url = TeslaFleetAPI.normalizedBaseURL(from: raw) {
+            return url
+        }
+        return FleetKitConfig.defaultBaseURL
+    }
+
+    public func save(serverBaseURL url: URL) {
+        defaults?.set(url.absoluteString, forKey: FleetKitConfig.serverBaseURLDefaultsKey)
     }
 
     public func selectedVIN() -> String? {

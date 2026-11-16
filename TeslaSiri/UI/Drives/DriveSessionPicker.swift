@@ -12,7 +12,7 @@ struct DriveSessionPicker: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(title)
+            Text(LocalizedStringKey(title))
                 .font(.headline)
                 .accessibilityAddTraits(.isHeader)
 

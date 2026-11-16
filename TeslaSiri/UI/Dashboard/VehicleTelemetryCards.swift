@@ -82,7 +82,7 @@ struct VehicleLiveDriveCard: View {
             Text(value)
                 .font(.subheadline.weight(.semibold))
                 .monospacedDigit()
-            Text(caption)
+            Text(LocalizedStringKey(caption))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -183,7 +183,7 @@ struct VehicleBatteryCard: View {
             Text(value)
                 .font(.subheadline.weight(.semibold))
                 .monospacedDigit()
-            Text(caption)
+            Text(LocalizedStringKey(caption))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -254,7 +254,10 @@ private struct BatteryLevelBar: View {
             if let limit {
                 GeometryReader { proxy in
                     let x = proxy.size.width * max(0, min(limit, 1))
-                    Text("Limit \(formattedNumber(limit * 100, fractionLength: 0, suffix: "%"))")
+                    Text(WattieCopy.text(
+                        "Limit \(formattedNumber(limit * 100, fractionLength: 0, suffix: "%"))",
+                        "한도 \(formattedNumber(limit * 100, fractionLength: 0, suffix: "%"))"
+                    ))
                         .font(.caption2.weight(.medium))
                         .foregroundStyle(.secondary)
                         .fixedSize()
@@ -281,10 +284,23 @@ private struct ChargingHistoryView: View {
     let sessions: [FleetChargeSession]
 
     var body: some View {
-        List(sessions) { session in
-            ChargeHistoryRow(session: session)
+        Group {
+            if sessions.isEmpty {
+                ContentUnavailableView(
+                    "No charging history",
+                    systemImage: "bolt.car",
+                    description: Text(WattieCopy.text(
+                        "This Tesla server does not keep past charging sessions. An active charge still appears here.",
+                        "이 Tesla 서버는 지난 충전 기록을 보관하지 않습니다. 진행 중인 충전만 여기에 나옵니다."
+                    ))
+                )
+            } else {
+                List(sessions) { session in
+                    ChargeHistoryRow(session: session)
+                }
+                .listStyle(.insetGrouped)
+            }
         }
-        .listStyle(.insetGrouped)
         .navigationTitle("Charging History")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -568,6 +584,18 @@ struct VehicleTiresCard: View {
         }
     }
 
+    private static func tirePositionTitle(_ position: String) -> String {
+        let korean: String
+        switch position {
+        case "Front left": korean = "앞 왼쪽"
+        case "Rear left": korean = "뒤 왼쪽"
+        case "Front right": korean = "앞 오른쪽"
+        case "Rear right": korean = "뒤 오른쪽"
+        default: korean = position
+        }
+        return WattieCopy.text(position, korean)
+    }
+
     private func tireReading(_ psi: Double?, position: String, alignment: HorizontalAlignment) -> some View {
         VStack(alignment: alignment, spacing: 0) {
             MetricValueText(
@@ -576,12 +604,12 @@ struct VehicleTiresCard: View {
                 font: .system(.title2, design: .rounded, weight: .semibold),
                 unitFont: .caption.weight(.semibold)
             )
-            Text(position)
+            Text(Self.tirePositionTitle(position))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(position) tire")
+        .accessibilityLabel(WattieCopy.text("\(position) tire", "\(Self.tirePositionTitle(position)) 타이어"))
         .accessibilityValue(formattedNumber(psi, fractionLength: 1, suffix: " psi"))
     }
 }

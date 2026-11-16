@@ -90,20 +90,22 @@ enum VehicleControlCommand: Hashable, Identifiable {
     }
 
     func confirmationMessage(vehicleName: String) -> LocalizedStringResource {
+        let message: String
         switch self {
         case .lock(shouldLock: false):
-            "Unlock \(vehicleName)?"
+            message = WattieCopy.text("Unlock \(vehicleName)?", "\(vehicleName) 잠금을 해제할까요?")
         case .trunk(let isFront):
-            isFront
-                ? "Open the front trunk on \(vehicleName)?"
-                : "Open the rear trunk on \(vehicleName)?"
+            message = isFront
+                ? WattieCopy.text("Open the front trunk on \(vehicleName)?", "\(vehicleName) 프렁크를 열까요?")
+                : WattieCopy.text("Open the rear trunk on \(vehicleName)?", "\(vehicleName) 트렁크를 열까요?")
         case .chargePort(let open):
-            open
-                ? "Open the charge port on \(vehicleName)?"
-                : "Close the charge port on \(vehicleName)?"
+            message = open
+                ? WattieCopy.text("Open the charge port on \(vehicleName)?", "\(vehicleName) 충전구를 열까요?")
+                : WattieCopy.text("Close the charge port on \(vehicleName)?", "\(vehicleName) 충전구를 닫을까요?")
         default:
-            "Send this command to \(vehicleName)?"
+            message = WattieCopy.text("Send this command to \(vehicleName)?", "\(vehicleName)에 이 명령을 보낼까요?")
         }
+        return LocalizedStringResource(stringLiteral: message)
     }
 }
 struct VehicleControlDashboard: View {
@@ -522,7 +524,7 @@ private struct QuickActionLabel: View {
             }
             .frame(height: 26)
 
-            Text(title)
+            Text(LocalizedStringKey(title))
                 .font(.caption.weight(.semibold))
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
@@ -592,22 +594,33 @@ extension FleetLatestSnapshot {
         var parts: [String] = []
         if isActivelyCharging {
             if let power = chargerPowerKW, power > 0 {
-                parts.append("Charging at \(formattedNumber(power, fractionLength: 1, suffix: " kW"))")
+                let powerText = formattedNumber(power, fractionLength: 1, suffix: " kW")
+                parts.append(WattieCopy.text("Charging at \(powerText)", "\(powerText)로 충전 중"))
             } else {
-                parts.append("Charging")
+                parts.append(WattieCopy.text("Charging", "충전 중"))
             }
         } else if let speed, speed > 0 {
-            parts.append("Driving \(formattedNumber(speed, fractionLength: 0, suffix: " mph"))")
+            let speedText = formattedNumber(speed, fractionLength: 0, suffix: " mph")
+            parts.append(WattieCopy.text("Driving \(speedText)", "주행 중 \(speedText)"))
+        } else if let gear, ["asleep", "offline", "suspended"].contains(gear.lowercased()) {
+            switch gear.lowercased() {
+            case "offline":
+                return WattieCopy.text("Offline", "오프라인")
+            case "suspended":
+                return WattieCopy.text("Suspended", "일시 중지")
+            default:
+                return WattieCopy.text("Asleep", "절전")
+            }
         } else if let gear, !gear.isEmpty, gear != "P" {
-            parts.append("In \(gear)")
+            parts.append(gear)
         } else {
-            parts.append("Parked")
+            parts.append(WattieCopy.text("Parked", "주차"))
         }
         if let locked {
-            parts.append(locked ? "Locked" : "Unlocked")
+            parts.append(locked ? WattieCopy.text("Locked", "잠김") : WattieCopy.text("Unlocked", "잠금 해제"))
         }
         if sentryMode == true {
-            parts.append("Sentry On")
+            parts.append(WattieCopy.text("Sentry On", "감시 모드"))
         }
         return parts.joined(separator: " · ")
     }
@@ -645,7 +658,14 @@ private struct VehicleUnavailableStage: View {
             VehicleHeroArtwork(vehicleName: vehicleName, vin: "", stageAspectRatio: compact ? 2.15 : 1.9)
                 .opacity(0.6)
 
-            Label("Waiting for \(vehicleName) to report in…", systemImage: "antenna.radiowaves.left.and.right")
+            Label {
+                Text(WattieCopy.text(
+                    "Waiting for \(vehicleName) to report in…",
+                    "\(vehicleName) 상태를 기다리는 중…"
+                ))
+            } icon: {
+                Image(systemName: "antenna.radiowaves.left.and.right")
+            }
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 16)

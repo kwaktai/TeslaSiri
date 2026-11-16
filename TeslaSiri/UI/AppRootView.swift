@@ -2,6 +2,7 @@ import AppIntents
 import FleetKit
 import Foundation
 import SwiftUI
+import TeslaFleetTransport
 
 enum AppTab: Hashable, Identifiable, CaseIterable {
     case dashboard
@@ -12,9 +13,9 @@ enum AppTab: Hashable, Identifiable, CaseIterable {
 
     var title: String {
         switch self {
-        case .dashboard: "Vehicle"
-        case .drives: "Drives"
-        case .diagnostics: "Diagnostics"
+        case .dashboard: String(localized: "Vehicle")
+        case .drives: String(localized: "Drives")
+        case .diagnostics: String(localized: "Diagnostics")
         }
     }
 
@@ -168,8 +169,8 @@ struct AppRootView: View {
                 isSignedIn: diagnostics.isSignedIn,
                 isAuthenticating: isAuthenticating,
                 sandboxMode: sandboxMode,
-                onSignIn: { token in
-                    Task { await signIn(accessToken: token) }
+                onSignIn: { serverURL, apiKey in
+                    Task { await signIn(serverURL: serverURL, apiKey: apiKey) }
                 },
                 onReload: {
                     await reloadFleet()
@@ -253,16 +254,26 @@ struct AppRootView: View {
 
     // MARK: - Actions
 
-    private func signIn(accessToken: String) async {
+    private func signIn(serverURL: String, apiKey: String) async {
         isAuthenticating = true
         defer { isAuthenticating = false }
 
         do {
-            let validationClient = FleetAPIClient(accessTokenProvider: StaticFleetAccessTokenProvider(token: accessToken))
+            guard let url = TeslaFleetAPI.normalizedBaseURL(from: serverURL) else {
+                throw FleetAPIError.invalidURL(serverURL)
+            }
+            var configuration = FleetAPIClient.Configuration.production
+            configuration.baseURL = url
+            configuration.pinsBaseURL = true
+            let validationClient = FleetAPIClient(
+                configuration: configuration,
+                accessTokenProvider: StaticFleetAccessTokenProvider(token: apiKey)
+            )
             let bootstrap = try await validationClient.bootstrap()
-            try tokenStore.saveAccessToken(accessToken)
+            FleetSharedTokenStore.shared.save(serverBaseURL: url)
+            try tokenStore.saveAccessToken(apiKey)
             await store.reset(clearCache: true)
-            diagnostics.probeMessage = "Connected to Tessie. Loading \(bootstrap.data.vehicles.count) vehicle(s)."
+            diagnostics.probeMessage = "Connected. Loading \(bootstrap.data.vehicles.count) vehicle(s)."
             refreshDiagnostics()
             await store.loadInitialData(validatedBootstrap: bootstrap)
             await FleetTokenBridge.sync(store: store)
@@ -375,7 +386,7 @@ struct AppRootView: View {
 
     private func runBackendProbe() async {
         diagnostics.isProbeRunning = true
-        diagnostics.probeMessage = "Checking Tessie API access."
+        diagnostics.probeMessage = "Checking Tesla server access."
         defer {
             diagnostics.isProbeRunning = false
             refreshDiagnostics()
@@ -406,7 +417,7 @@ struct AppRootView: View {
                 try? await FleetSpotlightIndexer.deleteAllIndexedEntities()
                 store.stopPolling()
             }
-            diagnostics.probeMessage = "Disconnected Tessie and cleared cached fleet data."
+            diagnostics.probeMessage = "Disconnected the Tesla server and cleared cached fleet data."
             refreshSandboxSnapshot()
             refreshDiagnostics()
         } catch {
@@ -430,9 +441,9 @@ struct AppRootView: View {
             diagnostics.tokenExpiresAt = nil
 
             if token != nil {
-                diagnostics.tokenAudience = ["https://api.tessie.com"]
-                diagnostics.tokenFormat = "Tessie access token"
-                diagnostics.tokenIssuer = "Tessie Developer Settings"
+                diagnostics.tokenAudience = [FleetSharedTokenStore.shared.serverBaseURL().absoluteString]
+                diagnostics.tokenFormat = "Tesla server API key"
+                diagnostics.tokenIssuer = "Self-hosted Tesla server"
                 diagnostics.tokenScopes = TessieModelAdapter.capabilities.scopes
             } else {
                 diagnostics.clearTokenInspection()
@@ -453,7 +464,7 @@ struct AppRootView: View {
     }
 
     private func backendProbeMessage(vehicleCount: Int, requestID: String?) -> String {
-        var message = "Tessie API OK. Vehicles: \(vehicleCount)."
+        var message = "Tesla server OK. Vehicles: \(vehicleCount)."
         if let requestID {
             message += " Request ID: \(requestID)."
         }

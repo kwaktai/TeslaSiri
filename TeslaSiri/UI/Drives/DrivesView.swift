@@ -92,7 +92,10 @@ struct DrivesView: View {
             }
             .keyboardShortcut(.defaultAction)
         } message: { place in
-            Text("Leave the nickname blank to use “\(place.name)”.")
+            Text(WattieCopy.text(
+                "Leave the nickname blank to use “\(place.name)”.",
+                "별명을 비우면 “\(place.name)”을(를) 사용합니다."
+            ))
         }
         .alert("Couldn’t Save Nickname", item: $nicknameSaveError) { _ in
             Button("OK", role: .cancel) {}
@@ -309,11 +312,14 @@ private struct DrivesPostureContainer: View {
                     } else {
                         CardContainer(title: "Drives", systemImage: "map.fill") {
                             ContentUnavailableView(
-                                drivesTitle == "Recent drives" ? "No drives" : "No matching drives",
+                                LocalizedStringKey(drivesTitle == "Recent drives" ? "No drives" : "No matching drives"),
                                 systemImage: "map",
                                 description: Text(drivesTitle == "Recent drives"
-                                    ? "Recent drive sessions were not returned for this vehicle."
-                                    : "Try another place or search.")
+                                    ? WattieCopy.text(
+                                        "This Tesla server does not provide drive history. Demo Car mode still has sample drives.",
+                                        "이 Tesla 서버는 과거 주행 기록을 제공하지 않습니다. 데모 차량에는 샘플 주행이 있습니다."
+                                    )
+                                    : WattieCopy.text("Try another place or search.", "다른 장소나 검색을 시도하세요."))
                             )
                             .frame(maxWidth: .infinity)
                         }

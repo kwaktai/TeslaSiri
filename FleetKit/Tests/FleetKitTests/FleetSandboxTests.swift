@@ -124,7 +124,7 @@ private func withSandboxTestContext<R>(
 struct FleetSandboxTests {
     @Test func `SetCabinTemperatureIntent starts climate before setting cabin temperature`() async throws {
         try await withSandboxTestContext(mode: .live, responder: { request in
-            if request.url?.path == "/vehicles" {
+            if request.url?.path == "/api/vehicles" {
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
             }
             return (200, FleetKitFixtures.commandResponse(result: true))
@@ -140,7 +140,10 @@ struct FleetSandboxTests {
             let commandPaths = requests()
                 .compactMap { $0.url?.path }
                 .filter { $0.contains("/command/") }
-            #expect(commandPaths == ["/VIN-1/command/start_climate", "/VIN-1/command/set_temperatures"])
+            #expect(commandPaths == [
+                "/api/vehicles/VIN-1/command/auto_conditioning_start",
+                "/api/vehicles/VIN-1/command/set_temps"
+            ])
             #expect(sandbox.commandLog().isEmpty)
         }
     }
@@ -159,9 +162,9 @@ struct FleetSandboxTests {
 
         try await withSandboxTestContext(mode: .dryRun, responder: { request in
             switch request.url?.path {
-            case "/vehicles":
+            case "/api/vehicles":
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
-            case "/VIN-1/state":
+            case "/api/vehicles/VIN-1/vehicle_data":
                 return (200, Data(stateJSON.utf8))
             case "/VIN-1/tire_pressure":
                 return (200, Data(FleetKitFixtures.tessieTiresJSON.utf8))
@@ -182,7 +185,7 @@ struct FleetSandboxTests {
             #expect(lockResult.succeeded == true)
 
             let paths = requests().compactMap { $0.url?.path }
-            #expect(paths.contains("/VIN-1/state"))
+            #expect(paths.contains("/api/vehicles/VIN-1/vehicle_data"))
             #expect(paths.allSatisfy { !$0.contains("/command/") })
 
             let log = sandbox.commandLog()

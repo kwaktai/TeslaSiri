@@ -25,7 +25,10 @@ public struct DrivingStatsSnippetView: View {
                 Text(String(format: "%.1f mi", stats.totalDistanceMiles))
                     .font(.system(size: 32, weight: .bold, design: .rounded))
                     .monospacedDigit()
-                Text("across \(stats.driveCount) drive\(stats.driveCount == 1 ? "" : "s")")
+                Text(FleetCopy.text(
+                    "across \(stats.driveCount) drive\(stats.driveCount == 1 ? "" : "s")",
+                    "주행 \(stats.driveCount)건"
+                ))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -81,7 +84,11 @@ public struct DrivingStatsSnippetView: View {
 
     private func statPill(icon: String, label: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Label(label, systemImage: icon)
+            Label {
+                Text(LocalizedStringKey(label))
+            } icon: {
+                Image(systemName: icon)
+            }
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
@@ -144,10 +151,16 @@ public struct ChargingStatsSnippetView: View {
                 let scFraction = min(max(Double(stats.superchargerCount) / Double(stats.sessionCount), 0), 1)
                 VStack(alignment: .leading, spacing: 5) {
                     HStack {
-                        Text("\(stats.superchargerCount) Supercharger")
+                        Text(FleetCopy.text(
+                            "\(stats.superchargerCount) Supercharger",
+                            "슈퍼차저 \(stats.superchargerCount)"
+                        ))
                             .foregroundStyle(.red)
                         Spacer()
-                        Text("\(max(0, stats.sessionCount - stats.superchargerCount)) Home / AC")
+                        Text(FleetCopy.text(
+                            "\(max(0, stats.sessionCount - stats.superchargerCount)) Home / AC",
+                            "집·완속 \(max(0, stats.sessionCount - stats.superchargerCount))"
+                        ))
                             .foregroundStyle(.green)
                     }
                     .font(.caption2.weight(.semibold))
@@ -191,7 +204,11 @@ public struct ChargingStatsSnippetView: View {
 
     private func miniTile(icon: String, label: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Label(label, systemImage: icon)
+            Label {
+                Text(LocalizedStringKey(label))
+            } icon: {
+                Image(systemName: icon)
+            }
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
@@ -231,7 +248,10 @@ public struct BatteryHealthSnippetView: View {
                             .foregroundStyle(.secondary)
                         Spacer()
                         if let deg = battery.degradationPercent {
-                            Text(String(format: "-%.1f%% deg", deg))
+                            Text(FleetCopy.text(
+                                String(format: "-%.1f%% deg", deg),
+                                String(format: "-%.1f%% 감소", deg)
+                            ))
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.secondary)
                                 .monospacedDigit()
@@ -252,7 +272,10 @@ public struct BatteryHealthSnippetView: View {
                 .padding(10)
                 .background(.quaternary.opacity(0.48), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             } else if let remaining = battery.energyRemainingKWH {
-                Text(String(format: "%.1f kWh Remaining", remaining))
+                Text(FleetCopy.text(
+                    String(format: "%.1f kWh Remaining", remaining),
+                    String(format: "잔량 %.1f kWh", remaining)
+                ))
                     .font(.title3.weight(.bold))
                     .monospacedDigit()
             }
@@ -291,7 +314,11 @@ public struct BatteryHealthSnippetView: View {
 
     private func packTile(icon: String, label: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Label(label, systemImage: icon)
+            Label {
+                Text(LocalizedStringKey(label))
+            } icon: {
+                Image(systemName: icon)
+            }
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)

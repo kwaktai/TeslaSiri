@@ -1,6 +1,6 @@
 ---
 name: driving-and-energy-insights
-description: Answer questions about the user's past car or Tesla drives and charging sessions, and their driving efficiency, charging costs, and battery health. Use when the user asks where or when they drove their car, how far or how efficiently they drove, to list or look up past trips or charges, what charging my car cost, how much energy they added at a Supercharger or at home, or about battery degradation or phantom drain. Not for live readings like the current battery level or tire pressure, and not for controlling the car.
+description: 지난 주행과 충전, 전비, 충전 요금, 배터리 건강에 답합니다. 언제 어디로 얼마나 달렸는지, 과거 주행이나 충전을 찾거나, 충전 비용, 슈퍼차저나 집 충전량, 배터리 노화나 대기 방전을 물을 때 사용합니다. 현재 배터리나 타이어 공기압 같은 실시간 값과 차량 제어에는 쓰지 않습니다.
 ---
 
 # Drive, Charging, and Battery Insights

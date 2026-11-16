@@ -47,7 +47,7 @@ public struct LockVehicleIntent: AppIntent, PredictableIntent {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             try await service.runControl(action: "door_lock", vin: resolved.vin, humanName: "locking")
-            let summary = "Locked \(resolved.name)."
+            let summary = FleetCopy.text("Locked \(resolved.name).", "\(resolved.name) 잠갔습니다.")
             let result = VehicleCommandResultEntity(vehicle: resolved, action: "door_lock", summary: summary)
             log.success("locked \(resolved.name)")
             return .result(value: result, dialog: IntentDialog("\(summary)"))
@@ -96,9 +96,12 @@ public struct UnlockVehicleIntent: AppIntent, PredictableIntent {
         do {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
-            try await confirmWithSafetyGate(dialog: IntentDialog("Unlock \(resolved.name)?"))
+            try await confirmWithSafetyGate(dialog: FleetCopy.dialog(
+                "Unlock \(resolved.name)?",
+                "\(resolved.name) 잠금을 해제할까요?"
+            ))
             try await service.runControl(action: "door_unlock", vin: resolved.vin, humanName: "unlocking")
-            let summary = "Unlocked \(resolved.name)."
+            let summary = FleetCopy.text("Unlocked \(resolved.name).", "\(resolved.name) 잠금을 해제했습니다.")
             let result = VehicleCommandResultEntity(vehicle: resolved, action: "door_unlock", summary: summary)
             log.success("unlocked \(resolved.name)")
             return .result(value: result, dialog: IntentDialog("\(summary)"))
@@ -152,7 +155,7 @@ public struct StartClimateIntent: AppIntent, PredictableIntent {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             try await service.runControl(action: "auto_conditioning_start", vin: resolved.vin, humanName: "starting climate")
-            let summary = "Climate is starting in \(resolved.name)."
+            let summary = FleetCopy.text("Climate is starting in \(resolved.name).", "\(resolved.name) 공조를 켭니다.")
             let result = VehicleCommandResultEntity(vehicle: resolved, action: "auto_conditioning_start", summary: summary)
             log.success("started climate in \(resolved.name)")
             return .result(
@@ -214,7 +217,7 @@ public struct VentWindowsIntent: AppIntent, PredictableIntent {
                 params: ["command": .string("vent")],
                 humanName: "venting the windows"
             )
-            let summary = "Venting \(resolved.name)'s windows."
+            let summary = FleetCopy.text("Venting \(resolved.name)'s windows.", "\(resolved.name) 창문을 환기합니다.")
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "window_control",
@@ -239,12 +242,12 @@ public enum TrunkPosition: String, AppEnum, Sendable {
         .rear: DisplayRepresentation(
             title: "Trunk",
             subtitle: "The rear cargo area at the back of the car",
-            synonyms: ["rear trunk", "back trunk", "liftgate", "hatch", "boot"]
+            synonyms: ["rear trunk", "back trunk", "liftgate", "hatch", "boot", "트렁크", "뒷트렁크"]
         ),
         .front: DisplayRepresentation(
             title: "Frunk",
             subtitle: "The front storage compartment under the hood",
-            synonyms: ["front trunk", "hood", "bonnet"]
+            synonyms: ["front trunk", "hood", "bonnet", "프렁크", "앞트렁크"]
         )
     ]
 
@@ -323,7 +326,10 @@ public struct OpenTrunkIntent: AppIntent, PredictableIntent {
     ) async throws -> VehicleCommandResultEntity {
         let service = FleetIntentService.make()
         let resolved = try await service.resolvedVehicle(vehicle?.id)
-        try await confirm(IntentDialog("Open the \(trunk.spokenName) on \(resolved.name)?"))
+        try await confirm(FleetCopy.dialog(
+            "Open the \(trunk.spokenName) on \(resolved.name)?",
+            trunk == .front ? "\(resolved.name) 프렁크를 열까요?" : "\(resolved.name) 트렁크를 열까요?"
+        ))
         try await service.runControl(
             action: "actuate_trunk",
             vin: resolved.vin,
@@ -334,7 +340,10 @@ public struct OpenTrunkIntent: AppIntent, PredictableIntent {
             vehicle: resolved,
             action: "actuate_trunk",
             appliedValue: trunk.rawValue,
-            summary: "Opening the \(trunk.spokenName) on \(resolved.name)."
+            summary: FleetCopy.text(
+                "Opening the \(trunk.spokenName) on \(resolved.name).",
+                trunk == .front ? "\(resolved.name) 프렁크를 엽니다." : "\(resolved.name) 트렁크를 엽니다."
+            )
         )
     }
 }
@@ -435,14 +444,20 @@ public struct SetChargeLimitIntent: AppIntent, PredictableIntent {
             let service = FleetIntentService.make()
             let resolved = try await service.resolvedVehicle(vehicle?.id)
             let clampedPercent = min(max(percent, 50), 100)
-            try await confirmWithSafetyGate(dialog: IntentDialog("Set \(resolved.name)'s charge limit to \(clampedPercent)%?"))
+            try await confirmWithSafetyGate(dialog: FleetCopy.dialog(
+                "Set \(resolved.name)'s charge limit to \(clampedPercent)%?",
+                "\(resolved.name) 충전 한도를 \(clampedPercent)%로 설정할까요?"
+            ))
             try await service.runControl(
                 action: "set_charge_limit",
                 vin: resolved.vin,
                 params: ["percent": .int(clampedPercent)],
                 humanName: "setting the charge limit"
             )
-            let summary = "Set \(resolved.name)'s charge limit to \(clampedPercent)%."
+            let summary = FleetCopy.text(
+                "Set \(resolved.name)'s charge limit to \(clampedPercent)%.",
+                "\(resolved.name) 충전 한도를 \(clampedPercent)%로 설정했습니다."
+            )
             let result = VehicleCommandResultEntity(
                 vehicle: resolved,
                 action: "set_charge_limit",

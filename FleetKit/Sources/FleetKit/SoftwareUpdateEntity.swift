@@ -89,23 +89,52 @@ public struct SoftwareUpdateEntity: AppEntity, IndexedEntity, SyncableEntity, Id
     /// One or two sentences for Siri describing where the update stands.
     public var spokenStatus: String {
         guard updateAvailable else {
-            return currentVersion.map { "\(vehicleName) is up to date on \($0)." } ?? "\(vehicleName) has no software update waiting."
+            return currentVersion.map {
+                FleetCopy.text("\(vehicleName) is up to date on \($0).", "\(vehicleName)은(는) \($0)으로 최신입니다.")
+            } ?? FleetCopy.text(
+                "\(vehicleName) has no software update waiting.",
+                "\(vehicleName)에 대기 중인 소프트웨어 업데이트가 없습니다."
+            )
         }
+        let version = availableVersion ?? ""
         let target = availableVersion.map { "Software update \($0)" } ?? "A software update"
-        let duration = expectedDurationMinutes.map { " Installing takes about \($0) minutes, and the car can't be driven during it." } ?? ""
+        let duration = expectedDurationMinutes.map {
+            FleetCopy.text(
+                " Installing takes about \($0) minutes, and the car can't be driven during it.",
+                " 설치에 약 \($0)분이 걸리며 그 동안 운전할 수 없습니다."
+            )
+        } ?? ""
         switch status?.lowercased() ?? "" {
         case "installing":
-            return "\(target) is installing on \(vehicleName)" + (installPercent.map { ", \($0)% done." } ?? ".")
+            return FleetCopy.text(
+                "\(target) is installing on \(vehicleName)" + (installPercent.map { ", \($0)% done." } ?? "."),
+                "\(vehicleName)에 \(version) 업데이트를 설치하는 중입니다" + (installPercent.map { ", \($0)% 완료." } ?? ".")
+            )
         case "scheduled":
-            return "\(target) is scheduled to install on \(vehicleName)." + duration
+            return FleetCopy.text(
+                "\(target) is scheduled to install on \(vehicleName).",
+                "\(vehicleName)에 \(version) 업데이트가 예약되어 있습니다."
+            ) + duration
         case "downloading":
-            return "\(target) is downloading to \(vehicleName)" + (downloadPercent.map { ", \($0)% done." } ?? ".")
+            return FleetCopy.text(
+                "\(target) is downloading to \(vehicleName)" + (downloadPercent.map { ", \($0)% done." } ?? "."),
+                "\(vehicleName)에 \(version) 업데이트를 받는 중입니다" + (downloadPercent.map { ", \($0)% 완료." } ?? ".")
+            )
         case "downloading_wifi_wait":
-            return "\(target) is waiting for Wi-Fi to finish downloading to \(vehicleName)" + (downloadPercent.map { " (\($0)% done)." } ?? ".")
+            return FleetCopy.text(
+                "\(target) is waiting for Wi-Fi to finish downloading to \(vehicleName)" + (downloadPercent.map { " (\($0)% done)." } ?? "."),
+                "\(vehicleName)의 \(version) 업데이트가 Wi-Fi를 기다리는 중입니다" + (downloadPercent.map { " (\($0)% 완료)." } ?? ".")
+            )
         default:
             return installable
-                ? "\(target) is ready to install on \(vehicleName)." + duration
-                : "\(target) is available for \(vehicleName)."
+                ? FleetCopy.text(
+                    "\(target) is ready to install on \(vehicleName).",
+                    "\(vehicleName)에 \(version) 업데이트를 설치할 수 있습니다."
+                ) + duration
+                : FleetCopy.text(
+                    "\(target) is available for \(vehicleName).",
+                    "\(vehicleName)에 \(version) 업데이트가 있습니다."
+                )
         }
     }
 
@@ -229,20 +258,37 @@ public struct ReleaseNoteEntity: AppEntity, IndexedEntity, SyncableEntity, Ident
         let trimmedQuery = featureQuery?.trimmingCharacters(in: .whitespacesAndNewlines)
         if notes.isEmpty {
             if let trimmedQuery, !trimmedQuery.isEmpty {
-                return "No release notes matching \"\(trimmedQuery)\" were found for version \(version) on \(vehicleName)."
+                return FleetCopy.text(
+                    "No release notes matching \"\(trimmedQuery)\" were found for version \(version) on \(vehicleName).",
+                    "\(vehicleName)의 \(version)에서 \"\(trimmedQuery)\"에 맞는 릴리즈 노트가 없습니다."
+                )
             }
-            return "No release notes were found for version \(version) on \(vehicleName)."
+            return FleetCopy.text(
+                "No release notes were found for version \(version) on \(vehicleName).",
+                "\(vehicleName)의 \(version) 릴리즈 노트가 없습니다."
+            )
         }
 
         let maxSpokenItems = 4
         let spokenItems = notes.prefix(maxSpokenItems).map(\.spokenItemSummary).joined(separator: " ")
         let remaining = notes.count - min(notes.count, maxSpokenItems)
-        let suffix = remaining > 0 ? " Plus \(remaining) more feature update\(remaining == 1 ? "" : "s")." : ""
+        let suffix = remaining > 0
+            ? FleetCopy.text(
+                " Plus \(remaining) more feature update\(remaining == 1 ? "" : "s").",
+                " 그 외 기능 \(remaining)개."
+            )
+            : ""
 
         if let trimmedQuery, !trimmedQuery.isEmpty {
-            return "Version \(version) on \(vehicleName) has \(notes.count) release note\(notes.count == 1 ? "" : "s") matching \"\(trimmedQuery)\". \(spokenItems)\(suffix)"
+            return FleetCopy.text(
+                "Version \(version) on \(vehicleName) has \(notes.count) release note\(notes.count == 1 ? "" : "s") matching \"\(trimmedQuery)\". \(spokenItems)\(suffix)",
+                "\(vehicleName)의 \(version)에서 \"\(trimmedQuery)\"에 맞는 노트 \(notes.count)개입니다. \(spokenItems)\(suffix)"
+            )
         }
-        return "Version \(version) on \(vehicleName) includes \(notes.count) release note\(notes.count == 1 ? "" : "s"). \(spokenItems)\(suffix)"
+        return FleetCopy.text(
+            "Version \(version) on \(vehicleName) includes \(notes.count) release note\(notes.count == 1 ? "" : "s"). \(spokenItems)\(suffix)",
+            "\(vehicleName)의 \(version) 릴리즈 노트 \(notes.count)개입니다. \(spokenItems)\(suffix)"
+        )
     }
 
     public var displayRepresentation: DisplayRepresentation {
@@ -334,7 +380,13 @@ public struct ReleaseNoteEntityQuery: EntityQuery, EntityStringQuery, IndexedEnt
         var notesByID: [ReleaseNoteEntity.ID: ReleaseNoteEntity] = [:]
         for (vin, versions) in versionsByVIN {
             for version in versions {
-                for note in try await service.releaseNotes(vin: vin, version: version) {
+                let notes: [FleetReleaseNoteInfo]
+                do {
+                    notes = try await service.releaseNotes(vin: vin, version: version)
+                } catch let error as FleetKitError where error.isUnavailableFeature {
+                    continue
+                }
+                for note in notes {
                     let entity = ReleaseNoteEntity(info: note, vin: vin, version: version)
                     notesByID[entity.id] = entity
                 }
@@ -385,7 +437,12 @@ public struct ReleaseNoteEntityQuery: EntityQuery, EntityStringQuery, IndexedEnt
     private func latestReleaseNotes(vin: String) async throws -> [ReleaseNoteEntity] {
         let software = try await service.software(vin: vin)
         guard let version = software.availableVersion ?? software.currentVersion else { return [] }
-        return try await service.releaseNotes(vin: vin, version: version)
-            .map { ReleaseNoteEntity(info: $0, vin: vin, version: version) }
+        let notes: [FleetReleaseNoteInfo]
+        do {
+            notes = try await service.releaseNotes(vin: vin, version: version)
+        } catch let error as FleetKitError where error.isUnavailableFeature {
+            return []
+        }
+        return notes.map { ReleaseNoteEntity(info: $0, vin: vin, version: version) }
     }
 }

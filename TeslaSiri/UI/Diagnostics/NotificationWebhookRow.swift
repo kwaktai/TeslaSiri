@@ -34,7 +34,7 @@ struct NotificationWebhookRow: View {
                 .foregroundStyle(.secondary)
 
             if !webhook.vins.isEmpty {
-                Text("VINs " + webhook.vins.map { String($0.suffix(6)) }.joined(separator: ", "))
+                Text(WattieCopy.text("VINs ", "VIN ") + webhook.vins.map { String($0.suffix(6)) }.joined(separator: ", "))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

@@ -21,9 +21,9 @@ struct FleetKitFixtures {
 
     static let tessieVehiclesJSON = """
     {
-      "results": [
-        {"vin":"VIN-1","is_active":true,"last_state":{"display_name":"Roadrunner"}},
-        {"vin":"VIN-2","is_active":true,"last_state":{"display_name":"Blue Y"}}
+      "response": [
+        {"id":"VIN-1","vin":"VIN-1","display_name":"Roadrunner","state":"online"},
+        {"id":"VIN-2","vin":"VIN-2","display_name":"Blue Y","state":"online"}
       ]
     }
     """

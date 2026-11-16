@@ -136,16 +136,20 @@ public enum FleetSpotlightIndexer {
                     let recent = try await service.drives(vin: vehicle.vin, limit: drivesPerVehicle)
                     drives.append(contentsOf: recent.map(DriveEntity.init(info:)))
                 } catch {
-                    errors.append("Drives for \(vehicle.name): \(error.localizedDescription)")
-                    if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
+                    if (error as? FleetKitError)?.isUnavailableFeature != true {
+                        errors.append("Drives for \(vehicle.name): \(error.localizedDescription)")
+                        if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
+                    }
                 }
 
                 do {
                     let recent = try await service.charges(vin: vehicle.vin, limit: chargesPerVehicle)
                     charges.append(contentsOf: recent.map(ChargeSessionEntity.init(info:)))
                 } catch {
-                    errors.append("Charging sessions for \(vehicle.name): \(error.localizedDescription)")
-                    if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
+                    if (error as? FleetKitError)?.isUnavailableFeature != true {
+                        errors.append("Charging sessions for \(vehicle.name): \(error.localizedDescription)")
+                        if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
+                    }
                 }
 
                 let info: FleetSoftwareInfo
@@ -167,8 +171,10 @@ public enum FleetSpotlightIndexer {
                         let releaseNotes = try await service.releaseNotes(vin: vehicle.vin, version: version)
                         notes.append(contentsOf: releaseNotes.map { ReleaseNoteEntity(info: $0, vin: vehicle.vin, version: version) })
                     } catch {
-                        errors.append("Release notes for \(vehicle.name): \(error.localizedDescription)")
-                        if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
+                        if (error as? FleetKitError)?.isUnavailableFeature != true {
+                            errors.append("Release notes for \(vehicle.name): \(error.localizedDescription)")
+                            if isAuthFailure(error) { stoppedOnAuthFailure = true; break vehicleLoop }
+                        }
                     }
                 }
             }

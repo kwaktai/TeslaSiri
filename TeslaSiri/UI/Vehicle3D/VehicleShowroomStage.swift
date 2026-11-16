@@ -285,7 +285,10 @@ struct VehicleDrivingReadout: View {
                 }
             }
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("Gear \(gear ?? "unknown")")
+            .accessibilityLabel(WattieCopy.text(
+                "Gear \(gear ?? "unknown")",
+                "기어 \(gear ?? "알 수 없음")"
+            ))
 
             HStack(alignment: .lastTextBaseline, spacing: 4) {
                 Text(formattedNumber(isMetric ? speedMPH * 1.609_344 : speedMPH, fractionLength: 0))
