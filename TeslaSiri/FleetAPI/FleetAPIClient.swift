@@ -410,7 +410,10 @@ struct FleetAPIClient {
     }
 
     func installSoftwareUpdate(vin: String, offsetSec: Int = 0) async throws -> FleetAPIPage<[String: JSONValue]> {
-        let command = try buildCommand(action: "schedule_software_update", params: ["offset_sec": .integer(max(offsetSec, 0))])
+        let command = try buildCommand(
+            action: "schedule_software_update",
+            params: ["offset_sec": TeslaFleetJSON.int(max(offsetSec, 0))]
+        )
         return try await postTeslaCommand(vin: vin, command: command)
     }
 
