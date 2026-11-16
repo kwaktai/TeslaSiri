@@ -1,18 +1,17 @@
 import Foundation
+import TeslaFleetTransport
 
-/// Shared configuration for Tessie and cross-process storage.
+/// Shared configuration for the self-hosted Tesla server and cross-process storage.
 ///
 /// `FleetKit` is intentionally self-contained so the App Intents extension can
-/// authenticate and talk to Tessie without dragging in the app's full data
-/// layer. The app mirrors the current access token into the shared keychain so
-/// this module can read it from either process.
+/// authenticate and talk to the owner's server without dragging in the app's full
+/// data layer. The app mirrors the API key into the shared keychain and the
+/// server URL into the App Group so this module can read both from either process.
 public enum FleetKitConfig {
-    public static let baseURL: URL = {
-        guard let url = URL(string: "https://api.tessie.com") else {
-            preconditionFailure("Invalid Tessie API base URL.")
-        }
-        return url
-    }()
+    /// Used when the owner has not saved a server URL yet.
+    public static let defaultBaseURL = TeslaFleetAPI.defaultBaseURL
+
+    public static let serverBaseURLDefaultsKey = "fleet.serverBaseURL"
 
     /// App Group shared between the app and the App Intents extension.
     public static let appGroupIdentifier = "group.com.maxweinbach.TeslaSiri"

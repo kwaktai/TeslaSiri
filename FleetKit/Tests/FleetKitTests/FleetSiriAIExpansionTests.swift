@@ -12,7 +12,7 @@ struct FleetSiriAIExpansionTests {
       "drive_state":{"latitude":37.3317,"longitude":-122.0301,"speed":0,"shift_state":"P","timestamp":1710000000000},
       "charge_state":{"battery_level":64,"battery_range":201.4,"charge_limit_soc":80,"charging_state":"Charging","charger_power":11,"charge_rate":30,"time_to_full_charge":1.5,"charge_port_door_open":true,"timestamp":1710000000000},
       "climate_state":{"inside_temp":20,"outside_temp":5,"is_climate_on":true,"driver_temp_setting":21,"seat_heater_left":3,"seat_heater_right":0,"steering_wheel_heater":true,"defrost_mode":0,"timestamp":1710000000000},
-      "vehicle_state":{"locked":false,"sentry_mode":true,"odometer":12345.6,"df":0,"pf":0,"dr":0,"pr":0,"ft":0,"rt":1,"fd_window":1,"fp_window":0,"rd_window":0,"rp_window":0,"car_version":"2026.2.1 abc","timestamp":1710000000000},
+      "vehicle_state":{"locked":false,"sentry_mode":true,"odometer":12345.6,"df":0,"pf":0,"dr":0,"pr":0,"ft":0,"rt":1,"fd_window":1,"fp_window":0,"rd_window":0,"rp_window":0,"tpms_pressure_fl":2.8958,"tpms_pressure_fr":2.5235,"tpms_pressure_rl":2.882,"tpms_pressure_rr":2.9096,"car_version":"2026.2.1 abc","timestamp":1710000000000},
       "gui_settings":{"gui_distance_units":"mi/hr","gui_temperature_units":"F"}
     }
     """
@@ -33,8 +33,8 @@ struct FleetSiriAIExpansionTests {
     private static func vehicleRouter(state: String = richStateJSON) -> (URLRequest) throws -> (Int, Data) {
         { request in
             switch request.url?.path {
-            case "/vehicles": (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
-            case "/VIN-1/state": (200, Data(state.utf8))
+            case "/api/vehicles": (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
+            case "/api/vehicles/VIN-1/vehicle_data": (200, Data(state.utf8))
             case "/VIN-1/tire_pressure": (200, Data(tiresJSON.utf8))
             case "/VIN-1/charges": (200, Data(chargesJSON.utf8))
             default: (200, FleetKitFixtures.commandResponse(result: true))
@@ -50,7 +50,7 @@ struct FleetSiriAIExpansionTests {
             let status = try #require(try await intent.perform().value)
 
             #expect(status.batteryPercent == 64)
-            #expect(status.frontRightTirePSI == 36.6)
+            #expect(abs((status.frontRightTirePSI ?? 0) - 36.6) < 0.2)
             #expect(status.temperatureUnit == "°F")
             #expect(status.openClosures == "Trunk, Driver window")
             #expect(status.seatHeaterSummary == "Driver 3, Passenger 0")
@@ -120,12 +120,17 @@ struct FleetSiriAIExpansionTests {
             let ampsResult = try #require(try await amps.perform().value)
             #expect(ampsResult.appliedValue == "16 A")
 
-            let urls = requests().compactMap { $0.url?.absoluteString }
-            #expect(urls.contains { $0.contains("/VIN-1/command/start_climate") })
-            #expect(urls.contains { $0.contains("/VIN-1/command/set_seat_heat") && $0.contains("seat=front_left") && $0.contains("level=2") })
-            #expect(urls.contains { $0.contains("/VIN-1/command/set_seat_heat") && $0.contains("seat=front_right") && $0.contains("level=2") })
-            #expect(urls.contains { $0.contains("/VIN-1/command/stop_steering_wheel_heater") })
-            #expect(urls.contains { $0.contains("/VIN-1/command/set_charging_amps") && $0.contains("amps=16") })
+            let commands = requests().filter { $0.url?.path.contains("/command/") == true }
+            func body(_ fragment: String) -> String {
+                let data = commands.first { $0.url?.path.contains(fragment) == true }?.httpBody ?? Data()
+                return String(data: data, encoding: .utf8) ?? ""
+            }
+            #expect(commands.contains { $0.url?.path.contains("auto_conditioning_start") == true })
+            let seatBodies = commands.filter { $0.url?.path.contains("remote_seat_heater_request") == true }.compactMap { $0.httpBody.flatMap { String(data: $0, encoding: .utf8) } }
+            #expect(seatBodies.contains { $0.contains("\"heater\":0") && $0.contains("\"level\":2") })
+            #expect(seatBodies.contains { $0.contains("\"heater\":1") && $0.contains("\"level\":2") })
+            #expect(body("remote_steering_wheel_heater_request").contains("false"))
+            #expect(body("set_charging_amps").contains("16"))
         }
     }
 
@@ -151,8 +156,7 @@ struct FleetSiriAIExpansionTests {
             #expect(OpenTrunkIntent(trunk: .front).trunk == .front)
 
             let paths = requests().compactMap { $0.url?.path }
-            #expect(paths.filter { $0 == "/VIN-1/command/activate_rear_trunk" }.count == 1)
-            #expect(paths.filter { $0 == "/VIN-1/command/activate_front_trunk" }.count == 1)
+            #expect(paths.filter { $0 == "/api/vehicles/VIN-1/command/actuate_trunk" }.count == 2)
         }
     }
 
@@ -173,11 +177,14 @@ struct FleetSiriAIExpansionTests {
             #expect(value.appliedValue?.contains("driver seat heat 3") == true)
             #expect(value.appliedValue?.contains("steering wheel heat on") == true)
 
-            let urls = requests().compactMap { $0.url?.absoluteString }
-            #expect(urls.contains { $0.contains("/command/start_climate") })
-            #expect(urls.contains { $0.contains("/command/set_seat_heat") && $0.contains("seat=front_left") && $0.contains("level=3") })
-            #expect(urls.contains { $0.contains("/command/start_steering_wheel_heater") })
-            #expect(!urls.contains { $0.contains("seat=front_right") })
+            let bodies = requests().compactMap { request -> String? in
+                guard request.url?.path.contains("/command/") == true else { return nil }
+                return (request.url?.path ?? "") + (request.httpBody.flatMap { String(data: $0, encoding: .utf8) } ?? "")
+            }
+            #expect(bodies.contains { $0.contains("auto_conditioning_start") })
+            #expect(bodies.contains { $0.contains("remote_seat_heater_request") && $0.contains("\"heater\":0") && $0.contains("\"level\":3") })
+            #expect(bodies.contains { $0.contains("remote_steering_wheel_heater_request") })
+            #expect(!bodies.contains { $0.contains("\"heater\":1") })
         }
     }
 
@@ -186,10 +193,11 @@ struct FleetSiriAIExpansionTests {
             let intent = SendNavigationIntent()
             intent.destination = "1 Infinite Loop, Cupertino"
             _ = try await intent.perform()
-            let share = try #require(requests().first { $0.url?.path == "/VIN-1/command/share" })
-            let query = URLComponents(url: try #require(share.url), resolvingAgainstBaseURL: false)?.queryItems ?? []
-            #expect(query.first { $0.name == "value" }?.value == "1 Infinite Loop, Cupertino")
-            #expect(query.first { $0.name == "locale" }?.value?.isEmpty == false)
+            let share = try #require(requests().first { $0.url?.path == "/api/vehicles/VIN-1/command/navigation_request" })
+            let body = String(data: share.httpBody ?? Data(), encoding: .utf8) ?? ""
+            #expect(body.contains("1 Infinite Loop, Cupertino"))
+            #expect(body.contains("locale"))
+            #expect(share.url?.query?.contains("wake=1") == true)
         }
     }
 
@@ -197,12 +205,10 @@ struct FleetSiriAIExpansionTests {
 
     @Test func `charge details default to the latest session with efficiency`() async throws {
         try await withIsolatedFleetService(responder: Self.vehicleRouter()) { _ in
-            let session = try #require(try await GetChargeDetailsIntent().perform().value)
-            #expect(session.id == "VIN-1:901")
-            #expect(session.isSupercharger)
-            #expect(session.energyDrawnKWH == 50)
-            #expect(session.chargingEfficiencyPercent == 88)
-            #expect(session.location == "Kettleman City Supercharger")
+            let error = await #expect(throws: FleetKitError.self) {
+                _ = try await GetChargeDetailsIntent().perform()
+            }
+            #expect(error?.isUnavailableFeature == true)
         }
     }
 
@@ -212,11 +218,11 @@ struct FleetSiriAIExpansionTests {
             intent.count = 5
             intent.superchargersOnly = false
             intent.startDate = Date(timeIntervalSince1970: 1_709_800_000)
-            let sessions = try #require(try await intent.perform().value)
-            #expect(sessions.map(\.id) == ["VIN-1:900"])
-
-            let chargesRequest = try #require(requests().first { $0.url?.path == "/VIN-1/charges" })
-            #expect(chargesRequest.url?.query?.contains("from=1709800000") == true)
+            let error = await #expect(throws: FleetKitError.self) {
+                _ = try await intent.perform()
+            }
+            #expect(error?.isUnavailableFeature == true)
+            #expect(!requests().contains { $0.url?.path.contains("/charges") == true })
         }
     }
 

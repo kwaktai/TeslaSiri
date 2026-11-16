@@ -312,7 +312,7 @@ private struct DrivesPostureContainer: View {
                                 drivesTitle == "Recent drives" ? "No drives" : "No matching drives",
                                 systemImage: "map",
                                 description: Text(drivesTitle == "Recent drives"
-                                    ? "Recent drive sessions were not returned for this vehicle."
+                                    ? "This Tesla server does not provide drive history. Demo Car mode still has sample drives."
                                     : "Try another place or search.")
                             )
                             .frame(maxWidth: .infinity)

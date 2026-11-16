@@ -9,7 +9,7 @@ struct BackendSection: View {
     let onSignOut: () -> Void
 
     var body: some View {
-        CardContainer(title: "Tessie API", systemImage: "server.rack") {
+        CardContainer(title: "Tesla server", systemImage: "server.rack") {
             VStack(alignment: .leading, spacing: 12) {
                 DiagnosticGroupHeader("Connection")
                 DiagnosticRow(label: "Auth", value: diagnostics.isSignedIn ? "Signed in" : "Not signed in")
@@ -138,7 +138,7 @@ struct BackendSection: View {
         Button {
             onProbeAccount()
         } label: {
-            Label("Probe Tessie", systemImage: "network")
+            Label("Probe Tesla server", systemImage: "network")
         }
         .buttonStyle(.bordered)
         .controlSize(.regular)

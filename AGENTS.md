@@ -172,6 +172,10 @@ TeslaSiriApp + TeslaSiriAppIntentsExtension
 
 Access tokens live in **shared keychain** (`FleetSharedTokenStore`); selected VIN stays in App Group `UserDefaults`. Legacy UserDefaults tokens are migrated on read.
 
+### Tesla server transport
+
+The app and FleetKit talk to the owner's self-hosted Tesla server (`TeslaFleetTransport`, default `https://t.kwakhome.com`) with an `X-API-Key` header. The key is stored in the shared keychain; the server URL is stored in the App Group (`fleet.serverBaseURL`). Reads use `GET /api/vehicles` and, only when the listed state is online, `GET /api/vehicles/<id>/vehicle_data`. They must not wake a sleeping car. Commands use `POST /api/vehicles/<id>/command/<command>?wake=1`. Drive history, charging history, battery health, consumption, and release notes are not on this server: Siri tools throw `FleetKitError.featureUnavailable`, and the app shows an empty state. Demo Car mode still answers from `FleetSandboxStore` before any network call.
+
 ### Tessie transport
 
 Both clients use `https://api.tessie.com` with `Authorization: Bearer <token>`. `FleetIntentClient` must join API paths with `URLComponents` (see `makeURL` in `FleetKitClient.swift`). **Never** use `baseURL.appendingPathComponent("/...")` for a complete endpoint path — it percent-encodes separators. Match `TeslaSiri/FleetAPI/FleetAPIClient.makeURL`.

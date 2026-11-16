@@ -28,9 +28,9 @@ When CLI fallback is necessary for project files, explain the reason.
 
 ## Project Summary
 
-TeslaSiri is a SwiftUI iOS 27.3+ app that connects to Tessie for Tesla vehicle data. It includes:
+TeslaSiri is a SwiftUI iOS 27.3+ app that connects to the owner's self-hosted Tesla server (`https://t.kwakhome.com` by default, `X-API-Key`) for Tesla vehicle data. Reads do not wake a sleeping car. Drive history, charging history, battery health, and release notes are unavailable on that server. It includes:
 
-- Tessie access-token setup with Keychain-backed storage.
+- Server URL and API-key setup with Keychain-backed storage. The URL lives in the App Group.
 - Tessie response adapters into app-owned Fleet models.
 - Observable Fleet data store.
 - Local cache hydration and refresh.

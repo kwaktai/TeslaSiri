@@ -578,7 +578,7 @@ final class FleetDataStore {
         let generation = sessionGeneration
         isExportingRawData = true
         rawDataExportURL = nil
-        rawDataExportMessage = "Exporting raw Tessie data."
+        rawDataExportMessage = "Exporting Tesla server data."
         defer {
             if generation == sessionGeneration { isExportingRawData = false }
         }

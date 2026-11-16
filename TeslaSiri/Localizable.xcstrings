@@ -1,0 +1,81 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "API key" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "API 키" } }
+      }
+    },
+    "Asleep" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "절전" } }
+      }
+    },
+    "Connect" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "연결" } }
+      }
+    },
+    "Connect your Tesla" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Tesla 연결" } }
+      }
+    },
+    "Connecting…" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "연결 중…" } }
+      }
+    },
+    "Enter the server URL and API key. Live status and commands use that server. The key stays in Keychain." : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "서버 주소와 API 키를 입력하세요. 실시간 상태와 명령은 그 서버를 사용합니다. 키는 Keychain에 저장됩니다." } }
+      }
+    },
+    "Launch an interactive simulated Model Y to test Siri climate, security, and trip-prep workflows without a Tesla server." : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Tesla 서버 없이 Siri 실내 온도, 보안, 여행 준비 흐름을 시험할 수 있는 가상 Model Y를 실행합니다." } }
+      }
+    },
+    "No charging history" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "충전 기록 없음" } }
+      }
+    },
+    "Offline" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "오프라인" } }
+      }
+    },
+    "Probe Tesla server" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Tesla 서버 확인" } }
+      }
+    },
+    "Server URL" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "서버 주소" } }
+      }
+    },
+    "Stored in Keychain" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Keychain에 저장됨" } }
+      }
+    },
+    "Tesla server" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Tesla 서버" } }
+      }
+    },
+    "This Tesla server does not keep past charging sessions. An active charge still appears here." : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "이 Tesla 서버는 지난 충전 기록을 보관하지 않습니다. 진행 중인 충전은 여기에 표시됩니다." } }
+      }
+    },
+    "This Tesla server does not provide drive history. Demo Car mode still has sample drives." : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "이 Tesla 서버는 주행 기록을 제공하지 않습니다. 데모 차량 모드에는 예시 주행이 있습니다." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

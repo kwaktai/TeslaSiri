@@ -443,7 +443,12 @@ public struct ChargeSessionEntityQuery: EntityQuery, EntityStringQuery, IndexedE
         // Only query the vehicles the identifiers belong to ("<VIN>:<id>").
         let requestedVINs = Set(identifiers.compactMap { $0.split(separator: ":").first.map(String.init) })
         for vehicle in vehicles where !remaining.isEmpty && (requestedVINs.isEmpty || requestedVINs.contains(vehicle.vin)) {
-            let charges = try await service.charges(vin: vehicle.vin, limit: 200)
+            let charges: [FleetChargeInfo]
+            do {
+                charges = try await service.charges(vin: vehicle.vin, limit: 200)
+            } catch let error as FleetKitError where error.isUnavailableFeature {
+                continue
+            }
             for charge in charges where remaining.contains(charge.sessionID) {
                 found.append(ChargeSessionEntity(info: charge))
                 remaining.remove(charge.sessionID)
@@ -458,8 +463,12 @@ public struct ChargeSessionEntityQuery: EntityQuery, EntityStringQuery, IndexedE
         let service = FleetIntentService.make()
         var all: [ChargeSessionEntity] = []
         for vehicle in try await service.vehicles() {
-            let charges = try await service.charges(vin: vehicle.vin, limit: 50).map(ChargeSessionEntity.init(info:))
-            all.append(contentsOf: charges)
+            do {
+                let charges = try await service.charges(vin: vehicle.vin, limit: 50).map(ChargeSessionEntity.init(info:))
+                all.append(contentsOf: charges)
+            } catch let error as FleetKitError where error.isUnavailableFeature {
+                continue
+            }
         }
         guard !query.isEmpty else { return Array(all.prefix(10)) }
         return all.filter { session in
@@ -472,7 +481,11 @@ public struct ChargeSessionEntityQuery: EntityQuery, EntityStringQuery, IndexedE
     public func suggestedEntities() async throws -> [ChargeSessionEntity] {
         let service = FleetIntentService.make()
         let vehicle = try await service.resolvedVehicle(nil)
-        return try await service.charges(vin: vehicle.vin, limit: 10).map(ChargeSessionEntity.init(info:))
+        do {
+            return try await service.charges(vin: vehicle.vin, limit: 10).map(ChargeSessionEntity.init(info:))
+        } catch let error as FleetKitError where error.isUnavailableFeature {
+            return []
+        }
     }
 
     public func reindexEntities(for identifiers: [ChargeSessionEntity.ID], indexDescription: CSSearchableIndexDescription) async throws {
@@ -483,7 +496,11 @@ public struct ChargeSessionEntityQuery: EntityQuery, EntityStringQuery, IndexedE
         let service = FleetIntentService.make()
         var all: [ChargeSessionEntity] = []
         for vehicle in try await service.vehicles() {
-            all.append(contentsOf: try await service.charges(vin: vehicle.vin, limit: FleetSpotlightIndexer.chargesPerVehicle).map(ChargeSessionEntity.init(info:)))
+            do {
+                all.append(contentsOf: try await service.charges(vin: vehicle.vin, limit: FleetSpotlightIndexer.chargesPerVehicle).map(ChargeSessionEntity.init(info:)))
+            } catch let error as FleetKitError where error.isUnavailableFeature {
+                continue
+            }
         }
         try await FleetSpotlightIndexer.donate(all)
     }

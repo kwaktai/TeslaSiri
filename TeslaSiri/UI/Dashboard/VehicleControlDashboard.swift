@@ -598,6 +598,15 @@ extension FleetLatestSnapshot {
             }
         } else if let speed, speed > 0 {
             parts.append("Driving \(formattedNumber(speed, fractionLength: 0, suffix: " mph"))")
+        } else if let gear, ["asleep", "offline", "suspended"].contains(gear.lowercased()) {
+            switch gear.lowercased() {
+            case "offline":
+                return WattieCopy.text("Offline", "오프라인")
+            case "suspended":
+                return WattieCopy.text("Suspended", "일시 중지")
+            default:
+                return WattieCopy.text("Asleep", "절전")
+            }
         } else if let gear, !gear.isEmpty, gear != "P" {
             parts.append("In \(gear)")
         } else {

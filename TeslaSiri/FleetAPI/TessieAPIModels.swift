@@ -108,6 +108,8 @@ nonisolated struct TessieVehicleRecord: Decodable {
     var vin: String
     var isActive: Bool
     var lastState: TessieJSONObject?
+    /// `asleep` or `offline` when live vehicle data was intentionally not fetched.
+    var powerState: String?
 
     enum CodingKeys: String, CodingKey {
         case vin
@@ -115,11 +117,19 @@ nonisolated struct TessieVehicleRecord: Decodable {
         case lastState = "last_state"
     }
 
+    init(vin: String, isActive: Bool = true, lastState: TessieJSONObject? = nil, powerState: String? = nil) {
+        self.vin = vin
+        self.isActive = isActive
+        self.lastState = lastState
+        self.powerState = powerState
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         vin = try container.decode(String.self, forKey: .vin)
         isActive = try container.decodeIfPresent(Bool.self, forKey: .isActive) ?? true
         lastState = try container.decodeIfPresent(TessieVehicleState.self, forKey: .lastState)?.fields
+        powerState = nil
     }
 }
 
@@ -185,8 +195,8 @@ nonisolated enum TessieModelAdapter {
             controlActions: controlActions,
             events: [],
             notificationEvents: [],
-            scopes: ["vehicles", "vehicle_commands", "vehicle_history"],
-            software: ["provider": "tessie"]
+            scopes: ["vehicle_device_data", "vehicle_location", "vehicle_cmds", "vehicle_charging_cmds"],
+            software: ["provider": "tesla-server"]
         )
     }
 
@@ -221,8 +231,8 @@ nonisolated enum TessieModelAdapter {
 
     static func user(from state: TessieJSONObject?) -> FleetUser {
         FleetUser(
-            authType: "tessie_access_token",
-            name: "Tessie",
+            authType: "api_key",
+            name: "Tesla",
             scopes: capabilities.scopes,
             units: state?.units
         )

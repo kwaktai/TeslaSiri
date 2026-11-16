@@ -1,31 +1,32 @@
+import FleetKit
 import SwiftUI
+import TeslaFleetTransport
 
 struct SignInBanner: View {
-    let onSignIn: (String) -> Void
+    let onSignIn: (String, String) -> Void
     let isAuthenticating: Bool
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @State private var accessToken = ""
+    @State private var serverURL = TeslaFleetAPI.defaultBaseURLString
+    @State private var apiKey = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             bannerHeader
 
-            SecureField(text: $accessToken, prompt: Text("Tessie access token")) {
-                Text("Tessie access token")
-            }
+            connectionField(title: "Server URL", text: $serverURL, secure: false)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .keyboardType(.URL)
+                .textContentType(.URL)
+                .submitLabel(.next)
+
+            connectionField(title: "API key", text: $apiKey, secure: true)
                 .textContentType(.password)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .privacySensitive()
                 .submitLabel(.go)
-                .padding(.horizontal, 14)
-                .frame(minHeight: 50)
-                .background(AppTheme.insetSurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .strokeBorder(AppTheme.hairline)
-                }
                 .onSubmit(connect)
 
             Button(action: connect) {
@@ -38,7 +39,7 @@ struct SignInBanner: View {
                         Image(systemName: "key.fill")
                     }
 
-                    Text(isAuthenticating ? "Connecting…" : "Connect Tessie")
+                    Text(isAuthenticating ? "Connecting…" : "Connect")
                         .fontWeight(.semibold)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
@@ -48,12 +49,15 @@ struct SignInBanner: View {
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.capsule)
             .controlSize(.large)
-            .disabled(isAuthenticating || trimmedToken.isEmpty)
+            .disabled(isAuthenticating || trimmedKey.isEmpty || normalizedURL == nil)
 
             tokenHelp
         }
         .padding(20)
         .appSurface(cornerRadius: 28)
+        .onAppear {
+            serverURL = FleetSharedTokenStore.shared.serverBaseURL().absoluteString
+        }
     }
 
     @ViewBuilder
@@ -82,11 +86,11 @@ struct SignInBanner: View {
 
     private var bannerCopy: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("Connect with Tessie")
+            Text("Connect your Tesla")
                 .font(.title3.weight(.bold))
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityAddTraits(.isHeader)
-            Text("Paste a Tessie access token to unlock live status, drive history, charging, and vehicle controls.")
+            Text("Enter the server URL and API key. Live status and commands use that server. The key stays in Keychain.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -110,11 +114,10 @@ struct SignInBanner: View {
     }
 
     private var generateTokenLink: some View {
-        Link(destination: TessieAccessTokenStore.developerSettingsURL) {
-            Label("Generate a token", systemImage: "arrow.up.right.square")
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .font(.footnote.weight(.semibold))
+        Text("Default server is \(TeslaFleetAPI.defaultBaseURLString).")
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
     private var keychainNote: some View {
@@ -124,19 +127,44 @@ struct SignInBanner: View {
             .fixedSize(horizontal: false, vertical: true)
     }
 
-    private var trimmedToken: String {
-        accessToken.trimmingCharacters(in: .whitespacesAndNewlines)
+    private var trimmedKey: String {
+        apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var normalizedURL: URL? {
+        TeslaFleetAPI.normalizedBaseURL(from: serverURL)
+    }
+
+    private func connectionField(title: String, text: Binding<String>, secure: Bool) -> some View {
+        Group {
+            if secure {
+                SecureField(text: text, prompt: Text(LocalizedStringKey(title))) {
+                    Text(LocalizedStringKey(title))
+                }
+            } else {
+                TextField(text: text, prompt: Text(LocalizedStringKey(title))) {
+                    Text(LocalizedStringKey(title))
+                }
+            }
+        }
+        .padding(.horizontal, 14)
+        .frame(minHeight: 50)
+        .background(AppTheme.insetSurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(AppTheme.hairline)
+        }
     }
 
     private func connect() {
-        guard !trimmedToken.isEmpty, !isAuthenticating else { return }
-        onSignIn(trimmedToken)
+        guard let url = normalizedURL, !trimmedKey.isEmpty, !isAuthenticating else { return }
+        onSignIn(url.absoluteString, trimmedKey)
     }
 }
 
 #Preview("Idle") {
     ScrollView {
-        SignInBanner(onSignIn: { _ in }, isAuthenticating: false)
+        SignInBanner(onSignIn: { _, _ in }, isAuthenticating: false)
             .padding()
     }
     .background {
@@ -146,7 +174,7 @@ struct SignInBanner: View {
 
 #Preview("Authenticating") {
     ScrollView {
-        SignInBanner(onSignIn: { _ in }, isAuthenticating: true)
+        SignInBanner(onSignIn: { _, _ in }, isAuthenticating: true)
             .padding()
     }
     .background {

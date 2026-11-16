@@ -7,7 +7,7 @@ struct DashboardView: View {
     let isSignedIn: Bool
     let isAuthenticating: Bool
     var sandboxMode: FleetSandboxMode = .live
-    let onSignIn: (String) -> Void
+    let onSignIn: (String, String) -> Void
     let onReload: () async -> Void
     var onOpenSandboxSettings: () -> Void = {}
     var onEnableDemoCar: () -> Void = {}
@@ -155,7 +155,7 @@ private struct DashboardPostureContainer: View {
     let isSignedIn: Bool
     let isAuthenticating: Bool
     let sandboxMode: FleetSandboxMode
-    let onSignIn: (String) -> Void
+    let onSignIn: (String, String) -> Void
     let onReload: () async -> Void
     let onCommand: (VehicleControlCommand) -> Void
     let onOpenSandboxSettings: () -> Void
@@ -326,7 +326,7 @@ private struct DashboardNotices: View {
     let isSignedIn: Bool
     let isAuthenticating: Bool
     let sandboxMode: FleetSandboxMode
-    let onSignIn: (String) -> Void
+    let onSignIn: (String, String) -> Void
     let onOpenSandboxSettings: () -> Void
 
     var body: some View {
@@ -435,7 +435,7 @@ private struct DashboardStandaloneStateScroll: View {
     let isSignedIn: Bool
     let isAuthenticating: Bool
     let sandboxMode: FleetSandboxMode
-    let onSignIn: (String) -> Void
+    let onSignIn: (String, String) -> Void
     let onReload: () async -> Void
     let onEnableDemoCar: () -> Void
 
@@ -453,7 +453,7 @@ private struct DashboardStandaloneStateScroll: View {
 
                     CardContainer(title: "Test without a car", systemImage: "sparkles") {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Launch an interactive simulated Model Y to test Siri climate, security, and trip-prep workflows safely without connecting Tessie.")
+                            Text("Launch an interactive simulated Model Y to test Siri climate, security, and trip-prep workflows without a Tesla server.")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
 

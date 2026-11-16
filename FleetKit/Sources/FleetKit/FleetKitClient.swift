@@ -1,5 +1,17 @@
 import Foundation
 import OSLog
+import TeslaFleetTransport
+
+enum FleetCopy {
+    static var prefersKorean: Bool {
+        if Locale.preferredLanguages.first?.hasPrefix("ko") == true { return true }
+        return Locale.current.identifier.hasPrefix("ko")
+    }
+
+    static func text(_ english: String, _ korean: String) -> String {
+        prefersKorean ? korean : english
+    }
+}
 
 public enum FleetKitError: Swift.Error, LocalizedError, CustomLocalizedStringResourceConvertible {
     case notSignedIn
@@ -7,6 +19,13 @@ public enum FleetKitError: Swift.Error, LocalizedError, CustomLocalizedStringRes
     case api(String?)
     case badResponse
     case unsupportedAction(String)
+    /// The self-hosted server has no equivalent of this Tessie history feature.
+    case featureUnavailable(String)
+
+    public var isUnavailableFeature: Bool {
+        if case .featureUnavailable = self { return true }
+        return false
+    }
 
     public var errorDescription: String? {
         String(localized: localizedStringResource)
@@ -15,18 +34,38 @@ public enum FleetKitError: Swift.Error, LocalizedError, CustomLocalizedStringRes
     public var localizedStringResource: LocalizedStringResource {
         switch self {
         case .notSignedIn:
-            return "Open Wattie and add your Tessie access token to use this."
+            return LocalizedStringResource(stringLiteral: FleetCopy.text(
+                "Open Wattie and add your Tesla server URL and API key.",
+                "Wattie를 열고 Tesla 서버 주소와 API 키를 입력하세요."
+            ))
         case .sessionExpired:
-            return "Your Tessie access token is invalid or revoked. Open Wattie to replace it."
+            return LocalizedStringResource(stringLiteral: FleetCopy.text(
+                "Your Tesla server API key is invalid. Open Wattie and enter it again.",
+                "Tesla 서버 API 키가 올바르지 않습니다. Wattie를 열고 다시 입력하세요."
+            ))
         case .api(let message):
             if let message {
-                return "\(message)"
+                return LocalizedStringResource(stringLiteral: message)
             }
-            return "Tessie returned an error."
+            return LocalizedStringResource(stringLiteral: FleetCopy.text(
+                "The Tesla server returned an error.",
+                "Tesla 서버가 오류를 반환했습니다."
+            ))
         case .badResponse:
-            return "Tessie returned an unexpected response."
+            return LocalizedStringResource(stringLiteral: FleetCopy.text(
+                "The Tesla server returned an unexpected response.",
+                "Tesla 서버가 예상과 다른 응답을 반환했습니다."
+            ))
         case .unsupportedAction(let action):
-            return "Your vehicle doesn't support \(action) right now."
+            return LocalizedStringResource(stringLiteral: FleetCopy.text(
+                "Your vehicle doesn't support \(action) right now.",
+                "지금 이 차량에서는 \(action)을(를) 사용할 수 없습니다."
+            ))
+        case .featureUnavailable(let feature):
+            return LocalizedStringResource(stringLiteral: FleetCopy.text(
+                "\(feature) isn't available on this Tesla server. Drive history, charging history, battery health, and release notes need data this server does not provide.",
+                "\(feature)은(는) 이 Tesla 서버에서 제공하지 않습니다. 주행 기록, 충전 기록, 배터리 건강, 릴리즈 노트는 이 서버에 없는 데이터입니다."
+            ))
         }
     }
 }
@@ -76,17 +115,8 @@ public struct FleetIntentClient: Sendable {
     // MARK: - Reads
 
     public func vehicles() async throws -> [FleetVehicleInfo] {
-        let response: TessieResults<TessieVehicle> = try await get(
-            "/vehicles",
-            query: [URLQueryItem(name: "only_active", value: "true")]
-        )
-        return response.results.map { vehicle in
-            FleetVehicleInfo(
-                vin: vehicle.vin,
-                displayName: vehicle.lastState?.displayName,
-                carType: vehicle.lastState?.carType,
-                exteriorColor: vehicle.lastState?.exteriorColor
-            )
+        try await listedVehicles().map { vehicle in
+            FleetVehicleInfo(vin: vehicle.vin, displayName: vehicle.displayName)
         }
     }
 
@@ -96,35 +126,28 @@ public struct FleetIntentClient: Sendable {
 
     func snapshotAndSoftware(vin: String) async throws -> (snapshot: FleetSnapshotInfo, software: FleetSoftwareInfo) {
         let (snapshot, state) = try await snapshotState(vin: vin)
-        return (snapshot, state.software)
+        return (snapshot, state?.software ?? .asleep)
     }
 
-    private func snapshotState(vin: String) async throws -> (snapshot: FleetSnapshotInfo, state: TessieObject) {
-        async let tireRead: TessieObject = get(
-            "/\(encoded(vin))/tire_pressure",
-            query: [URLQueryItem(name: "pressure_format", value: "psi")]
-        )
-        let state: TessieObject = try await get("/\(encoded(vin))/state")
-        let tireState: TessieObject?
-        do {
-            tireState = try await tireRead
-        } catch FleetKitError.sessionExpired {
-            throw FleetKitError.sessionExpired
-        } catch FleetKitError.notSignedIn {
-            throw FleetKitError.notSignedIn
-        } catch {
-            try Task.checkCancellation()
-            tireState = nil
+    /// `nil` state means the car is asleep or offline. The read stops there and does not wake it.
+    private func snapshotState(vin: String) async throws -> (snapshot: FleetSnapshotInfo, state: TessieObject?) {
+        guard let state = try await vehicleDataIfAwake(vin: vin) else {
+            return (FleetSnapshotInfo(vin: vin), nil)
         }
-        return (state.snapshot(vin: vin, tireState: tireState), state)
+        return (state.snapshot(vin: vin, tireState: nil), state)
     }
 
     public func user() async throws -> FleetUserInfo {
-        let response: TessieResults<TessieVehicle> = try await get(
-            "/vehicles",
-            query: [URLQueryItem(name: "only_active", value: "true")]
-        )
-        return FleetUserInfo(units: response.results.first?.lastState?.units)
+        let vehicles = try await listedVehicles()
+        guard let awake = vehicles.first(where: { TeslaFleetReadPolicy.allowsVehicleDataFetch(state: $0.state) }),
+              let state = try await vehicleData(id: awake.routeID) else {
+            return FleetUserInfo(units: nil)
+        }
+        let settings = state.object("gui_settings")
+        guard settings.string("gui_temperature_units") != nil || settings.string("gui_distance_units") != nil else {
+            return FleetUserInfo(units: nil)
+        }
+        return FleetUserInfo(units: state.usesFahrenheit ? "imperial" : "metric")
     }
 
     public func drives(
@@ -134,26 +157,8 @@ public struct FleetIntentClient: Sendable {
         to: Date? = nil,
         tag: String? = nil
     ) async throws -> [FleetDriveInfo] {
-        var query = [
-            URLQueryItem(name: "distance_format", value: "mi"),
-            URLQueryItem(name: "temperature_format", value: "f"),
-            URLQueryItem(name: "limit", value: String(limit))
-        ]
-        if let from {
-            query.append(URLQueryItem(name: "from", value: String(Int64(from.timeIntervalSince1970))))
-        }
-        if let to {
-            query.append(URLQueryItem(name: "to", value: String(Int64(to.timeIntervalSince1970))))
-        }
-        if let tag = tag?.trimmingCharacters(in: .whitespacesAndNewlines), !tag.isEmpty {
-            query.append(URLQueryItem(name: "tag", value: tag))
-        }
-        let response: TessieResults<TessieObject> = try await get(
-            "/\(encoded(vin))/drives",
-            query: query
-        )
-        return response.results.compactMap { $0.drive(vin: vin) }
-            .sorted { $0.startedAt > $1.startedAt }
+        _ = (vin, limit, from, to, tag)
+        throw FleetKitError.featureUnavailable("Drive history")
     }
 
     public func drivePath(
@@ -162,26 +167,8 @@ public struct FleetIntentClient: Sendable {
         to: Date,
         maxPoints: Int = 72
     ) async throws -> [FleetDriveRoutePoint] {
-        let fromSec = Int64(from.timeIntervalSince1970)
-        let toSec = max(Int64(to.timeIntervalSince1970), fromSec + 1)
-        let response: TessieResults<TessiePathSample> = try await get(
-            "/\(encoded(vin))/path",
-            query: [
-                URLQueryItem(name: "from", value: String(fromSec)),
-                URLQueryItem(name: "to", value: String(toSec)),
-                URLQueryItem(name: "details", value: "true"),
-                URLQueryItem(name: "simplify", value: "true")
-            ]
-        )
-        let points = response.results
-            .compactMap(\.routePoint)
-            .sorted { ($0.timestampMS ?? 0) < ($1.timestampMS ?? 0) }
-        guard maxPoints > 1, points.count > maxPoints else {
-            return points
-        }
-        return (0..<maxPoints).map { idx in
-            points[idx * (points.count - 1) / (maxPoints - 1)]
-        }
+        _ = (vin, from, to, maxPoints)
+        throw FleetKitError.featureUnavailable("Drive route playback")
     }
 
     public func charges(
@@ -190,82 +177,30 @@ public struct FleetIntentClient: Sendable {
         from: Date? = nil,
         to: Date? = nil
     ) async throws -> [FleetChargeInfo] {
-        var query = [
-            URLQueryItem(name: "distance_format", value: "mi"),
-            URLQueryItem(name: "limit", value: String(limit))
-        ]
-        if let from {
-            query.append(URLQueryItem(name: "from", value: String(Int64(from.timeIntervalSince1970))))
-        }
-        if let to {
-            query.append(URLQueryItem(name: "to", value: String(Int64(to.timeIntervalSince1970))))
-        }
-        let response: TessieResults<TessieObject> = try await get(
-            "/\(encoded(vin))/charges",
-            query: query
-        )
-        return response.results.compactMap { $0.charge(vin: vin) }
-            .sorted { $0.startedAt > $1.startedAt }
+        _ = (vin, limit, from, to)
+        throw FleetKitError.featureUnavailable("Charging history")
     }
 
     public func batteryHealth(vin: String) async throws -> FleetBatteryHealthInfo {
-        async let battery: TessieObject = get("/\(encoded(vin))/battery")
-        var healthObject: TessieObject?
-        var healthError: Error?
-        do {
-            let response: TessieResults<TessieObject> = try await get(
-                "/battery_health",
-                query: [
-                    URLQueryItem(name: "distance_format", value: "mi"),
-                    URLQueryItem(name: "only_active", value: "true")
-                ]
-            )
-            healthObject = response.results.first { $0.string("vin") == vin }
-        } catch let error as FleetKitError {
-            if case .sessionExpired = error { throw error }
-            if case .notSignedIn = error { throw error }
-            healthError = error
-        } catch {
-            healthError = error
-        }
-
-        var batteryObject: TessieObject?
-        do {
-            batteryObject = try await battery
-        } catch let error as FleetKitError {
-            if case .sessionExpired = error { throw error }
-            if case .notSignedIn = error { throw error }
-            if healthObject == nil {
-                throw healthError ?? error
-            }
-        } catch {
-            if healthObject == nil {
-                throw healthError ?? error
-            }
-        }
-
-        return TessieObject.mergedBatteryHealth(vin: vin, health: healthObject, battery: batteryObject)
+        _ = vin
+        throw FleetKitError.featureUnavailable("Battery health")
     }
 
     public func consumptionSinceCharge(vin: String) async throws -> FleetConsumptionInfo {
-        let response: TessieObject = try await get(
-            "/\(encoded(vin))/consumption_since_charge",
-            query: [URLQueryItem(name: "distance_format", value: "mi")]
-        )
-        return response.consumptionSinceCharge
+        _ = vin
+        throw FleetKitError.featureUnavailable("Energy used since the last charge")
     }
 
     public func software(vin: String) async throws -> FleetSoftwareInfo {
-        let state: TessieObject = try await get("/\(encoded(vin))/state")
+        guard let state = try await vehicleDataIfAwake(vin: vin) else {
+            return .asleep
+        }
         return state.software
     }
 
     public func releaseNotes(vin: String, version: String) async throws -> [FleetReleaseNoteInfo] {
-        guard !version.isEmpty, version != ".", version != ".." else {
-            throw FleetKitError.badResponse
-        }
-        let response: TessieReleaseNotes = try await get("/\(encoded(vin))/release_notes/\(encoded(version))")
-        return response.releaseNotes ?? []
+        _ = (vin, version)
+        throw FleetKitError.featureUnavailable("Release notes")
     }
 
     public func controlActions() async throws -> FleetControlActionsInfo {
@@ -322,116 +257,122 @@ public struct FleetIntentClient: Sendable {
     // MARK: - Writes
 
     public func runControl(action: String, vin: String, params: [String: FleetControlValue]) async throws {
-        let command: String
-        var query: [URLQueryItem] = []
-
-        switch action {
-        case "door_lock":
-            command = "lock"
-        case "door_unlock":
-            command = "unlock"
-        case "auto_conditioning_start":
-            command = "start_climate"
-        case "auto_conditioning_stop":
-            command = "stop_climate"
-        case "window_control":
-            switch params["command"]?.queryValue {
-            case "vent":
-                command = "vent_windows"
-            case "close":
-                command = "close_windows"
-            default:
-                throw FleetKitError.unsupportedAction("that window command")
+        var params = params
+        if action == "window_control", params["lat"] == nil || params["lon"] == nil {
+            if let state = try? await vehicleDataIfAwake(vin: vin) {
+                let drive = state.object("drive_state")
+                if params["lat"] == nil, let latitude = drive.double("latitude") {
+                    params["lat"] = .double(latitude)
+                }
+                if params["lon"] == nil, let longitude = drive.double("longitude") {
+                    params["lon"] = .double(longitude)
+                }
             }
-        case "actuate_trunk":
-            command = params["which_trunk"]?.queryValue == "front"
-                ? "activate_front_trunk"
-                : "activate_rear_trunk"
-        case "charge_start":
-            command = "start_charging"
-        case "charge_stop":
-            command = "stop_charging"
-        case "charge_port_door_open":
-            command = "open_charge_port"
-        case "charge_port_door_close":
-            command = "close_charge_port"
-        case "set_charge_limit":
-            command = "set_charge_limit"
-            query = requiredQuery("percent", from: params)
-        case "set_charging_amps":
-            command = "set_charging_amps"
-            query = requiredQuery("amps", from: params)
-        case "set_seat_heat", "set_seat_cool":
-            command = action
-            query = requiredQuery("seat", from: params) + requiredQuery("level", from: params)
-        case "steering_wheel_heater":
-            command = params["on"]?.boolValue == false ? "stop_steering_wheel_heater" : "start_steering_wheel_heater"
-        case "set_temps":
-            command = "set_temperatures"
-            let temperature = params["driver_temp"] ?? params["passenger_temp"]
-            guard let temperature else { throw FleetKitError.badResponse }
-            query = [URLQueryItem(name: "temperature", value: temperature.queryValue)]
-        case "remote_defrost":
-            command = params["on"]?.boolValue == false ? "stop_max_defrost" : "start_max_defrost"
-        case "set_pet_mode":
-            command = "set_climate_keeper_mode"
-            query = [URLQueryItem(name: "mode", value: params["on"]?.boolValue == false ? "0" : "2")]
-        case "set_bioweapon_mode":
-            command = "set_bioweapon_mode"
-            query = requiredQuery("on", from: params)
-        case "set_sentry_mode":
-            command = params["on"]?.boolValue == false ? "disable_sentry" : "enable_sentry"
-        case "flash_lights":
-            command = "flash"
-        case "honk_horn":
-            command = "honk"
-        case "navigation_request":
-            command = "share"
-            query = requiredQuery("value", from: params)
-            if let locale = params["locale"]?.queryValue, !locale.isEmpty {
-                query.append(URLQueryItem(name: "locale", value: locale))
-            }
-        default:
-            throw FleetKitError.unsupportedAction(action)
         }
 
-        try await postCommand("/\(encoded(vin))/command/\(command)", query: query)
+        let command: TeslaFleetCommand
+        do {
+            command = try TeslaFleetCommands.build(
+                action: action,
+                params: params.mapValues(\.teslaJSON),
+                locale: Locale.current.identifier.replacingOccurrences(of: "_", with: "-")
+            )
+        } catch let error as TeslaFleetCommandError {
+            switch error {
+            case .unsupported(let name):
+                throw FleetKitError.unsupportedAction(name)
+            case .missingParameter:
+                throw FleetKitError.badResponse
+            }
+        }
+        try await postCommand(vin: vin, command: command)
     }
 
     public func installSoftwareUpdate(vin: String, offsetSec: Int) async throws {
-        try await postCommand(
-            "/\(encoded(vin))/command/schedule_software_update",
-            query: [URLQueryItem(name: "in_seconds", value: String(max(offsetSec, 0)))]
+        let command = try TeslaFleetCommands.build(
+            action: "schedule_software_update",
+            params: ["offset_sec": .int(max(offsetSec, 0))]
         )
+        try await postCommand(vin: vin, command: command)
     }
 
     public func cancelSoftwareUpdate(vin: String) async throws {
-        try await postCommand("/\(encoded(vin))/command/cancel_software_update")
+        let command = try TeslaFleetCommands.build(action: "cancel_software_update", params: [:])
+        try await postCommand(vin: vin, command: command)
     }
 
     // MARK: - Transport
 
-    private func get<Value: Decodable>(_ path: String, query: [URLQueryItem] = []) async throws -> Value {
-        let request = try authorizedRequest(path: path, query: query, method: "GET")
-        let data = try await execute(request)
+    private func listedVehicles() async throws -> [TeslaFleetVehicle] {
+        let spec = TeslaFleetRequests.vehicles(baseURL: tokenStore.serverBaseURL())
+        let (data, status) = try await perform(try makeRequest(spec))
+        guard (200..<300).contains(status) else {
+            throw statusError(status, data: data)
+        }
         do {
-            return try JSONDecoder().decode(Value.self, from: data)
+            return try TeslaFleetDecoding.vehicles(from: data)
         } catch {
-            FleetKitLog.client.error("GET \(Self.logPath(path), privacy: .public) decode failed — \(error.localizedDescription, privacy: .private)")
+            FleetKitLog.client.error("Vehicle list decode failed — \(error.localizedDescription, privacy: .private)")
             throw FleetKitError.badResponse
         }
     }
 
-    private func postCommand(_ path: String, query: [URLQueryItem] = []) async throws {
-        let request = try authorizedRequest(path: path, query: query, method: "POST")
-        let data = try await execute(request)
-        guard let response = try? JSONDecoder().decode(TessieCommandResponse.self, from: data), response.result else {
-            FleetKitLog.client.error("POST \(Self.logPath(path), privacy: .public) command was not accepted")
-            throw FleetKitError.api("Tessie did not accept the vehicle command.")
+    private func vehicleDataIfAwake(vin: String) async throws -> TessieObject? {
+        let listed = try await listedVehicles()
+        guard let match = listed.first(where: { $0.vin.caseInsensitiveCompare(vin) == .orderedSame }) else {
+            throw FleetKitError.api(FleetCopy.text(
+                "That vehicle isn't on this Tesla server.",
+                "이 Tesla 서버에서 그 차량을 찾지 못했습니다."
+            ))
+        }
+        guard TeslaFleetReadPolicy.allowsVehicleDataFetch(state: match.state) else {
+            FleetKitLog.client.info("Skipped vehicle_data for \(FleetKitLog.vin(vin), privacy: .public) because it is \(match.state ?? "unknown", privacy: .public)")
+            return nil
+        }
+        return try await vehicleData(id: match.routeID)
+    }
+
+    private func vehicleData(id: String) async throws -> TessieObject? {
+        let spec = TeslaFleetRequests.vehicleData(baseURL: tokenStore.serverBaseURL(), vehicleID: id)
+        let (data, status) = try await perform(try makeRequest(spec))
+        if TeslaFleetDecoding.isAsleep(statusCode: status, body: data) {
+            return nil
+        }
+        guard (200..<300).contains(status) else {
+            throw statusError(status, data: data)
+        }
+        if let box = try? JSONDecoder().decode(TeslaStateBox.self, from: data), let response = box.response {
+            return response
+        }
+        do {
+            return try JSONDecoder().decode(TessieObject.self, from: data)
+        } catch {
+            FleetKitLog.client.error("vehicle_data decode failed — \(error.localizedDescription, privacy: .private)")
+            throw FleetKitError.badResponse
         }
     }
 
-    private func execute(_ request: URLRequest) async throws -> Data {
+    private func postCommand(vin: String, command: TeslaFleetCommand) async throws {
+        let spec = TeslaFleetRequests.command(
+            baseURL: tokenStore.serverBaseURL(),
+            vehicleID: vin,
+            name: command.name,
+            body: command.body
+        )
+        let (data, status) = try await perform(try makeRequest(spec))
+        if status == 401 {
+            throw FleetKitError.sessionExpired
+        }
+        switch TeslaFleetDecoding.commandOutcome(statusCode: status, body: data) {
+        case .accepted:
+            return
+        case .rejected(let message):
+            FleetKitLog.client.error("Command \(command.name, privacy: .public) was not accepted")
+            throw FleetKitError.api(message)
+        }
+    }
+
+    private func perform(_ request: URLRequest) async throws -> (Data, Int) {
         let method = request.httpMethod ?? "GET"
         let path = Self.logPath(request.url?.path(percentEncoded: true) ?? "?")
         let start = ContinuousClock.now
@@ -445,13 +386,10 @@ public struct FleetIntentClient: Sendable {
             FleetKitLog.client.info("\(method, privacy: .public) \(path, privacy: .public) → \(http.statusCode, privacy: .public) in \(elapsed, privacy: .public) ms")
 
             if http.statusCode == 401 {
-                FleetKitLog.client.warning("Received 401 from Tessie — the saved access token is invalid or revoked")
+                FleetKitLog.client.warning("Received 401 from the Tesla server — the saved API key is invalid")
                 throw FleetKitError.sessionExpired
             }
-            guard (200..<300).contains(http.statusCode) else {
-                throw FleetKitError.api(Self.errorMessage(from: data) ?? "Tessie request failed with HTTP \(http.statusCode).")
-            }
-            return data
+            return (data, http.statusCode)
         } catch let error as FleetKitError {
             throw error
         } catch {
@@ -461,52 +399,56 @@ public struct FleetIntentClient: Sendable {
         }
     }
 
-    private func makeURL(path: String, query: [URLQueryItem]) throws -> URL {
-        guard var components = URLComponents(url: FleetKitConfig.baseURL, resolvingAgainstBaseURL: false) else {
-            throw FleetKitError.badResponse
-        }
-
-        let endpointPath = path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-        components.percentEncodedPath = "/" + endpointPath
-        components.queryItems = query.isEmpty ? nil : query
-
-        guard let url = components.url else {
-            throw FleetKitError.badResponse
-        }
-        return url
-    }
-
-    private func authorizedRequest(path: String, query: [URLQueryItem], method: String) throws -> URLRequest {
-        guard let token = tokenStore.accessToken() else {
+    private func makeRequest(_ spec: TeslaFleetRequest) throws -> URLRequest {
+        guard let token = tokenStore.accessToken(), !token.isEmpty else {
             throw FleetKitError.notSignedIn
         }
-        let url = try makeURL(path: path, query: query)
-        var request = URLRequest(url: url, timeoutInterval: FleetKitConfig.requestTimeout)
-        request.httpMethod = method
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        return request
+        return spec.urlRequest(apiKey: token, timeout: FleetKitConfig.requestTimeout)
     }
 
-    private func requiredQuery(_ key: String, from params: [String: FleetControlValue]) -> [URLQueryItem] {
-        guard let value = params[key] else { return [] }
-        return [URLQueryItem(name: key, value: value.queryValue)]
+    private func statusError(_ status: Int, data: Data) -> FleetKitError {
+        if status == 401 { return .sessionExpired }
+        return .api(TeslaFleetDecoding.errorMessage(from: data) ?? FleetCopy.text(
+            "Tesla server request failed with HTTP \(status).",
+            "Tesla 서버 요청이 HTTP \(status)(으)로 실패했습니다."
+        ))
     }
 
     private static func logPath(_ path: String) -> String {
-        guard let separator = path.dropFirst().firstIndex(of: "/") else { return path }
-        return "/{vin}" + path[separator...]
+        guard let marker = path.range(of: "/api/vehicles/") else { return path }
+        let rest = path[marker.upperBound...]
+        guard let slash = rest.firstIndex(of: "/") else { return String(path[..<marker.upperBound]) + "{vin}" }
+        return String(path[..<marker.upperBound]) + "{vin}" + rest[slash...]
     }
+}
 
-    private static func errorMessage(from data: Data) -> String? {
-        guard let object = try? JSONDecoder().decode(TessieObject.self, from: data) else { return nil }
-        return object.string("error") ?? object.string("message")
+private struct TeslaStateBox: Decodable {
+    let response: TessieObject?
+}
+
+extension FleetControlValue {
+    var teslaJSON: TeslaFleetJSON {
+        switch self {
+        case .string(let value): .string(value)
+        case .int(let value): .int(value)
+        case .double(let value): .double(value)
+        case .bool(let value): .bool(value)
+        }
     }
+}
 
-    private func encoded(_ value: String) -> String {
-        var allowed = CharacterSet.alphanumerics
-        allowed.insert(charactersIn: "-._~")
-        return value.addingPercentEncoding(withAllowedCharacters: allowed) ?? value
+extension FleetSoftwareInfo {
+    static var asleep: FleetSoftwareInfo {
+        FleetSoftwareInfo(
+            currentVersion: nil,
+            availableVersion: nil,
+            updateAvailable: false,
+            installable: false,
+            status: "asleep",
+            downloadPercent: nil,
+            installPercent: nil,
+            expectedDurationMinutes: nil
+        )
     }
 }
 

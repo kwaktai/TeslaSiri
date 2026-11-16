@@ -272,7 +272,12 @@ public struct DriveEntityQuery: EntityQuery, EntityStringQuery, IndexedEntityQue
         var found: [DriveEntity] = []
 
         for vehicle in vehicles where !remaining.isEmpty && (hasLegacyID || requestedVINs.contains(vehicle.vin)) {
-            let drives = try await service.drives(vin: vehicle.vin, limit: 100)
+            let drives: [FleetDriveInfo]
+            do {
+                drives = try await service.drives(vin: vehicle.vin, limit: 100)
+            } catch let error as FleetKitError where error.isUnavailableFeature {
+                continue
+            }
             for drive in drives where remaining.contains(drive.sessionID) {
                 found.append(DriveEntity(info: drive))
                 remaining.remove(drive.sessionID)
@@ -292,6 +297,8 @@ public struct DriveEntityQuery: EntityQuery, EntityStringQuery, IndexedEntityQue
             do {
                 let drives = try await service.drives(vin: vehicle.vin, limit: 50).map(DriveEntity.init(info:))
                 all.append(contentsOf: drives)
+            } catch let error as FleetKitError where error.isUnavailableFeature {
+                continue
             } catch FleetKitError.sessionExpired {
                 throw FleetKitError.sessionExpired
             } catch {
@@ -313,7 +320,12 @@ public struct DriveEntityQuery: EntityQuery, EntityStringQuery, IndexedEntityQue
     public func suggestedEntities() async throws -> [DriveEntity] {
         let service = FleetIntentService.make()
         let vehicle = try await service.resolvedVehicle(nil)
-        let drives = try await service.drives(vin: vehicle.vin, limit: 10).map(DriveEntity.init(info:))
+        let drives: [DriveEntity]
+        do {
+            drives = try await service.drives(vin: vehicle.vin, limit: 10).map(DriveEntity.init(info:))
+        } catch let error as FleetKitError where error.isUnavailableFeature {
+            return []
+        }
         FleetKitLog.entities.info("DriveEntityQuery suggesting \(drives.count, privacy: .public) drive(s) for \(vehicle.name, privacy: .public)")
         return drives
     }
@@ -326,7 +338,11 @@ public struct DriveEntityQuery: EntityQuery, EntityStringQuery, IndexedEntityQue
         let service = FleetIntentService.make()
         var all: [DriveEntity] = []
         for vehicle in try await service.vehicles() {
-            all.append(contentsOf: try await service.drives(vin: vehicle.vin, limit: 50).map(DriveEntity.init(info:)))
+            do {
+                all.append(contentsOf: try await service.drives(vin: vehicle.vin, limit: 50).map(DriveEntity.init(info:)))
+            } catch let error as FleetKitError where error.isUnavailableFeature {
+                continue
+            }
         }
         try await FleetSpotlightIndexer.donate(all)
     }

@@ -6,11 +6,12 @@ import Testing
 // so parallel execution would cross-wire fixtures between tests.
 @Suite(.serialized)
 struct FleetIntentClientTests {
-    @Test func `vehicles request uses Tessie bearer token and active query`() async throws {
+    @Test func `vehicles request uses the Tesla server API key`() async throws {
         let client = makeMockClient { request in
-            #expect(request.url?.path == "/vehicles")
-            #expect(request.url?.query?.contains("only_active=true") == true)
-            #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer test-token")
+            #expect(request.url?.path == "/api/vehicles")
+            #expect(request.url?.query == nil)
+            #expect(request.value(forHTTPHeaderField: "X-API-Key") == "test-token")
+            #expect(request.value(forHTTPHeaderField: "Authorization") == nil)
             return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
         }
 
@@ -21,14 +22,16 @@ struct FleetIntentClientTests {
         #expect(MockURLProtocol.requests.count == 1)
     }
 
-    @Test func `snapshot maps Tessie state and optional tire pressure`() async throws {
+    @Test func `snapshot reads vehicle data without waking and without a tire endpoint`() async throws {
+        let listed = Data(#"{"response":[{"id":"VIN/ABC 123","vin":"VIN/ABC 123","display_name":"Roadrunner","state":"online"}]}"#.utf8)
         let client = makeMockClient { request in
             switch request.url?.path(percentEncoded: true) {
-            case "/VIN%2FABC%20123/state":
+            case "/api/vehicles":
+                return (200, listed)
+            case "/api/vehicles/VIN%2FABC%20123/vehicle_data":
+                #expect(request.httpMethod == "GET")
+                #expect(request.url?.query?.contains("wake") != true)
                 return (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
-            case "/VIN%2FABC%20123/tire_pressure":
-                #expect(request.url?.query?.contains("pressure_format=psi") == true)
-                return (200, Data(FleetKitFixtures.tessieTiresJSON.utf8))
             default:
                 Issue.record("Unexpected path: \(request.url?.absoluteString ?? "nil")")
                 return (404, Data())
@@ -37,65 +40,56 @@ struct FleetIntentClientTests {
 
         let snapshot = try await client.snapshot(vin: "VIN/ABC 123")
 
-        #expect(MockURLProtocol.requests.compactMap { $0.url?.path(percentEncoded: true) }.sorted() == [
-            "/VIN%2FABC%20123/state",
-            "/VIN%2FABC%20123/tire_pressure"
+        #expect(MockURLProtocol.requests.compactMap { $0.url?.path(percentEncoded: true) } == [
+            "/api/vehicles",
+            "/api/vehicles/VIN%2FABC%20123/vehicle_data"
         ])
         #expect(snapshot.vin == "VIN/ABC 123")
         #expect(snapshot.batteryLevel == 82.4)
         #expect(abs((snapshot.insideTemp ?? 0) - 68.9) < 0.001)
         #expect(snapshot.outsideTemp == 50)
         #expect(snapshot.petModeOn == true)
-        #expect(abs((snapshot.tires?.frontLeftPSI ?? 0) - 39.4) < 0.001)
+        #expect(snapshot.tires == nil)
     }
 
-    @Test func rosterDecodesOnlyVehicleIdentityAndAccountUnits() async throws {
-        let json = """
-            {"results":[
-              {"vin":"A","last_state":{"display_name":42,"vehicle_state":{"vehicle_name":"ignored"},
-                "vehicle_config":{"car_type":"modely","exterior_color":true},
-                "gui_settings":{"gui_temperature_units":"F","gui_distance_units":"km"},
-                "unknown":{"telemetry":[0,1,null]}}},
-              {"vin":"B","last_state":{"vehicle_state":{"vehicle_name":"Fallback"},"vehicle_config":false}},
-              {"vin":"C","last_state":null}
+    @Test func rosterDecodesVehicleIdentityAndAccountUnitsFromVehicleData() async throws {
+        let list = """
+            {"response":[
+              {"id":1,"vin":"A","display_name":42,"state":"online"},
+              {"vin":"B","display_name":"Fallback","state":"asleep"},
+              {"vin":"C","state":"offline"}
             ]}
             """
-        let client = makeMockClient { _ in (200, Data(json.utf8)) }
+        let state = #"{"gui_settings":{"gui_temperature_units":"F","gui_distance_units":"km"}}"#
+        let client = makeMockClient { request in
+            request.url?.path == "/api/vehicles" ? (200, Data(list.utf8)) : (200, Data(state.utf8))
+        }
         let vehicles = try await client.vehicles()
         #expect(vehicles.map(\.vin) == ["A", "B", "C"])
         #expect(vehicles.map(\.displayName) == ["42", "Fallback", nil])
-        #expect(vehicles.map(\.carType) == ["modely", nil, nil])
-        #expect(vehicles.map(\.exteriorColor) == ["true", nil, nil])
         #expect(try await client.user().units == "imperial")
+        #expect(MockURLProtocol.requests.map { $0.url?.path } == ["/api/vehicles", "/api/vehicles", "/api/vehicles/A/vehicle_data"])
     }
 
-    @Test func drivePathPreservesScalarCoercionsAndSampledEndpoints() async throws {
-        let json = """
-            {"results":[
-              {"latitude":"3","longitude":-3,"autopilot":true,"timestamp":1710000002000},
-              {"latitude":0,"longitude":"-1","heading":"340","speed":"12.5","timestamp":"1710000000",
-               "extra":{"payload":[true,false,null]}},
-              {"latitude":2,"longitude":-2,"timestamp":1710000001,"autopilot":2},
-              {"latitude":"NaN","longitude":-9}, {"latitude":[],"longitude":1}
-            ]}
-            """
-        let client = makeMockClient { _ in (200, Data(json.utf8)) }
+    @Test func drivePathIsUnavailableWithoutARequest() async throws {
+        let client = makeMockClient { _ in
+            Issue.record("Drive routes must not call the server")
+            return (500, Data())
+        }
         let start = Date(timeIntervalSince1970: 1710000000)
         let end = start.addingTimeInterval(3)
-        let full = try await client.drivePath(vin: "A", from: start, to: end, maxPoints: 1)
-        #expect(full.map(\.latitude) == [0, 2, 3])
-        #expect(full.map(\.timestampMS) == [1710000000000, 1710000001000, 1710000002000])
-        #expect(full.map(\.autopilotState) == [nil, "2", "true"])
-        #expect(full.first?.speedMPH == 12.5 && full.first?.heading == 340)
-        let sampled = try await client.drivePath(vin: "A", from: start, to: end, maxPoints: 2)
-        #expect(sampled == [full[0], full[2]])
+        await #expect(throws: FleetKitError.self) {
+            _ = try await client.drivePath(vin: "A", from: start, to: end, maxPoints: 1)
+        }
+        #expect(MockURLProtocol.requests.isEmpty)
     }
 
     @Test func snapshotPreservesRequiredStateErrorWhenBothReadsFail() async {
         let client = makeMockClient { request in
-            request.url?.lastPathComponent == "state"
-                ? (503, Data(#"{"error":"state unavailable"}"#.utf8))
-                : (401, Data())
+            if request.url?.path == "/api/vehicles" {
+                return (200, Data(#"{"response":[{"vin":"A","state":"online"}]}"#.utf8))
+            }
+            return (503, Data(#"{"error":"state unavailable"}"#.utf8))
         }
         let error = await #expect(throws: FleetKitError.self) {
             try await client.snapshot(vin: "A")
@@ -118,46 +112,38 @@ struct FleetIntentClientTests {
 
     @Test func spotlightStatusAndSoftwareUseOneStateResponse() async throws {
         let client = makeMockClient { request in
-            if request.url?.path == "/VIN-1/state" {
-                return (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
+            if request.url?.path == "/api/vehicles" {
+                return (200, Data(#"{"response":[{"vin":"VIN-1","display_name":"Roadrunner","state":"online"}]}"#.utf8))
             }
-            return (200, Data(FleetKitFixtures.tessieTiresJSON.utf8))
+            return (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
         }
         let result = try await FleetIntentService(client: client).snapshotAndSoftware(vin: "VIN-1")
         #expect(result.snapshot.batteryLevel == 82.4)
         #expect(result.software.availableVersion == "2026.8.4")
-        #expect(MockURLProtocol.requests.compactMap { $0.url?.path }.sorted() == ["/VIN-1/state", "/VIN-1/tire_pressure"])
+        #expect(MockURLProtocol.requests.compactMap { $0.url?.path } == ["/api/vehicles", "/api/vehicles/VIN-1/vehicle_data"])
     }
 
-    @Test(arguments: [200, 401, 503])
-    func batteryHealthPreservesPartialDataAndAuthenticationErrors(batteryStatus: Int) async throws {
+    @Test func batteryHealthIsUnavailableWithoutARequest() async throws {
         try await withIsolatedFleetService { request in
-            if request.url?.path == "/battery_health" {
-                return (200, Data(#"{"results":[{"vin":"VIN-1","health_percent":94}]}"#.utf8))
-            }
-            return (batteryStatus, Data(#"{"energy_remaining":42}"#.utf8))
+            Issue.record("Battery health must not call the server")
+            return (500, Data())
         } body: { requests in
-            let service = FleetIntentService.make()
-            if batteryStatus == 401 {
-                let error = await #expect(throws: FleetKitError.self) {
-                    try await service.batteryHealth(vin: "VIN-1")
-                }
-                #expect(error?.localizedDescription == FleetKitError.sessionExpired.localizedDescription)
-            } else {
-                let health = try await service.batteryHealth(vin: "VIN-1")
-                #expect(health.healthPercent == 94)
-                #expect(health.energyRemainingKWH == (batteryStatus == 200 ? 42 : nil))
+            let error = await #expect(throws: FleetKitError.self) {
+                try await FleetIntentService.make().batteryHealth(vin: "VIN-1")
             }
-            #expect(requests().compactMap { $0.url?.path }.sorted() == ["/VIN-1/battery", "/battery_health"])
+            #expect(error?.isUnavailableFeature == true)
+            #expect(requests().isEmpty)
         }
     }
 
     @Test func `control request maps action and parameters to Tessie command`() async throws {
         let client = makeMockClient { request in
             #expect(request.httpMethod == "POST")
-            #expect(request.url?.path == "/VIN-1/command/set_charge_limit")
-            #expect(request.url?.query?.contains("percent=80") == true)
-            #expect(request.httpBody == nil)
+            #expect(request.url?.path == "/api/vehicles/VIN-1/command/set_charge_limit")
+            #expect(request.url?.query?.contains("wake=1") == true)
+            #expect(request.value(forHTTPHeaderField: "X-API-Key") == "test-token")
+            let body = String(data: request.httpBody ?? Data(), encoding: .utf8) ?? ""
+            #expect(body.contains("\"percent\":80"))
             return (200, FleetKitFixtures.commandResponse())
         }
 
@@ -170,8 +156,8 @@ struct FleetIntentClientTests {
 
     @Test func `parameterless controls map to direct Tessie commands`() async throws {
         let client = makeMockClient { request in
-            #expect(request.url?.path == "/VIN-1/command/honk")
-            #expect(request.url?.query == nil)
+            #expect(request.url?.path == "/api/vehicles/VIN-1/command/honk_horn")
+            #expect(request.url?.query?.contains("wake=1") == true)
             return (200, FleetKitFixtures.commandResponse())
         }
 
@@ -202,7 +188,10 @@ struct FleetIntentClientTests {
 
     @Test func `software state maps Tessie version and progress`() async throws {
         let client = makeMockClient { request in
-            #expect(request.url?.path == "/VIN-1/state")
+            if request.url?.path == "/api/vehicles" {
+                return (200, Data(#"{"response":[{"vin":"VIN-1","state":"online"}]}"#.utf8))
+            }
+            #expect(request.url?.path == "/api/vehicles/VIN-1/vehicle_data")
             return (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
         }
 
@@ -217,12 +206,12 @@ struct FleetIntentClientTests {
     @Test func `snapshot falls back to state tire pressures in bar`() async throws {
         let client = makeMockClient { request in
             switch request.url?.path {
-            case "/VIN-1/state":
+            case "/api/vehicles":
+                return (200, Data(#"{"response":[{"vin":"VIN-1","state":"online"}]}"#.utf8))
+            case "/api/vehicles/VIN-1/vehicle_data":
                 return (200, Data("""
                     {"vehicle_state":{"tpms_pressure_fl":"2.7","tpms_pressure_fr":"NaN","tpms_pressure_rr":2.9}}
                     """.utf8))
-            case "/VIN-1/tire_pressure":
-                return (404, Data())
             default:
                 Issue.record("Unexpected request")
                 return (404, Data())
@@ -237,12 +226,11 @@ struct FleetIntentClientTests {
         #expect(tires.lastMeasuredAt == nil)
     }
 
-    @Test func `snapshot reports an expired session from the tire pressure request`() async throws {
+    @Test func `snapshot reports an expired session from vehicle data`() async throws {
         let client = makeMockClient { request in
-            if request.url?.path == "/VIN-1/state" {
-                return (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
+            if request.url?.path == "/api/vehicles" {
+                return (200, Data(#"{"response":[{"vin":"VIN-1","state":"online"}]}"#.utf8))
             }
-            #expect(request.url?.path == "/VIN-1/tire_pressure")
             return (401, Data())
         }
 
@@ -268,14 +256,11 @@ struct FleetIntentClientTests {
                 """.utf8))
         }
 
-        let drives = try await client.drives(vin: "VIN-1", limit: 10)
-        #expect(drives.map(\.sessionID) == ["VIN-1:2", "VIN-1:1"])
-        let latest = try #require(drives.first)
-        #expect(latest.startedAt == 1_710_001_200_000)
-        #expect(latest.durationMS == 300_000)
-        #expect(latest.distanceMiles == 12.5)
-        #expect(latest.avgSpeedMPH == 30)
-        #expect(latest.energyUsedKWH == 4.2)
+        let error = await #expect(throws: FleetKitError.self) {
+            _ = try await client.drives(vin: "VIN-1", limit: 10)
+        }
+        #expect(error?.isUnavailableFeature == true)
+        #expect(MockURLProtocol.requests.isEmpty)
     }
 
     @Test(.serialized, arguments: ["2026.8.4", ""])
@@ -283,9 +268,9 @@ struct FleetIntentClientTests {
         let expectedVersion = stagedVersion.isEmpty ? "2026.2.1" : stagedVersion
         let client = makeMockClient { request in
             switch request.url?.path {
-            case "/vehicles":
+            case "/api/vehicles":
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
-            case "/VIN-1/state":
+            case "/api/vehicles/VIN-1/vehicle_data":
                 return (200, Data("""
                     {"vehicle_state":{"car_version":"2026.2.1 build","software_update":{"version":"\(stagedVersion)"}}}
                     """.utf8))
@@ -304,17 +289,15 @@ struct FleetIntentClientTests {
         let query = ReleaseNoteEntityQuery(service: FleetIntentService(client: client))
 
         let notes = try await query.suggestedEntities()
-        let note = try #require(notes.first)
-        #expect(notes.count == 1)
-        #expect(note.version == expectedVersion)
-        #expect(note.title == "Route updates")
-        #expect(note.details == "Better directions")
+        #expect(notes.isEmpty)
+        #expect(MockURLProtocol.requests.allSatisfy { $0.url?.path.contains("release_notes") != true })
+        _ = expectedVersion
     }
 
     @Test func `saved release notes resolve by exact version for authorized vehicles`() async throws {
         let client = makeMockClient { request in
             switch request.url?.path {
-            case "/vehicles":
+            case "/api/vehicles":
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
             case "/VIN-2/release_notes/2025.44":
                 return (200, Data("""
@@ -332,8 +315,8 @@ struct FleetIntentClientTests {
         let id = "VIN-2:2025.44:2025.40:Changes: Navigation"
 
         let notes = try await query.entities(for: [id, "UNKNOWN:2025.44:Missing"])
-        #expect(notes.map(\.id) == [id])
-        #expect(MockURLProtocol.requests.map { $0.url?.path } == ["/vehicles", "/VIN-2/release_notes/2025.44"])
+        #expect(notes.isEmpty)
+        #expect(MockURLProtocol.requests.map { $0.url?.path } == ["/api/vehicles"])
     }
 
     @Test(.serialized, arguments: ["", ".", ".."])

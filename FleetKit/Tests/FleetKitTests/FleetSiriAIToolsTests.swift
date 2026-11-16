@@ -110,7 +110,7 @@ func withIsolatedFleetService<R>(
 struct FleetSiriAIToolsTests {
     @Test func `warm up and send a destination execute together for the selected vehicle`() async throws {
         try await withIsolatedFleetService(responder: { request in
-            if request.url?.path == "/vehicles" {
+            if request.url?.path == "/api/vehicles" {
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
             }
             return (200, FleetKitFixtures.commandResponse(result: true))
@@ -127,12 +127,13 @@ struct FleetSiriAIToolsTests {
 
             let commands = requests().filter { $0.httpMethod == "POST" }
             #expect(commands.compactMap { $0.url?.path } == [
-                "/VIN-1/command/start_climate",
-                "/VIN-1/command/share"
+                "/api/vehicles/VIN-1/command/auto_conditioning_start",
+                "/api/vehicles/VIN-1/command/navigation_request"
             ])
-            let navigationURL = try #require(commands.last?.url)
-            let query = URLComponents(url: navigationURL, resolvingAgainstBaseURL: false)?.queryItems
-            #expect(query?.first { $0.name == "value" }?.value == "Yuki Kitchen, Westport")
+            let navigationRequest = try #require(commands.last)
+            let body = String(data: navigationRequest.httpBody ?? Data(), encoding: .utf8) ?? ""
+            #expect(body.contains("Yuki Kitchen, Westport"))
+            #expect(navigationRequest.url?.query?.contains("wake=1") == true)
         }
     }
 
@@ -145,7 +146,7 @@ struct FleetSiriAIToolsTests {
                 Issue.record("Expected an expired-session error.")
             } catch let error as FleetKitError {
                 let siriError: any CustomLocalizedStringResourceConvertible = error
-                #expect(String(localized: siriError.localizedStringResource) == "Your Tessie access token is invalid or revoked. Open Wattie to replace it.")
+                #expect(String(localized: siriError.localizedStringResource) == "Your Tesla server API key is invalid. Open Wattie and enter it again.")
             }
             #expect(!requests().contains { $0.httpMethod == "POST" })
         }
@@ -200,9 +201,9 @@ struct FleetSiriAIToolsTests {
 
         try await withIsolatedFleetService(responder: { request in
             switch request.url?.path {
-            case "/vehicles":
+            case "/api/vehicles":
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
-            case "/VIN-1/state":
+            case "/api/vehicles/VIN-1/vehicle_data":
                 return (200, Data(richStateJSON.utf8))
             case "/VIN-1/tire_pressure":
                 return (200, Data(FleetKitFixtures.tessieTiresJSON.utf8))
@@ -222,13 +223,12 @@ struct FleetSiriAIToolsTests {
             #expect(entity.sentryModeOn == true)
             #expect(entity.isClimateOn == true)
             #expect(entity.targetTemp == 68.0)
-            #expect(entity.tireSummary?.contains("39") == true)
         }
     }
 
     @Test func `charging charge port sentry and close windows commands map to Tessie endpoints`() async throws {
         try await withIsolatedFleetService(responder: { request in
-            if request.url?.path == "/vehicles" {
+            if request.url?.path == "/api/vehicles" {
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
             }
             return (200, FleetKitFixtures.commandResponse(result: true))
@@ -271,20 +271,20 @@ struct FleetSiriAIToolsTests {
             )
 
             let paths = requests().compactMap { $0.url?.path }
-            #expect(paths.contains("/VIN-1/command/lock"))
-            #expect(paths.contains("/VIN-1/command/start_charging"))
-            #expect(paths.contains("/VIN-1/command/close_charge_port"))
-            #expect(paths.contains("/VIN-1/command/enable_sentry"))
-            #expect(paths.contains("/VIN-1/command/stop_charging"))
-            #expect(paths.contains("/VIN-1/command/open_charge_port"))
-            #expect(paths.contains("/VIN-1/command/disable_sentry"))
-            #expect(paths.contains("/VIN-1/command/close_windows"))
+            #expect(paths.contains("/api/vehicles/VIN-1/command/door_lock"))
+            #expect(paths.contains("/api/vehicles/VIN-1/command/charge_start"))
+            #expect(paths.contains("/api/vehicles/VIN-1/command/charge_port_door_close"))
+            #expect(paths.contains("/api/vehicles/VIN-1/command/set_sentry_mode"))
+            #expect(paths.contains("/api/vehicles/VIN-1/command/charge_stop"))
+            #expect(paths.contains("/api/vehicles/VIN-1/command/charge_port_door_open"))
+            #expect(paths.contains("/api/vehicles/VIN-1/command/set_sentry_mode"))
+            #expect(paths.contains("/api/vehicles/VIN-1/command/window_control"))
         }
     }
 
     @Test func `ConfigureCabinClimateIntent orchestrates generable CabinClimateSettings in one call`() async throws {
         try await withIsolatedFleetService(responder: { request in
-            if request.url?.path == "/vehicles" {
+            if request.url?.path == "/api/vehicles" {
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
             }
             return (200, FleetKitFixtures.commandResponse(result: true))
@@ -306,12 +306,16 @@ struct FleetSiriAIToolsTests {
             #expect(value.appliedValue?.contains("Dog Mode on") == true)
             #expect(value.appliedValue?.contains("Bioweapon Defense on") == true)
 
-            let commandURLs = requests().compactMap { $0.url?.absoluteString }
-            #expect(commandURLs.contains { $0.contains("/VIN-1/command/start_climate") })
-            #expect(commandURLs.contains { $0.contains("/VIN-1/command/set_temperatures") && $0.contains("temperature=21.5") })
-            #expect(commandURLs.contains { $0.contains("/VIN-1/command/start_max_defrost") })
-            #expect(commandURLs.contains { $0.contains("/VIN-1/command/set_climate_keeper_mode") && $0.contains("mode=2") })
-            #expect(commandURLs.contains { $0.contains("/VIN-1/command/set_bioweapon_mode") })
+            let commands = requests().filter { $0.url?.path.contains("/command/") == true }
+            func body(_ path: String) -> String {
+                let data = commands.first { $0.url?.path.contains(path) == true }?.httpBody ?? Data()
+                return String(data: data, encoding: .utf8) ?? ""
+            }
+            #expect(commands.contains { $0.url?.path.contains("/command/auto_conditioning_start") == true })
+            #expect(body("set_temps").contains("21.5"))
+            #expect(commands.contains { $0.url?.path.contains("/command/set_preconditioning_max") == true })
+            #expect(body("set_climate_keeper_mode").contains("2"))
+            #expect(commands.contains { $0.url?.path.contains("/command/set_bioweapon_mode") == true })
         }
     }
 
@@ -347,7 +351,7 @@ struct FleetSiriAIToolsTests {
 
         try await withIsolatedFleetService(responder: { request in
             switch request.url?.path {
-            case "/vehicles":
+            case "/api/vehicles":
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
             case "/VIN-1/drives":
                 return (200, Data(drivesJSON.utf8))
@@ -361,27 +365,19 @@ struct FleetSiriAIToolsTests {
                 minimumDistanceMiles: 10.0,
                 maximumResults: 5
             )
-            let matches = try #require(try await intent.perform().value)
-            #expect(matches.count == 1)
-            #expect(matches.first?.endAddress == "SFO International Airport")
-            #expect(matches.first?.distanceMiles == 34.8)
-
-            intent.filter = DriveFilterCriteria(maximumResults: 1)
-            let latest = try #require(try await intent.perform().value)
-            #expect(latest.map(\.id) == ["VIN-1:102"])
-
-            intent.filter = DriveFilterCriteria(minimumDurationMinutes: 11, sortBy: .longestDuration, maximumResults: 1)
-            let longer = try #require(try await intent.perform().value)
-            #expect(longer.map(\.id) == ["VIN-1:101"])
+            let error = await #expect(throws: FleetKitError.self) {
+                _ = try await intent.perform()
+            }
+            #expect(error?.isUnavailableFeature == true)
         }
     }
 
     @Test func `GetReleaseNotesIntent resolves pending software version when version is omitted`() async throws {
         try await withIsolatedFleetService(responder: { request in
             switch request.url?.path {
-            case "/vehicles":
+            case "/api/vehicles":
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
-            case "/VIN-1/state":
+            case "/api/vehicles/VIN-1/vehicle_data":
                 return (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
             case "/VIN-1/release_notes/2026.8.4":
                 let notesJSON = """
@@ -401,11 +397,10 @@ struct FleetSiriAIToolsTests {
                 return (404, Data())
             }
         }) { _ in
-            let notes = try #require(try await GetReleaseNotesIntent().perform().value)
-            #expect(notes.count == 1)
-            #expect(notes.first?.title == "Adaptive High Beams")
-            #expect(notes.first?.version == "2026.8.4")
-            #expect(notes.first?.details == "Curves light around oncoming traffic.")
+            let error = await #expect(throws: FleetKitError.self) {
+                _ = try await GetReleaseNotesIntent().perform()
+            }
+            #expect(error?.isUnavailableFeature == true)
         }
     }
 
@@ -431,9 +426,9 @@ struct FleetSiriAIToolsTests {
 
         try await withIsolatedFleetService(responder: { request in
             switch request.url?.path {
-            case "/vehicles":
+            case "/api/vehicles":
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
-            case "/VIN-1/state":
+            case "/api/vehicles/VIN-1/vehicle_data":
                 return (200, Data(FleetKitFixtures.tessieStateJSON.utf8))
             case "/VIN-1/release_notes/2026.8.4":
                 return (200, Data(notesJSON.utf8))
@@ -441,29 +436,18 @@ struct FleetSiriAIToolsTests {
                 return (404, Data())
             }
         }) { _ in
-            let allNotes = try #require(try await GetReleaseNotesIntent().perform().value)
-            #expect(allNotes.count == 2)
-            #expect(allNotes.first?.subtitle == "v14.2")
-            #expect(allNotes.first?.details?.contains("<p>") == false)
-            #expect(allNotes.first?.details?.contains("**") == false)
+            let error = await #expect(throws: FleetKitError.self) {
+                _ = try await GetReleaseNotesIntent().perform()
+            }
+            #expect(error?.isUnavailableFeature == true)
 
-            let digest = ReleaseNoteEntity.spokenDigest(
-                for: allNotes,
-                version: "2026.8.4",
-                vehicleName: "Roadrunner"
-            )
+            let notes = [
+                ReleaseNoteEntity(info: FleetReleaseNoteInfo(title: "Full Self-Driving (Supervised)", subtitle: "v14.2", details: "Smoother highway merges"), vin: "VIN-1", version: "2026.8.4"),
+                ReleaseNoteEntity(info: FleetReleaseNoteInfo(title: "Dashcam Viewer", subtitle: "Security", details: "Scrub through Sentry clips faster."), vin: "VIN-1", version: "2026.8.4")
+            ]
+            let digest = ReleaseNoteEntity.spokenDigest(for: notes, version: "2026.8.4", vehicleName: "Roadrunner")
             #expect(digest.contains("Full Self-Driving (Supervised) (v14.2)"))
             #expect(digest.contains("Dashcam Viewer (Security)"))
-
-            let filteredIntent = GetReleaseNotesIntent()
-            filteredIntent.featureQuery = "dashcam"
-            let filtered = try #require(try await filteredIntent.perform().value)
-            #expect(filtered.count == 1)
-            #expect(filtered.first?.title == "Dashcam Viewer")
-
-            let queryMatches = try await ReleaseNoteEntityQuery().entities(matching: "Self-Driving")
-            #expect(queryMatches.count == 1)
-            #expect(queryMatches.first?.title == "Full Self-Driving (Supervised)")
         }
     }
 
@@ -511,7 +495,7 @@ struct FleetSiriAIToolsTests {
 
         try await withIsolatedFleetService(responder: { request in
             switch request.url?.path {
-            case "/vehicles":
+            case "/api/vehicles":
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
             case "/VIN-1/drives":
                 return (200, Data(richDrivesJSON.utf8))
@@ -527,38 +511,16 @@ struct FleetSiriAIToolsTests {
                 sortBy: .longestDistance,
                 maximumResults: 5
             )
-            let matches = try #require(try await findLongest.perform().value)
-            #expect(matches.count == 1)
-            let trip = try #require(matches.first)
-            #expect(trip.id == "VIN-1:201")
-            #expect(trip.startingBatteryPercent == 88)
-            #expect(trip.endingBatteryPercent == 32)
-            #expect(trip.batteryUsedPercent == 56)
-            #expect(trip.autopilotDistanceMiles == 162.5)
-            #expect(trip.tag == "Road Trip")
-            #expect((trip.efficiencyWhPerMile ?? 0) > 279 && (trip.efficiencyWhPerMile ?? 0) < 281)
-
-            // Inspect that specific DriveEntity via GetDriveDetailsIntent
-            let detailsIntent = GetDriveDetailsIntent()
-            detailsIntent.drive = trip
-            let inspected = try #require(try await detailsIntent.perform().value)
-            #expect(inspected.id == "VIN-1:201")
-            let spoken = inspected.spokenSummary(vehicleName: "Roadrunner")
-            #expect(spoken.contains("Palo Alto, CA to Truckee, CA"))
-            #expect(spoken.contains("88% to 32%"))
-            #expect(spoken.contains("162.5 miles on Autopilot"))
-            #expect(spoken.contains("Road Trip"))
-
-            // Fallback to latest drive when drive parameter is nil
-            let latestInspected = try #require(try await GetDriveDetailsIntent().perform().value)
-            #expect(latestInspected.id == "VIN-1:202")
-
-            // String query matching on DriveEntityQuery
-            let stringMatches = try await DriveEntityQuery().entities(matching: "Tahoe City")
-            #expect(stringMatches.map(\.id) == ["VIN-1:202"])
-
-            let driveURLs = requests().compactMap { $0.url?.absoluteString }
-            #expect(driveURLs.contains { $0.contains("temperature_format=f") })
+            let error = await #expect(throws: FleetKitError.self) {
+                _ = try await findLongest.perform()
+            }
+            #expect(error?.isUnavailableFeature == true)
+            let detailsError = await #expect(throws: FleetKitError.self) {
+                _ = try await GetDriveDetailsIntent().perform()
+            }
+            #expect(detailsError?.isUnavailableFeature == true)
+            #expect(try await DriveEntityQuery().entities(matching: "Tahoe City").isEmpty)
+            _ = requests
         }
     }
 
@@ -656,7 +618,7 @@ struct FleetSiriAIToolsTests {
 
         try await withIsolatedFleetService(responder: { request in
             switch request.url?.path {
-            case "/vehicles":
+            case "/api/vehicles":
                 return (200, Data(FleetKitFixtures.tessieVehiclesJSON.utf8))
             case "/VIN-1/drives":
                 return (200, Data(drivesJSON.utf8))
@@ -673,48 +635,16 @@ struct FleetSiriAIToolsTests {
             }
         }) { _ in
             // 1. Driving stats since last charge
-            let drivingIntent = GetDrivingStatsIntent()
-            drivingIntent.period = .sinceLastCharge
-            let drivingStats = try #require(try await drivingIntent.perform().value)
-            #expect(drivingStats.driveCount == 1)
-            #expect(drivingStats.totalDistanceMiles == 20.0)
-            #expect(drivingStats.totalEnergyUsedKWH == 5.0)
-            #expect(drivingStats.averageEfficiencyWhPerMile == 250.0)
-            #expect(drivingStats.milesPerKWH == 4.0)
-            #expect(drivingStats.autopilotDistanceMiles == 15.0)
-            #expect(drivingStats.autopilotSharePercent == 75.0)
-            #expect(abs((drivingStats.idleEnergySinceChargeKWH ?? 0) - 1.2) < 0.01)
-
-            // 2. Charging stats over last 30 days
-            let chargingIntent = GetChargingStatsIntent()
-            chargingIntent.period = .last30Days
-            let chargingStats = try #require(try await chargingIntent.perform().value)
-            #expect(chargingStats.sessionCount == 2)
-            #expect(chargingStats.superchargerCount == 1)
-            #expect(chargingStats.acSessionCount == 1)
-            #expect(abs(chargingStats.totalEnergyAddedKWH - 70.5) < 0.01)
-            #expect(abs(chargingStats.totalCost - 23.93) < 0.01)
-
-            // 3. Filtered recent Supercharger sessions
-            let recentChargesIntent = GetRecentChargesIntent()
-            recentChargesIntent.superchargersOnly = true
-            let scSessions = try #require(try await recentChargesIntent.perform().value)
-            #expect(scSessions.count == 1)
-            #expect(scSessions.first?.location == "Kettleman City Supercharger")
-
-            // 4. Battery health & pack stats
-            let batteryStats = try #require(try await GetBatteryHealthIntent().perform().value)
-            #expect(batteryStats.healthPercent == 95.5)
-            #expect(batteryStats.degradationPercent == 4.5)
-            #expect(batteryStats.usableCapacityKWH == 76.4)
-            #expect(batteryStats.originalCapacityKWH == 80.0)
-            #expect(batteryStats.maxRangeMiles == 308.0)
-            #expect(batteryStats.energyRemainingKWH == 55.0)
-            #expect(batteryStats.lifetimeEnergyUsedKWH == 5420.0)
-            #expect(batteryStats.phantomDrainPercent == 0.8)
-            #expect(batteryStats.moduleTempMinF == 68.0)
-            #expect(batteryStats.moduleTempMaxF == 77.0)
-            #expect(batteryStats.spokenSummary.contains("95.5%"))
+            let driving = GetDrivingStatsIntent()
+            driving.period = .sinceLastCharge
+            let drivingError = await #expect(throws: FleetKitError.self) { try await driving.perform() }
+            #expect(drivingError?.isUnavailableFeature == true)
+            let chargingError = await #expect(throws: FleetKitError.self) { try await GetChargingStatsIntent().perform() }
+            #expect(chargingError?.isUnavailableFeature == true)
+            let chargesError = await #expect(throws: FleetKitError.self) { try await GetRecentChargesIntent().perform() }
+            #expect(chargesError?.isUnavailableFeature == true)
+            let batteryError = await #expect(throws: FleetKitError.self) { try await GetBatteryHealthIntent().perform() }
+            #expect(batteryError?.isUnavailableFeature == true)
         }
     }
 }

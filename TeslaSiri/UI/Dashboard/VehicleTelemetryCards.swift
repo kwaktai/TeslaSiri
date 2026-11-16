@@ -281,10 +281,20 @@ private struct ChargingHistoryView: View {
     let sessions: [FleetChargeSession]
 
     var body: some View {
-        List(sessions) { session in
-            ChargeHistoryRow(session: session)
+        Group {
+            if sessions.isEmpty {
+                ContentUnavailableView(
+                    "No charging history",
+                    systemImage: "bolt.car",
+                    description: Text("This Tesla server does not keep past charging sessions. An active charge still appears here.")
+                )
+            } else {
+                List(sessions) { session in
+                    ChargeHistoryRow(session: session)
+                }
+                .listStyle(.insetGrouped)
+            }
         }
-        .listStyle(.insetGrouped)
         .navigationTitle("Charging History")
         .navigationBarTitleDisplayMode(.inline)
     }

@@ -334,7 +334,13 @@ public struct ReleaseNoteEntityQuery: EntityQuery, EntityStringQuery, IndexedEnt
         var notesByID: [ReleaseNoteEntity.ID: ReleaseNoteEntity] = [:]
         for (vin, versions) in versionsByVIN {
             for version in versions {
-                for note in try await service.releaseNotes(vin: vin, version: version) {
+                let notes: [FleetReleaseNoteInfo]
+                do {
+                    notes = try await service.releaseNotes(vin: vin, version: version)
+                } catch let error as FleetKitError where error.isUnavailableFeature {
+                    continue
+                }
+                for note in notes {
                     let entity = ReleaseNoteEntity(info: note, vin: vin, version: version)
                     notesByID[entity.id] = entity
                 }
@@ -385,7 +391,12 @@ public struct ReleaseNoteEntityQuery: EntityQuery, EntityStringQuery, IndexedEnt
     private func latestReleaseNotes(vin: String) async throws -> [ReleaseNoteEntity] {
         let software = try await service.software(vin: vin)
         guard let version = software.availableVersion ?? software.currentVersion else { return [] }
-        return try await service.releaseNotes(vin: vin, version: version)
-            .map { ReleaseNoteEntity(info: $0, vin: vin, version: version) }
+        let notes: [FleetReleaseNoteInfo]
+        do {
+            notes = try await service.releaseNotes(vin: vin, version: version)
+        } catch let error as FleetKitError where error.isUnavailableFeature {
+            return []
+        }
+        return notes.map { ReleaseNoteEntity(info: $0, vin: vin, version: version) }
     }
 }

@@ -7,7 +7,7 @@ nonisolated enum TessieAccessTokenError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .emptyToken:
-            return "Paste a Tessie access token to connect your account."
+            return "Enter a Tesla server API key to connect."
         }
     }
 }

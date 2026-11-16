@@ -71,8 +71,8 @@ struct FleetModelTests {
     }
 
     @Test func `fleet errors use user-facing descriptions`() {
-        #expect(FleetKitError.notSignedIn.localizedDescription == "Open Wattie and add your Tessie access token to use this.")
-        #expect(FleetKitError.sessionExpired.localizedDescription == "Your Tessie access token is invalid or revoked. Open Wattie to replace it.")
+        #expect(FleetKitError.notSignedIn.localizedDescription == "Open Wattie and add your Tesla server URL and API key.")
+        #expect(FleetKitError.sessionExpired.localizedDescription == "Your Tesla server API key is invalid. Open Wattie and enter it again.")
         #expect(FleetKitError.unsupportedAction("honking").localizedDescription == "Your vehicle doesn't support honking right now.")
     }
 }

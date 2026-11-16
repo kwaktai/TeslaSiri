@@ -8,12 +8,16 @@
     "development": "en",
     "supported": [
       "Base",
+      "ko",
     ],
   },
   "packages": [
     {
       "kind": "local",
       "path": "FleetKit",
+    }, {
+      "kind": "local",
+      "path": "TeslaFleetTransport",
     }, {
       "kind": "local",
       "path": "TeslaVehicleKit",
@@ -82,6 +86,10 @@
       "package-product-members": [
         {
           "product-name": "FleetKit",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "TeslaFleetTransport",
+          "product-name": "TeslaFleetTransport",
           "build-phase": { "build-phase": "frameworks" },
         }, {
           "package": "TeslaVehicleKit",
